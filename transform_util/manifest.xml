@@ -1,0 +1,23 @@
+<package>
+  <description brief="transform_util">
+
+     The transform_util package contains utility functions and classes for
+     transforming between coordinate frames.
+
+  </description>
+  <author>Marc Alban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  
+  <depend package="roscpp"/> 
+  <depend package="tf" />
+  
+  <rosdep name="proj"/>
+  
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ltransform_util -Wl,-rpath,${prefix}/lib" />
+  </export>
+</package>
+
+
