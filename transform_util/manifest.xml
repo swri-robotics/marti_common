@@ -13,7 +13,9 @@
   <depend package="roscpp"/> 
   <depend package="tf" />
   
+  <rosdep name="opencv2.3"/>
   <rosdep name="proj"/>
+  <rosdep name="yaml-cpp" />
   
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ltransform_util -Wl,-rpath,${prefix}/lib" />
