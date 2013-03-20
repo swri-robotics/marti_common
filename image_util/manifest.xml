@@ -1,0 +1,35 @@
+<package>
+  <description brief="image_util">
+
+     image_util
+
+  </description>
+  <author>Kris Kozak</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/> 
+  <depend package="roslib"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="bullet"/>
+  <depend package="tf" />
+  <depend package="geometry_msgs" />
+  <depend package="image_geometry" />
+  <depend package="nav_msgs" />
+  <depend package="camera_calibration_parsers"/>
+  
+  <depend package="lapackpp" />
+  
+  <rosdep name="opencv2.3"/>
+  <rosdep name="qt4"/>
+  
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lranger_common -Wl,-rpath,${prefix}/lib" />
+  </export>
+</package>
+
+
