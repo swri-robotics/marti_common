@@ -50,6 +50,21 @@
 
 namespace image_util
 {
+  cv::Mat WarpImage(const cv::Mat& image, double roll, double pitch);
+
+  /**
+   * @brief      Gets the rotation matrix associated with the specified pitch
+   *             and roll values
+   *
+   * @param[in]  pitch    The pitch value
+   * @param[in]  roll     The roll value
+   * @param[in]  yaw      The yaw value (default = 0.0);
+   *
+   * @retval     Returns the appropriately formatted rotation matrix
+   */
+  static cv::Mat GetR(double pitch, double roll, double yaw = 0.0);
+
+
   /**
    * @brief      A class for estimating image warping based on perspective
    *             distortion.  Primarily intended for use with downward-facing
@@ -140,21 +155,6 @@ namespace image_util
                            const cv::Size& image_size,
                            const std::vector<cv::KeyPoint>& pts_in,
                            std::vector<cv::KeyPoint>& pts_out);
-
-    /**
-     * @brief      Gets the rotation matrix associated with the specified pitch
-     *             and roll values
-     *
-     * @param[in]  pitch    The pitch value
-     * @param[in]  roll     The roll value
-     * @param[in]  yaw      The yaw value (default = 0.0);
-     *
-     * @retval     Returns the appropriately formatted rotation matrix
-     */
-    static cv::Mat getR(double pitch,
-                        double roll,
-                        double yaw = 0.0);
-
   private:
 
     cv::Mat im1_;

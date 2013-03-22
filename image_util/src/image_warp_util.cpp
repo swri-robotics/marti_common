@@ -28,6 +28,54 @@
 namespace image_util
 {
 
+  cv::Mat WarpImage(const cv::Mat& image, double roll, double pitch)
+  {
+    cv::Mat warped;
+    
+    // Initialize the camera matrix:
+    cv::Mat K = cv::Mat::eye(cv::Size(3,3), CV_32F);
+    K.at<float>(0,2) = static_cast<double>(image.cols - 1) / 2.0;
+    K.at<float>(1,2) = static_cast<double>(image.rows - 1) / 2.0;
+    
+    cv::Mat T = cv::Mat::zeros(cv::Size(3,1), CV_32F);
+    
+    cv::Mat R = GetR(pitch, roll);
+    
+    cv::detail::PlaneWarper warper;
+    warper.warp(image, K, R, T, cv::INTER_LANCZOS4, 0, warped);
+    
+    return warped;
+  }
+  
+  cv::Mat GetR(double pitch, double roll, double yaw)
+  {
+    cv::Mat R1 = cv::Mat::eye(cv::Size(3,3), CV_32F);
+    cv::Mat R2 = cv::Mat::eye(cv::Size(3,3), CV_32F);
+    cv::Mat R3 = cv::Mat::eye(cv::Size(3,3), CV_32F);
+
+    // do pitch first:
+    R1.at<float>(0,0) = std::cos(pitch);
+    R1.at<float>(0,2) = -std::sin(pitch);
+    R1.at<float>(2,0) = std::sin(pitch);
+    R1.at<float>(2,2) = std::cos(pitch);
+
+    // Then roll
+    R2.at<float>(1,1) = std::cos(roll);
+    R2.at<float>(1,2) = std::sin(roll);
+    R2.at<float>(2,1) = -std::sin(roll);
+    R2.at<float>(2,2) = std::cos(roll);
+
+    // Finally yaw
+    R3.at<float>(0,0) = std::cos(yaw);
+    R3.at<float>(0,1) = std::sin(yaw);
+    R3.at<float>(1,0) = -std::sin(yaw);
+    R3.at<float>(1,1) = std::cos(yaw);
+
+
+    cv::Mat R = R3*R2*R1;
+
+    return R;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   //
@@ -120,8 +168,7 @@ namespace image_util
     ros::WallTime T2 = ros::WallTime::now();
 
     ROS_ERROR("Estimate Nominal Angle time = %g", (T2 - T1).toSec());
-    cv::Mat R = getR(nominal_pitch,
-                     nominal_roll);
+    cv::Mat R = GetR(nominal_pitch, nominal_roll);
 
     if(show_image_diff)
     {
@@ -263,7 +310,7 @@ namespace image_util
               nominal_pitch*180.0/3.14159,
               nominal_roll*180.0/3.14159);
 
-    cv::Mat R = getR(nominal_pitch,
+    cv::Mat R = GetR(nominal_pitch,
                      nominal_roll);
 
 
@@ -291,7 +338,7 @@ namespace image_util
     cv::detail::PlaneWarper warper;
 
     cv::Mat T = cv::Mat::zeros(cv::Size(3,1), CV_32F);
-    cv::Mat R = getR(pitch, roll);
+    cv::Mat R = GetR(pitch, roll);
     pts_in.copyTo(pts_out);
     for(int32_t i = 0; i < pts_in.rows; ++i)
     {
@@ -321,7 +368,7 @@ namespace image_util
     cv::detail::PlaneWarper warper;
 
     cv::Mat T = cv::Mat::zeros(cv::Size(3,1), CV_32F);
-    cv::Mat R = getR(pitch, roll);
+    cv::Mat R = GetR(pitch, roll);
 
     for(int32_t i = 0; i < (int)pts_in.size(); ++i)
     {
@@ -560,48 +607,6 @@ namespace image_util
       pts_out.at<cv::Vec2f>(0,i)[1] = pts_out_temp.at<float>(i,1);
     }
   }
-
-
-
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // getR()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  cv::Mat PitchAndRollEstimator::getR(double pitch,
-                              double roll,
-                              double yaw)
-  {
-    cv::Mat R1 = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    cv::Mat R2 = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    cv::Mat R3 = cv::Mat::eye(cv::Size(3,3), CV_32F);
-
-    // do pitch first:
-    R1.at<float>(0,0) = std::cos(pitch);
-    R1.at<float>(0,2) = -std::sin(pitch);
-    R1.at<float>(2,0) = std::sin(pitch);
-    R1.at<float>(2,2) = std::cos(pitch);
-
-    // Then roll
-    R2.at<float>(1,1) = std::cos(roll);
-    R2.at<float>(1,2) = std::sin(roll);
-    R2.at<float>(2,1) = -std::sin(roll);
-    R2.at<float>(2,2) = std::cos(roll);
-
-    // Finally yaw
-    R3.at<float>(0,0) = std::cos(yaw);
-    R3.at<float>(0,1) = std::sin(yaw);
-    R3.at<float>(1,0) = -std::sin(yaw);
-    R3.at<float>(1,1) = std::cos(yaw);
-
-
-    cv::Mat R = R3*R2*R1;
-
-    return R;
-  }
-
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
