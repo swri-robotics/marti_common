@@ -28,7 +28,7 @@
   
   <export>
     <rosdoc config="rosdoc.yaml" />
-    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lranger_common -Wl,-rpath,${prefix}/lib" />
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -limage_util -Wl,-rpath,${prefix}/lib" />
   </export>
 </package>
 
