@@ -32,6 +32,25 @@
 
 namespace image_util
 {
+
+  void DrawOverlap(
+      const std::string& title,
+      const cv::Mat& image1,
+      const cv::Mat& image2,
+      const cv::Mat& transform)
+  {
+    cv::Mat image2_warped;
+    cv::warpAffine(
+      image2,
+      image2_warped,
+      transform,
+      cv::Size(image2.cols, image2.rows));
+      
+    cv::Mat sub = image1 - image2_warped;
+    
+    cv::imshow(title, sub);
+  }
+
   void DrawMatches(
       cv::Mat& image_out,
       const cv::Mat image1,

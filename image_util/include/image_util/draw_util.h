@@ -26,6 +26,12 @@
 
 namespace image_util
 {
+  void DrawOverlap(
+      const std::string& title,
+      const cv::Mat& image1,
+      const cv::Mat& image2,
+      const cv::Mat& transform);
+
   void DrawMatches(
       cv::Mat& image_out,
       const cv::Mat image1,
