@@ -38,7 +38,7 @@ namespace transform_util
 
     transform.setRotation(reference_rotation.inverse() * rotation);
 
-    double x, y;
+    double x = 0, y = 0;
     ToLocalXY(x, y, latitude, longitude, reference_latitude, reference_longitude);
 
 
