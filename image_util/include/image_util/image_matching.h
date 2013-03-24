@@ -47,6 +47,31 @@ namespace image_util
                              cv::Mat& inliers2,
                              double max_distance = 1.0,
                              double confidence = 0.99);
+   
+  /**
+   * @brief      Computes the fundamental matrix for a set of matching points in
+   *             two different images.  The method also returns the inlier
+   *             keypoints for both frames.
+   *
+   * @param[in]  points1              The keypoints for the first image
+   * @param[in]  points2              The matching keypoints for a second image
+   * @param[out] fundamental_matrix   The computed fundamental matrix
+   * @param[out] inliers1             The inlier keypoints from the first set
+   * @param[out] inliers2             The inlier keypoints from the second set
+   * @param[out] indices              The indices of the inlier keypoints
+   * @param[in]  max_distance         The maximum allowable distance (in pixels)
+   *                                  from the computed epipolar line
+   * @param[in]  confidence           The confidence level (which affects the
+   *                                  number of iterations)
+   */
+  void GetFundamentalInliers(const cv::Mat points1,
+                             const cv::Mat points2,
+                             cv::Mat& fundamental_matrix,
+                             cv::Mat& inliers1,
+                             cv::Mat& inliers2,
+                             std::vector<uint32_t>& indices,
+                             double max_distance = 1.0,
+                             double confidence = 0.99);
 
 
   /**

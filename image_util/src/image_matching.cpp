@@ -33,16 +33,30 @@
 
 namespace image_util
 {
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // GetFundamentalInliers()
-  //
-  //////////////////////////////////////////////////////////////////////////////
   void GetFundamentalInliers(const cv::Mat points1,
                              const cv::Mat points2,
                              cv::Mat& fundamental_matrix,
                              cv::Mat& inliers1,
                              cv::Mat& inliers2,
+                             double max_distance,
+                             double confidence)
+  {
+    std::vector<uint32_t> indices;
+    GetFundamentalInliers(
+      points1, points2, 
+      fundamental_matrix, 
+      inliers1, inliers2,
+      indices,
+      max_distance, 
+      confidence);
+  }
+
+  void GetFundamentalInliers(const cv::Mat points1,
+                             const cv::Mat points2,
+                             cv::Mat& fundamental_matrix,
+                             cv::Mat& inliers1,
+                             cv::Mat& inliers2,
+                             std::vector<uint32_t>& indices,
                              double max_distance,
                              double confidence)
   {
@@ -64,6 +78,8 @@ namespace image_util
       }
     }
 
+    indices.resize(inliers);
+
     if (inliers > 0)
     {
       inliers1 = cv::Mat(cv::Size(1, inliers), CV_32FC2);
@@ -76,17 +92,13 @@ namespace image_util
         {
           inliers1.at<cv::Vec2f>(0, index) = points1.at<cv::Vec2f>(0, i);
           inliers2.at<cv::Vec2f>(0, index) = points2.at<cv::Vec2f>(0, i);
+          indices[index] = i;
           index++;
         }
       }
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // ConvertMatches()
-  //
-  //////////////////////////////////////////////////////////////////////////////
   void ConvertMatches(const std::vector<cv::KeyPoint>& kp1,
                       const std::vector<cv::KeyPoint>& kp2,
                       const std::vector<cv::DMatch>& matches,
