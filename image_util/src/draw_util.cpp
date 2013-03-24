@@ -39,16 +39,19 @@ namespace image_util
       const cv::Mat& image2,
       const cv::Mat& transform)
   {
-    cv::Mat image2_warped;
-    cv::warpAffine(
-      image2,
-      image2_warped,
-      transform,
-      cv::Size(image2.cols, image2.rows));
+    if (image1.rows == image2.rows && image1.cols == image2.cols)
+    {
+      cv::Mat image2_warped;
+      cv::warpAffine(
+        image2,
+        image2_warped,
+        transform,
+        cv::Size(image2.cols, image2.rows));
+        
+      cv::Mat sub = image1 - image2_warped;
       
-    cv::Mat sub = image1 - image2_warped;
-    
-    cv::imshow(title, sub);
+      cv::imshow(title, sub);
+    }
   }
 
   void DrawMatches(
