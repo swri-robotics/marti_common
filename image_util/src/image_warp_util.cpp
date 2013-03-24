@@ -43,6 +43,10 @@ namespace image_util
     
     cv::detail::PlaneWarper warper;
     warper.warp(image, K, R, T, cv::INTER_LANCZOS4, 0, warped);
+   
+    // TODO(malban): This warp can cause problems because it can change the 
+    //                image size.  The result should be cropped or padded.  The
+    //                warp points function will need to be modified accordingly.
     
     return warped;
   }

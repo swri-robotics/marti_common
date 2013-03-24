@@ -62,7 +62,7 @@ namespace image_util
    *
    * @retval     Returns the appropriately formatted rotation matrix
    */
-  static cv::Mat GetR(double pitch, double roll, double yaw = 0.0);
+  cv::Mat GetR(double pitch, double roll, double yaw = 0.0);
 
 
   /**
@@ -261,6 +261,8 @@ namespace image_util
      * @brief      Constructor
      */
     PitchAndRollEstimatorQueue();
+    
+    ~PitchAndRollEstimatorQueue() {}
 
     /**
      * @brief      Sets the circular buffer capacity for computing statistics
