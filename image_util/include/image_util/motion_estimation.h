@@ -38,6 +38,20 @@
 
 namespace image_util
 {
+  cv::Mat ComputeRigid2DTransformation(
+    const cv::Mat& inliers1,
+    const cv::Mat& inliers2,
+    bool allow_scaling = false);
+
+  bool ValidPointsForTransform(
+    const cv::Mat& points1,
+    const cv::Mat& points2);
+
+  double CalculateReprojectionError(
+    const cv::Mat& points1,
+    const cv::Mat& points2,
+    const cv::Mat& transform);
+
   tf::Transform ToTransform(const cv::Mat& matrix);
 
   /**

@@ -27,6 +27,120 @@
 
 namespace image_util
 {
+  cv::Mat ComputeRigid2DTransformation(
+    const cv::Mat& inliers1,
+    const cv::Mat& inliers2,
+    bool allow_scaling)
+  {
+    cv::Mat T;
+    
+    // Verify that the input points are well formed.
+    if (!ValidPointsForTransform(inliers1, inliers2))
+    {
+      ROS_ERROR("Invalid points for calculating transform.");
+      return T;
+    }
+
+    // Determine if the points are row ordered.
+    bool row_order = inliers1.rows > 1;
+    int32_t num_points = row_order ? inliers1.rows : inliers1.cols;
+
+    // Build the linear equation.
+    LaGenMatDouble A(num_points, 3);
+    LaGenMatDouble B(num_points, 2);
+    for(int32_t i = 0; i < num_points; i++)
+    {
+      int32_t row = row_order ? i : 0;
+      int32_t col = row_order ? 0 : i;
+      
+      A(i, 0) = inliers1.at<cv::Vec2f>(row, col)[0];
+      A(i, 1) = inliers1.at<cv::Vec2f>(row, col)[1];
+      A(i, 2) = 1.0;
+
+      B(i, 0) = inliers2.at<cv::Vec2f>(row, col)[0];
+      B(i, 1) = inliers2.at<cv::Vec2f>(row, col)[1];
+    }
+    
+    // Solve for the Transformation matrix, X
+    LaGenMatDouble X(3, 2);
+    LaLinearSolve(A, X, B);
+    double cn;
+    double rnorm;
+    regularizeTransformationMatrix(X, cn, rnorm, allow_scaling);
+    T.create(2, 3, CV_32FC1);
+
+    for (uint32_t i = 0; i < 2; i++)
+    {
+      for (uint32_t j = 0; j < 3; j++)
+      {
+        T.at<float>(i, j) = X(j, i);
+      }
+    }
+    
+    return T;
+  }
+
+  bool ValidPointsForTransform(
+    const cv::Mat& points1,
+    const cv::Mat& points2)
+  {
+    if (points1.type() != points2.type())
+    {
+      ROS_ERROR("Mismatched array types.");
+      return false;
+    }
+  
+    if (points1.type() != CV_32FC2 && points1.type() != CV_32FC3)
+    {
+      ROS_ERROR("Array type must be either CV_32FC2 or CV_32FC3");
+      return false;
+    }
+  
+    if (points1.cols != points2.cols  || points1.rows  != points2.rows)
+    {
+      ROS_ERROR("Mismatched array sizes.");
+      return false;
+    }
+    
+    if (points1.cols != 1 && points1.rows != 1)
+    {
+      ROS_ERROR("Invalid array size: The arrays need to be 1xN or Nx1.");
+      return false;
+    }
+    
+    if (points1.cols < 6 && points1.rows < 6)
+    {
+      ROS_ERROR("At least 6 points required to calculate rigid transform.");
+      return false;
+    }
+    
+    return true;
+  }
+
+  double CalculateReprojectionError(
+    const cv::Mat& points1,
+    const cv::Mat& points2,
+    const cv::Mat& transform)
+  { 
+    // Transform the first set of points.
+    cv::Mat transformed;
+    cv::transform(points1, transformed, transform);
+    
+    // Measure the point-wise absolute difference between the set of transformed
+    // points and the second set of points.
+    cv::Mat difference;
+    cv::absdiff(transformed, points2, difference);
+    
+    // Calculate the element-wise mean difference.
+    cv::Scalar mean_error = cv::mean(difference);
+    
+    // Calculate the mean reprojection error as the L2-norm of the element-wise
+    // mean difference.
+    double error = cv::norm(mean_error);
+    
+    return error;
+  }
+
   tf::Transform ToTransform(const cv::Mat& matrix)
   {
     tf::Transform transform = tf::Transform::getIdentity();
@@ -249,7 +363,6 @@ namespace image_util
                                         std::vector<uint32_t> &good_points,
                                         bool temp)
   {
-
     cv::Mat T;
     // Here we are trying to compute the transformation matrix T, where T most
     // closely satisfies the relationship
@@ -257,48 +370,18 @@ namespace image_util
     // We use RANSAC to exclude outliers
 
     // First build the input vectors
-    bool row_order = true;
-    if(points1.cols != points2.cols  || points1.rows  != points2.rows)
+    bool row_order = false;
+    if (!ValidPointsForTransform(points1, points2))
     {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  Be sure "
-                "that the arrays are the same size.");
+      ROS_ERROR("Invalid points for calculating transform.");
       return T;
     }
 
-    if (points1.cols < 1 || points1.rows < 1)
-    {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  The arrays "
-                "must have non-zero dimensions.");
-      return T;
-    }
-
-    if (points1.cols <= 2 && points1.rows <= 2)
-    {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  The arrays "
-                "need at least 2 points.");
-      return T;
-    }
-
-    if (points1.cols > 1 && points1.rows > 1)
-    {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  The arrays "
-                "need to be 1xN or Nx1.");
-      return T;
-    }
-
-    if((points1.type() != CV_32FC2 && points1.type() != CV_32FC3)
-        || (points2.type() != CV_32FC2 && points2.type() != CV_32FC3))
-    {
-      ROS_ERROR("Input Mat type must be either CV_32FC2 (for 2D) or "
-                "CV_32FC3 (for 3D)");
-      return T;
-    }
-
-    uint32_t NumPoints = points1.cols ;	// clewis removed divide by 2
+    uint32_t NumPoints = points1.cols ;
     if (points1.rows > 1)
     {
-      row_order = false;
-      NumPoints = points1.rows ; // clewis removed divide by 2
+      row_order = true;
+      NumPoints = points1.rows;
     }
 
     // Setup matrices for holding all of the points
@@ -319,21 +402,21 @@ namespace image_util
       // Points from first frame
       if (row_order)
       {
-        sourceA(i,0) = points1.at<cv::Vec2f>(0,i)[0];
-        sourceA(i,1) = points1.at<cv::Vec2f>(0,i)[1];
-        sourceB(i,0) = points2.at<cv::Vec2f>(0,i)[0];
-        sourceB(i,1) = points2.at<cv::Vec2f>(0,i)[1];
-        sourceA_aug(i,0) = points1.at<cv::Vec2f>(0,i)[0];
-        sourceA_aug(i,1) = points1.at<cv::Vec2f>(0,i)[1];
-      }
-      else
-      {
         sourceA(i,0) = points1.at<cv::Vec2f>(i,0)[0];
         sourceA(i,1) = points1.at<cv::Vec2f>(i,0)[1];
         sourceB(i,0) = points2.at<cv::Vec2f>(i,0)[0];
         sourceB(i,1) = points2.at<cv::Vec2f>(i,0)[1];
         sourceA_aug(i,0) = points1.at<cv::Vec2f>(i,0)[0];
         sourceA_aug(i,1) = points1.at<cv::Vec2f>(i,0)[1];
+      }
+      else
+      {
+        sourceA(i,0) = points1.at<cv::Vec2f>(0,i)[0];
+        sourceA(i,1) = points1.at<cv::Vec2f>(0,i)[1];
+        sourceB(i,0) = points2.at<cv::Vec2f>(0,i)[0];
+        sourceB(i,1) = points2.at<cv::Vec2f>(0,i)[1];
+        sourceA_aug(i,0) = points1.at<cv::Vec2f>(0,i)[0];
+        sourceA_aug(i,1) = points1.at<cv::Vec2f>(0,i)[1];
       }
       sourceA_aug(i,2) = 1.0;
 
@@ -457,34 +540,20 @@ namespace image_util
 
     if(good_points.size() >= MinNumValidPointsNeeded)
     {
-//      ROS_ERROR("Used %d of %d points to compute rigid transformation",
-//                static_cast<int>(good_points.size()),
-//                NumPoints);
-
+      // Compute a final transform using all the valid points.
       if (row_order)
       {
-        inliers1 = cv::Mat(cv::Size(good_points.size(), 1), CV_32FC2);
-        inliers2 = cv::Mat(cv::Size(good_points.size(), 1), CV_32FC2);
+        inliers1 = cv::Mat(good_points.size(), 1, CV_32FC2);
+        inliers2 = cv::Mat(good_points.size(), 1, CV_32FC2);
       }
       else
       {
-        inliers1 = cv::Mat(cv::Size(1, good_points.size()), CV_32FC2);
-        inliers2 = cv::Mat(cv::Size(1, good_points.size()), CV_32FC2);
+        inliers1 = cv::Mat(1, good_points.size(), CV_32FC2);
+        inliers2 = cv::Mat(1, good_points.size(), CV_32FC2);
       }
-
-      // We have a valid set, so let's compute a final transform using all the
-      // valid points
-      LaGenMatDouble A1(good_points.size(), 3);
-      LaGenMatDouble B1(good_points.size(), 2);
+      
       for(uint32_t i = 0; i < good_points.size(); ++i)
       {
-        A1(i,0) = sourceA(good_points[i],0);
-        A1(i,1) = sourceA(good_points[i],1);
-        A1(i,2) = 1.0;
-
-        B1(i,0) = sourceB(good_points[i],0);
-        B1(i,1) = sourceB(good_points[i],1);
-
         if (row_order)
         {
           inliers1.at<cv::Vec2f>(i, 0) =
@@ -500,20 +569,8 @@ namespace image_util
               cv::Vec2f(sourceB(good_points[i],0), sourceB(good_points[i],1));
         }
       }
-      // Solve for the Transformation matrix, X
-      LaLinearSolve(A1, X, B1);
-      double cn;
-      double rnorm;
-      regularizeTransformationMatrix(X, cn, rnorm,temp);
-      T.create(2,3,CV_32FC1);
 
-      for(uint32_t i = 0; i < 2; i++)
-      {
-        for(uint32_t j = 0; j < 3; j++)
-        {
-          T.at<float>(i,j) = X(j,i);
-        }
-      }
+      T = ComputeRigid2DTransformation(inliers1, inliers2, temp);
     }
     else{
       ROS_DEBUG("Not enough valid points size of good_points =%d",
@@ -546,39 +603,9 @@ namespace image_util
 
     // First build the input vectors
     bool row_order = true;
-    if(points1.cols != points2.cols  || points1.rows  != points2.rows)
+    if (!ValidPointsForTransform(points1, points2))
     {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  Be sure "
-                "that the arrays are the same size.");
-      return Affine;
-    }
-
-    if (points1.cols < 1 || points1.rows < 1)
-    {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  The arrays "
-                "must have non-zero dimensions.");
-      return Affine;
-    }
-
-    if (points1.cols <= 2 && points1.rows <= 2)
-    {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  The arrays "
-                "need at least 2 points.");
-      return Affine;
-    }
-
-    if (points1.cols > 1 && points1.rows > 1)
-    {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  The arrays "
-                "need to be 1xN or Nx1.");
-      return Affine;
-    }
-
-    if((points1.type() != CV_32FC2 && points1.type() != CV_32FC3)
-        || (points2.type() != CV_32FC2 && points2.type() != CV_32FC3))
-    {
-      ROS_ERROR("Input Mat type must be either CV_32FC2 (for 2D) or "
-                "CV_32FC3 (for 3D)");
+      ROS_ERROR("Invalid points for calculating transform.");
       return Affine;
     }
 
