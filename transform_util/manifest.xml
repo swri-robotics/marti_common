@@ -12,6 +12,7 @@
   
   <depend package="roscpp"/> 
   <depend package="tf" />
+  <depend package="math_util" />
   
   <rosdep name="opencv2.3"/>
   <rosdep name="proj"/>
