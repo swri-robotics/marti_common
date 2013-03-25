@@ -27,15 +27,13 @@
 
 namespace transform_util
 {
-  static const long double _pi = 3.1415926535897932384626433832795029L;
-  static const double _earth_equator_radius = 6378137.0;
-  static const double _earth_eccentricity = 0.0818191908426;
-
-  tf::Transform GetRelativeTransform(double latitude, double longitude, double yaw, double reference_latitude, double reference_longitude, double reference_yaw);
-
-  void ToLocalXY(double& x, double& y, double latitude, double longitude, double reference_latitude, double reference_longitude);
-
-  void ToLatLon(double& latitude, double& longitude, double x, double y, double reference_latitude, double reference_longitude);
+  tf::Transform GetRelativeTransform(
+      double latitude,
+      double longitude,
+      double yaw,
+      double reference_latitude,
+      double reference_longitude,
+      double reference_yaw);
 
   uint32_t GetZone(double longitude);
 

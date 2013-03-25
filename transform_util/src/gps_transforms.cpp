@@ -17,11 +17,14 @@
 //
 // *****************************************************************************
 
-#include <cmath>
-
 #include <transform_util/gps_transforms.h>
 
+#include <cmath>
+
 #include <ros/ros.h>
+
+#include <math_util/constants.h>
+#include <transform_util/local_xy_util.h>
 
 namespace transform_util
 {
@@ -38,50 +41,16 @@ namespace transform_util
 
     transform.setRotation(reference_rotation.inverse() * rotation);
 
-    double x = 0, y = 0;
-    ToLocalXY(x, y, latitude, longitude, reference_latitude, reference_longitude);
-
+    double x, y;
+    LocalXyFromWgs84(
+        latitude, longitude,
+        reference_latitude, reference_longitude,
+        x, y);
 
     tf::Vector3 origin = tf::Transform(reference_rotation) * tf::Vector3(x, y, 0);
     transform.setOrigin(origin);
 
     return transform;
-  }
-
-  void ToLocalXY(double& x, double& y, double latitude, double longitude, double reference_latitude, double reference_longitude)
-  {
-  	double rlat = latitude * _pi / 180.0;
-	  double rlon = longitude * _pi / 180.0;
-
-	  double ref_rlat = reference_latitude  * _pi / 180.0;
-	  double ref_rlon = reference_longitude  * _pi / 180.0;
-	  double tmp = _earth_eccentricity * std::sin(ref_rlat);
-	  tmp = 1.0 - tmp * tmp;
-	  double sqt = std::sqrt(tmp);
-	  double rho_e = _earth_equator_radius * (1.0 - _earth_eccentricity * _earth_eccentricity) / (sqt * tmp);
-	  double rho_n = _earth_equator_radius / sqt;
-	  double rad_lat = rho_e; /* - depth; */
-	  double rad_lon = (rho_n /* - depth  */) * cos(ref_rlat);
-
-	  y = (rlat - ref_rlat) * rad_lat;
-	  x = (rlon - ref_rlon) * rad_lon;
-  }
-
-  void ToLatLon(double& latitude, double& longitude, double x, double y, double reference_latitude, double reference_longitude)
-  {
-    double ref_rlat = reference_latitude  * _pi / 180.0;
-    double ref_rlon = reference_longitude  * _pi / 180.0;
-
-    double tmp = _earth_eccentricity * std::sin(ref_rlat);
-    tmp = 1.0 - tmp * tmp;
-    double sqt = std::sqrt(tmp);
-    double rho_e = _earth_equator_radius * (1.0 - _earth_eccentricity * _earth_eccentricity) / (sqt * tmp);
-    double rho_n = _earth_equator_radius / sqt;
-    double rad_lat = rho_e; /* - depth; */
-    double rad_lon = (rho_n /* - depth  */) * cos(ref_rlat);
-
-    latitude = (y / rad_lat + ref_rlat) * 180.0 / _pi;
-    longitude = (x / rad_lon + ref_rlon) * 180.0 / _pi;
   }
 
   uint32_t GetZone(double longitude)
@@ -160,8 +129,8 @@ namespace transform_util
     zone = GetZone(longitude);
     band = GetBand(latitude);
 
-    double x = longitude * _pi / 180.0;
-    double y = latitude * _pi / 180.0;
+    double x = longitude * math_util::_deg_2_rad;
+    double y = latitude * math_util::_deg_2_rad;
 
     // Get easting and northing values.
     if (band <= 'N')
@@ -191,8 +160,8 @@ namespace transform_util
       pj_transform(utm_north_[zone - 1], lat_lon_, 1, 0, &x, &y, NULL);
     }
 
-    longitude = x * 180.0 / _pi;
-    latitude = y * 180.0 / _pi;
+    longitude = x * math_util::_rad_2_deg;
+    latitude = y * math_util::_rad_2_deg;
   }
 
 }
