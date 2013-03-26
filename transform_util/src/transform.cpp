@@ -32,9 +32,22 @@ namespace transform_util
   {
   }
 
+  Transform::Transform(boost::shared_ptr<TransformImpl> transform) :
+    transform_(transform)
+  {
+
+  }
+
   Transform& Transform::operator=(const tf::Transform transform)
   {
     transform_ = boost::make_shared<TfTransform>(transform);
+
+    return *this;
+  }
+
+  Transform& Transform::operator=(boost::shared_ptr<TransformImpl> transform)
+  {
+    transform_ = transform;
 
     return *this;
   }

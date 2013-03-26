@@ -68,7 +68,7 @@ namespace transform_util
      *
      * @param[in]  transform  The input transform implementation.
      */
-    explicit Transform(boost::shared_ptr<TransformImpl>& transform);
+    explicit Transform(boost::shared_ptr<TransformImpl> transform);
 
     /**
      * Assignment operator for tf::Transform.
@@ -80,14 +80,13 @@ namespace transform_util
     Transform& operator=(const tf::Transform transform);
 
     /**
-     * Assignment operator for tf::StampedTransform.
+     * Assignment operator for TransformImpl.
      *
-     * Generates a standard rigid transform from a tf::StampedTransform.  The
-     * time stamp is ignored.
+     * Note: The transform implementation is only a shallow copy.
      *
      * @param[in]  transform  The input transform.
      */
-    Transform& operator=(const tf::StampedTransform transform);
+    Transform& operator=(boost::shared_ptr<TransformImpl> transform);
 
     /**
      * Return the transform of the vector.
