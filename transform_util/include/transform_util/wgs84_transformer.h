@@ -28,6 +28,7 @@
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
 
+#include <transform_util/local_xy_util.h>
 #include <transform_util/transformer.h>
 
 namespace transform_util
@@ -35,9 +36,6 @@ namespace transform_util
   class Wgs84Transformer : public Transformer
   {
     public:
-      UtmTransformer();
-      virtual ~UtmTransformer();
-      
       virtual std::map<std::string, std::string> Supports() const;
       
       virtual bool GetTransform(
@@ -48,7 +46,9 @@ namespace transform_util
         
     protected:      
       virtual bool Initialize();
-  }
+
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+  };
 }
 
 #endif  // TRANSFORM_UTIL_WGS84_TRANSFORMER_H_

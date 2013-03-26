@@ -35,14 +35,10 @@ namespace transform_util
   class Transformer
   {
     public:
-      Transformer() : initialized_(false) {}
-      virtual ~Transformer() {}
+      Transformer();
+      virtual ~Transformer();
       
-      void Initialize(const boost::shared_ptr<tf::TransformListener>& tf_listener)
-      {
-        tf_listener_ = tf_listener;
-        initialized_ = Initialize();
-      }
+      void Initialize(const boost::shared_ptr<tf::TransformListener>& tf);
       
       virtual std::map<std::string, std::string> Supports() const = 0;
       
@@ -57,8 +53,14 @@ namespace transform_util
       boost::shared_ptr<tf::TransformListener> tf_listener_;
       std::map<std::string, std::string> supports_;
       
-      virtual bool Initialize() { return true; }
-  }
+      virtual bool Initialize();
+
+      virtual bool GetTransform(
+          const std::string& target_frame,
+          const std::string& source_frame,
+          const ros::Time& time,
+          tf::StampedTransform& transform) const;
+  };
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORMER_H_

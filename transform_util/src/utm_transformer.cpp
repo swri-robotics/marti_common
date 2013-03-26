@@ -17,9 +17,6 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_UTM_TRANSFORMER_H_
-#define TRANSFORM_UTIL_UTM_TRANSFORMER_H_
-
 #include <transform_util/utm_transformer.h>
 
 #include <boost/make_shared.hpp>
@@ -52,39 +49,67 @@ namespace transform_util
     const ros::Time& time,
     Transform& transform)
   {
-    if (target_frame_ == _utm_frame)
+    if (target_frame == _utm_frame)
     {
-      if (source_frame_ == _wgs84_frame)
+      if (source_frame == _wgs84_frame)
       {
-        transform = Transform(boost::make_shared<Wgs84ToUtmTransform>(utm_util_);
+        transform = boost::make_shared<Wgs84ToUtmTransform>(utm_util_);
+
         return true;
       }
       else if (initialized_)
       {
         tf::StampedTransform tf_transform;
-        //TODO(malban): Get tf transform;
+        if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+        {
+          return false;
+        }
         
-        transform = Transform(boost::make_shared<TfToUtmTransform>(
-          tf_transform,
-          utm_util_,
-          local_xy_util_);
+        transform = Transform(boost::shared_ptr<TransformImpl>(
+            boost::make_shared<TfToUtmTransform>(
+                tf_transform,
+                utm_util_,
+                local_xy_util_)));
+
         return true;
       }
     }
-    else if target_frame_ == _wgs84_frame && source_frame_ == _utm_frame)
+    else if (target_frame == _wgs84_frame && source_frame == _utm_frame)
     {
-      transform = Transform(boost::make_shared<UtmToWgs84Transform>(utm_util_);
+      if (!initialized_)
+      {
+        return false;
+      }
+
+      transform = Transform(boost::shared_ptr<TransformImpl>(
+          boost::make_shared<UtmToWgs84Transform>(
+              utm_util_,
+              utm_zone_,
+              utm_band_)));
+
       return true;
     }
-    else if (initialized_ && source_frame_ == _utm_frame)
+    else if (source_frame == _utm_frame)
     {
+      if (!initialized_)
+      {
+        return false;
+      }
+
       tf::StampedTransform tf_transform;
-      //TODO(malban): Get tf transform;
+      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+      {
+        return false;
+      }
         
-      transform = Transform(boost::make_shared<UtmToTfTransform>(
-        tf_transform,
-        utm_util_,
-        local_xy_util_);
+      transform = Transform(boost::shared_ptr<TransformImpl>(
+          boost::make_shared<UtmToTfTransform>(
+              tf_transform,
+              utm_util_,
+              local_xy_util_,
+              utm_zone_,
+              utm_band_)));
+
       return true;
     }
     
@@ -93,66 +118,103 @@ namespace transform_util
  
   bool UtmTransformer::Initialize()
   {
-    // TODO(malban): Initialize LocalXY util with origin.
+    // Initialize LocalXY util with an origin.
+    local_xy_util_ = ParseLocalXyOrigin();
     
-    return false;
+    utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
+    utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
+
+    return local_xy_util_;
   }
   
   UtmToTfTransform::UtmToTfTransform(
       const tf::Transform& transform,
-      boost::shared_ptr<UtmTransforms>& utm_util,
-      boost::shared_ptr<LocalXyUtil>& local_xy_util) :
+      boost::shared_ptr<UtmTransforms> utm_util,
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util,
+      int32_t utm_zone,
+      char utm_band) :
       transform_(transform),
       utm_util_(utm_util),
-      local_xy_util_(local_xy_util)
+      local_xy_util_(local_xy_util),
+      utm_zone_(utm_zone),
+      utm_band_(utm_band)
    {
    
    }
       
   void UtmToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-    // TODO(malban)
+    // If the source frame is UTM and the target frame is in the TF tree,
+    // then first use the UTM to lat/lon conversion, then transform the
+    // lat/lon into LocalXY, and finally use the TF transform to get to the
+    // target frame.
+
+    // Convert to WGS84 latitude and longitude
+    double lat, lon;
+    utm_util_->ToLatLon(utm_zone_, utm_band_, v_in.x(), v_in.y(), lat, lon);
+
+    // Convert to the LocalXY coordinate system.
+    double x, y;
+    local_xy_util_->ToLocalXy(lat, lon, x, y);
+
+    // Transform from the LocalXY coordinate frame using the TF transform
+    v_out.setValue(x, y, v_in.z());
+    v_out = transform_ * v_out;
   }
   
   TfToUtmTransform::TfToUtmTransform(
       const tf::Transform& transform,
-      boost::shared_ptr<UtmTransforms>& utm_util,
-      boost::shared_ptr<LocalXyUtil>& local_xy_util) :
+      boost::shared_ptr<UtmTransforms> utm_util,
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
       transform_(transform),
       utm_util_(utm_util),
       local_xy_util_(local_xy_util)
    {
-   
    }
       
   void TfToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-    // TODO(malban)
+    // Transform into the LocalXY coordinate frame using the TF transform
+    tf::Vector3 local_xy = transform_ * v_in;
+
+    // Convert to WGS84 latitude and longitude
+    double latitude, longitude;
+    local_xy_util_->ToWgs84(local_xy.x(), local_xy.y(), latitude, longitude);
+
+    // Convert to UTM easting and northing
+    double easting, northing;
+    utm_util_->ToUtm(latitude, longitude, easting, northing);
+    v_out.setValue(easting, northing, local_xy.z());
   }
   
   UtmToWgs84Transform::UtmToWgs84Transform(
-    boost::shared_ptr<UtmTransforms>& utm_util) :
-    utm_util_(utm_util)
+    boost::shared_ptr<UtmTransforms> utm_util,
+    int32_t utm_zone,
+    char utm_band) :
+    utm_util_(utm_util),
+    utm_zone_(utm_zone),
+    utm_band_(utm_band)
   {
-  
   }
       
   void UtmToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-    // TODO(malban)
+    double lat, lon;
+    utm_util_->ToLatLon(utm_zone_, utm_band_, v_in.x(), v_in.y(), lat, lon);
+    v_out.setValue(lat, lon, v_in.z());
   }
     
   
   Wgs84ToUtmTransform::Wgs84ToUtmTransform(
-    boost::shared_ptr<UtmTransforms>& utm_util) :
+    boost::shared_ptr<UtmTransforms> utm_util) :
     utm_util_(utm_util)
   {
-  
   }
       
   void Wgs84ToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-    // TODO(malban)
+    double easting, northing;
+    utm_util_->ToUtm(v_in.y(), v_in.x(), easting, northing);
+    v_out.setValue(easting, northing, v_in.z());
   }
 }
-
