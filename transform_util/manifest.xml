@@ -11,14 +11,16 @@
   <url></url>
   
   <depend package="roscpp"/> 
-  <depend package="tf" />
-  <depend package="math_util" />
+  <depend package="tf"/>
+  <depend package="pluginlib"/>
+  <depend package="math_util"/>
   
   <rosdep name="opencv2.3"/>
   <rosdep name="proj"/>
-  <rosdep name="yaml-cpp" />
+  <rosdep name="yaml-cpp"/>
   
   <export>
+    <transform_util plugin="${prefix}/transformer_plugins.xml" />
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ltransform_util -Wl,-rpath,${prefix}/lib" />
   </export>
 </package>

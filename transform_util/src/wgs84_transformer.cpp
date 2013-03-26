@@ -23,6 +23,13 @@
 
 #include <transform_util/frames.h>
 
+#include <pluginlib/class_list_macros.h>
+PLUGINLIB_DECLARE_CLASS(
+    transformers,
+    wgs84,
+    transform_util::Wgs84Transformer,
+    transform_util::Transformer)
+
 namespace transform_util
 {
   std::map<std::string, std::string> Wgs84Transformer::Supports() const
@@ -54,7 +61,7 @@ namespace transform_util
         return false;
       }
 
-      transform = boost::make_shared<TfToWgs84Transform>(local_xy_util_);
+      transform = boost::make_shared<TfToWgs84Transform>(tf_transform, local_xy_util_);
     }
     else if (source_frame == _wgs84_frame)
     {
@@ -64,7 +71,7 @@ namespace transform_util
         return false;
       }
 
-      transform = boost::make_shared<Wgs84ToTfTransform>(local_xy_util_);
+      transform = boost::make_shared<Wgs84ToTfTransform>(tf_transform, local_xy_util_);
     }
 
     return false;

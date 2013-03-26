@@ -23,6 +23,13 @@
 
 #include <transform_util/frames.h>
 
+#include <pluginlib/class_list_macros.h>
+PLUGINLIB_DECLARE_CLASS(
+    transformers,
+    utm,
+    transform_util::UtmTransformer,
+    transform_util::Transformer)
+
 namespace transform_util
 {
   UtmTransformer::UtmTransformer() :
