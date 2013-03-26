@@ -21,7 +21,8 @@ rosbuild_add_library(${PROJECT_NAME}
   src/georeference.cpp
   src/local_xy_util.cpp
   src/transform.cpp
-  src/transformer.cpp)
+  src/transformer.cpp
+  src/transform_manager.cpp)
 target_link_libraries(${PROJECT_NAME} yaml-cpp proj ${OpenCV_LIBRARIES})
   
 rosbuild_add_library(transformer_plugins
