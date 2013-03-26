@@ -21,6 +21,12 @@
 
 #include <cmath>
 
+#include <boost/make_shared.hpp>
+
+#include <XmlRpcException.h>
+
+#include <ros/ros.h>
+
 #include <math_util/constants.h>
 #include <transform_util/earth_constants.h>
 
@@ -54,11 +60,13 @@ namespace transform_util
       double reference_latitude,
       double reference_longitude,
       double reference_heading,
-      double reference_altitude) :
+      double reference_altitude,
+      const std::string& frame_id) :
     reference_latitude_(reference_latitude * math_util::_deg_2_rad),
     reference_longitude_(reference_longitude * math_util::_deg_2_rad),
     reference_heading_(reference_heading * math_util::_deg_2_rad),
-    reference_altitude_(reference_altitude)
+    reference_altitude_(reference_altitude),
+    frame_id_(frame_id)
   {
     if (reference_heading_ > math_util::_pi)
     {
@@ -83,6 +91,21 @@ namespace transform_util
 
     rho_lat_ = rho_e - depth;
     rho_lon_ = (rho_n - depth) * std::cos(reference_latitude_);
+  }
+
+  double LocalXyWgs84Util::ReferenceLongitude() const
+  {
+    return reference_longitude_ * math_util::_rad_2_deg;
+  }
+
+  double LocalXyWgs84Util::ReferenceLatitude() const
+  {
+    return reference_latitude_ * math_util::_rad_2_deg;
+  }
+
+  std::string LocalXyWgs84Util::FrameId() const
+  {
+    return frame_id_;
   }
 
   bool LocalXyWgs84Util::ToLocalXy(
@@ -125,5 +148,101 @@ namespace transform_util
 
     latitude = rlat * math_util::_rad_2_deg;
     longitude = rlon * math_util::_rad_2_deg;
+  }
+
+  LocalXyWgs84UtilPtr ParseLocalXyOrigin()
+  {
+    LocalXyWgs84UtilPtr local_xy;
+
+    try
+    {
+      std::string local_xy_frame;
+      if (!ros::param::get("/local_xy_frame", local_xy_frame))
+      {
+        ROS_WARN("[local_xy]: Undefined /local_xy_frame parameter.");
+        return local_xy;
+      }
+
+      std::string local_xy_name;
+      if (!ros::param::get("/local_xy_origin", local_xy_name))
+      {
+        ROS_WARN("[local_xy]: Undefined /local_xy_origin parameter.");
+        return local_xy;
+      }
+
+      XmlRpc::XmlRpcValue local_xy_origins;
+      if (!ros::param::get("/local_xy_origins", local_xy_origins))
+      {
+        ROS_WARN("[local_xy]: Undefined /local_xy_origins parameter.");
+        return local_xy;
+      }
+
+      if (local_xy_origins.getType() != XmlRpc::XmlRpcValue::TypeArray)
+      {
+        ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
+        return local_xy;
+      }
+
+      for (int32_t i = 0; i < local_xy_origins.size(); ++i)
+      {
+        if (local_xy_origins[i].getType() != XmlRpc::XmlRpcValue::TypeStruct)
+        {
+          ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
+          return local_xy;
+        }
+
+        if (!local_xy_origins[i].hasMember("name"))
+        {
+          ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter: Missing name");
+          return local_xy;
+        }
+
+        std::string name = static_cast<std::string>(local_xy_origins[i]["name"]);
+
+        if (name == local_xy_name)
+        {
+          if (!local_xy_origins[i].hasMember("latitude") ||
+              !local_xy_origins[i].hasMember("longitude") ||
+              !local_xy_origins[i].hasMember("altitude") ||
+              !local_xy_origins[i].hasMember("heading"))
+          {
+            ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
+            return local_xy;
+          }
+
+          double lat = static_cast<double>(local_xy_origins[i]["latitude"]);
+          if (lat < -90 || lat > 90)
+          {
+            ROS_ERROR("[local_xy]: Invalid LocalXY latitude: Out of range [-90, 90]");
+            return local_xy;
+          }
+
+          double lon = static_cast<double>(local_xy_origins[i]["longitude"]);
+          if (lon < -180 || lon > 180)
+          {
+            ROS_ERROR("[local_xy]: Invalid LocalXY longitude: Out of range [-180, 180]");
+            return local_xy;
+          }
+
+          double alt = static_cast<double>(local_xy_origins[i]["altitude"]);
+          double heading = static_cast<double>(local_xy_origins[i]["heading"]);
+
+          local_xy = boost::make_shared<LocalXyWgs84Util>(
+              lat, lon, alt, heading, local_xy_frame);
+        }
+      }
+    }
+    catch (const XmlRpc::XmlRpcException& e)
+    {
+      ROS_ERROR("[local_xy]: Exception parsing LocalXY origin parameters: %s",
+          e.getMessage().c_str());
+    }
+    catch(...)
+    {
+      ROS_ERROR("[local_xy]: Exception parsing LocalXY origin parameters.");
+      return local_xy;
+    }
+
+    return local_xy;
   }
 }

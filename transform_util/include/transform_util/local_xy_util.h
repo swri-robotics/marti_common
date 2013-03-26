@@ -20,6 +20,10 @@
 #ifndef TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
 #define TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
 
+#include <string>
+
+#include <boost/shared_ptr.hpp>
+
 namespace transform_util
 {
 /**
@@ -81,8 +85,15 @@ namespace transform_util
         double reference_latitude,
         double reference_longitude,
         double reference_heading = 0,
-        double reference_altitude = 0);
+        double reference_altitude = 0,
+        const std::string& frame_id = std::string(""));
     // TODO(malban): What is the heading referenced from?
+
+    double ReferenceLongitude() const;
+
+    double ReferenceLatitude() const;
+
+    std::string FrameId() const;
 
     /**
      * Convert WGS84 latitude and longitude to LocalXY.
@@ -120,11 +131,16 @@ namespace transform_util
     double reference_heading_;    //< Reference heading in radians.
     double reference_altitude_;   //< Reference altitude in meters.
 
+    std::string frame_id_;
+
     double rho_lat_;
     double rho_lon_;
     double cos_heading_;
     double sin_heading_;
   };
+  typedef boost::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
+
+  LocalXyWgs84UtilPtr ParseLocalXyOrigin();
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
