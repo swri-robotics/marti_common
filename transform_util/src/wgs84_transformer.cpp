@@ -41,13 +41,30 @@ namespace transform_util
     const ros::Time& time,
     Transform& transform)
   {
+    if (!initialized_)
+    {
+      return false;
+    }
+
     if (target_frame == _wgs84_frame)
     {
+      tf::StampedTransform tf_transform;
+      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+      {
+        return false;
+      }
 
+      transform = boost::make_shared<TfToWgs84Transform>(local_xy_util_);
     }
     else if (source_frame == _wgs84_frame)
     {
+      tf::StampedTransform tf_transform;
+      if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+      {
+        return false;
+      }
 
+      transform = boost::make_shared<Wgs84ToTfTransform>(local_xy_util_);
     }
 
     return false;
@@ -59,6 +76,44 @@ namespace transform_util
     local_xy_util_ = ParseLocalXyOrigin();
 
     return local_xy_util_;
+  }
+
+  TfToWgs84Transform::TfToWgs84Transform(
+    const tf::Transform& transform,
+    boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
+    transform_(transform),
+    local_xy_util_(local_xy_util)
+  {
+  }
+
+  void TfToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
+  {
+   // Transform into the LocalXY coordinate frame using the TF transform.
+   tf::Vector3 local_xy = transform_ * v_in;
+
+   // Convert to WGS84 latitude and longitude.
+   double latitude, longitude;
+   local_xy_util_->ToWgs84(local_xy.x(), local_xy.y(), latitude, longitude);
+   v_out.setValue(longitude, latitude, local_xy.z());
+  }
+
+  Wgs84ToTfTransform::Wgs84ToTfTransform(
+    const tf::Transform& transform,
+    boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
+    transform_(transform),
+    local_xy_util_(local_xy_util)
+  {
+  }
+
+  void Wgs84ToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
+  {
+   // Convert to LocalXY coordinate frame.
+   double x, y;
+   local_xy_util_->ToLocalXy(v_in.y(), v_in.x(), x, y);
+   v_out.setValue(x, y, v_in.z());
+
+   // Transform from the LocalXY coordinate frame using the TF transform.
+   v_out = transform_ * v_out;
   }
 }
 

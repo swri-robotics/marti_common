@@ -49,6 +49,36 @@ namespace transform_util
 
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
+
+  class TfToWgs84Transform : public TransformImpl
+  {
+  public:
+    TfToWgs84Transform(
+      const tf::Transform& transform,
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util
+      );
+
+    virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+
+  protected:
+    tf::Transform transform_;
+    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+  };
+
+  class Wgs84ToTfTransform : public TransformImpl
+  {
+  public:
+    Wgs84ToTfTransform(
+      const tf::Transform& transform,
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util
+      );
+
+    virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+
+  protected:
+    tf::Transform transform_;
+    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+  };
 }
 
 #endif  // TRANSFORM_UTIL_WGS84_TRANSFORMER_H_

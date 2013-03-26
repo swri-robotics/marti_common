@@ -65,11 +65,10 @@ namespace transform_util
           return false;
         }
         
-        transform = Transform(boost::shared_ptr<TransformImpl>(
-            boost::make_shared<TfToUtmTransform>(
+        transform = boost::make_shared<TfToUtmTransform>(
                 tf_transform,
                 utm_util_,
-                local_xy_util_)));
+                local_xy_util_);
 
         return true;
       }
@@ -81,11 +80,10 @@ namespace transform_util
         return false;
       }
 
-      transform = Transform(boost::shared_ptr<TransformImpl>(
-          boost::make_shared<UtmToWgs84Transform>(
+      transform = boost::make_shared<UtmToWgs84Transform>(
               utm_util_,
               utm_zone_,
-              utm_band_)));
+              utm_band_);
 
       return true;
     }
@@ -102,13 +100,12 @@ namespace transform_util
         return false;
       }
         
-      transform = Transform(boost::shared_ptr<TransformImpl>(
-          boost::make_shared<UtmToTfTransform>(
+      transform = boost::make_shared<UtmToTfTransform>(
               tf_transform,
               utm_util_,
               local_xy_util_,
               utm_zone_,
-              utm_band_)));
+              utm_band_);
 
       return true;
     }
@@ -144,11 +141,6 @@ namespace transform_util
       
   void UtmToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-    // If the source frame is UTM and the target frame is in the TF tree,
-    // then first use the UTM to lat/lon conversion, then transform the
-    // lat/lon into LocalXY, and finally use the TF transform to get to the
-    // target frame.
-
     // Convert to WGS84 latitude and longitude
     double lat, lon;
     utm_util_->ToLatLon(utm_zone_, utm_band_, v_in.x(), v_in.y(), lat, lon);
