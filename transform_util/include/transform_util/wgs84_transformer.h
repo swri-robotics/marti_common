@@ -17,27 +17,38 @@
 //
 // *****************************************************************************
 
+#ifndef TRANSFORM_UTIL_WGS84_TRANSFORMER_H_
+#define TRANSFORM_UTIL_WGS84_TRANSFORMER_H_
+
+#include <map>
+#include <string>
+
+#include <boost/shared_ptr.hpp>
+
+#include <tf/transform_datatypes.h>
+#include <tf/transform_listener.h>
+
+#include <transform_util/transformer.h>
+
 namespace transform_util
 {
-  /**
-   * Special frame id for data defined in the WGS84 lat/lon coordinate system.
-   */
-  static const std::string _wgs84_frame = "/wgs84";
-
-  /**
-   * Special frame id for data defined in the UTM coordinate system.
-   *
-   * The zone is assumed to be the same as the LocalXY origin of the system.
-   * Because of this zone transitions are not supported.
-   */
-  static const std::string _utm_frame = "/utm";
-
-  /**
-   * Special frame id for data defined a LocalXY coordinate system.
-   *
-   * Dependent on the LocalXY origin of the system.
-   */
-  static const std::string _local_xy_frame = "/local_xy";
-  
-  static const std::string _tf_frame = "/tf";
+  class Wgs84Transformer : public Transformer
+  {
+    public:
+      UtmTransformer();
+      virtual ~UtmTransformer();
+      
+      virtual std::map<std::string, std::string> Supports() const;
+      
+      virtual bool GetTransform(
+        const std::string& target_frame,
+        const std::string& source_frame,
+        const ros::Time& time,
+        Transform& transform);
+        
+    protected:      
+      virtual bool Initialize();
+  }
 }
+
+#endif  // TRANSFORM_UTIL_WGS84_TRANSFORMER_H_

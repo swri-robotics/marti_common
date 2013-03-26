@@ -62,6 +62,11 @@ namespace transform_util
     v_out = v_in;
   }
   
+  TfTransform::TfTransform(const tf::Transform& transform) :
+    transform_(transform)
+  {
+  }
+  
   void TfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     v_out = transform_ * v_in;
