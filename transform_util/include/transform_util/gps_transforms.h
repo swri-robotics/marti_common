@@ -57,6 +57,15 @@ namespace transform_util
     void ToUtm(double latitude, double longitude, int& zone, char& band, double& easting, double& northing) const;
 
     /**
+     * @brief Convert WGS84 latitude and longitude to UTM.
+     * @param[in] latitude Latitude value.
+     * @param[in] longitude Longitude value.
+     * @param[out] easting UTM easting.
+     * @param[out] northing UTM northing.
+     */
+    void ToUtm(double latitude, double longitude, double& easting, double& northing) const;
+
+    /**
      * @brief Convert UTM easting and northing to WGS84 latitude and longitude.
      * @param[in] zone UTM zone.
      * @param[in] band UTM band.

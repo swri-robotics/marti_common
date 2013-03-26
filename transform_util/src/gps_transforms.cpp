@@ -124,7 +124,13 @@ namespace transform_util
     }
   }
 
-  void UtmTransforms::ToUtm(double latitude, double longitude, int& zone, char& band, double& easting, double& northing) const
+  void UtmTransforms::ToUtm(
+      double latitude,
+      double longitude,
+      int& zone,
+      char& band,
+      double& easting,
+      double& northing) const
   {
     zone = GetZone(longitude);
     band = GetBand(latitude);
@@ -146,14 +152,32 @@ namespace transform_util
     northing = y;
   }
 
-  void UtmTransforms::ToLatLon(int zone, char band, double easting, double northing, double& latitude, double& longitude) const
+  void UtmTransforms::ToUtm(
+      double latitude,
+      double longitude,
+      double& easting,
+      double& northing) const
+  {
+    int zone;
+    char band;
+
+    ToUtm(latitude, longitude, zone, band, easting, northing);
+  }
+
+  void UtmTransforms::ToLatLon(
+      int zone,
+      char band,
+      double easting,
+      double northing,
+      double& latitude,
+      double& longitude) const
   {
     double x = easting;
     double y = northing;
 
     if (band <= 'N')
     {
-      pj_transform(utm_north_[zone - 1], lat_lon_, 1, 0, &x, &y, NULL);
+      pj_transform(utm_south_[zone - 1], lat_lon_, 1, 0, &x, &y, NULL);
     }
     else
     {
