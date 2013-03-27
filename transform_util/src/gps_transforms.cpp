@@ -147,7 +147,7 @@ namespace transform_util
     // Get easting and northing values.
     if (band <= 'N')
     {
-      pj_transform(lat_lon_, utm_north_[zone - 1], 1, 0, &x, &y, NULL);
+      pj_transform(lat_lon_, utm_south_[zone - 1], 1, 0, &x, &y, NULL);
     }
     else
     {
