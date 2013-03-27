@@ -22,83 +22,71 @@
  *  Created on: Jul 25, 2012
  *      Author: kkozak
  */
- 
+
 #include <image_util/image_warp_util.h>
 
 namespace image_util
 {
-
   cv::Mat WarpImage(const cv::Mat& image, double roll, double pitch)
   {
     cv::Mat warped;
-    
+
     // Initialize the camera matrix:
-    cv::Mat K = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    K.at<float>(0,2) = static_cast<double>(image.cols - 1) / 2.0;
-    K.at<float>(1,2) = static_cast<double>(image.rows - 1) / 2.0;
-    
-    cv::Mat T = cv::Mat::zeros(cv::Size(3,1), CV_32F);
-    
+    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    K.at<float>(0, 2) = static_cast<double>(image.cols - 1) / 2.0;
+    K.at<float>(1, 2) = static_cast<double>(image.rows - 1) / 2.0;
+
+    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
+
     cv::Mat R = GetR(pitch, roll);
-    
+
     cv::detail::PlaneWarper warper;
     warper.warp(image, K, R, T, cv::INTER_LANCZOS4, 0, warped);
-   
-    // TODO(malban): This warp can cause problems because it can change the 
-    //                image size.  The result should be cropped or padded.  The
-    //                warp points function will need to be modified accordingly.
-    
+
+    // TODO(malban): This warp can cause problems because it can change the
+    //               image size.  The result should be cropped or padded.  The
+    //               warp points function will need to be modified accordingly.
+
     return warped;
   }
-  
+
   cv::Mat GetR(double pitch, double roll, double yaw)
   {
-    cv::Mat R1 = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    cv::Mat R2 = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    cv::Mat R3 = cv::Mat::eye(cv::Size(3,3), CV_32F);
+    cv::Mat R1 = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    cv::Mat R2 = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    cv::Mat R3 = cv::Mat::eye(cv::Size(3, 3), CV_32F);
 
     // do pitch first:
-    R1.at<float>(0,0) = std::cos(pitch);
-    R1.at<float>(0,2) = -std::sin(pitch);
-    R1.at<float>(2,0) = std::sin(pitch);
-    R1.at<float>(2,2) = std::cos(pitch);
+    R1.at<float>(0, 0) = std::cos(pitch);
+    R1.at<float>(0, 2) = -std::sin(pitch);
+    R1.at<float>(2, 0) = std::sin(pitch);
+    R1.at<float>(2, 2) = std::cos(pitch);
 
     // Then roll
-    R2.at<float>(1,1) = std::cos(roll);
-    R2.at<float>(1,2) = std::sin(roll);
-    R2.at<float>(2,1) = -std::sin(roll);
-    R2.at<float>(2,2) = std::cos(roll);
+    R2.at<float>(1, 1) = std::cos(roll);
+    R2.at<float>(1, 2) = std::sin(roll);
+    R2.at<float>(2, 1) = -std::sin(roll);
+    R2.at<float>(2, 2) = std::cos(roll);
 
     // Finally yaw
-    R3.at<float>(0,0) = std::cos(yaw);
-    R3.at<float>(0,1) = std::sin(yaw);
-    R3.at<float>(1,0) = -std::sin(yaw);
-    R3.at<float>(1,1) = std::cos(yaw);
+    R3.at<float>(0, 0) = std::cos(yaw);
+    R3.at<float>(0, 1) = std::sin(yaw);
+    R3.at<float>(1, 0) = -std::sin(yaw);
+    R3.at<float>(1, 1) = std::cos(yaw);
 
-
-    cv::Mat R = R3*R2*R1;
+    cv::Mat R = R3 * R2 * R1;
 
     return R;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // ImageWarpUtil()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  PitchAndRollEstimator::PitchAndRollEstimator(const cv::Mat& im1,
-                                               const cv::Mat& im2)
+  PitchAndRollEstimator::PitchAndRollEstimator(
+      const cv::Mat& im1,
+      const cv::Mat& im2)
   {
     LoadImages(im1, im2);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // ImageWarpUtil()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  bool PitchAndRollEstimator::LoadImages(const cv::Mat& im1,
-                                         const cv::Mat& im2)
+  bool PitchAndRollEstimator::LoadImages(const cv::Mat& im1, const cv::Mat& im2)
   {
     kp1_.clear();
     kp2_.clear();
@@ -108,23 +96,15 @@ namespace image_util
     im2_ = im2;
 
     // Get the keypoints and descriptors
-    GetKeypoints(im1_,
-                 kp1_,
-                 descriptors1_,
-                 200,
-                 500);
+    GetKeypoints(im1_, kp1_, descriptors1_, 200, 500);
 
-    GetKeypoints(im2_,
-                 kp2_,
-                 descriptors2_,
-                 200,
-                 500);
+    GetKeypoints(im2_, kp2_, descriptors2_, 200, 500);
 
     // Match the keypoints
     bool success = ComputeGeometricMatches();
 
     // If not successful clear out the variables
-    if(!success)
+    if (!success)
     {
       ROS_ERROR("Loaded images are unsuitable for computing warp parameters");
       im1_.release();
@@ -136,28 +116,22 @@ namespace image_util
     }
 
     // Initialize the camera matrix:
-    K_ = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    K_.at<float>(0,2) = static_cast<double>(im1_.cols - 1) / 2.0;
-    K_.at<float>(1,2) = static_cast<double>(im1_.rows - 1) / 2.0;
+    K_ = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    K_.at<float>(0, 2) = static_cast<double>(im1_.cols - 1) / 2.0;
+    K_.at<float>(1, 2) = static_cast<double>(im1_.rows - 1) / 2.0;
 
-    T_ = cv::Mat::zeros(cv::Size(3,1), CV_32F);
+    T_ = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
 
     return success;
   }
 
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // EstimateNominalAngle()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  cv::Mat PitchAndRollEstimator::EstimateNominalAngle(double& nominal_pitch,
-                                              double& nominal_roll,
-                                              bool show_image_diff)
+  cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
+      double& nominal_pitch,
+      double& nominal_roll,
+      bool show_image_diff)
   {
 
-    if(kp1_matched_.empty() || kp2_matched_.empty())
+    if (kp1_matched_.empty() || kp2_matched_.empty())
     {
       return cv::Mat();
     }
@@ -208,18 +182,11 @@ namespace image_util
       cv::namedWindow("im2_");
       cv::imshow("im2_", im2_);
       cv::waitKey(0);
-
     }
 
     return R;
-
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // EstimateNominalAngle()
-  //
-  //////////////////////////////////////////////////////////////////////////////
   cv::Mat PitchAndRollEstimator::EstimateNominalAngle(const cv::Mat& points1,
                                                       const cv::Mat& points2,
                                                       const cv::Size& image_size,
@@ -239,7 +206,7 @@ namespace image_util
     double max_roll = std::abs(roll_range / 2.0);
 
     cv::Mat T_rigid_final = cv::Mat();
-    for(int32_t octave_idx = 0; octave_idx < num_octaves; ++octave_idx)
+    for (int32_t octave_idx = 0; octave_idx < num_octaves; ++octave_idx)
     {
       double dp = (max_pitch - min_pitch) /
           static_cast<double>(max_iterations - 1);
@@ -251,12 +218,12 @@ namespace image_util
       nominal_roll = 0.0;
 
 
-      for(int32_t pitch_idx = 0; pitch_idx < max_iterations; ++pitch_idx)
+      for (int32_t pitch_idx = 0; pitch_idx < max_iterations; ++pitch_idx)
       {
-        double cur_pitch = min_pitch + dp*pitch_idx;
-        for(int32_t roll_idx = 0; roll_idx < max_iterations; ++roll_idx)
+        double cur_pitch = min_pitch + dp * pitch_idx;
+        for (int32_t roll_idx = 0; roll_idx < max_iterations; ++roll_idx)
         {
-          double cur_roll = min_roll + dr*roll_idx;
+          double cur_roll = min_roll + dr * roll_idx;
 
           cv::Mat kp1_warped;
           WarpPoints(cur_pitch,
@@ -296,62 +263,50 @@ namespace image_util
             nominal_roll = cur_roll;
             T_rigid_final = T_rigid;
           }
-
-
         }
       }
 
+      min_pitch = nominal_pitch - std::abs(dp * 2 / 3);
+      max_pitch = nominal_pitch + std::abs(dp * 2 / 3);
 
-      min_pitch = nominal_pitch - std::abs(dp*2/3);
-      max_pitch = nominal_pitch + std::abs(dp*2/3);
 
-
-      min_roll = nominal_roll - std::abs(dr*2/3);
-      max_roll = nominal_roll + std::abs(dr*2/3);
-
+      min_roll = nominal_roll - std::abs(dr * 2 / 3);
+      max_roll = nominal_roll + std::abs(dr * 2 / 3);
     }
     ROS_ERROR("Final pitch and roll: (%g, %g)",
-              nominal_pitch*180.0/3.14159,
-              nominal_roll*180.0/3.14159);
+              nominal_pitch * 180.0 / 3.14159,
+              nominal_roll * 180.0 / 3.14159);
 
     cv::Mat R = GetR(nominal_pitch,
                      nominal_roll);
 
-
     return T_rigid_final;
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // WarpPoints()
-  //
-  //////////////////////////////////////////////////////////////////////////////
   void PitchAndRollEstimator::WarpPoints(double pitch,
                                          double roll,
                                          const cv::Size& image_size,
                                          const cv::Mat& pts_in,
                                          cv::Mat& pts_out)
   {
-
     // Initialize the camera matrix:
-    cv::Mat K = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    K.at<float>(0,2) = static_cast<double>(image_size.width - 1) / 2.0;
-    K.at<float>(1,2) = static_cast<double>(image_size.height - 1) / 2.0;
+    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    K.at<float>(0, 2) = static_cast<double>(image_size.width - 1) / 2.0;
+    K.at<float>(1, 2) = static_cast<double>(image_size.height - 1) / 2.0;
 
     cv::detail::PlaneWarper warper;
 
-    cv::Mat T = cv::Mat::zeros(cv::Size(3,1), CV_32F);
+    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
     cv::Mat R = GetR(pitch, roll);
     pts_in.copyTo(pts_out);
-    for(int32_t i = 0; i < pts_in.rows; ++i)
+    for (int32_t i = 0; i < pts_in.rows; ++i)
     {
       cv::Point2f pt;
-      pt.x = pts_in.at<cv::Vec2f>(i,0).val[0];
-      pt.y = pts_in.at<cv::Vec2f>(i,0).val[1];
+      pt.x = pts_in.at<cv::Vec2f>(i, 0).val[0];
+      pt.y = pts_in.at<cv::Vec2f>(i, 0).val[1];
       cv::Point2f pt2 = warper.warpPoint(pt, K, R, T);
-      pts_out.at<cv::Vec2f>(i,0).val[0] = pt2.x + K.at<float>(0,2);
-      pts_out.at<cv::Vec2f>(i,0).val[1] = pt2.y + K.at<float>(1,2);
+      pts_out.at<cv::Vec2f>(i, 0).val[0] = pt2.x + K.at<float>(0, 2);
+      pts_out.at<cv::Vec2f>(i, 0).val[1] = pt2.y + K.at<float>(1, 2);
     }
   }
 
@@ -365,33 +320,29 @@ namespace image_util
     pts_out = pts_in;
 
     // Initialize the camera matrix:
-    cv::Mat K = cv::Mat::eye(cv::Size(3,3), CV_32F);
-    K.at<float>(0,2) = static_cast<double>(image_size.width - 1) / 2.0;
-    K.at<float>(1,2) = static_cast<double>(image_size.height - 1) / 2.0;
+    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    K.at<float>(0, 2) = static_cast<double>(image_size.width - 1) / 2.0;
+    K.at<float>(1, 2) = static_cast<double>(image_size.height - 1) / 2.0;
 
     cv::detail::PlaneWarper warper;
 
-    cv::Mat T = cv::Mat::zeros(cv::Size(3,1), CV_32F);
+    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
     cv::Mat R = GetR(pitch, roll);
 
-    for(int32_t i = 0; i < (int)pts_in.size(); ++i)
+    for (int32_t i = 0; i < (int)pts_in.size(); ++i)
     {
       pts_out[i].pt = warper.warpPoint(pts_in[i].pt, K, R, T);
-      pts_out[i].pt.x += K.at<float>(0,2);
-      pts_out[i].pt.y += K.at<float>(1,2);
+      pts_out[i].pt.x += K.at<float>(0, 2);
+      pts_out[i].pt.y += K.at<float>(1, 2);
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // GetKeypoints()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  bool PitchAndRollEstimator::GetKeypoints(const cv::Mat& image,
-                                    std::vector<cv::KeyPoint>& keypoints,
-                                    cv::Mat& descriptors,
-                                    int32_t min_keypoints,
-                                    int32_t max_keypoints)
+  bool PitchAndRollEstimator::GetKeypoints(
+      const cv::Mat& image,
+      std::vector<cv::KeyPoint>& keypoints,
+      cv::Mat& descriptors,
+      int32_t min_keypoints,
+      int32_t max_keypoints)
   {
     double auto_hessian = 1000.0;
     double min_hessian = 50;
@@ -438,22 +389,14 @@ namespace image_util
 
     // Extract SURF descriptors for each keypoint.
     cv::SurfDescriptorExtractor extractor;
-    extractor.compute(image,
-                      keypoints,
-                      descriptors);
+    extractor.compute(image, keypoints, descriptors);
 
     return (cur_iter <= max_iterations);
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // ComputeGeometricMatches()
-  //
-  //////////////////////////////////////////////////////////////////////////////
   bool PitchAndRollEstimator::ComputeGeometricMatches()
   {
-    if(im1_.empty() || im2_.empty())
+    if (im1_.empty() || im2_.empty())
     {
       ROS_ERROR("No images defined");
       return false;
@@ -463,18 +406,11 @@ namespace image_util
     // Compute the matching features between this frame and the previous one.
     std::vector<cv::DMatch> matches;
     cv::BruteForceMatcher<cv::L2<float> > matcher;
-    matcher.match(descriptors1_,
-                  descriptors2_,
-                  matches);
-
+    matcher.match(descriptors1_, descriptors2_, matches);
 
     cv::Mat points1;
     cv::Mat points2;
-    ConvertMatches(kp1_,
-                   kp2_,
-                   matches,
-                   points1,
-                   points2);
+    ConvertMatches(kp1_, kp2_, matches, points1, points2);
 
     // Compute the fundamental matrix which describes the camera motion
     // between the frames using a RANSAC process and get the set of inlier
@@ -490,7 +426,7 @@ namespace image_util
                             fund_inliers1,
                             fund_inliers2);
     }
-    catch(std::exception& e)
+    catch(const std::exception& e)
     {
       ROS_ERROR("Caught an exception when computing fundamental inliers:"
                 " %s",e.what());
@@ -523,17 +459,12 @@ namespace image_util
     return true;
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // EstimateTransforms()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  bool PitchAndRollEstimator::EstimateTransforms(cv::Mat& pts1,
-                                         cv::Mat& pts2,
-                                         cv::Mat& T_affine,
-                                         cv::Mat& T_rigid,
-                                         double& rms_error)
+  bool PitchAndRollEstimator::EstimateTransforms(
+      cv::Mat& pts1,
+      cv::Mat& pts2,
+      cv::Mat& T_affine,
+      cv::Mat& T_rigid,
+      double& rms_error)
   {
 
     cv::Mat inliers1;
@@ -549,21 +480,15 @@ namespace image_util
     {
       return false;
     }
-    return true;
 
-    return false;
+    return true;
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // WarpPoints()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  void PitchAndRollEstimator::WarpPoints(double pitch,
-                                 double roll,
-                                 const cv::Mat& pts_in,
-                                 cv::Mat& pts_out)
+  void PitchAndRollEstimator::WarpPoints(
+      double pitch,
+      double roll,
+      const cv::Mat& pts_in,
+      cv::Mat& pts_out)
   {
     if(im1_.empty() || im2_.empty())
     {
@@ -579,36 +504,31 @@ namespace image_util
                pts_out);
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // WarpPoints()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  void PitchAndRollEstimator::WarpAffinePoints(const cv::Mat& T,
-                                 const cv::Mat& pts_in,
-                                 cv::Mat& pts_out)
+  void PitchAndRollEstimator::WarpAffinePoints(
+      const cv::Mat& T,
+      const cv::Mat& pts_in,
+      cv::Mat& pts_out)
   {
     // Create augmented keypoint matrix:
-    cv::Mat aug_mat(cv::Size(3,pts_in.rows), CV_32F);
+    cv::Mat aug_mat(cv::Size(3, pts_in.rows), CV_32F);
 
-    for(int32_t i = 0; i < pts_in.rows; ++i)
+    for (int32_t i = 0; i < pts_in.rows; ++i)
     {
-      aug_mat.at<float>(i,0) = pts_in.at<cv::Vec2f>(0,i)[0];
-      aug_mat.at<float>(i,1) = pts_in.at<cv::Vec2f>(0,i)[1];
-      aug_mat.at<float>(i,2) = 1.0;
+      aug_mat.at<float>(i, 0) = pts_in.at<cv::Vec2f>(0, i)[0];
+      aug_mat.at<float>(i, 1) = pts_in.at<cv::Vec2f>(0, i)[1];
+      aug_mat.at<float>(i, 2) = 1.0;
     }
 
     cv::Mat T_temp = T.t();
-    cv::Mat pts_out_temp = aug_mat*T_temp;
+    cv::Mat pts_out_temp = aug_mat * T_temp;
 
     pts_out.release();
-    pts_out.create(cv::Size(1,pts_in.rows), CV_32FC2);
+    pts_out.create(cv::Size(1, pts_in.rows), CV_32FC2);
     // Convert points back to proper form:
-    for(int32_t i = 0; i < pts_in.rows; ++i)
+    for (int32_t i = 0; i < pts_in.rows; ++i)
     {
-      pts_out.at<cv::Vec2f>(0,i)[0] = pts_out_temp.at<float>(i,0);
-      pts_out.at<cv::Vec2f>(0,i)[1] = pts_out_temp.at<float>(i,1);
+      pts_out.at<cv::Vec2f>(0, i)[0] = pts_out_temp.at<float>(i, 0);
+      pts_out.at<cv::Vec2f>(0, i)[1] = pts_out_temp.at<float>(i, 1);
     }
   }
 
@@ -729,7 +649,6 @@ namespace image_util
       LoadNewData(pitch, roll);
       ComputeStats();
     }
-
   }
 
 
@@ -759,7 +678,6 @@ namespace image_util
     roll = median_roll_;
 
     return pitches_.size() > 0;
-
   }
 
 
@@ -788,7 +706,7 @@ namespace image_util
     median_pitch_ = 0.0;
     median_roll_ = 0.0;
 
-    if(pitches_.empty())
+    if (pitches_.empty())
     {
       return;
     }
@@ -804,7 +722,7 @@ namespace image_util
     double pitch_sum = 0.0;
     double roll_sum = 0.0;
 
-    for(int32_t i = 0; i < (int32_t)temp_pitch.size(); ++i)
+    for (int32_t i = 0; i < (int32_t)temp_pitch.size(); ++i)
     {
       pitch_sum += temp_pitch[i];
       roll_sum += temp_roll[i];
@@ -815,7 +733,7 @@ namespace image_util
     mean_roll_ = roll_sum / N;
 
     int32_t mid_idx = static_cast<int32_t>(temp_pitch.size() - 1) / 2;
-    if(temp_pitch.size() % 2 == 0)
+    if (temp_pitch.size() % 2 == 0)
     {
 
       median_pitch_ = (temp_pitch[mid_idx] + temp_pitch[mid_idx + 1]) / 2.0;
@@ -826,9 +744,5 @@ namespace image_util
       median_pitch_ = temp_pitch[mid_idx];
       median_roll_ = temp_roll[mid_idx];
     }
-
   }
-
 }
-
-
