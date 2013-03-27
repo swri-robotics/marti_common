@@ -38,25 +38,25 @@ namespace transform_util
   {
     public:
       UtmTransformer();
-       
+
       virtual std::map<std::string, std::string> Supports() const;
-      
+
       virtual bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
         const ros::Time& time,
         Transform& transform);
-        
-    protected:      
+
+    protected:
       virtual bool Initialize();
-      
+
       boost::shared_ptr<UtmTransforms> utm_util_;
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
 
       int32_t utm_zone_;
       char utm_band_;
   };
-  
+
   class UtmToTfTransform : public TransformImpl
   {
   public:
@@ -68,7 +68,7 @@ namespace transform_util
       char utm_band);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
-    
+
   protected:
     tf::Transform transform_;
     boost::shared_ptr<UtmTransforms> utm_util_;
@@ -76,7 +76,7 @@ namespace transform_util
     int32_t utm_zone_;
     char utm_band_;
   };
-  
+
   class TfToUtmTransform : public TransformImpl
   {
   public:
@@ -85,15 +85,15 @@ namespace transform_util
       boost::shared_ptr<UtmTransforms> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util
       );
-      
+
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
-    
+
   protected:
     tf::Transform transform_;
     boost::shared_ptr<UtmTransforms> utm_util_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
-  
+
   class UtmToWgs84Transform : public TransformImpl
   {
   public:
@@ -101,22 +101,22 @@ namespace transform_util
         boost::shared_ptr<UtmTransforms> utm_util,
         int32_t utm_zone,
         char utm_band);
-      
+
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
-    
+
   protected:
     boost::shared_ptr<UtmTransforms> utm_util_;
     int32_t utm_zone_;
     char    utm_band_;
   };
-  
+
   class Wgs84ToUtmTransform : public TransformImpl
   {
   public:
-    Wgs84ToUtmTransform(boost::shared_ptr<UtmTransforms> utm_util);
-      
+    explicit Wgs84ToUtmTransform(boost::shared_ptr<UtmTransforms> utm_util);
+
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
-    
+
   protected:
     boost::shared_ptr<UtmTransforms> utm_util_;
   };

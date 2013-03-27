@@ -37,14 +37,14 @@ namespace transform_util
   {
     public:
       virtual std::map<std::string, std::string> Supports() const;
-      
+
       virtual bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
         const ros::Time& time,
         Transform& transform);
-        
-    protected:      
+
+    protected:
       virtual bool Initialize();
 
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;

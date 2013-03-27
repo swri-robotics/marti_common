@@ -81,9 +81,8 @@ namespace transform_util
     projPJ utm_south_[60];
 
   private:
-    UtmTransforms(UtmTransforms const&);   // Don't Implement
-    void operator=(UtmTransforms const&);  // Don't implement
-
+    explicit UtmTransforms(UtmTransforms const&);   // Don't Implement
+    void operator=(UtmTransforms const&);           // Don't implement
   };
 }
 

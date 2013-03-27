@@ -28,8 +28,13 @@
 
 namespace transform_util
 {
-
-  tf::Transform GetRelativeTransform(double latitude, double longitude, double yaw, double reference_latitude, double reference_longitude, double reference_yaw)
+  tf::Transform GetRelativeTransform(
+      double latitude,
+      double longitude,
+      double yaw,
+      double reference_latitude,
+      double reference_longitude,
+      double reference_yaw)
   {
     tf::Transform transform = tf::Transform::getIdentity();
 
@@ -70,27 +75,28 @@ namespace transform_util
 
     char band;
 
-    if((84 <= latitude) && (latitude >= 72)) band = 'X';
-    else if((72 > latitude) && (latitude >= 64)) band = 'W';
-    else if((64 > latitude) && (latitude >= 56)) band = 'V';
-    else if((56 > latitude) && (latitude >= 48)) band = 'U';
-    else if((48 > latitude) && (latitude >= 40)) band = 'T';
-    else if((40 > latitude) && (latitude >= 32)) band = 'S';
-    else if((32 > latitude) && (latitude >= 24)) band = 'R';
-    else if((24 > latitude) && (latitude >= 16)) band = 'Q';
-    else if((16 > latitude) && (latitude >= 8)) band = 'P';
-    else if(( 8 > latitude) && (latitude >= 0)) band = 'N';
-    else if(( 0 > latitude) && (latitude >= -8)) band = 'M';
-    else if((-8 > latitude) && (latitude >= -16)) band = 'L';
-    else if((-16 > latitude) && (latitude >= -24)) band = 'K';
-    else if((-24 > latitude) && (latitude >= -32)) band = 'J';
-    else if((-32 > latitude) && (latitude >= -40)) band = 'H';
-    else if((-40 > latitude) && (latitude >= -48)) band = 'G';
-    else if((-48 > latitude) && (latitude >= -56)) band = 'F';
-    else if((-56 > latitude) && (latitude >= -64)) band = 'E';
-    else if((-64 > latitude) && (latitude >= -72)) band = 'D';
-    else if((-72 > latitude) && (latitude >= -80)) band = 'C';
-    else band = 'Z'; //This is here as an error flag to show that the Latitude is outside the UTM limits
+    if ((84 <= latitude) && (latitude >= 72)) band = 'X';
+    else if ((72 > latitude) && (latitude >= 64)) band = 'W';
+    else if ((64 > latitude) && (latitude >= 56)) band = 'V';
+    else if ((56 > latitude) && (latitude >= 48)) band = 'U';
+    else if ((48 > latitude) && (latitude >= 40)) band = 'T';
+    else if ((40 > latitude) && (latitude >= 32)) band = 'S';
+    else if ((32 > latitude) && (latitude >= 24)) band = 'R';
+    else if ((24 > latitude) && (latitude >= 16)) band = 'Q';
+    else if ((16 > latitude) && (latitude >= 8)) band = 'P';
+    else if (( 8 > latitude) && (latitude >= 0)) band = 'N';
+    else if (( 0 > latitude) && (latitude >= -8)) band = 'M';
+    else if ((-8 > latitude) && (latitude >= -16)) band = 'L';
+    else if ((-16 > latitude) && (latitude >= -24)) band = 'K';
+    else if ((-24 > latitude) && (latitude >= -32)) band = 'J';
+    else if ((-32 > latitude) && (latitude >= -40)) band = 'H';
+    else if ((-40 > latitude) && (latitude >= -48)) band = 'G';
+    else if ((-48 > latitude) && (latitude >= -56)) band = 'F';
+    else if ((-56 > latitude) && (latitude >= -64)) band = 'E';
+    else if ((-64 > latitude) && (latitude >= -72)) band = 'D';
+    else if ((-72 > latitude) && (latitude >= -80)) band = 'C';
+    else band = 'Z';  // This is here as an error flag to show that the Latitude
+                      // is outside the UTM limits
 
     return band;
   }
@@ -187,5 +193,4 @@ namespace transform_util
     longitude = x * math_util::_rad_2_deg;
     latitude = y * math_util::_rad_2_deg;
   }
-
 }

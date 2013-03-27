@@ -35,21 +35,20 @@ namespace transform_util
   UtmTransformer::UtmTransformer() :
     utm_util_(boost::make_shared<UtmTransforms>())
   {
-    
   }
-  
+
   std::map<std::string, std::string> UtmTransformer::Supports() const
   {
     std::map<std::string, std::string> supports;
-    
+
     supports[_utm_frame] = _wgs84_frame;
     supports[_wgs84_frame] = _utm_frame;
     supports[_utm_frame] = _tf_frame;
     supports[_tf_frame] = _utm_frame;
-    
+
     return supports;
   }
-  
+
   bool UtmTransformer::GetTransform(
     const std::string& target_frame,
     const std::string& source_frame,
@@ -71,7 +70,7 @@ namespace transform_util
         {
           return false;
         }
-        
+
         transform = boost::make_shared<TfToUtmTransform>(
                 tf_transform,
                 utm_util_,
@@ -106,7 +105,7 @@ namespace transform_util
       {
         return false;
       }
-        
+
       transform = boost::make_shared<UtmToTfTransform>(
               tf_transform,
               utm_util_,
@@ -116,21 +115,21 @@ namespace transform_util
 
       return true;
     }
-    
+
     return false;
   }
- 
+
   bool UtmTransformer::Initialize()
   {
     // Initialize LocalXY util with an origin.
     local_xy_util_ = ParseLocalXyOrigin();
-    
+
     utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
     utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
 
     return local_xy_util_;
   }
-  
+
   UtmToTfTransform::UtmToTfTransform(
       const tf::Transform& transform,
       boost::shared_ptr<UtmTransforms> utm_util,
@@ -143,9 +142,8 @@ namespace transform_util
       utm_zone_(utm_zone),
       utm_band_(utm_band)
    {
-   
    }
-      
+
   void UtmToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     // Convert to WGS84 latitude and longitude
@@ -160,7 +158,7 @@ namespace transform_util
     v_out.setValue(x, y, v_in.z());
     v_out = transform_ * v_out;
   }
-  
+
   TfToUtmTransform::TfToUtmTransform(
       const tf::Transform& transform,
       boost::shared_ptr<UtmTransforms> utm_util,
@@ -170,7 +168,7 @@ namespace transform_util
       local_xy_util_(local_xy_util)
    {
    }
-      
+
   void TfToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     // Transform into the LocalXY coordinate frame using the TF transform
@@ -185,7 +183,7 @@ namespace transform_util
     utm_util_->ToUtm(latitude, longitude, easting, northing);
     v_out.setValue(easting, northing, local_xy.z());
   }
-  
+
   UtmToWgs84Transform::UtmToWgs84Transform(
     boost::shared_ptr<UtmTransforms> utm_util,
     int32_t utm_zone,
@@ -195,21 +193,21 @@ namespace transform_util
     utm_band_(utm_band)
   {
   }
-      
+
   void UtmToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     double lat, lon;
     utm_util_->ToLatLon(utm_zone_, utm_band_, v_in.x(), v_in.y(), lat, lon);
     v_out.setValue(lat, lon, v_in.z());
   }
-    
-  
+
+
   Wgs84ToUtmTransform::Wgs84ToUtmTransform(
     boost::shared_ptr<UtmTransforms> utm_util) :
     utm_util_(utm_util)
   {
   }
-      
+
   void Wgs84ToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     double easting, northing;

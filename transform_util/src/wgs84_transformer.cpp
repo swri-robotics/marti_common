@@ -95,13 +95,13 @@ namespace transform_util
 
   void TfToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-   // Transform into the LocalXY coordinate frame using the TF transform.
-   tf::Vector3 local_xy = transform_ * v_in;
+    // Transform into the LocalXY coordinate frame using the TF transform.
+    tf::Vector3 local_xy = transform_ * v_in;
 
-   // Convert to WGS84 latitude and longitude.
-   double latitude, longitude;
-   local_xy_util_->ToWgs84(local_xy.x(), local_xy.y(), latitude, longitude);
-   v_out.setValue(longitude, latitude, local_xy.z());
+    // Convert to WGS84 latitude and longitude.
+    double latitude, longitude;
+    local_xy_util_->ToWgs84(local_xy.x(), local_xy.y(), latitude, longitude);
+    v_out.setValue(longitude, latitude, local_xy.z());
   }
 
   Wgs84ToTfTransform::Wgs84ToTfTransform(
@@ -114,13 +114,13 @@ namespace transform_util
 
   void Wgs84ToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
-   // Convert to LocalXY coordinate frame.
-   double x, y;
-   local_xy_util_->ToLocalXy(v_in.y(), v_in.x(), x, y);
-   v_out.setValue(x, y, v_in.z());
+    // Convert to LocalXY coordinate frame.
+    double x, y;
+    local_xy_util_->ToLocalXy(v_in.y(), v_in.x(), x, y);
+    v_out.setValue(x, y, v_in.z());
 
-   // Transform from the LocalXY coordinate frame using the TF transform.
-   v_out = transform_ * v_out;
+    // Transform from the LocalXY coordinate frame using the TF transform.
+    v_out = transform_ * v_out;
   }
 }
 

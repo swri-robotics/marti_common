@@ -46,12 +46,12 @@ namespace transform_util
     y_offset_(0)
   {
     // Initialize transform to identity
-    transform_.at<double>(0,0) = 1;
-    transform_.at<double>(0,1) = 0;
-    transform_.at<double>(0,2) = 0;
-    transform_.at<double>(1,0) = 0;
-    transform_.at<double>(1,1) = 1;
-    transform_.at<double>(1,2) = 0;
+    transform_.at<double>(0, 0) = 1;
+    transform_.at<double>(0, 1) = 0;
+    transform_.at<double>(0, 2) = 0;
+    transform_.at<double>(1, 0) = 0;
+    transform_.at<double>(1, 1) = 1;
+    transform_.at<double>(1, 2) = 0;
   }
 
   GeoReference::GeoReference(const GeoReference& geo) :
@@ -65,19 +65,17 @@ namespace transform_util
     projection_(geo.projection_),
     transform_(geo.transform_)
   {
-
   }
-  
+
   GeoReference::~GeoReference()
   {
-
   }
 
   bool GeoReference::Load()
   {
     if (loaded_)
       return true;
-  
+
     std::ifstream fin(path_.c_str());
     if (fin.fail())
     {
@@ -97,8 +95,9 @@ namespace transform_util
       boost::filesystem::path imagePath(image_path_);
 
       // If we have an absolute path, we don't need to change it
-      // Otherwise, we want to create a relative path from the .geo file location
-      if(imagePath.is_complete() == false)
+      // Otherwise, we want to create a relative path from the .geo file
+      // location
+      if (imagePath.is_complete() == false)
       {
         boost::filesystem::path geoPath(path_);
         image_path_ = (geoPath.parent_path() / imagePath.relative_path()).normalize().string();
@@ -117,7 +116,7 @@ namespace transform_util
       pixels_ = cv::Mat(1, doc["tiepoints"].size(), CV_32SC2);
       coordinates_ = cv::Mat(1, doc["tiepoints"].size(), CV_64FC2);
       ROS_INFO("georeference: Found %d tiepoints", (int32_t)(doc["tiepoints"].size()));
-      for(unsigned int i=0; i< doc["tiepoints"].size();i++) 
+      for (unsigned int i = 0; i < doc["tiepoints"].size(); i++)
       {
         // Parse pixel column value into the pixel list
         doc["tiepoints"][i]["point"][0] >> pixels_.at<cv::Vec2s>(0, i)[0];
@@ -144,23 +143,26 @@ namespace transform_util
         // Parse in the Y scale
         doc["pixel_scale"][1] >> transform_.at<float>(1,1);
 
-        transform_.at<float>(0,2) = coordinates_.at<cv::Vec2d>(0, 1)[0] - pixels_.at<cv::Vec2s>(0, 1)[0] * transform_.at<double>(0,0);
-        transform_.at<float>(0,2) = coordinates_.at<cv::Vec2d>(0, 1)[1] - pixels_.at<cv::Vec2s>(0, 1)[1] * transform_.at<double>(1,1);
+        transform_.at<float>(0, 2) = coordinates_.at<cv::Vec2d>(0, 1)[0] -
+            pixels_.at<cv::Vec2s>(0, 1)[0] * transform_.at<double>(0, 0);
+
+        transform_.at<float>(1, 2) = coordinates_.at<cv::Vec2d>(0, 1)[1] -
+            pixels_.at<cv::Vec2s>(0, 1)[1] * transform_.at<double>(1, 1);
       }
       else
       {
         ROS_ERROR("georeference: No tiepoints.");
         return false;
       }
-      
+
       Print();
     }
-    catch (YAML::ParserException& e)
+    catch (const YAML::ParserException& e)
     {
       ROS_ERROR("%s", e.what());
       return false;
     }
-    catch (YAML::Exception& e)
+    catch (const YAML::Exception& e)
     {
       ROS_ERROR("%s", e.what());
       return false;
@@ -179,7 +181,7 @@ namespace transform_util
       src.at<cv::Vec2f>(0, i)[0] = static_cast<float>(pixels_.at<cv::Vec2s>(0, i)[0]);
       src.at<cv::Vec2f>(0, i)[1] = static_cast<float>(pixels_.at<cv::Vec2s>(0, i)[1]);
     }
-    
+
     // Offset coordinates to a new origin to avoid loss of precision
     x_offset_ = coordinates_.at<cv::Vec2d>(0, 0)[0];
     y_offset_ = coordinates_.at<cv::Vec2d>(0, 0)[1];
@@ -209,7 +211,7 @@ namespace transform_util
     x_coordinate = dst.at<cv::Vec2f>(0, 0)[0] + x_offset_;
     y_coordinate = dst.at<cv::Vec2f>(0, 0)[1] + y_offset_;
   }
-  
+
   void GeoReference::GetPixel(double x_coordinate, double y_coordinate, int& x_pixel, int& y_pixel) const
   {
     cv::Mat src(1, 1, CV_32FC2);
@@ -223,7 +225,7 @@ namespace transform_util
     x_pixel = static_cast<int>(dst.at<cv::Vec2f>(0, 0)[0]);
     y_pixel = static_cast<int>(dst.at<cv::Vec2f>(0, 0)[1]);
   }
-  
+
   void GeoReference::Print()
   {
     ROS_INFO("georeference:  path = %s", path_.c_str());
@@ -243,16 +245,16 @@ namespace transform_util
           coordinates_.at<cv::Vec2d>(0, i)[0],
           coordinates_.at<cv::Vec2d>(0, i)[1]);
     }
-    
+
     ROS_INFO("georeference:  transform: %8lf, %8lf, %8lf",
-        transform_.at<double>(0,0),
-        transform_.at<double>(0,1),
-        transform_.at<double>(0,2) + x_offset_);
+        transform_.at<double>(0, 0),
+        transform_.at<double>(0, 1),
+        transform_.at<double>(0, 2) + x_offset_);
 
     ROS_INFO("georeference:             %8lf, %8lf, %8lf",
-        transform_.at<double>(1,0),
-        transform_.at<double>(1,1),
-        transform_.at<double>(1,2)  + y_offset_);
+        transform_.at<double>(1, 0),
+        transform_.at<double>(1, 1),
+        transform_.at<double>(1, 2) + y_offset_);
 
     ROS_INFO("georeference:             %8lf, %8lf, %8lf", 0.0, 0.0, 1.0);
   }
