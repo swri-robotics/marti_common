@@ -151,7 +151,6 @@ public:
     image_count_(0),
     image_written_(false)
   {
-
     filename_ = ros::package::getPath("ranger_common") +
                 "/normalization_image.png";
 

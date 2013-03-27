@@ -145,7 +145,7 @@ bool cmp_names(boost::filesystem::path p1,
       }
       break;
     }
-    ri1++;
+    ++ri1;
   }
   if(!success)
   {
@@ -170,7 +170,7 @@ bool cmp_names(boost::filesystem::path p1,
       }
       break;
     }
-    ri2++;
+    ++ri2;
   }
   if(!success)
   {

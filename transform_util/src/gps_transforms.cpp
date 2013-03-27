@@ -75,28 +75,28 @@ namespace transform_util
 
     char band;
 
-    if ((84 <= latitude) && (latitude >= 72)) band = 'X';
-    else if ((72 > latitude) && (latitude >= 64)) band = 'W';
-    else if ((64 > latitude) && (latitude >= 56)) band = 'V';
-    else if ((56 > latitude) && (latitude >= 48)) band = 'U';
-    else if ((48 > latitude) && (latitude >= 40)) band = 'T';
-    else if ((40 > latitude) && (latitude >= 32)) band = 'S';
-    else if ((32 > latitude) && (latitude >= 24)) band = 'R';
-    else if ((24 > latitude) && (latitude >= 16)) band = 'Q';
-    else if ((16 > latitude) && (latitude >= 8)) band = 'P';
-    else if (( 8 > latitude) && (latitude >= 0)) band = 'N';
-    else if (( 0 > latitude) && (latitude >= -8)) band = 'M';
-    else if ((-8 > latitude) && (latitude >= -16)) band = 'L';
-    else if ((-16 > latitude) && (latitude >= -24)) band = 'K';
-    else if ((-24 > latitude) && (latitude >= -32)) band = 'J';
-    else if ((-32 > latitude) && (latitude >= -40)) band = 'H';
-    else if ((-40 > latitude) && (latitude >= -48)) band = 'G';
-    else if ((-48 > latitude) && (latitude >= -56)) band = 'F';
-    else if ((-56 > latitude) && (latitude >= -64)) band = 'E';
-    else if ((-64 > latitude) && (latitude >= -72)) band = 'D';
-    else if ((-72 > latitude) && (latitude >= -80)) band = 'C';
-    else band = 'Z';  // This is here as an error flag to show that the Latitude
-                      // is outside the UTM limits
+    if (latitude > 84) band = 'Z';
+    else if (latitude >= 72)  band = 'X';
+    else if (latitude >= 64)  band = 'W';
+    else if (latitude >= 56)  band = 'V';
+    else if (latitude >= 48)  band = 'U';
+    else if (latitude >= 40)  band = 'T';
+    else if (latitude >= 32)  band = 'S';
+    else if (latitude >= 24)  band = 'R';
+    else if (latitude >= 16)  band = 'Q';
+    else if (latitude >= 8)   band = 'P';
+    else if (latitude >= 0)   band = 'N';
+    else if (latitude >= -8)  band = 'M';
+    else if (latitude >= -16) band = 'L';
+    else if (latitude >= -24) band = 'K';
+    else if (latitude >= -32) band = 'J';
+    else if (latitude >= -40) band = 'H';
+    else if (latitude >= -48) band = 'G';
+    else if (latitude >= -56) band = 'F';
+    else if (latitude >= -64) band = 'E';
+    else if (latitude >= -72) band = 'D';
+    else if (latitude >= -80) band = 'C';
+    else band = 'Z';
 
     return band;
   }

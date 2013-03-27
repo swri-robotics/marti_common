@@ -54,8 +54,6 @@ namespace image_util
 
     cv::Mat image_sum(cv::Size(rep_im.cols, rep_im.rows), CV_64F);
 
-
-    std::vector<cv::Mat> image_list_filtered;
     for(int32_t i = 0; i < (int)image_list.size(); ++i)
     {
       cv::Mat temp_im;
