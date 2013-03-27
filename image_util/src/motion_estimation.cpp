@@ -472,7 +472,7 @@ namespace image_util
       {
         LaLinearSolve(A, X, B);
       }
-      catch(const std::exception& e)
+      catch (const std::exception& e)
       {
         // ROS_INFO("Got LaLinearSolve Error ignore OK: %s", e.what());
         // when multiple potential matches are allowed, this has the potential
@@ -522,7 +522,7 @@ namespace image_util
         break;
         // We've met the escape criteria, so we don't need to keep iterating
       }
-    } // end of 100 iterations
+    }  // end of 100 iterations
 
 
     if (good_points.size() >= MinNumValidPointsNeeded)
@@ -592,11 +592,11 @@ namespace image_util
       return Affine;
     }
 
-    uint32_t NumPoints = points1.cols ;
+    uint32_t NumPoints = points1.cols;
     if (points1.rows > 1)
     {
       row_order = false;
-      NumPoints = points1.rows ;
+      NumPoints = points1.rows;
     }
 
     // Setup matrices for holding all of the points
@@ -697,7 +697,7 @@ namespace image_util
       {
         LaLinearSolve(A, X, B);
       }
-      catch(const std::exception& e)
+      catch (const std::exception& e)
       {
         // when multiple potential matches are allowed, this has the potential
         // to be exactly singular, and when it is, LAPACK may/will throw an
@@ -721,7 +721,7 @@ namespace image_util
 
       // tempA is a list vectors between projected points and actual points
       tempA = sourceB;
-      //The following implements: tempA = sourceA_aug * X - sourceB;
+      //  The following implements: tempA = sourceA_aug * X - sourceB;
       Blas_Mat_Mat_Mult(sourceA_aug, X, tempA, false, false, 1.0, -1.0);
 
       // Find all of the points within the re-projection error bound (add their
@@ -748,7 +748,7 @@ namespace image_util
         break;
         // We've met the escape criteria, so we don't need to keep iterating
       }
-    } // end of 100 iterations
+    }  // end of 100 iterations
 
 
     if (good_points.size() >= MinNumValidPointsNeeded)
@@ -810,7 +810,7 @@ namespace image_util
       // Compute the Mean Squared Error
       // tempA is a list vectors between projected points and actual points
       tempA = B1;
-      //The following implements: tempA = sourceA_aug * X - sourceB;
+      // The following implements: tempA = sourceA_aug * X - sourceB;
       LaGenMatDouble X_short_temp = X;
       double cn1;
       double rnorm1;
@@ -896,7 +896,7 @@ namespace image_util
                 "(for 3D)");
     }
 
-    uint32_t NumPoints = points1.cols; // clewis removed divide by 2,
+    uint32_t NumPoints = points1.cols;
 
     // Setup matrices for holding all of the points
     LaGenMatDouble sourceA(NumPoints, 3);
@@ -908,7 +908,6 @@ namespace image_util
     double xmin = 1.0e20;
     double ymax = xmax;
     double ymin = xmin;
-    //double range;
 
     // Convert from cv::Mat to LaGenMatDouble
     for (uint32_t i = 0; i < NumPoints; i++)
@@ -995,7 +994,7 @@ namespace image_util
 
       // Check to see whether the rotation matrix is close to valid
       // TODO(kkozak): Parameterize this
-      if(fabs(cn - 1.0) > 0.1 || rnorm > maxRNorm)
+      if (fabs(cn - 1.0) > 0.1 || rnorm > maxRNorm)
       {
         // ROS_ERROR("Did not meet condition number or rnorm criteria: "
         // "cn = %f, rnorm = %f",cn,rnorm);
@@ -1004,7 +1003,7 @@ namespace image_util
 
       // tempA is a list vectors between projected points and actual points
       tempA = sourceB;
-      //The following implements: tempA = sourceA_aug * X - sourceB;
+      // The following implements: tempA = sourceA_aug * X - sourceB;
       Blas_Mat_Mat_Mult(sourceA_aug, X, tempA, false, false, 1.0, -1.0);
 
 
@@ -1051,7 +1050,6 @@ namespace image_util
         B1(i, 0) = sourceB(good_points[i], 0);
         B1(i, 1) = sourceB(good_points[i], 1);
         B1(i, 2) = sourceB(good_points[i], 2);
-
       }
 
       // Solve for the Transformation matrix, X
@@ -1114,34 +1112,34 @@ namespace image_util
     LaGenMatDouble Vt(N, N);
     LaGenMatDouble RtR(N, N);
 
-
-    LaSVD_IP(rot,Sigma,U,Vt);
+    LaSVD_IP(rot, Sigma, U, Vt);
     conditionNum = Sigma(0) / Sigma(N-1);
-
 
     // find the diagonal matrix S whose values are either 1, when scaling is
     // not allowed, or the average singular value when it is
     double diagonal = 0;
-    for (uint32_t i = 0; i<N; i++)
+    for (uint32_t i = 0; i < N; i++)
     {
       diagonal += Sigma(i);
     }
-    if(scaleOK)
-    {// set diagonal to average singular value
+    if (scaleOK)
+    {
+      // set diagonal to average singular value
       diagonal = diagonal/N;
     }
     else
-    {// set diagonal to 1
+    {
+      // set diagonal to 1
       diagonal = 1.0;
     }
 
     // compute the diagonal matrix
-    LaGenMatDouble S(N,N);
+    LaGenMatDouble S(N, N);
     for (uint32_t i = 0; i < N; i++)
     {
       for (uint32_t j = 0; j < N; j++)
       {
-        if (i==j)
+        if (i == j)
         {
           S(i, j) = diagonal;
         }
@@ -1158,7 +1156,6 @@ namespace image_util
     // compute the rotation measure as ||RtR - StS||
     Blas_Mat_Trans_Mat_Mult(rot, rot, RtR);
     rnorm = Blas_NormF(RtR - S * S);
-
   }
 
   void rand_perm_set(uint32_t max_num,
@@ -1220,8 +1217,8 @@ namespace image_util
     for (int32_t i = 0; i < static_cast<int32_t>(kp_in.rows); ++i)
     {
       cv::KeyPoint pt;
-      pt.pt.x = kp_in.at<cv::Vec2f>(0,i)[0] + x_offset;
-      pt.pt.y = kp_in.at<cv::Vec2f>(0,i)[1] + y_offset;
+      pt.pt.x = kp_in.at<cv::Vec2f>(0, i)[0] + x_offset;
+      pt.pt.y = kp_in.at<cv::Vec2f>(0, i)[1] + y_offset;
       kp_out.push_back(pt);
     }
   }
