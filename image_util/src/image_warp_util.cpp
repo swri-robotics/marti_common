@@ -25,6 +25,8 @@
 
 #include <image_util/image_warp_util.h>
 
+#include <algorithm>
+
 namespace image_util
 {
   cv::Mat WarpImage(const cv::Mat& image, double roll, double pitch)
@@ -130,7 +132,6 @@ namespace image_util
       double& nominal_roll,
       bool show_image_diff)
   {
-
     if (kp1_matched_.empty() || kp2_matched_.empty())
     {
       return cv::Mat();
@@ -148,7 +149,7 @@ namespace image_util
     ROS_ERROR("Estimate Nominal Angle time = %g", (T2 - T1).toSec());
     cv::Mat R = GetR(nominal_pitch, nominal_roll);
 
-    if(show_image_diff)
+    if (show_image_diff)
     {
       // Do the warping and transformation and show the results
       cv::Mat warped_im1;
@@ -187,11 +188,12 @@ namespace image_util
     return R;
   }
 
-  cv::Mat PitchAndRollEstimator::EstimateNominalAngle(const cv::Mat& points1,
-                                                      const cv::Mat& points2,
-                                                      const cv::Size& image_size,
-                                                      double& nominal_pitch,
-                                                      double& nominal_roll)
+  cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
+      const cv::Mat& points1,
+      const cv::Mat& points2,
+      const cv::Size& image_size,
+      double& nominal_pitch,
+      double& nominal_roll)
   {
     // Max number of iterations per angle, per scale
     const int32_t max_iterations = 5;
@@ -247,16 +249,15 @@ namespace image_util
                                             T_affine,
                                             T_rigid,
                                             rms_error);
-          if(!success)
+          if (!success)
           {
             continue;
           }
 
           double cur_diff = rms_error;
 
-          if(cur_diff < min_diff)
+          if (cur_diff < min_diff)
           {
-
             min_diff = cur_diff;
 
             nominal_pitch = cur_pitch;
@@ -358,7 +359,6 @@ namespace image_util
            auto_hessian > min_hessian &&
            cur_iter++ < max_iterations)
     {
-
       cv::SurfFeatureDetector detector(auto_hessian);
       keypoints.clear();
       detector.detect(image, keypoints);
@@ -426,10 +426,10 @@ namespace image_util
                             fund_inliers1,
                             fund_inliers2);
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
       ROS_ERROR("Caught an exception when computing fundamental inliers:"
-                " %s",e.what());
+                " %s", e.what());
       return false;
     }
 
@@ -447,7 +447,7 @@ namespace image_util
                                           T_rigid,
                                           rms_error);
 
-    if(T_affine.empty())
+    if (T_affine.empty())
     {
       ROS_ERROR("Failed to comput loose 2D rigid transform.");
       return false;
@@ -466,7 +466,6 @@ namespace image_util
       cv::Mat& T_rigid,
       double& rms_error)
   {
-
     cv::Mat inliers1;
     cv::Mat inliers2;
     T_affine =  computeLooseRigid2DAffine(pts1,
@@ -476,7 +475,7 @@ namespace image_util
                                           T_rigid,
                                           rms_error);
 
-    if(T_affine.empty())
+    if (T_affine.empty())
     {
       return false;
     }
@@ -490,7 +489,7 @@ namespace image_util
       const cv::Mat& pts_in,
       cv::Mat& pts_out)
   {
-    if(im1_.empty() || im2_.empty())
+    if (im1_.empty() || im2_.empty())
     {
       ROS_ERROR("Object not initialized. Pitch and roll not computed.  Perhaps"
                 "call static implementation instead");
@@ -575,7 +574,7 @@ namespace image_util
   {
     double pitch;
     double roll;
-    if(use_median)
+    if (use_median)
     {
       GetMedianPitchAndRoll(pitch, roll);
     }
@@ -614,7 +613,6 @@ namespace image_util
       const cv::Mat& points2,
       const cv::Size& image_size)
   {
-
     double pitch = 0.0;
     double roll = 0.0;
     cv::Mat T = PitchAndRollEstimator::EstimateNominalAngle(points1,
@@ -623,7 +621,7 @@ namespace image_util
                                                             pitch,
                                                             roll);
 
-    if(!T.empty())
+    if (!T.empty())
     {
       LoadNewData(pitch, roll);
       ComputeStats();
@@ -644,7 +642,7 @@ namespace image_util
     double roll = 0.0;
     cv::Mat T = est.EstimateNominalAngle(pitch, roll);
 
-    if(!T.empty())
+    if (!T.empty())
     {
       LoadNewData(pitch, roll);
       ComputeStats();
@@ -735,7 +733,6 @@ namespace image_util
     int32_t mid_idx = static_cast<int32_t>(temp_pitch.size() - 1) / 2;
     if (temp_pitch.size() % 2 == 0)
     {
-
       median_pitch_ = (temp_pitch[mid_idx] + temp_pitch[mid_idx + 1]) / 2.0;
       median_roll_ = (temp_roll[mid_idx] + temp_roll[mid_idx + 1]) / 2.0;
     }

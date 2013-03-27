@@ -32,7 +32,6 @@
 
 namespace image_util
 {
-
   void DrawOverlap(
       const std::string& title,
       const cv::Mat& image1,
@@ -47,9 +46,9 @@ namespace image_util
         image2_warped,
         transform,
         cv::Size(image2.cols, image2.rows));
-        
+
       cv::Mat sub = image1 - image2_warped;
-      
+
       cv::imshow(title, sub);
     }
   }
@@ -64,11 +63,11 @@ namespace image_util
       bool draw_image_borders)
   {
     cv::Size size(image1.cols + image2.cols, std::max(image1.rows, image2.rows));
-    image_out.create( size, CV_MAKETYPE(image1.depth(), 3));
+    image_out.create(size, CV_MAKETYPE(image1.depth(), 3));
     cv::Mat draw_image1 = image_out(cv::Rect(0, 0, image1.cols, image1.rows));
     cv::Mat draw_image2 = image_out(cv::Rect(image1.cols, 0, image2.cols, image2.rows));
 
-    if(image1.type() == CV_8U)
+    if (image1.type() == CV_8U)
     {
       cvtColor(image1, draw_image1, CV_GRAY2BGR);
     }
@@ -77,7 +76,7 @@ namespace image_util
       image1.copyTo(draw_image1);
     }
 
-    if(image2.type() == CV_8U)
+    if (image2.type() == CV_8U)
     {
       cvtColor(image2, draw_image2, CV_GRAY2BGR);
     }
@@ -86,20 +85,19 @@ namespace image_util
       image2.copyTo(draw_image2);
     }
 
-    if(draw_image_borders)
+    if (draw_image_borders)
     {
       cv::rectangle(draw_image1,
-                    cv::Point(0,0),
+                    cv::Point(0, 0),
                     cv::Point(image1.cols, image1.rows),
-                    cv::Scalar(0,0,0),
+                    cv::Scalar(0, 0, 0),
                     2);
 
       cv::rectangle(draw_image2,
-                    cv::Point(0,0),
+                    cv::Point(0, 0),
                     cv::Point(image2.cols, image2.rows),
-                    cv::Scalar(0,0,0),
+                    cv::Scalar(0, 0, 0),
                     2);
-
     }
 
     cv::RNG rng = cv::theRNG();
@@ -148,7 +146,7 @@ namespace image_util
       bool draw_image_borders)
   {
     cv::Mat draw_image;
-    if(image.type() == CV_8U)
+    if (image.type() == CV_8U)
     {
       cvtColor(image, draw_image, CV_GRAY2BGR);
     }

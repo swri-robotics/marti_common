@@ -706,7 +706,7 @@ namespace image_util
         continue;
       }
 
-      double cn; // condition number
+      double cn;  // condition number
       double rnorm;
       regularizeTransformationMatrix(X, cn, rnorm, temp);
 
