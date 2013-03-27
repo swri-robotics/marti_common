@@ -25,6 +25,8 @@
 
 #include <image_util/motion_estimation.h>
 
+#include <algorithm>
+
 namespace image_util
 {
   cv::Mat ComputeRigid2DTransformation(
@@ -48,7 +50,7 @@ namespace image_util
     // Build the linear equation.
     LaGenMatDouble A(num_points, 3);
     LaGenMatDouble B(num_points, 2);
-    for(int32_t i = 0; i < num_points; i++)
+    for (int32_t i = 0; i < num_points; i++)
     {
       int32_t row = row_order ? i : 0;
       int32_t col = row_order ? 0 : i;
@@ -147,12 +149,10 @@ namespace image_util
 
     if (matrix.rows == 2 && matrix.cols == 3)
     {
-
       transform.setOrigin(tf::Vector3(
           matrix.at<float>(0, 2),
           matrix.at<float>(1, 2),
           0.0));
-
 
       transform.getBasis().setValue(
           matrix.at<float>(0, 0),
@@ -167,14 +167,14 @@ namespace image_util
     return transform;
   }
 
-  void PrintMat1(LaGenMatDouble &A)
+  void PrintMat1(const LaGenMatDouble &A)
   {
     int i, j;
     for (i = 0; i < A.rows(); i++)
     {
       fprintf(stderr, "\n");
       for (j = 0; j < A.cols(); j++)
-        fprintf (stderr, "%15.10f ", A(i, j));
+        fprintf(stderr, "%15.10f ", A(i, j));
     }
     fprintf(stderr, "\n");
   }
@@ -198,7 +198,7 @@ namespace image_util
       // Intrinsics
       ROS_ERROR("No camera parameters provided; using identity matrix instead"
                 " -- This will probably result in a bad transformation.");
-      Ain = cv::Mat::eye(Fin.rows ,Fin.cols, CV_64FC1);
+      Ain = cv::Mat::eye(Fin.rows, Fin.cols, CV_64FC1);
     }
 
     // std::stringstream Finstr;
@@ -218,8 +218,8 @@ namespace image_util
     {
       for (int j = 0; j < Fin.cols; j++)
       {
-        F(i ,j) = Fin.at<double>(i ,j);
-        A(i ,j) = Ain.at<double>(i ,j);
+        F(i, j) = Fin.at<double>(i, j);
+        A(i, j) = Ain.at<double>(i, j);
 //        Finstr << Fin.at<double>(i,j) << "  ";
 //        Ainstr << Ain.at<double>(i,j) << "  ";
 //        Foutstr << F(i,j) << "  ";
@@ -258,7 +258,7 @@ namespace image_util
     LaGenMatDouble Vt(3, 3);     // V'
 
     // Note that E gets modified in this step, so it can't be used after this
-    LaSVD_IP(E,Stemp,U,Vt);
+    LaSVD_IP(E, Stemp, U, Vt);
 
     if (std::abs(Stemp(0) - Stemp(1)) / Stemp(0) > 0.05)
     {
@@ -305,9 +305,9 @@ namespace image_util
     LaGenMatDouble Ttemp2(3, 3);
     // Ttemp1 = Vt'*Z = V*Z -- Using Z which better deals with the case where
     // sigma1 != sigma2
-    Blas_Mat_Trans_Mat_Mult(Vt,Z,Ttemp1);
+    Blas_Mat_Trans_Mat_Mult(Vt, Z, Ttemp1);
     // Ttemp2 = Ttemp1*Vt = Ttemp1*V' = V*Z*V'
-    Blas_Mat_Mat_Mult(Ttemp1,Vt,Ttemp2);
+    Blas_Mat_Mat_Mult(Ttemp1, Vt, Ttemp2);
 
 //    Blas_Mat_Trans_Mat_Mult(Vt,W,Ttemp1); // Ttemp1 = Vt'*W = V*W
 //    Blas_Mat_Mat_Mult(Ttemp1,S,Ttemp2);   // Ttemp2 = Ttemp1*S
@@ -368,7 +368,7 @@ namespace image_util
       return T;
     }
 
-    uint32_t NumPoints = points1.cols ;
+    uint32_t NumPoints = points1.cols;
     if (points1.rows > 1)
     {
       row_order = true;
@@ -377,18 +377,17 @@ namespace image_util
 
     // Setup matrices for holding all of the points
     LaGenMatDouble sourceA(NumPoints, 2);
-    LaGenMatDouble sourceA_aug(NumPoints,3);
+    LaGenMatDouble sourceA_aug(NumPoints, 3);
     LaGenMatDouble sourceB(NumPoints, 2);
-    LaGenMatDouble tempA(NumPoints,2);
+    LaGenMatDouble tempA(NumPoints, 2);
 
     double xmax = -1.0e20;
     double xmin = 1.0e20;
     double ymax = xmax;
     double ymin = xmin;
-    //double range;
 
     // Convert from cv::Mat to LaGenMatDouble
-    for(uint32_t i = 0; i < NumPoints; i++)
+    for (uint32_t i = 0; i < NumPoints; i++)
     {
       // Points from first frame
       if (row_order)
@@ -412,26 +411,24 @@ namespace image_util
       sourceA_aug(i, 2) = 1.0;
 
       // Find the range of the data;
-      if(sourceA(i, 0) > xmax)
+      if (sourceA(i, 0) > xmax)
       {
         xmax = sourceA(i, 0);
       }
-      else if(sourceA(i, 0) < xmin)
+      else if (sourceA(i, 0) < xmin)
       {
         xmin = sourceA(i, 0);
       }
 
-      if(sourceA(i, 1) > ymax)
+      if (sourceA(i, 1) > ymax)
       {
         ymax = sourceA(i, 1);
       }
-      else if(sourceA(i, 1) < ymin)
+      else if (sourceA(i, 1) < ymin)
       {
         ymin = sourceA(i, 1);
       }
     }
-
-    //range = std::sqrt(std::pow((xmax-xmin),2) + std::pow(ymax-ymin,2));
 
     // Specify RANSAC Parameters:
     uint32_t NumberOfPointsToSample = 3;
@@ -475,31 +472,30 @@ namespace image_util
       {
         LaLinearSolve(A, X, B);
       }
-      catch(std::exception& e)
+      catch(const std::exception& e)
       {
-        //	 ROS_INFO("Got LaLinearSolve Error ignore OK: %s", e.what());
+        // ROS_INFO("Got LaLinearSolve Error ignore OK: %s", e.what());
         // when multiple potential matches are allowed, this has the potential
         // to be exactly singular
         continue;
       }
-      //PrintMat1(X);
-      double cn; // condition number
+
+      double cn;  // condition number
       double rnorm;
       regularizeTransformationMatrix(X, cn, rnorm, temp);
-      //PrintMat1(X);
 
       // Check to see whether the rotation matrix is close to valid
-      // TODO: Parameterize this
+      // TODO(kkozak): Parameterize this
       if (fabs(cn - 1.0) > .1 || rnorm > maxRNorm)
       {
-        //ROS_ERROR("Did not meet condition number or rnorm criteria: cn = %f,
+        // ROS_ERROR("Did not meet condition number or rnorm criteria: cn = %f,
         // rnorm = %g",cn,rnorm);
         continue;
       }
 
       // tempA is a list vectors between projected points and actual points
       tempA = sourceB;
-      //The following implements: tempA = sourceA_aug * X - sourceB;
+      // The following implements: tempA = sourceA_aug * X - sourceB;
       Blas_Mat_Mat_Mult(sourceA_aug, X, tempA, false, false, 1.0, -1.0);
 
       // Find all of the points within the re-projection error bound (add their
@@ -509,7 +505,7 @@ namespace image_util
       {
         double dist = sqrt(pow(tempA(j, 0), 2) + pow(tempA(j, 1), 2));
 
-        if(dist < MaxReprojError)
+        if (dist < MaxReprojError)
         {
           temp_points.push_back(j);
         }
@@ -526,7 +522,7 @@ namespace image_util
         break;
         // We've met the escape criteria, so we don't need to keep iterating
       }
-    }// end of 100 iterations
+    } // end of 100 iterations
 
 
     if (good_points.size() >= MinNumValidPointsNeeded)
@@ -543,7 +539,7 @@ namespace image_util
         inliers2 = cv::Mat(1, good_points.size(), CV_32FC2);
       }
 
-      for(uint32_t i = 0; i < good_points.size(); ++i)
+      for (uint32_t i = 0; i < good_points.size(); ++i)
       {
         if (row_order)
         {
@@ -563,12 +559,13 @@ namespace image_util
 
       T = ComputeRigid2DTransformation(inliers1, inliers2, temp);
     }
-    else{
+    else
+    {
       ROS_DEBUG("Not enough valid points size of good_points =%d",
                 (int)good_points.size());
     }
-    return T;
 
+    return T;
   }
 
   cv::Mat computeLooseRigid2DAffine(
@@ -595,24 +592,23 @@ namespace image_util
       return Affine;
     }
 
-    uint32_t NumPoints = points1.cols ; // clewis removed divide by 2
+    uint32_t NumPoints = points1.cols ;
     if (points1.rows > 1)
     {
       row_order = false;
-      NumPoints = points1.rows ; // clewis removed divide by 2
+      NumPoints = points1.rows ;
     }
 
     // Setup matrices for holding all of the points
     LaGenMatDouble sourceA(NumPoints, 2);
-    LaGenMatDouble sourceA_aug(NumPoints,3);
+    LaGenMatDouble sourceA_aug(NumPoints, 3);
     LaGenMatDouble sourceB(NumPoints, 2);
-    LaGenMatDouble tempA(NumPoints,2);
+    LaGenMatDouble tempA(NumPoints, 2);
 
     double xmax = -1.0e20;
     double xmin = 1.0e20;
     double ymax = xmax;
     double ymin = xmin;
-    //double range;
 
     // Convert from cv::Mat to LaGenMatDouble
     for (uint32_t i = 0; i < NumPoints; i++)
@@ -664,9 +660,9 @@ namespace image_util
     uint32_t MinNumValidPointsNeeded = 6;
     double   EscapeLevel = 0.8;
     // Perhaps change this to be a fraction of max range or make it a parameter
-    double   MaxReprojError = 30; // Use a looser reprojection error to capture
-                                  // inliers in cases where there is strong
-                                  // perspective distortion
+    double   MaxReprojError = 30;  // Use a looser reprojection error to capture
+                                   // inliers in cases where there is strong
+                                   // perspective distortion
     double   maxRNorm = 0.000000000000001;
 
 
@@ -676,7 +672,6 @@ namespace image_util
     LaGenMatDouble B(NumberOfPointsToSample, 2);
     LaGenMatDouble X(3, 2);
     LaGenMatDouble X_good(3, 2);
-
 
     // Do RANSAC
     for (uint32_t i = 0; i < MaxNumberOfIterations; ++i)
@@ -702,7 +697,7 @@ namespace image_util
       {
         LaLinearSolve(A, X, B);
       }
-      catch(std::exception& e)
+      catch(const std::exception& e)
       {
         // when multiple potential matches are allowed, this has the potential
         // to be exactly singular, and when it is, LAPACK may/will throw an
@@ -710,17 +705,16 @@ namespace image_util
         // be no good so just continue;
         continue;
       }
-      //PrintMat1(X);
+
       double cn; // condition number
       double rnorm;
       regularizeTransformationMatrix(X, cn, rnorm, temp);
-      //PrintMat1(X);
 
       // Check to see whether the rotation matrix is close to valid
-      // TODO: Parameterize this
+      // TODO(kkozak): Parameterize this
       if (fabs(cn - 1.0) > .1 || rnorm > maxRNorm)
       {
-        //ROS_ERROR("Did not meet condition number or rnorm criteria: cn = %f,
+        // ROS_ERROR("Did not meet condition number or rnorm criteria: cn = %f,
         // rnorm = %g",cn,rnorm);
         continue;
       }
@@ -754,15 +748,11 @@ namespace image_util
         break;
         // We've met the escape criteria, so we don't need to keep iterating
       }
-    }// end of 100 iterations
+    } // end of 100 iterations
 
 
     if (good_points.size() >= MinNumValidPointsNeeded)
     {
-//      ROS_ERROR("Used %d of %d points to compute rigid transformation",
-//                static_cast<int>(good_points.size()),
-//                NumPoints);
-
       if (row_order)
       {
         inliers1 = cv::Mat(cv::Size(good_points.size(), 1), CV_32FC2);
@@ -774,8 +764,7 @@ namespace image_util
         inliers2 = cv::Mat(cv::Size(1, good_points.size()), CV_32FC2);
       }
 
-      // We have a valid set, so let's compute a final transform using all the
-      // valid points
+      // Compute a final transform using all the valid points
       LaGenMatDouble A1(good_points.size(), 3);
       LaGenMatDouble B1(good_points.size(), 2);
       for (uint32_t i = 0; i < good_points.size(); ++i)
@@ -790,16 +779,16 @@ namespace image_util
         if (row_order)
         {
           inliers1.at<cv::Vec2f>(i, 0) =
-              cv::Vec2f(sourceA(good_points[i],0), sourceA(good_points[i],1));
+              cv::Vec2f(sourceA(good_points[i], 0), sourceA(good_points[i], 1));
           inliers2.at<cv::Vec2f>(i, 0) =
-              cv::Vec2f(sourceB(good_points[i],0), sourceB(good_points[i],1));
+              cv::Vec2f(sourceB(good_points[i], 0), sourceB(good_points[i], 1));
         }
         else
         {
           inliers1.at<cv::Vec2f>(0, i) =
-              cv::Vec2f(sourceA(good_points[i],0), sourceA(good_points[i],1));
+              cv::Vec2f(sourceA(good_points[i], 0), sourceA(good_points[i], 1));
           inliers2.at<cv::Vec2f>(0, i) =
-              cv::Vec2f(sourceB(good_points[i],0), sourceB(good_points[i],1));
+              cv::Vec2f(sourceB(good_points[i], 0), sourceB(good_points[i], 1));
         }
       }
       // Solve for the Transformation matrix, X
@@ -814,12 +803,9 @@ namespace image_util
       {
         dx_sum += B1(i, 0) - A1(i, 0);
         dy_sum += B1(i, 1) - A1(i, 1);
-
       }
       X(2, 0) = dx_sum / A1.rows();
       X(2, 1) = dy_sum / A1.rows();
-
-
 
       // Compute the Mean Squared Error
       // tempA is a list vectors between projected points and actual points
@@ -829,27 +815,23 @@ namespace image_util
       double cn1;
       double rnorm1;
 
-
-      regularizeTransformationMatrix(X_short_temp, cn1, rnorm1,temp);
-
+      regularizeTransformationMatrix(X_short_temp, cn1, rnorm1, temp);
 
       Blas_Mat_Mat_Mult(A1, X_short_temp, tempA, false, false, 1.0, -1.0);
-
 
       std::vector<double> dist_err;
 
       for (int32_t i = 0; i < A1.rows(); ++i)
       {
-
-        double temp_dist = std::sqrt(tempA(i,0) * tempA(i,0)
-                                     + tempA(i,1) * tempA(i,1));
+        double temp_dist = std::sqrt(tempA(i, 0) * tempA(i, 0)
+                                     + tempA(i, 1) * tempA(i, 1));
 
         dist_err.push_back(temp_dist);
       }
 
       rms_error = 0.0;
       std::sort(dist_err.begin(), dist_err.end());
-      int n = dist_err.size();//std::min((int)dist_err.size(), 10);
+      int n = dist_err.size();
       for (int i = 0; i < n; ++i)
       {
         rms_error += dist_err[i];
@@ -857,13 +839,11 @@ namespace image_util
       std::sort(dist_err.begin(), dist_err.end());
       int mid_idx = dist_err.size() / 2;
       rms_error = dist_err[mid_idx];
-      //rms_error /= n;
-
 
       double cn;
       double rnorm;
 
-      Affine.create(2,3,CV_32FC1);
+      Affine.create(2, 3, CV_32FC1);
       for (uint32_t i = 0; i < 2; i++)
       {
         for (uint32_t j = 0; j < 3; j++)
@@ -872,9 +852,9 @@ namespace image_util
         }
       }
 
-      regularizeTransformationMatrix(X, cn, rnorm,temp);
+      regularizeTransformationMatrix(X, cn, rnorm, temp);
       T_rigid.release();
-      T_rigid.create(2,3,CV_32FC1);
+      T_rigid.create(2, 3, CV_32FC1);
 
       for (uint32_t i = 0; i < 2; i++)
       {
@@ -884,7 +864,8 @@ namespace image_util
         }
       }
     }
-    else{
+    else
+    {
       ROS_DEBUG("Not enough valid points size of good_points =%d",
                 (int)good_points.size());
     }
@@ -919,9 +900,9 @@ namespace image_util
 
     // Setup matrices for holding all of the points
     LaGenMatDouble sourceA(NumPoints, 3);
-    LaGenMatDouble sourceA_aug(NumPoints,4);
+    LaGenMatDouble sourceA_aug(NumPoints, 4);
     LaGenMatDouble sourceB(NumPoints, 3);
-    LaGenMatDouble tempA(NumPoints,3);
+    LaGenMatDouble tempA(NumPoints, 3);
 
     double xmax = -1.0e20;
     double xmin = 1.0e20;
@@ -930,7 +911,7 @@ namespace image_util
     //double range;
 
     // Convert from cv::Mat to LaGenMatDouble
-    for(uint32_t i = 0; i < NumPoints; i++)
+    for (uint32_t i = 0; i < NumPoints; i++)
     {
       // Points from first frame
       sourceA(i, 0) = points1.at<cv::Vec3f>(0, i)[0];
@@ -938,20 +919,20 @@ namespace image_util
       sourceA(i, 2) = points1.at<cv::Vec3f>(0, i)[2];
 
       // Find the range of the data;
-      if(sourceA(i, 0) > xmax)
+      if (sourceA(i, 0) > xmax)
       {
         xmax = sourceA(i, 0);
       }
-      else if(sourceA(i, 0) < xmin)
+      else if (sourceA(i, 0) < xmin)
       {
         xmin = sourceA(i, 0);
       }
 
-      if(sourceA(i, 1) > ymax)
+      if (sourceA(i, 1) > ymax)
       {
         ymax = sourceA(i, 1);
       }
-      else if(sourceA(i, 1) < ymin)
+      else if (sourceA(i, 1) < ymin)
       {
         ymin = sourceA(i, 1);
       }
@@ -966,8 +947,6 @@ namespace image_util
       sourceB(i, 1) = points2.at<cv::Vec3f>(0, i)[1];
       sourceB(i, 2) = points2.at<cv::Vec3f>(0, i)[2];
     }
-
-    //range = std::sqrt(std::pow((xmax-xmin),2) + std::pow(ymax-ymin,2));
 
     // Specify RANSAC Parameters:
     uint32_t NumberOfPointsToSample = 6;
@@ -1009,18 +988,17 @@ namespace image_util
 
       // Solve for the Transformation matrix, X
       LaLinearSolve(A, X, B);
-      //PrintMat1(X);
+
       double cn;
       double rnorm;
       regularizeTransformationMatrix(X, cn, rnorm);
-      //PrintMat1(X);
 
       // Check to see whether the rotation matrix is close to valid
-      // TODO: Parameterize this
+      // TODO(kkozak): Parameterize this
       if(fabs(cn - 1.0) > 0.1 || rnorm > maxRNorm)
       {
-//        ROS_ERROR("Did not meet condition number or rnorm criteria: "
-//                  "cn = %f, rnorm = %f",cn,rnorm);
+        // ROS_ERROR("Did not meet condition number or rnorm criteria: "
+        // "cn = %f, rnorm = %f",cn,rnorm);
         continue;
       }
 
@@ -1057,11 +1035,8 @@ namespace image_util
       }
     }
 
-
     if (good_points.size() >= MinNumValidPointsNeeded)
     {
-//      ROS_ERROR("Used %d of %d points to compute rigid transformation",
-//                static_cast<int>(good_points.size()),NumPoints);
       // We have a valid set, so let's compute a final transform using all the
       // valid points
       LaGenMatDouble A1(good_points.size(), 4);
@@ -1078,14 +1053,14 @@ namespace image_util
         B1(i, 2) = sourceB(good_points[i], 2);
 
       }
+
       // Solve for the Transformation matrix, X
       LaLinearSolve(A1, X, B1);
       double cn;
       double rnorm;
       regularizeTransformationMatrix(X, cn, rnorm);
-      //PrintMat1(X);
-      T.create(3, 4, CV_32FC1);
 
+      T.create(3, 4, CV_32FC1);
       for (uint32_t i = 0; i < 3; i++)
       {
         for (uint32_t j = 0; j < 4; j++)
@@ -1096,7 +1071,6 @@ namespace image_util
     }
 
     return T;
-
   }
 
   void regularizeTransformationMatrix(LaGenMatDouble &T,
@@ -1107,7 +1081,7 @@ namespace image_util
     // Note that T here is really T' without the extra column ==> [R';p];
     LaGenMatDouble rot(T.cols(), T.cols());
     getR(T, rot);
-    regularizeRotationMatrix(rot,conditionNum,rnorm,scaleOK);
+    regularizeRotationMatrix(rot, conditionNum, rnorm, scaleOK);
     for (int i = 0; i < T.cols(); i++)
     {
       for (int j = 0; j < T.cols(); j++)
@@ -1120,9 +1094,9 @@ namespace image_util
   void getR(const LaGenMatDouble& T, LaGenMatDouble& R)
   {
     // Note that T here is really T' without the extra column ==> [R';p];
-    for(int i = 0; i < T.cols(); i++)
+    for (int i = 0; i < T.cols(); i++)
     {
-      for(int j = 0; j < T.cols(); j++)
+      for (int j = 0; j < T.cols(); j++)
       {
         R(i, j) = T(i, j);
       }
@@ -1142,13 +1116,13 @@ namespace image_util
 
 
     LaSVD_IP(rot,Sigma,U,Vt);
-    conditionNum = Sigma(0)/Sigma(N-1);
+    conditionNum = Sigma(0) / Sigma(N-1);
 
 
     // find the diagonal matrix S whose values are either 1, when scaling is
     // not allowed, or the average singular value when it is
-    double diagonal=0;
-    for(uint32_t i=0;i<N;i++)
+    double diagonal = 0;
+    for (uint32_t i = 0; i<N; i++)
     {
       diagonal += Sigma(i);
     }
@@ -1163,27 +1137,27 @@ namespace image_util
 
     // compute the diagonal matrix
     LaGenMatDouble S(N,N);
-    for(uint32_t i = 0; i < N; i++)
+    for (uint32_t i = 0; i < N; i++)
     {
-      for(uint32_t j = 0; j < N; j++)
+      for (uint32_t j = 0; j < N; j++)
       {
-        if(i==j)
+        if (i==j)
         {
-          S(i,j) = diagonal;
+          S(i, j) = diagonal;
         }
         else
         {
-          S(i,j) = 0;
+          S(i, j) = 0;
         }
       }
     }
 
     // Compute the rotation as USVt
-    rot=U*S*Vt;
+    rot = U * S * Vt;
 
     // compute the rotation measure as ||RtR - StS||
-    Blas_Mat_Trans_Mat_Mult(rot,rot,RtR);
-    rnorm = Blas_NormF(RtR-S*S);
+    Blas_Mat_Trans_Mat_Mult(rot, rot, RtR);
+    rnorm = Blas_NormF(RtR - S * S);
 
   }
 
@@ -1193,7 +1167,7 @@ namespace image_util
   {
     indices.clear();
 
-    if(total_samples > max_num)
+    if (total_samples > max_num)
     {
       ROS_ERROR("Total samples is greater than max number. %d > %d",
                 (int)total_samples,
@@ -1201,19 +1175,19 @@ namespace image_util
       return;
     }
 
-    while(indices.size() < total_samples)
+    while (indices.size() < total_samples)
     {
       uint32_t sample = static_cast<uint32_t>(rand() % static_cast<int>(max_num));
       bool found = false;
-      for(uint32_t i = 0; i < indices.size(); i++)
+      for (uint32_t i = 0; i < indices.size(); i++)
       {
-        if(sample == indices[i])
+        if (sample == indices[i])
         {
           found = true;
           break;
         }
       }
-      if(!found)
+      if (!found)
       {
         indices.push_back(sample);
       }
@@ -1224,9 +1198,9 @@ namespace image_util
   LaGenMatDouble transpose(const LaGenMatDouble& mat)
   {
     LaGenMatDouble trans_mat = LaGenMatDouble::zeros(mat.cols(), mat.rows());
-    for(int i = 0; i < mat.rows(); ++i)
+    for (int i = 0; i < mat.rows(); ++i)
     {
-      for(int j = 0; j < mat.cols(); ++j)
+      for (int j = 0; j < mat.cols(); ++j)
       {
         trans_mat(j, i) = mat(i, j);
       }
@@ -1243,7 +1217,7 @@ namespace image_util
     // TODO(kkozak): Check matrix dimensions and type
     kp_out.clear();
     kp_out.reserve(static_cast<std::size_t>(kp_in.rows));
-    for(int32_t i = 0; i < static_cast<int32_t>(kp_in.rows); ++i)
+    for (int32_t i = 0; i < static_cast<int32_t>(kp_in.rows); ++i)
     {
       cv::KeyPoint pt;
       pt.pt.x = kp_in.at<cv::Vec2f>(0,i)[0] + x_offset;
@@ -1261,11 +1235,11 @@ namespace image_util
                            cv::Mat& kp_out)
   {
     kp_out.release();
-    kp_out.create(cv::Size(1,(int)kp_in.size()), CV_32FC2);
-    for(int32_t i = 0; i < (int)kp_in.size(); ++i)
+    kp_out.create(cv::Size(1, (int)kp_in.size()), CV_32FC2);
+    for (int32_t i = 0; i < (int)kp_in.size(); ++i)
     {
-      kp_out.at<cv::Vec2f>(0,i)[0] = kp_in[i].pt.x;
-      kp_out.at<cv::Vec2f>(0,i)[1] = kp_in[i].pt.y;
+      kp_out.at<cv::Vec2f>(0, i)[0] = kp_in[i].pt.x;
+      kp_out.at<cv::Vec2f>(0, i)[1] = kp_in[i].pt.y;
     }
   }
 }

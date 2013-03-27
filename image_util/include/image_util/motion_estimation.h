@@ -59,7 +59,7 @@ namespace image_util
    *
    * @param[in]  A  The matrix to print
    */
-  void PrintMat1(LaGenMatDouble &A);
+  void PrintMat1(const LaGenMatDouble &A);
 
   /**
    * @brief This function extracts the Rotation and Translation (up to a scale
