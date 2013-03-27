@@ -63,7 +63,7 @@ namespace transform_util
         tf::StampedTransform& transform) const;
 
   private:
-    bool initialized_;
+    boost::shared_ptr<tf::TransformListener> tf_listener_;
     std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > > transformers_;
   };
 }

@@ -23,10 +23,11 @@
 
 #include <pluginlib/class_loader.h>
 
+#include <transform_util/frames.h>
+
 namespace transform_util
 {
-  TransformManager::TransformManager() :
-      initialized_(false)
+  TransformManager::TransformManager()
   {
     pluginlib::ClassLoader<transform_util::Transformer> loader(
         "transform_util", "transform_util::Transformer");
@@ -63,6 +64,8 @@ namespace transform_util
 
   void TransformManager::Initialize(boost::shared_ptr<tf::TransformListener> tf)
   {
+    tf_listener_ = tf;
+
     std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > >::iterator iter1;
     for (iter1 = transformers_.begin(); iter1 != transformers_.end(); ++iter1)
     {
@@ -72,7 +75,133 @@ namespace transform_util
         iter2->second->Initialize(tf);
       }
     }
+  }
 
-    initialized_ = true;
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Time& time,
+      Transform& transform)
+  {
+    if (target_frame == source_frame)
+    {
+      transform = Transform();
+      return true;
+    }
+
+    if (!tf_listener_)
+    {
+      ROS_WARN("[transform_manager]: TF listener not initialized.");
+      return false;
+    }
+
+    // Check if the source frame is in the TF tree.
+    std::string source = source_frame;
+    if (tf_listener_->frameExists(source_frame))
+    {
+      source = _tf_frame;
+    }
+
+    // Check if the target frame is in the TF tree.
+    std::string target = target_frame;
+    if (tf_listener_->frameExists(target_frame))
+    {
+      target = _tf_frame;
+    }
+
+    if (source == target)
+    {
+      // Both frames are in the TF tree.
+
+      tf::StampedTransform tf_transform;
+      if (GetTransform(target_frame, source_frame, time, tf_transform))
+      {
+        transform = tf_transform;
+        return true;
+      }
+
+      return false;
+    }
+
+    if (transformers_[source].count(target) == 0)
+    {
+      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+          source.c_str(), target.c_str());
+
+      return false;
+    }
+
+    boost::shared_ptr<Transformer> transformer = transformers_[source][target];
+    if (!transformer)
+    {
+      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+          source.c_str(), target.c_str());
+
+      return false;
+    }
+
+    return transformer->GetTransform(target_frame, source_frame, time, transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      Transform& transform)
+  {
+    return GetTransform(target_frame, source_frame, ros::Time(0), transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Time& time,
+      tf::StampedTransform& transform) const
+  {
+    if (!tf_listener_)
+      return false;
+
+    bool has_transform = false;
+    try
+    {
+      tf_listener_->waitForTransform(
+          target_frame,
+          source_frame,
+          time,
+          ros::Duration(0.1));
+
+      tf_listener_->lookupTransform(
+          target_frame,
+          source_frame,
+          time,
+          transform);
+
+      has_transform = true;
+    }
+    catch (const tf::LookupException& e)
+    {
+      ROS_ERROR("[transform_manager]: %s", e.what());
+    }
+    catch (const tf::ConnectivityException& e)
+    {
+      ROS_ERROR("[transform_manager]: %s", e.what());
+    }
+    catch (const tf::ExtrapolationException& e)
+    {
+      ROS_ERROR("[transform_manager]: %s", e.what());
+    }
+    catch (...)
+    {
+      ROS_ERROR("[transform_manager]: Exception looking up transform");
+    }
+
+    return has_transform;
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      tf::StampedTransform& transform) const
+  {
+    return GetTransform(target_frame, source_frame, ros::Time(0), transform);
   }
 }
