@@ -26,6 +26,9 @@
 #ifndef IMAGE_UTIL_IMAGE_WARP_UTIL_H_
 #define IMAGE_UTIL_IMAGE_WARP_UTIL_H_
 
+// Boost Libraries
+#include <boost/circular_buffer.hpp>
+
 // ROS Libraries
 #include <ros/ros.h>
 
@@ -40,9 +43,6 @@
 #if CV_MAJOR_VERSION >= 2 && CV_MINOR_VERSION >= 4
 #include <opencv2/nonfree/features2d.hpp>
 #endif
-
-// Boost Libraries
-#include <boost/circular_buffer.hpp>
 
 // RANGER Libraries
 #include <image_util/motion_estimation.h>
@@ -76,7 +76,7 @@ namespace image_util
     /**
      * @brief      Constructor
      */
-    PitchAndRollEstimator(){};
+    PitchAndRollEstimator() {}
 
     /**
      * @brief      Constructor
@@ -156,7 +156,6 @@ namespace image_util
                            const std::vector<cv::KeyPoint>& pts_in,
                            std::vector<cv::KeyPoint>& pts_out);
   private:
-
     cv::Mat im1_;
     cv::Mat im2_;
 
@@ -212,7 +211,7 @@ namespace image_util
      * @param[out] T_affine
      * @param[out] T_rigid
      * @param[out] rms_error    The RMS (distance) error for inlier points using
-   *                          the rigid transform
+     *                          the rigid transform
      *
      * @retval     Returns false if unable to find enough valid matches
      */
@@ -245,7 +244,6 @@ namespace image_util
     void WarpAffinePoints(const cv::Mat& T,
                           const cv::Mat& pts_in,
                           cv::Mat& pts_out);
-
   };
 
   /**
@@ -256,12 +254,11 @@ namespace image_util
   class PitchAndRollEstimatorQueue
   {
   public:
-
     /**
      * @brief      Constructor
      */
     PitchAndRollEstimatorQueue();
-    
+
     ~PitchAndRollEstimatorQueue() {}
 
     /**
@@ -364,11 +361,7 @@ namespace image_util
      * @brief      Computes the statistics on the data in the buffers
      */
     void ComputeStats();
-
-
   };
-
 }
-
 
 #endif  // IMAGE_UTIL_IMAGE_WARP_UTIL_H_

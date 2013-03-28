@@ -138,10 +138,10 @@ namespace transform_util
       else if (doc["tiepoints"].size() == 1)
       {
         // Parse in the X scale
-        doc["pixel_scale"][0] >> transform_.at<float>(0,0);
+        doc["pixel_scale"][0] >> transform_.at<float>(0, 0);
 
         // Parse in the Y scale
-        doc["pixel_scale"][1] >> transform_.at<float>(1,1);
+        doc["pixel_scale"][1] >> transform_.at<float>(1, 1);
 
         transform_.at<float>(0, 2) = coordinates_.at<cv::Vec2d>(0, 1)[0] -
             pixels_.at<cv::Vec2s>(0, 1)[0] * transform_.at<double>(0, 0);
