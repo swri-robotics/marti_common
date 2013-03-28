@@ -30,4 +30,10 @@ rosbuild_add_library(transformer_plugins
   src/wgs84_transformer.cpp)
 target_link_libraries(transformer_plugins ${PROJECT_NAME})
   
+# Tests
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+rosbuild_add_executable(test_local_xy_util test/test_local_xy_util.cpp)
+rosbuild_add_gtest_build_flags(test_local_xy_util)
+target_link_libraries(test_local_xy_util ${PROJECT_NAME})
 
+rosbuild_add_rostest(launch/local_xy_util.test)

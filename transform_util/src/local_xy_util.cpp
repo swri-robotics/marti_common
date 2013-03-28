@@ -159,21 +159,21 @@ namespace transform_util
       std::string local_xy_frame;
       if (!ros::param::get("/local_xy_frame", local_xy_frame))
       {
-        ROS_WARN("[local_xy]: Undefined /local_xy_frame parameter.");
+        ROS_ERROR("[local_xy]: Undefined /local_xy_frame parameter.");
         return local_xy;
       }
 
       std::string local_xy_name;
       if (!ros::param::get("/local_xy_origin", local_xy_name))
       {
-        ROS_WARN("[local_xy]: Undefined /local_xy_origin parameter.");
+        ROS_ERROR("[local_xy]: Undefined /local_xy_origin parameter.");
         return local_xy;
       }
 
       XmlRpc::XmlRpcValue local_xy_origins;
       if (!ros::param::get("/local_xy_origins", local_xy_origins))
       {
-        ROS_WARN("[local_xy]: Undefined /local_xy_origins parameter.");
+        ROS_ERROR("[local_xy]: Undefined /local_xy_origins parameter.");
         return local_xy;
       }
 
