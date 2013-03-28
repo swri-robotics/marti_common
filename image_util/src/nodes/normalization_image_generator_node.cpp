@@ -23,6 +23,9 @@
  *      Author: kkozak
  */
 
+#include <string>
+#include <vector>
+
 // ROS Libraries
 #include <ros/ros.h>
 #include <ros/package.h>
@@ -38,7 +41,7 @@
 
 class NormalizationImageNode
 {
-private:
+ private:
   ros::NodeHandle nh_;
 
   ros::Subscriber image_sub_;
@@ -76,7 +79,6 @@ private:
 
     ROS_ERROR("Planning to write normalization image to: %s",
               filename_.c_str());
-
   }
 
 
@@ -90,13 +92,13 @@ private:
 
   void image_cb(const sensor_msgs::ImageConstPtr& msg)
   {
-    if(image_count_ >= max_num_to_average_)
+    if (image_count_ >= max_num_to_average_)
     {
       ::sleep(1);
       return;
     }
 
-    if(raw_count_++ % num_to_skip_ == 0)
+    if (raw_count_++ % num_to_skip_ == 0)
     {
       image_count_++;
       ROS_ERROR("Got image %d of %d",
@@ -106,10 +108,9 @@ private:
       cv_bridge::CvImagePtr im_ptr = cv_bridge::toCvCopy(msg);
       cv::Mat image(im_ptr->image);
       image_array_.push_back(image);
-      if(image_count_ >= max_num_to_average_)
+      if (image_count_ >= max_num_to_average_)
       {
         generate_and_write_image();
-
       }
     }
   }
@@ -118,13 +119,13 @@ private:
   void generate_and_write_image()
   {
     cv::Mat norm_im = image_util::generate_normalization_image(image_array_);
-    if(!norm_im.empty())
+    if (!norm_im.empty())
     {
       try
       {
         cv::imwrite(filename_, norm_im);
       }
-      catch(std::exception& e)
+      catch (const std::exception& e)
       {
         ROS_ERROR("Failed to save the normalization image: %s",
                   e.what());
@@ -141,9 +142,8 @@ private:
     }
   }
 
-public:
-
-  NormalizationImageNode(const ros::NodeHandle& nh):
+ public:
+  explicit NormalizationImageNode(const ros::NodeHandle& nh):
     nh_(nh),
     num_to_skip_(20),
     max_num_to_average_(100),
@@ -161,7 +161,7 @@ public:
 
   void shut_down()
   {
-    if(!image_written_ && image_array_.size() > 25)
+    if (!image_written_ && image_array_.size() > 25)
     {
       generate_and_write_image();
       fprintf(stderr, "\nNode killed before enough frames received to generate "
@@ -170,7 +170,7 @@ public:
                 image_count_,
                 max_num_to_average_);
     }
-    else if(!image_written_)
+    else if (!image_written_)
     {
       fprintf(stderr, "\nNode killed before enough frames received to generate "
                 "normalized image: Too few frames in the buffer to generate a "
@@ -188,9 +188,9 @@ public:
   }
 };
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "colorize_node");
+  ros::init(argc, argv, "image_normalization_node");
 
   ros::NodeHandle n;
 
@@ -198,9 +198,7 @@ int main (int argc, char **argv)
 
   ros::spin();
 
-
   node.shut_down();
-
 
   return 0;
 }
