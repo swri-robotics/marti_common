@@ -31,5 +31,4 @@ namespace image_util
   bool Intersects(const BoundingBox& box1, const BoundingBox& box2);
 }
 
-
 #endif  // IMAGE_UTIL_GEOMETRY_UTIL_H_

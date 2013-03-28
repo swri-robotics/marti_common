@@ -39,10 +39,10 @@ namespace transform_util
     tf::Transform transform = tf::Transform::getIdentity();
 
     tf::Quaternion reference_rotation = tf::Quaternion::getIdentity();
-    reference_rotation.setRotation(tf::Vector3(0,0,1), reference_yaw);
+    reference_rotation.setRotation(tf::Vector3(0, 0, 1), reference_yaw);
 
     tf::Quaternion rotation = tf::Quaternion::getIdentity();
-    rotation.setRotation(tf::Vector3(0,0,1), yaw);
+    rotation.setRotation(tf::Vector3(0, 0, 1), yaw);
 
     transform.setRotation(reference_rotation.inverse() * rotation);
 
@@ -69,9 +69,9 @@ namespace transform_util
 
   char GetBand(double latitude)
   {
-    //This routine determines the correct UTM letter designator for the given latitude
-    //returns 'Z' if latitude is outside the UTM limits of 84N to 80S
-    //Written by Chuck Gantz- chuck.gantz@globalstar.com
+    // This routine determines the correct UTM letter designator for the given
+    // latitude returns 'Z' if latitude is outside the UTM limits of 84N to 80S
+    // Written by Chuck Gantz- chuck.gantz@globalstar.com
 
     char band;
 
@@ -96,7 +96,8 @@ namespace transform_util
     else if (latitude >= -64) band = 'E';
     else if (latitude >= -72) band = 'D';
     else if (latitude >= -80) band = 'C';
-    else band = 'Z';
+    else
+      band = 'Z';
 
     return band;
   }

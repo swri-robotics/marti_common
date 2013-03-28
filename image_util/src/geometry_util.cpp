@@ -19,6 +19,8 @@
 
 #include <image_util/geometry_util.h>
 
+#include <vector>
+
 #include <QPolygonF>
 #include <QPointF>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -50,8 +52,8 @@ namespace image_util
            box2.contains(n3) ||
            box2.contains(n4);
   }
-  
-  double GetOverlappingArea(const cv::Rect& rect,const cv::Mat& rigid_transform)
+
+  double GetOverlappingArea(const cv::Rect& rect, const cv::Mat& rigid_transform)
   {
     // List of points corresponding to the input rectangle.
     std::vector<cv::Vec2f> points;
@@ -60,7 +62,7 @@ namespace image_util
     std::vector<cv::Vec2f> points_t;
 
     // Create a point for each corner of the input rectangle.
-    points.push_back(cv::Vec2f(0,0));
+    points.push_back(cv::Vec2f(0, 0));
     points.push_back(cv::Vec2f(rect.width, 0));
     points.push_back(cv::Vec2f(rect.width, rect.height));
     points.push_back(cv::Vec2f(0, rect.height));
@@ -93,11 +95,11 @@ namespace image_util
     QPolygonF intersection = polygon.intersected(transformed_polygon);
 
     // If the intersection is empty, then just return 0 area.
-    if (intersection.size() == 0) 
+    if (intersection.size() == 0)
     {
       return 0;
     }
-    
+
     // Build an OpenCV contour to measure the area of the intersection.
     std::vector<cv::Point2f> contour;
     for (int i = 0; i < intersection.size(); i++)
