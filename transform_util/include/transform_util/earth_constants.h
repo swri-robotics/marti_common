@@ -46,7 +46,6 @@ namespace transform_util
    * Earth rotation rate in radians per second.
    */
   static const double _earth_rotation_rate = 7.292115e-5;
-
 }
 
 #endif  // TRANSFORM_UTIL_EARTH_CONSTANTS_H_

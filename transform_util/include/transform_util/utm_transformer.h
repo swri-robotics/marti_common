@@ -83,8 +83,7 @@ namespace transform_util
     TfToUtmTransform(
       const tf::Transform& transform,
       boost::shared_ptr<UtmTransforms> utm_util,
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util
-      );
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 

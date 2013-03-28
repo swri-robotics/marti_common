@@ -20,6 +20,8 @@
 #ifndef IMAGE_UTIL_IMAGE_NORMALIZATION_H_
 #define IMAGE_UTIL_IMAGE_NORMALIZATION_H_
 
+#include <vector>
+
 // ROS Libraries
 #include <ros/ros.h>
 
