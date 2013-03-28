@@ -34,18 +34,17 @@ namespace image_util
     // note that Norm image should be of type CV_32FC1 and scaled between 0 and
     // 1 (but not exactly equal to 0 anywhere)
     cv::Mat tempIm1;
-    SourceImage.convertTo(tempIm1,CV_32FC1,1.0,0.0);
-    cv::divide(tempIm1,NormImage,tempIm1,1.0);
+    SourceImage.convertTo(tempIm1, CV_32FC1, 1.0, 0.0);
+    cv::divide(tempIm1, NormImage, tempIm1, 1.0);
     cv::Mat firstImage;
     cv::Mat secondImage;
-    tempIm1.convertTo(DestImage,CV_8UC1);
+    tempIm1.convertTo(DestImage, CV_8UC1);
   }
-
 
   cv::Mat generate_normalization_image(const std::vector<cv::Mat>& image_list)
   {
     cv::Mat norm_image;
-    if(image_list.empty())
+    if (image_list.empty())
     {
       return cv::Mat();
     }
@@ -54,7 +53,7 @@ namespace image_util
 
     cv::Mat image_sum(cv::Size(rep_im.cols, rep_im.rows), CV_64F);
 
-    for(int32_t i = 0; i < (int)image_list.size(); ++i)
+    for (uint32_t i = 0; i < image_list.size(); i++)
     {
       cv::Mat temp_im;
       image_list[i].convertTo(temp_im, CV_64F, 1.0, 0.0);
@@ -73,13 +72,13 @@ namespace image_util
     cv::Mat temp_norm_image2;
     temp_norm_image.convertTo(temp_norm_image2, CV_32F);
     double max1 = 0;
-    for(int32_t i = 0; i < temp_norm_image2.rows; ++i)
+    for (int32_t i = 0; i < temp_norm_image2.rows; i++)
     {
-      for(int32_t j = 0; j < temp_norm_image2.cols; ++j)
+      for (int32_t j = 0; j < temp_norm_image2.cols; j++)
       {
-        if (temp_norm_image2.at<float>(i,j) > max1)
+        if (temp_norm_image2.at<float>(i, j) > max1)
         {
-          max1 = temp_norm_image2.at<float>(i,j);
+          max1 = temp_norm_image2.at<float>(i, j);
         }
       }
     }
@@ -92,14 +91,10 @@ namespace image_util
 
     cv::GaussianBlur(temp_norm_image3,
                      norm_image,
-                     cv::Size(25,25),
+                     cv::Size(25, 25),
                      5,
                      5);
 
-
-
     return norm_image;
   }
-
-
 }

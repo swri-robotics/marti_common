@@ -345,7 +345,6 @@ namespace image_util
     bool GetMedianPitchAndRoll(double& pitch,
                                double& roll);
 
-
   private:
     boost::circular_buffer<double> pitches_;
     boost::circular_buffer<double> rolls_;
@@ -354,8 +353,6 @@ namespace image_util
     double mean_roll_;
     double median_pitch_;
     double median_roll_;
-
-
 
     /**
      * @brief      Computes the statistics on the data in the buffers
