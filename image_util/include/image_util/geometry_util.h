@@ -26,7 +26,9 @@ namespace image_util
 {
   typedef cv::Rect_<double> BoundingBox;
 
-  double GetOverlappingArea(const cv::Rect& rect, const cv::Mat& rigid_transform);
+  double GetOverlappingArea(
+      const cv::Rect& rect,
+      const cv::Mat& rigid_transform);
 
   bool Intersects(const BoundingBox& box1, const BoundingBox& box2);
 }
