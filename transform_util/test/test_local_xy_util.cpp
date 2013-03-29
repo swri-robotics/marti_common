@@ -118,6 +118,40 @@ TEST(LocalXyUtilTests, Wgs84FromLocalXy)
   EXPECT_FLOAT_EQ(-98.6613942088, lon);
 }
 
+TEST(LocalXyUtilTests, Continuity)
+{
+  // (FOR) - Fortaleza International Airport
+  transform_util::LocalXyWgs84Util local_xy_util(-3.775833, -38.532222);
+
+  double x = 0;
+  double y = 0;
+
+  double last_lon = 0;
+
+  for (int i = 0; i < 1000; i++)
+  {
+    double new_lat;
+    double new_lon;
+    double new_x;
+    double new_y;
+
+    local_xy_util.ToWgs84(x + (double)i * 1.11 / 100.0, y, new_lat, new_lon);
+    local_xy_util.ToLocalXy(new_lat, new_lon, new_x, new_y);
+
+    EXPECT_FLOAT_EQ(x + (double)i * 1.11 / 100.0, new_x);
+    EXPECT_FLOAT_EQ(y, new_y);
+
+    if (i > 0)
+    {
+      // The difference should be 1.11cm which is approximately
+      // 1/10th of 1 microdegree near the equator
+      EXPECT_NEAR(0.0000001, std::fabs(new_lon - last_lon), 0.00000001);
+    }
+
+    last_lon = new_lon;
+  }
+}
+
 TEST(LocalXyUtilTests, TestFrameId)
 {
   transform_util::LocalXyWgs84Util local_xy_util(

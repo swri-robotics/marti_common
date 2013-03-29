@@ -17,6 +17,8 @@
 //
 // *****************************************************************************
 
+#include <cmath>
+
 #include <gtest/gtest.h>
 
 #include <transform_util/utm_util.h>
@@ -107,6 +109,41 @@ TEST(UtmUtilTests, ToWgs84)
   utm_util.ToLatLon(19, 'F', 545237, 3922415, lat, lon);
   EXPECT_FLOAT_EQ(-54.843333, lat);
   EXPECT_FLOAT_EQ(-68.295556, lon);
+}
+
+TEST(UtmUtilTests, Continuity)
+{
+  transform_util::UtmUtil utm_util;
+
+  // (FOR) - Fortaleza International Airport
+  double easting = 551940;
+  double northing = 9582637;
+
+  double last_lon = 0;
+
+  for (int i = 0; i < 1000; i++)
+  {
+    double new_lat;
+    double new_lon;
+    double new_easting;
+    double new_northing;
+    int zone;
+    char band;
+    utm_util.ToLatLon(24, 'M', easting + (double)i * 1.11 / 100.0, northing, new_lat, new_lon);
+    utm_util.ToUtm(new_lat, new_lon, zone, band, new_easting, new_northing);
+
+    EXPECT_FLOAT_EQ(easting + (double)i * 1.11 / 100.0, new_easting);
+    EXPECT_FLOAT_EQ(northing, new_northing);
+
+    if (i > 0)
+    {
+      // The difference should be 1.11cm which is approximately
+      // 1/10th of 1 microdegree near the equator
+      EXPECT_NEAR(0.0000001, std::fabs(new_lon - last_lon), 0.00000001);
+    }
+
+    last_lon = new_lon;
+  }
 }
 
 // Run all the tests that were declared with TEST()
