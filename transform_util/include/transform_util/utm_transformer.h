@@ -39,7 +39,7 @@ namespace transform_util
     public:
       UtmTransformer();
 
-      virtual std::map<std::string, std::string> Supports() const;
+      virtual std::map<std::string, std::vector<std::string> > Supports() const;
 
       virtual bool GetTransform(
         const std::string& target_frame,

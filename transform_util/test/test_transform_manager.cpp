@@ -51,7 +51,6 @@ TEST(TransformManagerTests, WgsToUtm)
   EXPECT_FLOAT_EQ(3266454, utm.y());
 }
 
-/*
 TEST(TransformManagerTests, UtmToWgs84)
 {
   transform_util::TransformManager tf_manager;
@@ -70,7 +69,7 @@ TEST(TransformManagerTests, UtmToWgs84)
 
   EXPECT_FLOAT_EQ(29.526667, wgs84.x());
   EXPECT_FLOAT_EQ(-98.471944, wgs84.y());
-}*/
+}
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)

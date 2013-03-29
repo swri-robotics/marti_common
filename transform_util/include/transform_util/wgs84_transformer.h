@@ -36,7 +36,7 @@ namespace transform_util
   class Wgs84Transformer : public Transformer
   {
     public:
-      virtual std::map<std::string, std::string> Supports() const;
+      virtual std::map<std::string, std::vector<std::string> > Supports() const;
 
       virtual bool GetTransform(
         const std::string& target_frame,

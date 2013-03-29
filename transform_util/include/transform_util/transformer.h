@@ -40,7 +40,7 @@ namespace transform_util
 
       void Initialize(const boost::shared_ptr<tf::TransformListener> tf);
 
-      virtual std::map<std::string, std::string> Supports() const = 0;
+      virtual std::map<std::string, std::vector<std::string> > Supports() const = 0;
 
       virtual bool GetTransform(
         const std::string& target_frame,

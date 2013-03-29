@@ -37,14 +37,14 @@ namespace transform_util
   {
   }
 
-  std::map<std::string, std::string> UtmTransformer::Supports() const
+  std::map<std::string, std::vector<std::string> > UtmTransformer::Supports() const
   {
-    std::map<std::string, std::string> supports;
+    std::map<std::string, std::vector<std::string> >  supports;
 
-    supports[_utm_frame] = _wgs84_frame;
-    supports[_wgs84_frame] = _utm_frame;
-    supports[_utm_frame] = _tf_frame;
-    supports[_tf_frame] = _utm_frame;
+    supports[_utm_frame].push_back(_wgs84_frame);
+    supports[_wgs84_frame].push_back(_utm_frame);
+    supports[_utm_frame].push_back(_tf_frame);
+    supports[_tf_frame].push_back(_utm_frame);
 
     return supports;
   }

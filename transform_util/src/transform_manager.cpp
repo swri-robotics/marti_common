@@ -36,18 +36,21 @@ namespace transform_util
       {
         boost::shared_ptr<Transformer> transformer = loader_.createInstance(class_names[i]);
 
-        std::map<std::string, std::string> supports = transformer->Supports();
+        std::map<std::string, std::vector<std::string> > supports = transformer->Supports();
 
-        std::map<std::string, std::string>::iterator iter;
+        std::map<std::string, std::vector<std::string> >::iterator iter;
         for (iter = supports.begin(); iter != supports.end(); ++iter)
         {
-          if (transformers_[iter->first].count(iter->second) > 0)
+          for (uint32_t j = 0; j < iter->second.size(); j++)
           {
-            ROS_WARN("[transform_manager]: Transformer conflict for %s to %s",
-                iter->first.c_str(), iter->second.c_str());
-          }
+            if (transformers_[iter->first].count(iter->second[j]) > 0)
+            {
+              ROS_WARN("[transform_manager]: Transformer conflict for %s to %s",
+                  iter->first.c_str(), iter->second[j].c_str());
+            }
 
-          transformers_[iter->first][iter->second] = transformer;
+            transformers_[iter->first][iter->second[j]] = transformer;
+          }
         }
       }
       catch (pluginlib::CreateClassException& e)
