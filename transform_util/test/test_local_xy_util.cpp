@@ -178,6 +178,8 @@ TEST(LocalXyUtilTests, TestParseOrigin)
 
   EXPECT_FLOAT_EQ(29.45196669, local_xy_util->ReferenceLatitude());
   EXPECT_FLOAT_EQ(-98.61370577, local_xy_util->ReferenceLongitude());
+  EXPECT_FLOAT_EQ(233.719, local_xy_util->ReferenceAltitude());
+  EXPECT_FLOAT_EQ(0, local_xy_util->ReferenceHeading());
 
   double x, y;
   local_xy_util->ToLocalXy(29.45196669, -98.61370577, x, y);
@@ -190,6 +192,25 @@ TEST(LocalXyUtilTests, TestParseOrigin)
   EXPECT_FLOAT_EQ(-98.61370577, lon);
 
   EXPECT_EQ(std::string("/far_field"), local_xy_util->FrameId());
+}
+
+TEST(LocalXyUtilTests, TestKnownOffset)
+{
+  transform_util::LocalXyWgs84UtilPtr local_xy_util =
+      transform_util::ParseLocalXyOrigin();
+
+  ASSERT_TRUE(local_xy_util);
+
+  double x, y;
+  local_xy_util->ToLocalXy(29.4564773982, -98.6085519577, x, y);
+  EXPECT_FLOAT_EQ(500, x);
+  EXPECT_FLOAT_EQ(500, y);
+
+  double lat, lon;
+
+  local_xy_util->ToWgs84(500, 500, lat, lon);
+  EXPECT_FLOAT_EQ(29.4564773982, lat);
+  EXPECT_FLOAT_EQ(-98.6085519577, lon);
 }
 
 // Run all the tests that were declared with TEST()

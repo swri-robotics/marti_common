@@ -93,6 +93,10 @@ namespace transform_util
 
     double ReferenceLatitude() const;
 
+    double ReferenceHeading() const;
+
+    double ReferenceAltitude() const;
+
     std::string FrameId() const;
 
     /**

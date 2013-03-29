@@ -80,7 +80,7 @@ namespace transform_util
     cos_heading_ = std::cos(reference_heading_);
     sin_heading_ = std::sin(reference_heading_);
 
-    double depth = -reference_altitude;
+    double depth = -reference_altitude_;
 
     double p = _earth_eccentricity * std::sin(reference_latitude_);
     p = 1.0 - p * p;
@@ -101,6 +101,16 @@ namespace transform_util
   double LocalXyWgs84Util::ReferenceLatitude() const
   {
     return reference_latitude_ * math_util::_rad_2_deg;
+  }
+
+  double LocalXyWgs84Util::ReferenceHeading() const
+  {
+    return reference_heading_ * math_util::_rad_2_deg;
+  }
+
+  double LocalXyWgs84Util::ReferenceAltitude() const
+  {
+    return reference_altitude_;
   }
 
   std::string LocalXyWgs84Util::FrameId() const
@@ -228,7 +238,7 @@ namespace transform_util
           double heading = static_cast<double>(local_xy_origins[i]["heading"]);
 
           local_xy = boost::make_shared<LocalXyWgs84Util>(
-              lat, lon, alt, heading, local_xy_frame);
+              lat, lon, heading, alt, local_xy_frame);
         }
       }
     }
