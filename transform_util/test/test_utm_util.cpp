@@ -54,16 +54,24 @@ TEST(UtmUtilTests, ToUtm)
   char band;
 
   // LAX
-  utm_util.ToUtm(33.9425, -118.408056, zone, band,easting, northing);
+  utm_util.ToUtm(33.9425, -118.408056, zone, band, easting, northing);
   EXPECT_EQ(11, zone);
   EXPECT_EQ('S', band);
   EXPECT_NEAR(369877, easting, 0.5);
   EXPECT_FLOAT_EQ(3756673, northing);
 
+  utm_util.ToUtm(33.9425, -118.408056, easting, northing);
+  EXPECT_NEAR(369877, easting, 0.5);
+  EXPECT_FLOAT_EQ(3756673, northing);
+
   // MIA
-  utm_util.ToUtm(25.793333, -80.290556, zone, band,easting, northing);
+  utm_util.ToUtm(25.793333, -80.290556, zone, band, easting, northing);
   EXPECT_EQ(17, zone);
   EXPECT_EQ('R', band);
+  EXPECT_NEAR(571124, easting, 0.5);
+  EXPECT_FLOAT_EQ(2852989, northing);
+
+  utm_util.ToUtm(25.793333, -80.290556, easting, northing);
   EXPECT_NEAR(571124, easting, 0.5);
   EXPECT_FLOAT_EQ(2852989, northing);
 
@@ -73,6 +81,32 @@ TEST(UtmUtilTests, ToUtm)
   EXPECT_EQ('F', band);
   EXPECT_FLOAT_EQ(545237, easting);
   EXPECT_FLOAT_EQ(3922415, northing);
+
+  utm_util.ToUtm(-54.843333, -68.295556, easting, northing);
+  EXPECT_FLOAT_EQ(545237, easting);
+  EXPECT_FLOAT_EQ(3922415, northing);
+}
+
+TEST(UtmUtilTests, ToWgs84)
+{
+  transform_util::UtmUtil utm_util;
+
+  double lat, lon;
+
+  // LAX
+  utm_util.ToLatLon(11, 'S', 369877, 3756673, lat, lon);
+  EXPECT_FLOAT_EQ(33.9425, lat);
+  EXPECT_NEAR(-118.408056, lon, .000005);
+
+  // LAX
+  utm_util.ToLatLon(17, 'R', 571124, 2852989, lat, lon);
+  EXPECT_FLOAT_EQ(25.793333, lat);
+  EXPECT_NEAR(-80.290556, lon, .000005);
+
+  // USH
+  utm_util.ToLatLon(19, 'F', 545237, 3922415, lat, lon);
+  EXPECT_FLOAT_EQ(-54.843333, lat);
+  EXPECT_FLOAT_EQ(-68.295556, lon);
 }
 
 // Run all the tests that were declared with TEST()
