@@ -33,7 +33,7 @@ PLUGINLIB_DECLARE_CLASS(
 namespace transform_util
 {
   UtmTransformer::UtmTransformer() :
-    utm_util_(boost::make_shared<UtmTransforms>())
+    utm_util_(boost::make_shared<UtmUtil>())
   {
   }
 
@@ -132,7 +132,7 @@ namespace transform_util
 
   UtmToTfTransform::UtmToTfTransform(
       const tf::Transform& transform,
-      boost::shared_ptr<UtmTransforms> utm_util,
+      boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util,
       int32_t utm_zone,
       char utm_band) :
@@ -161,7 +161,7 @@ namespace transform_util
 
   TfToUtmTransform::TfToUtmTransform(
       const tf::Transform& transform,
-      boost::shared_ptr<UtmTransforms> utm_util,
+      boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
       transform_(transform),
       utm_util_(utm_util),
@@ -185,7 +185,7 @@ namespace transform_util
   }
 
   UtmToWgs84Transform::UtmToWgs84Transform(
-    boost::shared_ptr<UtmTransforms> utm_util,
+    boost::shared_ptr<UtmUtil> utm_util,
     int32_t utm_zone,
     char utm_band) :
     utm_util_(utm_util),
@@ -203,7 +203,7 @@ namespace transform_util
 
 
   Wgs84ToUtmTransform::Wgs84ToUtmTransform(
-    boost::shared_ptr<UtmTransforms> utm_util) :
+    boost::shared_ptr<UtmUtil> utm_util) :
     utm_util_(utm_util)
   {
   }

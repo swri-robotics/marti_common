@@ -17,47 +17,16 @@
 //
 // *****************************************************************************
 
-#include <transform_util/gps_transforms.h>
+#include <transform_util/utm_util.h>
 
 #include <cmath>
 
 #include <ros/ros.h>
 
 #include <math_util/constants.h>
-#include <transform_util/local_xy_util.h>
 
 namespace transform_util
 {
-  tf::Transform GetRelativeTransform(
-      double latitude,
-      double longitude,
-      double yaw,
-      double reference_latitude,
-      double reference_longitude,
-      double reference_yaw)
-  {
-    tf::Transform transform = tf::Transform::getIdentity();
-
-    tf::Quaternion reference_rotation = tf::Quaternion::getIdentity();
-    reference_rotation.setRotation(tf::Vector3(0, 0, 1), reference_yaw);
-
-    tf::Quaternion rotation = tf::Quaternion::getIdentity();
-    rotation.setRotation(tf::Vector3(0, 0, 1), yaw);
-
-    transform.setRotation(reference_rotation.inverse() * rotation);
-
-    double x, y;
-    LocalXyFromWgs84(
-        latitude, longitude,
-        reference_latitude, reference_longitude,
-        x, y);
-
-    tf::Vector3 origin = tf::Transform(reference_rotation) * tf::Vector3(x, y, 0);
-    transform.setOrigin(origin);
-
-    return transform;
-  }
-
   uint32_t GetZone(double longitude)
   {
     int32_t zone = static_cast<int32_t>((longitude + 180.0) / 6.0) + 1;
@@ -102,7 +71,7 @@ namespace transform_util
     return band;
   }
 
-  UtmTransforms::UtmTransforms()
+  UtmUtil::UtmUtil()
   {
     // Initialize lat long projection.
     lat_lon_ = pj_init_plus("+proj=latlong +ellps=WGS84");
@@ -119,7 +88,7 @@ namespace transform_util
     }
   }
 
-  UtmTransforms::~UtmTransforms()
+  UtmUtil::~UtmUtil()
   {
     pj_free(lat_lon_);
 
@@ -131,7 +100,7 @@ namespace transform_util
     }
   }
 
-  void UtmTransforms::ToUtm(
+  void UtmUtil::ToUtm(
       double latitude,
       double longitude,
       int& zone,
@@ -159,7 +128,7 @@ namespace transform_util
     northing = y;
   }
 
-  void UtmTransforms::ToUtm(
+  void UtmUtil::ToUtm(
       double latitude,
       double longitude,
       double& easting,
@@ -171,7 +140,7 @@ namespace transform_util
     ToUtm(latitude, longitude, zone, band, easting, northing);
   }
 
-  void UtmTransforms::ToLatLon(
+  void UtmUtil::ToLatLon(
       int zone,
       char band,
       double easting,

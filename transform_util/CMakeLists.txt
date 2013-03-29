@@ -17,12 +17,13 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 find_package(OpenCV REQUIRED)
 
 rosbuild_add_library(${PROJECT_NAME} 
-  src/gps_transforms.cpp
   src/georeference.cpp
   src/local_xy_util.cpp
+  src/utm_util.cpp
   src/transform.cpp
   src/transformer.cpp
-  src/transform_manager.cpp)
+  src/transform_manager.cpp
+  src/transform_util.cpp)
 target_link_libraries(${PROJECT_NAME} yaml-cpp proj ${OpenCV_LIBRARIES})
   
 rosbuild_add_library(transformer_plugins
