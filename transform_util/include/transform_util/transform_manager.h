@@ -23,10 +23,12 @@
 #include <map>
 #include <string>
 
+#include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <pluginlib/class_loader.h>
 #include <tf/transform_datatypes.h>
+#include <tf/transform_listener.h>
 
 #include <transform_util/transform.h>
 #include <transform_util/transformer.h>

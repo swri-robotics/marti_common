@@ -23,7 +23,8 @@
 
 namespace transform_util
 {
-  Transform::Transform()
+  Transform::Transform() :
+    transform_(boost::make_shared<IdentityTransform>())
   {
   }
 
