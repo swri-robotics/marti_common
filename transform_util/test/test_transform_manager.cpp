@@ -161,6 +161,39 @@ TEST(TransformManagerTests, Wgs84ToTf2)
   EXPECT_FLOAT_EQ(-500, tf.y());
 }
 
+TEST(TransformManagerTests, TfToWgs84_1)
+{
+  // Local Origin
+  tf::Vector3 tf(0, 0, 0);
+
+  transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      transform_util::_wgs84_frame,
+      "/far_field",
+      transform));
+
+  tf::Vector3 wgs84 = transform * tf;
+
+  EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
+  EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
+}
+
+TEST(TransformManagerTests, TfToWgs84_2)
+{
+  tf::Vector3 tf(0, 0, 0);
+
+  transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      transform_util::_wgs84_frame,
+      "/near_field",
+      transform));
+
+  tf::Vector3 wgs84 = transform * tf;
+
+  EXPECT_FLOAT_EQ(-98.620911, wgs84.x());
+  EXPECT_FLOAT_EQ(29.452934, wgs84.y());
+}
+
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
 {
