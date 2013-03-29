@@ -18,6 +18,7 @@
 // *****************************************************************************
 
 #include <cmath>
+#include <cstdlib>
 
 #include <gtest/gtest.h>
 
@@ -143,6 +144,32 @@ TEST(UtmUtilTests, Continuity)
     }
 
     last_lon = new_lon;
+  }
+}
+
+TEST(UtmUtilTests, Random)
+{
+  transform_util::UtmUtil utm_util;
+
+  std::srand(0);
+
+  for (int i = 0; i < 1000; i++)
+  {
+    double lon = ((double)std::rand() / RAND_MAX) * 360.0 - 180;
+    double lat = ((double)std::rand() / RAND_MAX) * 140.0 - 70;
+
+    char band;
+    int zone;
+    double easting;
+    double northing;
+    utm_util.ToUtm(lat, lon, zone, band, easting, northing);
+
+    double new_lat;
+    double new_lon;
+    utm_util.ToLatLon(zone, band, easting, northing, new_lat, new_lon);
+
+    EXPECT_FLOAT_EQ(lat, new_lat);
+    EXPECT_FLOAT_EQ(lon, new_lon);
   }
 }
 
