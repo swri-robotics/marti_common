@@ -45,6 +45,36 @@ TEST(UtmUtilTests, GetBand)
   EXPECT_EQ('Z', transform_util::GetBand(-80.5));
 }
 
+TEST(UtmUtilTests, ToUtm)
+{
+  transform_util::UtmUtil utm_util;
+
+  double easting, northing;
+  int zone;
+  char band;
+
+  // LAX
+  utm_util.ToUtm(33.9425, -118.408056, zone, band,easting, northing);
+  EXPECT_EQ(11, zone);
+  EXPECT_EQ('S', band);
+  EXPECT_NEAR(369877, easting, 0.5);
+  EXPECT_FLOAT_EQ(3756673, northing);
+
+  // MIA
+  utm_util.ToUtm(25.793333, -80.290556, zone, band,easting, northing);
+  EXPECT_EQ(17, zone);
+  EXPECT_EQ('R', band);
+  EXPECT_NEAR(571124, easting, 0.5);
+  EXPECT_FLOAT_EQ(2852989, northing);
+
+  // USH
+  utm_util.ToUtm(-54.843333, -68.295556, zone, band,easting, northing);
+  EXPECT_EQ(19, zone);
+  EXPECT_EQ('F', band);
+  EXPECT_FLOAT_EQ(545237, easting);
+  EXPECT_FLOAT_EQ(3922415, northing);
+}
+
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
 {
