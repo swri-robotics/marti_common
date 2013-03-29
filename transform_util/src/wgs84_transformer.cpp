@@ -56,22 +56,26 @@ namespace transform_util
     if (target_frame == _wgs84_frame)
     {
       tf::StampedTransform tf_transform;
-      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+      if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame , time, tf_transform))
       {
         return false;
       }
 
       transform = boost::make_shared<TfToWgs84Transform>(tf_transform, local_xy_util_);
+
+      return true;
     }
     else if (source_frame == _wgs84_frame)
     {
       tf::StampedTransform tf_transform;
-      if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
       {
         return false;
       }
 
       transform = boost::make_shared<Wgs84ToTfTransform>(tf_transform, local_xy_util_);
+
+      return true;
     }
 
     return false;

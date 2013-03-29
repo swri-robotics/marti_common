@@ -59,12 +59,29 @@ TEST(TransformManagerTests, Identity2)
   EXPECT_FLOAT_EQ(p1.y(), p2.y());
 }
 
-TEST(TransformManagerTests, TfToTf)
+TEST(TransformManagerTests, TfToTf1)
 {
   // Local Origin
   tf::Vector3 far_field(0, 0, 0);
 
   transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "/near_field",
+      "/far_field",
+      transform));
+
+  tf::Vector3 near_field = transform * far_field;
+
+  EXPECT_FLOAT_EQ(-500, near_field.x());
+  EXPECT_FLOAT_EQ(-500, near_field.y());
+}
+
+TEST(TransformManagerTests, TfToTf2)
+{
+  // Local Origin
+  tf::Vector3 far_field(0, 0, 0);
+
+  tf::StampedTransform transform;
   ASSERT_TRUE(_tf_manager.GetTransform(
       "/near_field",
       "/far_field",
@@ -110,7 +127,6 @@ TEST(TransformManagerTests, UtmToWgs84)
   EXPECT_FLOAT_EQ(-98.471944, wgs84.y());
 }
 
-/*
 TEST(TransformManagerTests, Wgs84ToTf1)
 {
   // Local Origin
@@ -144,7 +160,6 @@ TEST(TransformManagerTests, Wgs84ToTf2)
   EXPECT_FLOAT_EQ(-500, tf.x());
   EXPECT_FLOAT_EQ(-500, tf.y());
 }
-*/
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
