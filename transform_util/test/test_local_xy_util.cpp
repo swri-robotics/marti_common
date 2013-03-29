@@ -198,7 +198,7 @@ int main(int argc, char **argv)
   testing::InitGoogleTest(&argc, argv);
 
   // Initialize the ROS core parameters can be loaded from the launch file
- ros::init(argc, argv, "test_local_xy_util");
+  ros::init(argc, argv, "test_local_xy_util");
 
   return RUN_ALL_TESTS();
 }

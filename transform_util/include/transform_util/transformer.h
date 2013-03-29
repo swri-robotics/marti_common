@@ -37,22 +37,21 @@ namespace transform_util
     public:
       Transformer();
       virtual ~Transformer();
-      
-      void Initialize(const boost::shared_ptr<tf::TransformListener>& tf);
-      
+
+      void Initialize(const boost::shared_ptr<tf::TransformListener> tf);
+
       virtual std::map<std::string, std::string> Supports() const = 0;
-      
+
       virtual bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
         const ros::Time& time,
         Transform& transform) = 0;
-        
+
     protected:
       bool initialized_;
       boost::shared_ptr<tf::TransformListener> tf_listener_;
-      std::map<std::string, std::string> supports_;
-      
+
       virtual bool Initialize();
 
       virtual bool GetTransform(

@@ -30,7 +30,7 @@ rosbuild_add_library(transformer_plugins
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
 target_link_libraries(transformer_plugins ${PROJECT_NAME})
-  
+
 # Tests
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
@@ -42,5 +42,10 @@ rosbuild_add_executable(test_utm_util test/test_utm_util.cpp)
 rosbuild_add_gtest_build_flags(test_utm_util)
 target_link_libraries(test_utm_util ${PROJECT_NAME})
 
+rosbuild_add_executable(test_transform_manager test/test_transform_manager.cpp)
+rosbuild_add_gtest_build_flags(test_transform_manager)
+target_link_libraries(test_transform_manager ${PROJECT_NAME})
+
 rosbuild_add_rostest(launch/local_xy_util.test)
 rosbuild_add_rostest(launch/utm_util.test)
+rosbuild_add_rostest(launch/transform_manager.test)

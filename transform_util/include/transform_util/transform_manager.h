@@ -25,6 +25,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <pluginlib/class_loader.h>
 #include <tf/transform_datatypes.h>
 
 #include <transform_util/transform.h>
@@ -36,6 +37,7 @@ namespace transform_util
   {
   public:
     TransformManager();
+    ~TransformManager();
 
     void Initialize(boost::shared_ptr<tf::TransformListener> tf
         = boost::make_shared<tf::TransformListener>());
@@ -63,6 +65,7 @@ namespace transform_util
         tf::StampedTransform& transform) const;
 
   private:
+    pluginlib::ClassLoader<transform_util::Transformer> loader_;
     boost::shared_ptr<tf::TransformListener> tf_listener_;
     std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > > transformers_;
   };

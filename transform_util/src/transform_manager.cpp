@@ -21,24 +21,20 @@
 
 #include <vector>
 
-#include <pluginlib/class_loader.h>
-
 #include <transform_util/frames.h>
 
 namespace transform_util
 {
-  TransformManager::TransformManager()
+  TransformManager::TransformManager() :
+      loader_("transform_util", "transform_util::Transformer")
   {
-    pluginlib::ClassLoader<transform_util::Transformer> loader(
-        "transform_util", "transform_util::Transformer");
-
-    std::vector<std::string> class_names = loader.getDeclaredClasses();
+    std::vector<std::string> class_names = loader_.getDeclaredClasses();
 
     for (uint32_t i = 0; i < class_names.size(); i++)
     {
       try
       {
-        boost::shared_ptr<Transformer> transformer = loader.createInstance(class_names[i]);
+        boost::shared_ptr<Transformer> transformer = loader_.createInstance(class_names[i]);
 
         std::map<std::string, std::string> supports = transformer->Supports();
 
@@ -56,10 +52,14 @@ namespace transform_util
       }
       catch (pluginlib::CreateClassException& e)
       {
-        ROS_FATAL("[transform_manager]: Failed to load transformer plugin '%s': %s",
+        ROS_ERROR("[transform_manager]: Failed to load transformer plugin '%s': %s",
             class_names[i].c_str(), e.what());
       }
     }
+  }
+
+  TransformManager::~TransformManager()
+  {
   }
 
   void TransformManager::Initialize(boost::shared_ptr<tf::TransformListener> tf)

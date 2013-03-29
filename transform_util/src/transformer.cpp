@@ -32,7 +32,7 @@ namespace transform_util
   }
 
   void Transformer::Initialize(
-      const boost::shared_ptr<tf::TransformListener>& tf)
+      const boost::shared_ptr<tf::TransformListener> tf)
   {
     tf_listener_ = tf;
     initialized_ = Initialize();
