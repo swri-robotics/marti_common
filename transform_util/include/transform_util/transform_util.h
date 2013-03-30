@@ -33,6 +33,12 @@ namespace transform_util
       double reference_latitude,
       double reference_longitude,
       double reference_yaw);
+
+  double GetBearing(
+      double source_latitude,
+      double source_longitude,
+      double destination_latitude,
+      double destination_longitude);
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_
