@@ -22,6 +22,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 
@@ -55,8 +56,7 @@ namespace transform_util
   public:
     TfToWgs84Transform(
       const tf::Transform& transform,
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util
-      );
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
@@ -70,8 +70,7 @@ namespace transform_util
   public:
     Wgs84ToTfTransform(
       const tf::Transform& transform,
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util
-      );
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 

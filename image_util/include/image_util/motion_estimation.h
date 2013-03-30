@@ -241,7 +241,7 @@ namespace image_util
    */
   cv::Mat computeRigid3DTransformation(cv::Mat& points1,
                                        cv::Mat& points2,
-                                       bool temp=false);
+                                       bool temp = false);
 
 
   void transform_points(const cv::Mat& pts_in,
@@ -265,7 +265,7 @@ namespace image_util
   void regularizeTransformationMatrix(LaGenMatDouble &T,
                                       double &conditionNum,
                                       double &rnorm,
-                                      bool scaleOK=false);
+                                      bool scaleOK = false);
 
   /**
    * @brief  Converts a non-orthonormal matrix to the "nearest" orthonormal
@@ -285,7 +285,7 @@ namespace image_util
   void regularizeRotationMatrix(LaGenMatDouble &rot,
                                 double &conditionNum,
                                 double &rnorm,
-                                bool scaleOK=false);
+                                bool scaleOK = false);
 
 
   /**
@@ -345,7 +345,6 @@ namespace image_util
    */
   void keypoint_conversion(const std::vector<cv::KeyPoint>& kp_out,
                            cv::Mat& kp_in);
-
 }
 
 #endif  // IMAGE_UTIL_MOTION_ESTIMATION_H_

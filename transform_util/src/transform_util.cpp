@@ -49,7 +49,8 @@ namespace transform_util
         reference_latitude, reference_longitude,
         x, y);
 
-    tf::Vector3 origin = tf::Transform(reference_rotation) * tf::Vector3(x, y, 0);
+    tf::Vector3 origin =
+        tf::Transform(reference_rotation) * tf::Vector3(x, y, 0);
     transform.setOrigin(origin);
 
     return transform;
@@ -67,7 +68,6 @@ namespace transform_util
     double lat2 = destination_latitude * math_util::_deg_2_rad;
     double lon2 = destination_longitude * math_util::_deg_2_rad;
 
-    double d_lat = lat2 - lat1;
     double d_lon = lon2 - lon1;
 
     double y = std::sin(d_lon) * std::cos(lat2);

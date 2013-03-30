@@ -20,6 +20,8 @@
 #ifndef IMAGE_UTIL_IMAGE_MATCHING_H_
 #define IMAGE_UTIL_IMAGE_MATCHING_H_
 
+#include <vector>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
@@ -47,7 +49,7 @@ namespace image_util
                              cv::Mat& inliers2,
                              double max_distance = 1.0,
                              double confidence = 0.99);
-   
+
   /**
    * @brief      Computes the fundamental matrix for a set of matching points in
    *             two different images.  The method also returns the inlier
