@@ -10,7 +10,7 @@
   <url></url>
 
   <export>
-    <cpp cflags="-I${prefix}/include" />
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lmath_util -Wl,-rpath,${prefix}/lib" />
   </export>
 
 </package>
