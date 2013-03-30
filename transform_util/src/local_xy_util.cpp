@@ -28,6 +28,7 @@
 #include <ros/ros.h>
 
 #include <math_util/constants.h>
+#include <math_util/trig_util.h>
 #include <transform_util/earth_constants.h>
 
 namespace transform_util
@@ -68,14 +69,7 @@ namespace transform_util
     reference_altitude_(reference_altitude),
     frame_id_(frame_id)
   {
-    if (reference_heading_ > math_util::_pi)
-    {
-      reference_heading_ -= math_util::_2pi;
-    }
-    else if (reference_heading_ <= -math_util::_pi)
-    {
-      reference_heading_ += math_util::_2pi;
-    }
+    math_util::WrapRadians(reference_heading_, 0);
 
     cos_heading_ = std::cos(reference_heading_);
     sin_heading_ = std::sin(reference_heading_);

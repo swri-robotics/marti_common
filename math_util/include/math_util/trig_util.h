@@ -30,7 +30,7 @@ namespace math_util
    *
    * @returns An equivalent angle in the desired range.
    */
-  double wrap_radians(double angle, double center);
+  double WrapRadians(double angle, double center);
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_

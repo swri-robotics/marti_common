@@ -23,7 +23,7 @@
 
 namespace math_util
 {
-  double wrap_radians(double angle, double center)
+  double WrapRadians(double angle, double center)
   {
     double wrapped = angle;
     while (wrapped < center && center - wrapped > _pi)

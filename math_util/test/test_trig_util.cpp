@@ -25,20 +25,20 @@
 TEST(TrigUtilTests, WrapRadians)
 {
   // Test values wrapped between [-pi, pi]
-  EXPECT_FLOAT_EQ(0, math_util::wrap_radians(0, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::wrap_radians(math_util::_pi, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::wrap_radians(math_util::_pi * 3.0, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi * -0.5, math_util::wrap_radians(math_util::_pi * 1.5, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi * 0.5, math_util::wrap_radians(math_util::_pi * -1.5, 0));
+  EXPECT_FLOAT_EQ(0, math_util::WrapRadians(0, 0));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi, 0));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi * 3.0, 0));
+  EXPECT_FLOAT_EQ(math_util::_pi * -0.5, math_util::WrapRadians(math_util::_pi * 1.5, 0));
+  EXPECT_FLOAT_EQ(math_util::_pi * 0.5, math_util::WrapRadians(math_util::_pi * -1.5, 0));
 
   // Test values wrapped between [0, 2pi]
-  EXPECT_FLOAT_EQ(0, math_util::wrap_radians(0, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::wrap_radians(math_util::_pi, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::wrap_radians(math_util::_pi * 3.0, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::wrap_radians(-math_util::_pi, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::wrap_radians(math_util::_pi * -3.0, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi * 0.5, math_util::wrap_radians(math_util::_pi * 2.5, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi * 1.5, math_util::wrap_radians(math_util::_pi * 3.5, math_util::_pi));
+  EXPECT_FLOAT_EQ(0, math_util::WrapRadians(0, math_util::_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi, math_util::_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi * 3.0, math_util::_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(-math_util::_pi, math_util::_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi * -3.0, math_util::_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi * 0.5, math_util::WrapRadians(math_util::_pi * 2.5, math_util::_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi * 1.5, math_util::WrapRadians(math_util::_pi * 3.5, math_util::_pi));
 }
 
 // Run all the tests that were declared with TEST()
