@@ -18,3 +18,12 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_library(${PROJECT_NAME} 
   src/trig_util.cpp)
+  
+# Tests
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
+rosbuild_add_executable(test_trig_util test/test_trig_util.cpp)
+rosbuild_add_gtest_build_flags(test_trig_util)
+target_link_libraries(test_trig_util ${PROJECT_NAME})
+
+rosbuild_add_rostest(launch/trig_util.test)
