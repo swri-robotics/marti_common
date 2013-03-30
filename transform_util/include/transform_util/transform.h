@@ -116,19 +116,19 @@ namespace transform_util
   private:
     boost::shared_ptr<TransformImpl> transform_;
   };
-  
+
   class IdentityTransform : public TransformImpl
   {
   public:
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
   };
-  
+
   class TfTransform : public TransformImpl
   {
   public:
-    TfTransform(const tf::Transform& transform);
+    explicit TfTransform(const tf::Transform& transform);
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
-    
+
   protected:
     tf::Transform transform_;
   };

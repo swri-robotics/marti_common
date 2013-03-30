@@ -17,29 +17,29 @@
 //
 // *****************************************************************************
 
-#include <string>
+#include <gtest/gtest.h>
 
-namespace transform_util
+#include <ros/ros.h>
+
+#include <transform_util/transform_util.h>
+
+TEST(TransformUtilTests, GetBearing)
 {
-  /**
-   * Special frame id for data defined in the WGS84 lat/lon coordinate system.
-   */
-  static const std::string _wgs84_frame = "/wgs84";
+  EXPECT_FLOAT_EQ(0, transform_util::GetBearing(30, 50, 35, 50));
+  EXPECT_FLOAT_EQ(180, transform_util::GetBearing(35, 50, 30, 50));
+  EXPECT_FLOAT_EQ(90, transform_util::GetBearing(0, 50, 0, 55));
+  EXPECT_FLOAT_EQ(-90, transform_util::GetBearing(0, 55, 0, 50));
+}
 
-  /**
-   * Special frame id for data defined in the UTM coordinate system.
-   *
-   * The zone is assumed to be the same as the LocalXY origin of the system.
-   * Because of this zone transitions are not supported.
-   */
-  static const std::string _utm_frame = "/utm";
+// TODO(malban): Add unit tests for GetRelativeTransform()
 
-  /**
-   * Special frame id for data defined a LocalXY coordinate system.
-   *
-   * Dependent on the LocalXY origin of the system.
-   */
-  static const std::string _local_xy_frame = "/local_xy";
+// Run all the tests that were declared with TEST()
+int main(int argc, char **argv)
+{
+  testing::InitGoogleTest(&argc, argv);
 
-  static const std::string _tf_frame = "/tf";
+  // Initialize the ROS core parameters can be loaded from the launch file
+  ros::init(argc, argv, "test_transform_util");
+
+  return RUN_ALL_TESTS();
 }
