@@ -46,6 +46,11 @@ rosbuild_add_executable(test_transform_manager test/test_transform_manager.cpp)
 rosbuild_add_gtest_build_flags(test_transform_manager)
 target_link_libraries(test_transform_manager ${PROJECT_NAME})
 
+rosbuild_add_executable(test_georeference test/test_georeference.cpp)
+rosbuild_add_gtest_build_flags(test_georeference)
+target_link_libraries(test_georeference ${PROJECT_NAME})
+
 rosbuild_add_rostest(launch/local_xy_util.test)
 rosbuild_add_rostest(launch/utm_util.test)
 rosbuild_add_rostest(launch/transform_manager.test)
+rosbuild_add_rostest(launch/georeference.test)
