@@ -21,6 +21,7 @@
 
 #include <ros/ros.h>
 
+#include <math_util/constants.h>
 #include <transform_util/transform_util.h>
 
 TEST(TransformUtilTests, GetBearing)
@@ -29,6 +30,27 @@ TEST(TransformUtilTests, GetBearing)
   EXPECT_FLOAT_EQ(180, transform_util::GetBearing(35, 50, 30, 50));
   EXPECT_FLOAT_EQ(90, transform_util::GetBearing(0, 50, 0, 55));
   EXPECT_FLOAT_EQ(-90, transform_util::GetBearing(0, 55, 0, 50));
+}
+
+TEST(TransformUtilTests, SnapToRightAngle)
+{
+  tf::Quaternion identity = tf::Quaternion::getIdentity();
+
+  EXPECT_TRUE(identity == transform_util::SnapToRightAngle(identity));
+
+  tf::Quaternion q1;
+  q1.setRPY(0.0, 0.0, math_util::_half_pi);
+  q1.normalize();
+
+  tf::Quaternion q2;
+  q2.setRPY(0.4, 0.3, 1.6);
+
+  tf::Quaternion q3 = transform_util::SnapToRightAngle(q2);
+
+  EXPECT_FLOAT_EQ(q1.x(), q3.x());
+  EXPECT_FLOAT_EQ(q1.y(), q3.y());
+  EXPECT_FLOAT_EQ(q1.z(), q3.z());
+  EXPECT_FLOAT_EQ(q1.w(), q3.w());
 }
 
 // TODO(malban): Add unit tests for GetRelativeTransform()

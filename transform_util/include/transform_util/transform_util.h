@@ -26,6 +26,12 @@
 
 namespace transform_util
 {
+  class TransformUtil
+  {
+  public:
+    static const tf::Matrix3x3 _right_angle_rotations[];
+  };
+
   tf::Transform GetRelativeTransform(
       double latitude,
       double longitude,
@@ -39,6 +45,8 @@ namespace transform_util
       double source_longitude,
       double destination_latitude,
       double destination_longitude);
+
+  tf::Quaternion SnapToRightAngle(const tf::Quaternion& rotation);
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_

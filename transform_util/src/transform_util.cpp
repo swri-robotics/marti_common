@@ -20,11 +20,39 @@
 #include <transform_util/transform_util.h>
 
 #include <cmath>
+#include <limits>
 
 #include <math_util/constants.h>
+#include <math_util/math_util.h>
 
 namespace transform_util
 {
+  const tf::Matrix3x3 TransformUtil::_right_angle_rotations[] = {
+    tf::Matrix3x3( 1,  0,  0,   0,  1,  0,   0,  0,  1),  // Identity
+    tf::Matrix3x3( 0,  0,  1,   0,  1,  0,  -1,  0,  0),  // 90 Y
+    tf::Matrix3x3(-1,  0,  0,   0,  1,  0,   0,  0, -1),  // 180 Y
+    tf::Matrix3x3( 0,  0, -1,   0,  1,  0,   1,  0,  0),  // 270 Y
+    tf::Matrix3x3( 0, -1,  0,   1,  0,  0,   0,  0,  1),
+    tf::Matrix3x3( 0,  0,  1,   1,  0,  0,   0,  1,  0),
+    tf::Matrix3x3( 0,  1,  0,   1,  0,  0,   0,  0, -1),
+    tf::Matrix3x3( 0,  0, -1,   1,  0,  0,   0, -1,  0),
+    tf::Matrix3x3( 0,  1,  0,  -1,  0,  0,   0,  0,  1),
+    tf::Matrix3x3( 0,  0,  1,  -1,  0,  0,   0, -1,  0),
+    tf::Matrix3x3( 0, -1,  0,  -1,  0,  0,   0,  0, -1),
+    tf::Matrix3x3( 0,  0, -1,  -1,  0,  0,   0,  1,  0),
+    tf::Matrix3x3( 1,  0,  0,   0,  0, -1,   0,  1,  0),
+    tf::Matrix3x3( 0,  1,  0,   0,  0, -1,  -1,  0,  0),
+    tf::Matrix3x3(-1,  0,  0,   0,  0, -1,   0, -1,  0),
+    tf::Matrix3x3( 0, -1,  0,   0,  0, -1,   1,  0,  0),
+    tf::Matrix3x3( 1,  0,  0,   0, -1,  0,   0,  0, -1),
+    tf::Matrix3x3( 0,  0, -1,   0, -1,  0,  -1,  0,  0),
+    tf::Matrix3x3(-1,  0,  0,   0, -1,  0,   0,  0,  1),
+    tf::Matrix3x3( 0,  0,  1,   0, -1,  0,   1,  0,  0),
+    tf::Matrix3x3( 1,  0,  0,   0,  0,  1,   0, -1,  0),
+    tf::Matrix3x3( 0, -1,  0,   0,  0,  1,  -1,  0,  0),
+    tf::Matrix3x3(-1,  0,  0,   0,  0,  1,   0,  1,  0),
+    tf::Matrix3x3( 0,  1,  0,   0,  0,  1,   1,  0,  0)};
+
   tf::Transform GetRelativeTransform(
         double latitude,
         double longitude,
@@ -75,5 +103,33 @@ namespace transform_util
         std::sin(lat1) * std::cos(lat2) * std::cos(d_lon);
 
     return std::atan2(y, x) * math_util::_rad_2_deg;
+  }
+
+  tf::Quaternion SnapToRightAngle(const tf::Quaternion& rotation)
+  {
+    tf::Quaternion normalized = rotation.normalized();
+    tf::Quaternion nearest_quaternion = tf::Quaternion::getIdentity();
+    double nearest_distance = std::numeric_limits<double>::max();
+
+    for (int32_t i = 0 ; i < 24; i++)
+    {
+      tf::Quaternion quaternion;
+      TransformUtil::_right_angle_rotations[i].getRotation(quaternion);
+      quaternion.normalize();
+
+      double distance = std::sqrt(
+        std::pow(quaternion.x() - normalized.x(), 2) +
+        std::pow(quaternion.y() - normalized.y(), 2) +
+        std::pow(quaternion.z() - normalized.z(), 2) +
+        std::pow(quaternion.w() - normalized.w(), 2));
+
+      if (distance < nearest_distance)
+      {
+        nearest_distance = distance;
+        nearest_quaternion = quaternion;
+      }
+    }
+
+    return nearest_quaternion;
   }
 }
