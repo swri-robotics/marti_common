@@ -40,7 +40,7 @@ namespace math_util
    *
    * @returns The rounded value.
    */
-  double ToNearest(double value, int multiple);
+  double ToNearest(double value, double multiple);
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_

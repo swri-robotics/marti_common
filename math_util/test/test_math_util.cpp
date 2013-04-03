@@ -19,6 +19,7 @@
 
 #include <gtest/gtest.h>
 
+#include <math_util/constants.h>
 #include <math_util/math_util.h>
 
 TEST(MathUtilTests, Round)
@@ -53,6 +54,14 @@ TEST(MathUtilTests, ToNearest)
   EXPECT_EQ(0.0, math_util::ToNearest(35.4, 0));
   EXPECT_EQ(0.0, math_util::ToNearest(-35.3, 0));
   EXPECT_EQ(0.0, math_util::ToNearest(-301.4, 0));
+
+  EXPECT_EQ(0, math_util::ToNearest(-0.45, math_util::_half_pi));
+  EXPECT_EQ(0, math_util::ToNearest(0.45, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_half_pi, math_util::ToNearest(1.2, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_half_pi, math_util::ToNearest(1.6, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::ToNearest(2.4, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::ToNearest(math_util::_pi, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_2pi, math_util::ToNearest(6.1, math_util::_half_pi));
 }
 
 // Run all the tests that were declared with TEST()

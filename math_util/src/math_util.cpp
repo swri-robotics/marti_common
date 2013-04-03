@@ -28,7 +28,7 @@ namespace math_util
     return (value > 0.0) ? std::floor(value + 0.5) : std::ceil(value - 0.5);
   }
 
-  double ToNearest(double value, int multiple)
+  double ToNearest(double value, double multiple)
   {
     if (multiple == 0)
     {
