@@ -22,37 +22,13 @@
 #include <cmath>
 #include <limits>
 
+#include <boost/math/special_functions/sign.hpp>
+
 #include <math_util/constants.h>
 #include <math_util/math_util.h>
 
 namespace transform_util
 {
-  const tf::Matrix3x3 TransformUtil::_right_angle_rotations[] = {
-    tf::Matrix3x3( 1,  0,  0,   0,  1,  0,   0,  0,  1),  // Identity
-    tf::Matrix3x3( 0,  0,  1,   0,  1,  0,  -1,  0,  0),  // 90 Y
-    tf::Matrix3x3(-1,  0,  0,   0,  1,  0,   0,  0, -1),  // 180 Y
-    tf::Matrix3x3( 0,  0, -1,   0,  1,  0,   1,  0,  0),  // 270 Y
-    tf::Matrix3x3( 0, -1,  0,   1,  0,  0,   0,  0,  1),
-    tf::Matrix3x3( 0,  0,  1,   1,  0,  0,   0,  1,  0),
-    tf::Matrix3x3( 0,  1,  0,   1,  0,  0,   0,  0, -1),
-    tf::Matrix3x3( 0,  0, -1,   1,  0,  0,   0, -1,  0),
-    tf::Matrix3x3( 0,  1,  0,  -1,  0,  0,   0,  0,  1),
-    tf::Matrix3x3( 0,  0,  1,  -1,  0,  0,   0, -1,  0),
-    tf::Matrix3x3( 0, -1,  0,  -1,  0,  0,   0,  0, -1),
-    tf::Matrix3x3( 0,  0, -1,  -1,  0,  0,   0,  1,  0),
-    tf::Matrix3x3( 1,  0,  0,   0,  0, -1,   0,  1,  0),
-    tf::Matrix3x3( 0,  1,  0,   0,  0, -1,  -1,  0,  0),
-    tf::Matrix3x3(-1,  0,  0,   0,  0, -1,   0, -1,  0),
-    tf::Matrix3x3( 0, -1,  0,   0,  0, -1,   1,  0,  0),
-    tf::Matrix3x3( 1,  0,  0,   0, -1,  0,   0,  0, -1),
-    tf::Matrix3x3( 0,  0, -1,   0, -1,  0,  -1,  0,  0),
-    tf::Matrix3x3(-1,  0,  0,   0, -1,  0,   0,  0,  1),
-    tf::Matrix3x3( 0,  0,  1,   0, -1,  0,   1,  0,  0),
-    tf::Matrix3x3( 1,  0,  0,   0,  0,  1,   0, -1,  0),
-    tf::Matrix3x3( 0, -1,  0,   0,  0,  1,  -1,  0,  0),
-    tf::Matrix3x3(-1,  0,  0,   0,  0,  1,   0,  1,  0),
-    tf::Matrix3x3( 0,  1,  0,   0,  0,  1,   1,  0,  0)};
-
   tf::Transform GetRelativeTransform(
         double latitude,
         double longitude,
@@ -112,29 +88,168 @@ namespace transform_util
       return rotation;
     }
 
-    tf::Quaternion normalized = rotation.normalized();
-    tf::Quaternion nearest_quaternion = tf::Quaternion::getIdentity();
-    double nearest_distance = std::numeric_limits<double>::max();
-
-    for (int32_t i = 0 ; i < 24; i++)
+    // Attempt to snap the orientation matrix in row order.
+    tf::Matrix3x3 matrix(rotation);
+    for (int32_t i = 0; i < 3; i++)
     {
-      tf::Quaternion quaternion;
-      TransformUtil::_right_angle_rotations[i].getRotation(quaternion);
-      quaternion.normalize();
+      tf::Vector3 row = GetPrimaryAxis(matrix.getRow(i));
 
-      double distance = std::sqrt(
-        std::pow(quaternion.x() - normalized.x(), 2) +
-        std::pow(quaternion.y() - normalized.y(), 2) +
-        std::pow(quaternion.z() - normalized.z(), 2) +
-        std::pow(quaternion.w() - normalized.w(), 2));
+      matrix[i][0] = row[0];
+      matrix[i][1] = row[1];
+      matrix[i][2] = row[2];
+    }
 
-      if (distance < nearest_distance)
+    // Verify that the resulting matrix is a valid rotation.
+    if (!IsRotation(matrix))
+    {
+      // If it is not attempt to snap the matrix in column order.
+      matrix = tf::Matrix3x3(rotation);
+      for (int32_t i = 0; i < 3; i++)
       {
-        nearest_distance = distance;
-        nearest_quaternion = quaternion;
+        tf::Vector3 col = GetPrimaryAxis(matrix.getColumn(i));
+
+        matrix[0][i] = col[0];
+        matrix[1][i] = col[1];
+        matrix[2][i] = col[2];
+      }
+
+      if (!IsRotation(matrix))
+      {
+        // If this fails return the identity matrix.
+        return tf::Quaternion::getIdentity();
       }
     }
 
-    return nearest_quaternion;
+    tf::Quaternion snapped_rotation;
+    matrix.getRotation(snapped_rotation);
+
+    return snapped_rotation;
+  }
+
+  tf::Vector3 GetPrimaryAxis(const tf::Vector3& vector)
+  {
+    tf::Vector3 vector_out = vector;
+
+    if (vector.length() > 0)
+    {
+      double max = 0;
+      int index = 0;
+
+      for (int32_t i = 0; i < 3; i++)
+      {
+        if (std::fabs(vector[i]) > max)
+        {
+          max = std::fabs(vector[i]);
+          index = i;
+        }
+      }
+
+      for (int32_t i = 0; i < 3; i++)
+      {
+        if (i == index)
+        {
+          vector_out[i] = 1.0 * boost::math::sign<double>(vector[i]);
+        }
+        else
+        {
+          vector_out[i] = 0;
+        }
+      }
+    }
+
+    return vector_out;
+  }
+
+  bool IsRotation(tf::Matrix3x3 matrix)
+  {
+    // Check that determinant is near 1.
+    if (!math_util::IsNear(matrix.determinant(), 1, 0.00001))
+    {
+      return false;
+    }
+
+    // Check that the each row is a unit vector.
+    for (int32_t i = 0; i < 3; i++)
+    {
+      if (!math_util::IsNear(matrix.getRow(i).length(), 1, 0.00001))
+      {
+        return false;
+      }
+    }
+
+    // Check that the each column is a unit vector.
+    for (int32_t i = 0; i < 3; i++)
+    {
+      if (!math_util::IsNear(matrix.getColumn(i).length(), 1, 0.00001))
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  tf::Matrix3x3 GetUpperLeft (const boost::array<double, 36>& matrix)
+  {
+    tf::Matrix3x3 sub_matrix;
+
+    sub_matrix[0][0] = matrix[0];
+    sub_matrix[0][1] = matrix[1];
+    sub_matrix[0][2] = matrix[2];
+    sub_matrix[1][0] = matrix[6];
+    sub_matrix[1][1] = matrix[7];
+    sub_matrix[1][2] = matrix[8];
+    sub_matrix[2][0] = matrix[12];
+    sub_matrix[2][1] = matrix[13];
+    sub_matrix[2][2] = matrix[14];
+
+    return sub_matrix;
+  }
+
+  tf::Matrix3x3 GetLowerRight (const boost::array<double, 36>& matrix)
+  {
+    tf::Matrix3x3 sub_matrix;
+
+    sub_matrix[0][0] = matrix[21];
+    sub_matrix[0][1] = matrix[22];
+    sub_matrix[0][2] = matrix[23];
+    sub_matrix[1][0] = matrix[27];
+    sub_matrix[1][1] = matrix[28];
+    sub_matrix[1][2] = matrix[29];
+    sub_matrix[2][0] = matrix[33];
+    sub_matrix[2][1] = matrix[34];
+    sub_matrix[2][2] = matrix[35];
+
+    return sub_matrix;
+  }
+
+  void SetUpperLeft (
+      const tf::Matrix3x3& sub_matrix,
+      boost::array<double, 36>& matrix)
+  {
+    matrix[0] = sub_matrix[0][0];
+    matrix[1] = sub_matrix[0][1];
+    matrix[2] = sub_matrix[0][2];
+    matrix[6] = sub_matrix[1][0];
+    matrix[7] = sub_matrix[1][1];
+    matrix[8] = sub_matrix[1][2];
+    matrix[12] = sub_matrix[2][0];
+    matrix[13] = sub_matrix[2][1];
+    matrix[14] = sub_matrix[2][2];
+  }
+
+  void SetLowerRight (
+      const tf::Matrix3x3& sub_matrix,
+      boost::array<double, 36>& matrix)
+  {
+    matrix[21] = sub_matrix[0][0];
+    matrix[22] = sub_matrix[0][1];
+    matrix[23] = sub_matrix[0][2];
+    matrix[27] = sub_matrix[1][0];
+    matrix[28] = sub_matrix[1][1];
+    matrix[29] = sub_matrix[1][2];
+    matrix[33] = sub_matrix[2][0];
+    matrix[34] = sub_matrix[2][1];
+    matrix[35] = sub_matrix[2][2];
   }
 }

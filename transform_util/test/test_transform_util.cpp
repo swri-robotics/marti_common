@@ -17,12 +17,16 @@
 //
 // *****************************************************************************
 
+#include <boost/array.hpp>
+
 #include <gtest/gtest.h>
 
 #include <ros/ros.h>
 
 #include <math_util/constants.h>
 #include <transform_util/transform_util.h>
+
+// TODO(malban): Add unit tests for GetRelativeTransform()
 
 TEST(TransformUtilTests, GetBearing)
 {
@@ -32,7 +36,7 @@ TEST(TransformUtilTests, GetBearing)
   EXPECT_FLOAT_EQ(-90, transform_util::GetBearing(0, 55, 0, 50));
 }
 
-TEST(TransformUtilTests, SnapToRightAngle)
+TEST(TransformUtilTests, SnapToRightAngle1)
 {
   tf::Quaternion identity = tf::Quaternion::getIdentity();
 
@@ -53,7 +57,119 @@ TEST(TransformUtilTests, SnapToRightAngle)
   EXPECT_FLOAT_EQ(q1.w(), q3.w());
 }
 
-// TODO(malban): Add unit tests for GetRelativeTransform()
+
+TEST(TransformUtilTests, SnapToRightAngle2)
+{
+  tf::Quaternion q1;
+  q1.setRPY(0.0, 0.0, math_util::_half_pi);
+  
+  EXPECT_EQ(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q1)));
+  
+  tf::Quaternion q2;
+  q2.setRPY(0.0, 0.0, math_util::_pi);
+  
+  EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q2)));
+  
+  tf::Quaternion q3;
+  q3.setRPY(0.0, 0.0, math_util::_pi + .34);
+  EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q3)));
+  
+  tf::Quaternion q4;
+  q4.setRPY(-0.4, 0.23, math_util::_pi + 0.34);
+  EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q4)));
+}
+
+TEST(TransformUtilTests, TestUpperLeftLowerRight)
+{
+  tf::Matrix3x3 ul(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  tf::Matrix3x3 lr(10, 11, 12, 13, 14, 15, 16, 17, 18);
+
+  boost::array<double, 36> array;
+
+  transform_util::SetUpperLeft(ul, array);
+  transform_util::SetLowerRight(lr, array);
+
+  tf::Matrix3x3 ul2 = transform_util::GetUpperLeft(array);
+  tf::Matrix3x3 lr2 = transform_util::GetLowerRight(array);
+
+  EXPECT_EQ(ul, ul2);
+  EXPECT_EQ(lr, lr2);
+
+  EXPECT_EQ(1, array[0]);
+  EXPECT_EQ(18, array[35]);
+}
+
+TEST(TransformUtilTests, GetPrimaryAxis)
+{
+  tf::Vector3 v1(-1, 0, 0);
+  tf::Vector3 v2(-.7, .3, 0);
+
+  tf::Vector3 v3(0, 1, 0);
+  tf::Vector3 v4(.6, .61, .3);
+
+  tf::Vector3 v5(0, 0, 1);
+  tf::Vector3 v6(-.23, .3, .5);
+
+  tf::Vector3 v7(0, 0, 0);
+
+  EXPECT_EQ(v1, transform_util::GetPrimaryAxis(v1));
+  EXPECT_EQ(v1, transform_util::GetPrimaryAxis(v2));
+
+  EXPECT_EQ(v3, transform_util::GetPrimaryAxis(v3));
+  EXPECT_EQ(v3, transform_util::GetPrimaryAxis(v4));
+
+  EXPECT_EQ(v5, transform_util::GetPrimaryAxis(v5));
+  EXPECT_EQ(v5, transform_util::GetPrimaryAxis(v6));
+
+  EXPECT_EQ(v7, transform_util::GetPrimaryAxis(v7));
+}
+
+TEST(TransformUtilTests, ValidIsRotation)
+{
+  tf::Matrix3x3 valid_rotations[] = {
+  tf::Matrix3x3( 1,  0,  0,   0,  1,  0,   0,  0,  1),
+  tf::Matrix3x3( 0,  0,  1,   0,  1,  0,  -1,  0,  0),
+  tf::Matrix3x3(-1,  0,  0,   0,  1,  0,   0,  0, -1),
+  tf::Matrix3x3( 0,  0, -1,   0,  1,  0,   1,  0,  0),
+  tf::Matrix3x3( 0, -1,  0,   1,  0,  0,   0,  0,  1),
+  tf::Matrix3x3( 0,  0,  1,   1,  0,  0,   0,  1,  0),
+  tf::Matrix3x3( 0,  1,  0,   1,  0,  0,   0,  0, -1),
+  tf::Matrix3x3( 0,  0, -1,   1,  0,  0,   0, -1,  0),
+  tf::Matrix3x3( 0,  1,  0,  -1,  0,  0,   0,  0,  1),
+  tf::Matrix3x3( 0,  0,  1,  -1,  0,  0,   0, -1,  0),
+  tf::Matrix3x3( 0, -1,  0,  -1,  0,  0,   0,  0, -1),
+  tf::Matrix3x3( 0,  0, -1,  -1,  0,  0,   0,  1,  0),
+  tf::Matrix3x3( 1,  0,  0,   0,  0, -1,   0,  1,  0),
+  tf::Matrix3x3( 0,  1,  0,   0,  0, -1,  -1,  0,  0),
+  tf::Matrix3x3(-1,  0,  0,   0,  0, -1,   0, -1,  0),
+  tf::Matrix3x3( 0, -1,  0,   0,  0, -1,   1,  0,  0),
+  tf::Matrix3x3( 1,  0,  0,   0, -1,  0,   0,  0, -1),
+  tf::Matrix3x3( 0,  0, -1,   0, -1,  0,  -1,  0,  0),
+  tf::Matrix3x3(-1,  0,  0,   0, -1,  0,   0,  0,  1),
+  tf::Matrix3x3( 0,  0,  1,   0, -1,  0,   1,  0,  0),
+  tf::Matrix3x3( 1,  0,  0,   0,  0,  1,   0, -1,  0),
+  tf::Matrix3x3( 0, -1,  0,   0,  0,  1,  -1,  0,  0),
+  tf::Matrix3x3(-1,  0,  0,   0,  0,  1,   0,  1,  0),
+  tf::Matrix3x3( 0,  1,  0,   0,  0,  1,   1,  0,  0)};
+
+  for (int i = 0; i < 24; i++)
+  {
+    EXPECT_TRUE(transform_util::IsRotation(valid_rotations[i]));
+  }
+}
+
+TEST(TransformUtilTests, InvalidIsRotation)
+{
+  tf::Matrix3x3 invalid_rotations[] = {
+  tf::Matrix3x3( 2,  0,  0,   0,  1,  0,   0,  0,  1),
+  tf::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
+  tf::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
+
+  for (int i = 0; i < 24; i++)
+  {
+    EXPECT_FALSE(transform_util::IsRotation(invalid_rotations[i]));
+  }
+}
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
