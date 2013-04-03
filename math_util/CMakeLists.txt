@@ -16,7 +16,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-rosbuild_add_library(${PROJECT_NAME} 
+rosbuild_add_library(${PROJECT_NAME}
+  src/math_util.cpp
   src/trig_util.cpp)
   
 # Tests
@@ -26,4 +27,9 @@ rosbuild_add_executable(test_trig_util test/test_trig_util.cpp)
 rosbuild_add_gtest_build_flags(test_trig_util)
 target_link_libraries(test_trig_util ${PROJECT_NAME})
 
+rosbuild_add_executable(test_math_util test/test_math_util.cpp)
+rosbuild_add_gtest_build_flags(test_math_util)
+target_link_libraries(test_math_util ${PROJECT_NAME})
+
 rosbuild_add_rostest(launch/trig_util.test)
+rosbuild_add_rostest(launch/math_util.test)
