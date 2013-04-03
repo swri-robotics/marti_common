@@ -47,6 +47,12 @@ TEST(MathUtilTests, ToNearest)
   EXPECT_EQ(0.0, math_util::ToNearest(35.4, 90));
   EXPECT_EQ(0.0, math_util::ToNearest(-35.3, 90));
   EXPECT_EQ(-270.0, math_util::ToNearest(-301.4, 90));
+
+  EXPECT_EQ(0.0, math_util::ToNearest(85.4, 0));
+  EXPECT_EQ(0.0, math_util::ToNearest(301.4, 0));
+  EXPECT_EQ(0.0, math_util::ToNearest(35.4, 0));
+  EXPECT_EQ(0.0, math_util::ToNearest(-35.3, 0));
+  EXPECT_EQ(0.0, math_util::ToNearest(-301.4, 0));
 }
 
 // Run all the tests that were declared with TEST()
