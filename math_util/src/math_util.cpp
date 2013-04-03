@@ -37,4 +37,9 @@ namespace math_util
 
     return Round(value / multiple) * multiple;
   }
+
+  bool IsNear(double v1, double v2, double epsilon)
+  {
+    return std::fabs(v1 - v2) <= epsilon;
+  }
 }

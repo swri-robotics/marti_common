@@ -64,6 +64,16 @@ TEST(MathUtilTests, ToNearest)
   EXPECT_FLOAT_EQ(math_util::_2pi, math_util::ToNearest(6.1, math_util::_half_pi));
 }
 
+TEST(MathUtilTests, IsNear)
+{
+   EXPECT_TRUE(math_util::IsNear(1, 1, 0));
+   EXPECT_TRUE(math_util::IsNear(3535.353, 3535.353, 0));
+   EXPECT_TRUE(math_util::IsNear(10.1, 10, 0.1));
+   EXPECT_TRUE(math_util::IsNear(10, 10.1, 0.1));
+   EXPECT_TRUE(math_util::IsNear(-10.1, -10, 0.1));
+   EXPECT_TRUE(math_util::IsNear(-10, -10.1, 0.1));
+}
+
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
 {

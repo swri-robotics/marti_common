@@ -41,6 +41,17 @@ namespace math_util
    * @returns The rounded value.
    */
   double ToNearest(double value, double multiple);
+
+  /**
+   * Check if v1 is within +/- epsilon of v2
+   *
+   * @param[in]  v1       The first value.
+   * @param[in]  v2       The second value.
+   * @param[in]  epsilon  The tolerance.
+   *
+   * @returns True if v1 is near v2.
+   */
+  bool IsNear(double v1, double v2, double epsilon);
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_
