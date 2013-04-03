@@ -107,6 +107,11 @@ namespace transform_util
 
   tf::Quaternion SnapToRightAngle(const tf::Quaternion& rotation)
   {
+    if (rotation == tf::Quaternion::getIdentity())
+    {
+      return rotation;
+    }
+
     tf::Quaternion normalized = rotation.normalized();
     tf::Quaternion nearest_quaternion = tf::Quaternion::getIdentity();
     double nearest_distance = std::numeric_limits<double>::max();
