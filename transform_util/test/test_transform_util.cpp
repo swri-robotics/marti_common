@@ -17,6 +17,8 @@
 //
 // *****************************************************************************
 
+#include <cstdlib>
+
 #include <boost/array.hpp>
 
 #include <gtest/gtest.h>
@@ -24,6 +26,7 @@
 #include <ros/ros.h>
 
 #include <math_util/constants.h>
+#include <math_util/math_util.h>
 #include <transform_util/transform_util.h>
 
 // TODO(malban): Add unit tests for GetRelativeTransform()
@@ -62,21 +65,47 @@ TEST(TransformUtilTests, SnapToRightAngle2)
 {
   tf::Quaternion q1;
   q1.setRPY(0.0, 0.0, math_util::_half_pi);
-  
+
   EXPECT_EQ(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q1)));
-  
+
   tf::Quaternion q2;
   q2.setRPY(0.0, 0.0, math_util::_pi);
-  
+
   EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q2)));
-  
+
   tf::Quaternion q3;
   q3.setRPY(0.0, 0.0, math_util::_pi + .34);
   EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q3)));
-  
+
   tf::Quaternion q4;
   q4.setRPY(-0.4, 0.23, math_util::_pi + 0.34);
   EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q4)));
+}
+
+TEST(TransformUtilTests, SnapToRightAngleRandom)
+{
+  std::srand(0);
+
+  for (int32_t i = 0; i < 1000; i++)
+  {
+    double y = math_util::Round(((double)std::rand() / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
+    double p = math_util::Round(((double)std::rand() / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
+    double r = math_util::Round(((double)std::rand() / RAND_MAX) * 2.0 - 1.0) * math_util::_half_pi;
+
+    tf::Quaternion q1;
+    q1.setRPY(r, p, y);
+
+    double dy = ((double)std::rand() / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+    double dp = ((double)std::rand() / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+    double dr = ((double)std::rand() / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+
+    tf::Quaternion q2;
+    q2.setRPY(r + dr, p + dp, y + dy);
+
+
+    EXPECT_NEAR(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q1)), 0.00000003);
+    EXPECT_NEAR(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q2)), 0.00000003);
+  }
 }
 
 TEST(TransformUtilTests, TestUpperLeftLowerRight)
