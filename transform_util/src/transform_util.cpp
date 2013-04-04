@@ -20,7 +20,9 @@
 #include <transform_util/transform_util.h>
 
 #include <cmath>
+#include <algorithm>
 #include <limits>
+#include <vector>
 
 #include <boost/math/special_functions/sign.hpp>
 
@@ -29,6 +31,13 @@
 
 namespace transform_util
 {
+  bool compare_rows(
+      const std::pair<int32_t, double>& i,
+      const std::pair<int32_t, double>& j)
+  {
+    return i.second > j.second;
+  }
+
   tf::Transform GetRelativeTransform(
         double latitude,
         double longitude,
@@ -88,36 +97,50 @@ namespace transform_util
       return rotation;
     }
 
-    // Attempt to snap the orientation matrix in row order.
     tf::Matrix3x3 matrix(rotation);
+
+    // First determine the order to process the rows in.  Rows with the largest
+    // absolute max values will be ordered first.
+    std::vector<std::pair<int32_t, double> > process_order(3);
     for (int32_t i = 0; i < 3; i++)
     {
-      tf::Vector3 row = GetPrimaryAxis(matrix.getRow(i));
+      process_order[i].first = i;
 
-      matrix[i][0] = row[0];
-      matrix[i][1] = row[1];
-      matrix[i][2] = row[2];
+      tf::Vector3 row = matrix.getRow(i).absolute();
+      process_order[i].second = row[row.maxAxis()];
+    }
+    std::sort(process_order.begin(), process_order.end(), compare_rows);
+
+    // Update the rotation matrix by operating on each row in the determined
+    // order.  Each row will be aligned to its primary axis such that a single
+    // element in each row will be either 1 or -1 and the rest will be 0.
+    for (int32_t i = 0; i < 3; i++)
+    {
+      int32_t row_num = process_order[i].first;
+      tf::Vector3 row = GetPrimaryAxis(matrix.getRow(row_num));
+
+      for (int32_t j = 0; j < 3; j++)
+      {
+        matrix[row_num][j] = row[j];
+
+        if (row[j] != 0)
+        {
+          for (int32_t k = 0; k < 3; k++)
+          {
+            if (k != row_num)
+            {
+              matrix[k][j] = 0;
+            }
+          }
+        }
+      }
     }
 
     // Verify that the resulting matrix is a valid rotation.
     if (!IsRotation(matrix))
     {
-      // If it is not attempt to snap the matrix in column order.
-      matrix = tf::Matrix3x3(rotation);
-      for (int32_t i = 0; i < 3; i++)
-      {
-        tf::Vector3 col = GetPrimaryAxis(matrix.getColumn(i));
-
-        matrix[0][i] = col[0];
-        matrix[1][i] = col[1];
-        matrix[2][i] = col[2];
-      }
-
-      if (!IsRotation(matrix))
-      {
-        // If this fails return the identity matrix.
-        return tf::Quaternion::getIdentity();
-      }
+       // If this fails return the identity matrix.
+       return tf::Quaternion::getIdentity();
     }
 
     tf::Quaternion snapped_rotation;

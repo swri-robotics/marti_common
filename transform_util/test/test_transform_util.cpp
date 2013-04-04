@@ -108,6 +108,46 @@ TEST(TransformUtilTests, SnapToRightAngleRandom)
   }
 }
 
+TEST(TransformUtilTests, SnapToRightAngleDegenerate1)
+{
+  double y = math_util::_half_pi;
+  double p = math_util::_half_pi;
+  double r = 0.0;
+
+  double dy = -0.390704844938401241183356660258141346275806427001953125;
+  double dp = 0.2254961365127778616379572440564516000449657440185546875;
+  double dr = 0.38988573881896215755915591216762550175189971923828125;
+
+  tf::Quaternion q1;
+  q1.setRPY(r, p, y);
+
+  tf::Quaternion q2;
+  q2.setRPY(r + dr, p + dp, y + dy);
+
+  EXPECT_NEAR(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q1)), 0.00000003);
+  EXPECT_NEAR(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q2)), 0.00000003);
+}
+
+TEST(TransformUtilTests, SnapToRightAngleDegenerate2)
+{
+  double y = -math_util::_pi;
+  double p = -math_util::_half_pi;
+  double r = 0.0;
+
+  double dy = -0.382504303669122636133437254102318547666072845458984375;
+  double dp = 0.363762144414233323796992181087261997163295745849609375;
+  double dr = -0.38101948131676321995797707131714560091495513916015625;
+
+  tf::Quaternion q1;
+  q1.setRPY(r, p, y);
+
+  tf::Quaternion q2;
+  q2.setRPY(r + dr, p + dp, y + dy);
+
+  EXPECT_NEAR(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q1)), 0.00000003);
+  EXPECT_NEAR(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q2)), 0.00000003);
+}
+
 TEST(TransformUtilTests, TestUpperLeftLowerRight)
 {
   tf::Matrix3x3 ul(1, 2, 3, 4, 5, 6, 7, 8, 9);
