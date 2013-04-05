@@ -33,6 +33,10 @@ rosbuild_add_executable(normalization_image_generator_node src/nodes/normalizati
 target_link_libraries(normalization_image_generator_node ${PROJECT_NAME})
 
 # TESTS
+rosbuild_add_executable(test_geometry_util test/test_geometry_util.cpp)
+rosbuild_add_gtest_build_flags(test_geometry_util)
+target_link_libraries(test_geometry_util ${PROJECT_NAME})
+
 rosbuild_add_executable(image_warp_tests test/image_warp_tests.cpp)
 rosbuild_add_gtest_build_flags(image_warp_tests)
 target_link_libraries(image_warp_tests ${PROJECT_NAME})
@@ -42,5 +46,7 @@ rosbuild_add_executable(image_normalization_tests test/image_normalization_tests
 rosbuild_add_gtest_build_flags(image_normalization_tests)
 target_link_libraries(image_normalization_tests ${PROJECT_NAME})
 rosbuild_link_boost(image_normalization_tests filesystem system)
+
+rosbuild_add_rostest(launch/geometry_util.test)
 
 #rosbuild_add_rostest(launch/image_util.test)
