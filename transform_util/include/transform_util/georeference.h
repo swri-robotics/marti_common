@@ -2,10 +2,10 @@
 //
 // Copyright (C) 2011 All Right Reserved, Southwest Research Institute® (SwRI®)
 //
-// Contract No.  10-R8248
+// Contract No.  10-58058A
 // Contractor    Southwest Research Institute® (SwRI®)
 // Address       6220 Culebra Road, San Antonio, Texas 78228-0510
-// Contact       Kris Kozak <kkozak@swri.org> (210) 522-3854
+// Contact       Steve Dellenback <sdellenback@swri.org> (210) 522-3914
 //
 // This code was developed as part of an internal research project fully funded
 // by Southwest Research Institute®.
