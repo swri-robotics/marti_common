@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 
+#include <opencv2/core/core.hpp>
+
 #include <image_util/geometry_util.h>
 
 TEST(ImageUtilTests, Intersects)
@@ -53,6 +55,56 @@ TEST(ImageUtilTests, Intersects)
   EXPECT_FALSE(image_util::Intersects(b5, b2));
   EXPECT_FALSE(image_util::Intersects(b5, b3));
   EXPECT_TRUE(image_util::Intersects(b5, b4));
+}
+
+TEST(ImageUtilTests, GetOverlappingArea1)
+{
+  cv::Rect rect(-5, -5, 10, 10);
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat identity(2, 3, CV_32FC1);
+  identity.at<float>(0,0) = 1;
+  identity.at<float>(0,1) = 0;
+  identity.at<float>(0,2) = 0;
+  identity.at<float>(1,0) = 0;
+  identity.at<float>(1,1) = 1;
+  identity.at<float>(1,2) = 0;
+
+  EXPECT_FLOAT_EQ(100, image_util::GetOverlappingArea(rect, identity));
+  EXPECT_FLOAT_EQ(200, image_util::GetOverlappingArea(rect2, identity));
+
+  cv::Mat shift_15_x(2, 3, CV_32FC1);
+  shift_15_x.at<float>(0,0) = 1;
+  shift_15_x.at<float>(0,1) = 0;
+  shift_15_x.at<float>(0,2) = 15;
+  shift_15_x.at<float>(1,0) = 0;
+  shift_15_x.at<float>(1,1) = 1;
+  shift_15_x.at<float>(1,2) = 0;
+
+  EXPECT_FLOAT_EQ(0, image_util::GetOverlappingArea(rect, shift_15_x));
+  EXPECT_FLOAT_EQ(50, image_util::GetOverlappingArea(rect2, shift_15_x));
+
+  cv::Mat shift_5_x(2, 3, CV_32FC1);
+  shift_5_x.at<float>(0,0) = 1;
+  shift_5_x.at<float>(0,1) = 0;
+  shift_5_x.at<float>(0,2) = 5;
+  shift_5_x.at<float>(1,0) = 0;
+  shift_5_x.at<float>(1,1) = 1;
+  shift_5_x.at<float>(1,2) = 0;
+
+  EXPECT_FLOAT_EQ(50, image_util::GetOverlappingArea(rect, shift_5_x));
+  EXPECT_FLOAT_EQ(150, image_util::GetOverlappingArea(rect2, shift_5_x));
+
+  cv::Mat shift_5_xy(2, 3, CV_32FC1);
+  shift_5_xy.at<float>(0,0) = 1;
+  shift_5_xy.at<float>(0,1) = 0;
+  shift_5_xy.at<float>(0,2) = 5;
+  shift_5_xy.at<float>(1,0) = 0;
+  shift_5_xy.at<float>(1,1) = 1;
+  shift_5_xy.at<float>(1,2) = 5;
+
+  EXPECT_FLOAT_EQ(25, image_util::GetOverlappingArea(rect, shift_5_xy));
+  EXPECT_FLOAT_EQ(75, image_util::GetOverlappingArea(rect2, shift_5_xy));
 }
 
 // Run all the tests that were declared with TEST()
