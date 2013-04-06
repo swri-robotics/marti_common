@@ -62,10 +62,10 @@ namespace image_util
     std::vector<cv::Vec2f> points_t;
 
     // Create a point for each corner of the input rectangle.
-    points.push_back(cv::Vec2f(0, 0));
-    points.push_back(cv::Vec2f(rect.width, 0));
-    points.push_back(cv::Vec2f(rect.width, rect.height));
-    points.push_back(cv::Vec2f(0, rect.height));
+    points.push_back(cv::Vec2f(rect.x, rect.y));
+    points.push_back(cv::Vec2f(rect.x + rect.width, rect.y));
+    points.push_back(cv::Vec2f(rect.x + rect.width, rect.y + rect.height));
+    points.push_back(cv::Vec2f(rect.x, rect.y + rect.height));
 
     // Transform the input points to the transformed points using the rigid
     // transform.

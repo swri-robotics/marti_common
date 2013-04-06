@@ -17,10 +17,13 @@
 //
 // *****************************************************************************
 
+#include <cmath>
+
 #include <gtest/gtest.h>
 
 #include <opencv2/core/core.hpp>
 
+#include <math_util/constants.h>
 #include <image_util/geometry_util.h>
 
 TEST(ImageUtilTests, Intersects)
@@ -105,6 +108,45 @@ TEST(ImageUtilTests, GetOverlappingArea1)
 
   EXPECT_FLOAT_EQ(25, image_util::GetOverlappingArea(rect, shift_5_xy));
   EXPECT_FLOAT_EQ(75, image_util::GetOverlappingArea(rect2, shift_5_xy));
+}
+
+TEST(ImageUtilTests, GetOverlappingArea2)
+{
+  cv::Rect rect(-5, -5, 10, 10);
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat rotate90(2, 3, CV_32FC1);
+  rotate90.at<float>(0,0) = 0;
+  rotate90.at<float>(0,1) = 1;
+  rotate90.at<float>(0,2) = 0;
+  rotate90.at<float>(1,0) = -1;
+  rotate90.at<float>(1,1) = 0;
+  rotate90.at<float>(1,2) = 0;
+
+  EXPECT_FLOAT_EQ(100, image_util::GetOverlappingArea(rect, rotate90));
+  EXPECT_FLOAT_EQ(100, image_util::GetOverlappingArea(rect2, rotate90));
+
+  cv::Mat rotate180(2, 3, CV_32FC1);
+  rotate180.at<float>(0,0) = -1;
+  rotate180.at<float>(0,1) = 0;
+  rotate180.at<float>(0,2) = 0;
+  rotate180.at<float>(1,0) = 0;
+  rotate180.at<float>(1,1) = -1;
+  rotate180.at<float>(1,2) = 0;
+
+  EXPECT_FLOAT_EQ(100, image_util::GetOverlappingArea(rect, rotate180));
+  EXPECT_FLOAT_EQ(200, image_util::GetOverlappingArea(rect2, rotate180));
+
+  cv::Mat rotate45(2, 3, CV_32FC1);
+  rotate45.at<float>(0,0) = std::cos(math_util::_half_pi * 0.5);
+  rotate45.at<float>(0,1) = std::sin(math_util::_half_pi * 0.5);
+  rotate45.at<float>(0,2) = 0;
+  rotate45.at<float>(1,0) = -std::sin(math_util::_half_pi * 0.5);
+  rotate45.at<float>(1,1) = std::cos(math_util::_half_pi * 0.5);
+  rotate45.at<float>(1,2) = 0;
+
+  EXPECT_FLOAT_EQ(82.842712, image_util::GetOverlappingArea(rect, rotate45));
+  EXPECT_FLOAT_EQ(136.3961, image_util::GetOverlappingArea(rect2, rotate45));
 }
 
 // Run all the tests that were declared with TEST()
