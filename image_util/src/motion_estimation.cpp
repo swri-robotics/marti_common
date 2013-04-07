@@ -29,10 +29,9 @@
 
 namespace image_util
 {
-  cv::Mat ComputeRigid2DTransformation(
+  cv::Mat LeastSqauresRigid2DTransform(
     const cv::Mat& inliers1,
-    const cv::Mat& inliers2,
-    bool allow_scaling)
+    const cv::Mat& inliers2)
   {
     cv::Mat T;
 
@@ -68,7 +67,7 @@ namespace image_util
     LaLinearSolve(A, X, B);
     double cn;
     double rnorm;
-    regularizeTransformationMatrix(X, cn, rnorm, allow_scaling);
+    RegularizeTransform(X, cn, rnorm);
     T.create(2, 3, CV_32FC1);
 
     for (uint32_t i = 0; i < 2; i++)
@@ -167,7 +166,7 @@ namespace image_util
     return transform;
   }
 
-  void PrintMat1(const LaGenMatDouble &A)
+  void PrintMatrix(const LaGenMatDouble &A)
   {
     int i, j;
     for (i = 0; i < A.rows(); i++)
@@ -179,7 +178,7 @@ namespace image_util
     fprintf(stderr, "\n");
   }
 
-  void extractMotionParametersFromFundamentalMatrix(
+  void ExtractMotionParameters(
       const cv::Mat& Fin,
       const cv::Mat& Intrinsics,
       cv::Mat& R1,
@@ -271,7 +270,7 @@ namespace image_util
     S = LaGenMatDouble::from_diag(Stemp);
 
     ROS_ERROR("Singular Values Matrix");
-    PrintMat1(S);
+    PrintMatrix(S);
 
     LaGenMatDouble W = LaGenMatDouble::zeros(3, 3);
     W(0, 1) = -1;
@@ -339,20 +338,19 @@ namespace image_util
 
 
     ROS_ERROR("Translation Matrix");
-    PrintMat1(Ttemp2);
+    PrintMatrix(Ttemp2);
     ROS_ERROR("Rotation Matrix");
-    PrintMat1(Rtemp2);
+    PrintMatrix(Rtemp2);
     ROS_ERROR("Rotation Matrix 2 = ");
-    PrintMat1(Rtemp4);
+    PrintMatrix(Rtemp4);
   }
 
-  cv::Mat computeRigid2DTransformation(
+  cv::Mat ComputeRigid2DTransform(
       const cv::Mat& points1,
       const cv::Mat& points2,
       cv::Mat& inliers1,
       cv::Mat& inliers2,
-      std::vector<uint32_t> &good_points,
-      bool temp)
+      std::vector<uint32_t> &good_points)
   {
     cv::Mat T;
     // Here we are trying to compute the transformation matrix T, where T most
@@ -454,7 +452,7 @@ namespace image_util
       std::vector<uint32_t> p1;
 
       // Generate a random set of indices
-      rand_perm_set(NumPoints, NumberOfPointsToSample, p1);
+      RandPermSet(NumPoints, NumberOfPointsToSample, p1);
 
       // Fill the matrices used to solve for the Sample Transformation Matrix, X
       for (uint32_t j = 0; j < p1.size(); j++)
@@ -482,7 +480,7 @@ namespace image_util
 
       double cn;  // condition number
       double rnorm;
-      regularizeTransformationMatrix(X, cn, rnorm, temp);
+      RegularizeTransform(X, cn, rnorm);
 
       // Check to see whether the rotation matrix is close to valid
       // TODO(kkozak): Parameterize this
@@ -557,7 +555,7 @@ namespace image_util
         }
       }
 
-      T = ComputeRigid2DTransformation(inliers1, inliers2, temp);
+      T = LeastSqauresRigid2DTransform(inliers1, inliers2);
     }
     else
     {
@@ -568,7 +566,7 @@ namespace image_util
     return T;
   }
 
-  cv::Mat computeLooseRigid2DAffine(
+  cv::Mat ComputeLooseAffine2DTransform(
       const cv::Mat& points1,
       const cv::Mat& points2,
       cv::Mat& inliers1,
@@ -577,7 +575,6 @@ namespace image_util
       double& rms_error)
   {
     cv::Mat Affine;
-    bool temp = false;
     std::vector<uint32_t> good_points;
     // Here we are trying to compute the affine transformation matrix Affine,
     // where A most closely satisfies the relationship
@@ -679,7 +676,7 @@ namespace image_util
       std::vector<uint32_t> p1;
 
       // Generate a random set of indices
-      rand_perm_set(NumPoints, NumberOfPointsToSample, p1);
+      RandPermSet(NumPoints, NumberOfPointsToSample, p1);
 
       // Fill the matrices used to solve for the Sample Transformation Matrix, X
       for (uint32_t j = 0; j < p1.size(); j++)
@@ -708,7 +705,7 @@ namespace image_util
 
       double cn;  // condition number
       double rnorm;
-      regularizeTransformationMatrix(X, cn, rnorm, temp);
+      RegularizeTransform(X, cn, rnorm);
 
       // Check to see whether the rotation matrix is close to valid
       // TODO(kkozak): Parameterize this
@@ -815,7 +812,7 @@ namespace image_util
       double cn1;
       double rnorm1;
 
-      regularizeTransformationMatrix(X_short_temp, cn1, rnorm1, temp);
+      RegularizeTransform(X_short_temp, cn1, rnorm1);
 
       Blas_Mat_Mat_Mult(A1, X_short_temp, tempA, false, false, 1.0, -1.0);
 
@@ -852,7 +849,7 @@ namespace image_util
         }
       }
 
-      regularizeTransformationMatrix(X, cn, rnorm, temp);
+      RegularizeTransform(X, cn, rnorm);
       T_rigid.release();
       T_rigid.create(2, 3, CV_32FC1);
 
@@ -872,10 +869,7 @@ namespace image_util
     return Affine;
   }
 
-  cv::Mat computeRigid3DTransformation(
-      cv::Mat& points1,
-      cv::Mat& points2,
-      bool temp)
+  cv::Mat ComputeRigid3DTransform(cv::Mat& points1, cv::Mat& points2)
   {
     cv::Mat T;
     // Here we are trying to compute the transformation matrix T, where T most
@@ -970,7 +964,7 @@ namespace image_util
       std::vector<uint32_t> p1;
 
       // Generate a random set of indices
-      rand_perm_set(NumPoints, NumberOfPointsToSample, p1);
+      RandPermSet(NumPoints, NumberOfPointsToSample, p1);
 
       // Fill the matrices used to solve for the Sample Transformation Matrix, X
       for (uint32_t j = 0; j < p1.size(); j++)
@@ -990,7 +984,7 @@ namespace image_util
 
       double cn;
       double rnorm;
-      regularizeTransformationMatrix(X, cn, rnorm);
+      RegularizeTransform(X, cn, rnorm);
 
       // Check to see whether the rotation matrix is close to valid
       // TODO(kkozak): Parameterize this
@@ -1056,7 +1050,7 @@ namespace image_util
       LaLinearSolve(A1, X, B1);
       double cn;
       double rnorm;
-      regularizeTransformationMatrix(X, cn, rnorm);
+      RegularizeTransform(X, cn, rnorm);
 
       T.create(3, 4, CV_32FC1);
       for (uint32_t i = 0; i < 3; i++)
@@ -1071,15 +1065,15 @@ namespace image_util
     return T;
   }
 
-  void regularizeTransformationMatrix(LaGenMatDouble &T,
-                                      double &conditionNum,
-                                      double &rnorm,
-                                      bool scaleOK)
+  void RegularizeTransform(
+      LaGenMatDouble &T,
+      double &conditionNum,
+      double &rnorm)
   {
     // Note that T here is really T' without the extra column ==> [R';p];
     LaGenMatDouble rot(T.cols(), T.cols());
-    getR(T, rot);
-    regularizeRotationMatrix(rot, conditionNum, rnorm, scaleOK);
+    GetR(T, rot);
+    RegularizeRotation(rot, conditionNum, rnorm);
     for (int i = 0; i < T.cols(); i++)
     {
       for (int j = 0; j < T.cols(); j++)
@@ -1089,7 +1083,7 @@ namespace image_util
     }
   }
 
-  void getR(const LaGenMatDouble& T, LaGenMatDouble& R)
+  void GetR(const LaGenMatDouble& T, LaGenMatDouble& R)
   {
     // Note that T here is really T' without the extra column ==> [R';p];
     for (int i = 0; i < T.cols(); i++)
@@ -1101,10 +1095,10 @@ namespace image_util
     }
   }
 
-  void regularizeRotationMatrix(LaGenMatDouble &rot,
-                                double &conditionNum,
-                                double &rnorm,
-                                bool scaleOK)
+  void RegularizeRotation(
+      LaGenMatDouble &rot,
+      double &conditionNum,
+      double &rnorm)
   {
     uint32_t N = rot.cols();
     LaVectorDouble Sigma(N);
@@ -1122,16 +1116,9 @@ namespace image_util
     {
       diagonal += Sigma(i);
     }
-    if (scaleOK)
-    {
-      // set diagonal to average singular value
-      diagonal = diagonal/N;
-    }
-    else
-    {
-      // set diagonal to 1
-      diagonal = 1.0;
-    }
+
+    // set diagonal to 1
+    diagonal = 1.0;
 
     // compute the diagonal matrix
     LaGenMatDouble S(N, N);
@@ -1158,9 +1145,10 @@ namespace image_util
     rnorm = Blas_NormF(RtR - S * S);
   }
 
-  void rand_perm_set(uint32_t max_num,
-                     uint32_t total_samples,
-                     std::vector<uint32_t>& indices)
+  void RandPermSet(
+      uint32_t max_num,
+      uint32_t total_samples,
+      std::vector<uint32_t>& indices)
   {
     indices.clear();
 
@@ -1190,53 +1178,5 @@ namespace image_util
       }
     }
     return;
-  }
-
-  LaGenMatDouble transpose(const LaGenMatDouble& mat)
-  {
-    LaGenMatDouble trans_mat = LaGenMatDouble::zeros(mat.cols(), mat.rows());
-    for (int i = 0; i < mat.rows(); ++i)
-    {
-      for (int j = 0; j < mat.cols(); ++j)
-      {
-        trans_mat(j, i) = mat(i, j);
-      }
-    }
-
-    return trans_mat;
-  }
-
-  void keypoint_conversion(const cv::Mat& kp_in,
-                           std::vector<cv::KeyPoint>& kp_out,
-                           double x_offset,
-                           double y_offset)
-  {
-    // TODO(kkozak): Check matrix dimensions and type
-    kp_out.clear();
-    kp_out.reserve(static_cast<std::size_t>(kp_in.rows));
-    for (int32_t i = 0; i < static_cast<int32_t>(kp_in.rows); ++i)
-    {
-      cv::KeyPoint pt;
-      pt.pt.x = kp_in.at<cv::Vec2f>(0, i)[0] + x_offset;
-      pt.pt.y = kp_in.at<cv::Vec2f>(0, i)[1] + y_offset;
-      kp_out.push_back(pt);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // keypoint_conversion()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  void keypoint_conversion(const std::vector<cv::KeyPoint>& kp_in,
-                           cv::Mat& kp_out)
-  {
-    kp_out.release();
-    kp_out.create(cv::Size(1, (int)kp_in.size()), CV_32FC2);
-    for (int32_t i = 0; i < (int)kp_in.size(); ++i)
-    {
-      kp_out.at<cv::Vec2f>(0, i)[0] = kp_in[i].pt.x;
-      kp_out.at<cv::Vec2f>(0, i)[1] = kp_in[i].pt.y;
-    }
   }
 }

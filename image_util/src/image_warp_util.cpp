@@ -440,12 +440,8 @@ namespace image_util
     cv::Mat inliers1;
     cv::Mat inliers2;
     double rms_error;
-    T_affine =  computeLooseRigid2DAffine(fund_inliers1,
-                                          fund_inliers2,
-                                          inliers1,
-                                          inliers2,
-                                          T_rigid,
-                                          rms_error);
+    T_affine =  ComputeLooseAffine2DTransform(
+        fund_inliers1, fund_inliers2, inliers1, inliers2, T_rigid, rms_error);
 
     if (T_affine.empty())
     {
@@ -468,12 +464,8 @@ namespace image_util
   {
     cv::Mat inliers1;
     cv::Mat inliers2;
-    T_affine =  computeLooseRigid2DAffine(pts1,
-                                          pts2,
-                                          inliers1,
-                                          inliers2,
-                                          T_rigid,
-                                          rms_error);
+    T_affine = ComputeLooseAffine2DTransform(
+        pts1, pts2, inliers1, inliers2, T_rigid, rms_error);
 
     if (T_affine.empty())
     {

@@ -38,10 +38,9 @@
 
 namespace image_util
 {
-  cv::Mat ComputeRigid2DTransformation(
+  cv::Mat LeastSqauresRigid2DTransform(
     const cv::Mat& inliers1,
-    const cv::Mat& inliers2,
-    bool allow_scaling = false);
+    const cv::Mat& inliers2);
 
   bool ValidPointsForTransform(
     const cv::Mat& points1,
@@ -59,7 +58,7 @@ namespace image_util
    *
    * @param[in]  A  The matrix to print
    */
-  void PrintMat1(const LaGenMatDouble &A);
+  void PrintMatrix(const LaGenMatDouble &A);
 
   /**
    * @brief This function extracts the Rotation and Translation (up to a scale
@@ -82,11 +81,12 @@ namespace image_util
    *                            accurate in direction, but not in magnitude)
    *
    */
-  void extractMotionParametersFromFundamentalMatrix(const cv::Mat& Fin,
-                                                    const cv::Mat& Intrinsics,
-                                                    cv::Mat& R1,
-                                                    cv::Mat& R2,
-                                                    cv::Mat& T);
+  void ExtractMotionParameters(
+      const cv::Mat& Fin,
+      const cv::Mat& Intrinsics,
+      cv::Mat& R1,
+      cv::Mat& R2,
+      cv::Mat& T);
 
   /**
    * @brief Computes the rigid planar transformation given the points passed in
@@ -109,17 +109,16 @@ namespace image_util
    *                      transform.
    * @param[in]  good_points     This is just to maintain similarity to the
    *                             estimateRigidTransform from openCV.
-   * @param[in]  temp
    *
    * @retval  Returns the transformation matrix, which will be empty if no valid
    *          transformation was found
    */
-  cv::Mat computeRigid2DTransformation(const cv::Mat& points1,
-                                        const cv::Mat& points2,
-                                        cv::Mat& inliers1,
-                                        cv::Mat& inliers2,
-                                        std::vector<uint32_t> &good_points,
-                                        bool temp = false);
+  cv::Mat ComputeRigid2DTransform(
+      const cv::Mat& points1,
+      const cv::Mat& points2,
+      cv::Mat& inliers1,
+      cv::Mat& inliers2,
+      std::vector<uint32_t> &good_points);
 
   /**
    * @brief Computes the rigid planar transformation given the points passed in
@@ -141,19 +140,15 @@ namespace image_util
    * @retval  Returns the transformation matrix, which will be empty if no valid
    *          transformation was found
    */
-  inline  cv::Mat computeRigid2DTransformation(const cv::Mat& points1,
-                                               const cv::Mat& points2,
-                                               bool temp = false)
+  inline cv::Mat ComputeRigid2DTransform(
+      const cv::Mat& points1,
+      const cv::Mat& points2)
   {
       cv::Mat inliers1;
       cv::Mat inliers2;
       std::vector<uint32_t> good_points;
-      return(computeRigid2DTransformation(points1,
-                                            points2,
-                                            inliers1,
-                                            inliers2,
-                                            good_points,
-                                            temp));
+      return ComputeRigid2DTransform(
+          points1, points2, inliers1, inliers2, good_points);
   }
 
 
@@ -178,18 +173,15 @@ namespace image_util
    * @retval  Returns the transformation matrix, which will be empty if no valid
    *          transformation was found
    */
-  inline  cv::Mat computeRigid2DTransformation(const cv::Mat& points1,
-                                               const cv::Mat& points2,
-                                               cv::Mat& inliers1,
-                                               cv::Mat& inliers2)
+  inline cv::Mat ComputeRigid2DTransform(
+      const cv::Mat& points1,
+      const cv::Mat& points2,
+      cv::Mat& inliers1,
+      cv::Mat& inliers2)
   {
       std::vector<uint32_t> good_points;
-      return(computeRigid2DTransformation(points1,
-                                            points2,
-                                            inliers1,
-                                            inliers2,
-                                            good_points,
-                                            false));
+      return ComputeRigid2DTransform(
+          points1, points2, inliers1, inliers2, good_points);
   }
 
   /**
@@ -205,12 +197,13 @@ namespace image_util
    *
    * @return
    */
-  cv::Mat computeLooseRigid2DAffine(const cv::Mat& points1,
-                                    const cv::Mat& points2,
-                                    cv::Mat& inliers1,
-                                    cv::Mat& inliers2,
-                                    cv::Mat& T_rigid,
-                                    double& rms_error);
+  cv::Mat ComputeLooseAffine2DTransform(
+      const cv::Mat& points1,
+      const cv::Mat& points2,
+      cv::Mat& inliers1,
+      cv::Mat& inliers2,
+      cv::Mat& T_rigid,
+      double& rms_error);
 
 
   /**
@@ -233,18 +226,8 @@ namespace image_util
    *                      and the third channel corresponding to the z values
    *
    * @param[in]  good_points points within bound of the transform computed
-   *
-   * @retval  Returns the transformation matrix, which will be empty if no valid
-   *          transformation was found
    */
-  cv::Mat computeRigid3DTransformation(cv::Mat& points1,
-                                       cv::Mat& points2,
-                                       bool temp = false);
-
-
-  void transform_points(const cv::Mat& pts_in,
-                        cv::Mat& pts_out,
-                        const cv::Mat& Transform);
+  cv::Mat ComputeRigid3DTransform(cv::Mat& points1, cv::Mat& points2);
 
   /**
    * @brief  Converts the rotation matrix portion of a non-rigid transform
@@ -257,13 +240,11 @@ namespace image_util
    *                               rot matrix
    * @param[out]     rnorm         Returns ||RtR - StS|| where S is diagonal of
    *                               the singular value matrix
-   * @param[out]     scaleOK       If set, allows scale changes, Rot = USVt
-   *                               where S is diagonal with equal entries
    */
-  void regularizeTransformationMatrix(LaGenMatDouble &T,
-                                      double &conditionNum,
-                                      double &rnorm,
-                                      bool scaleOK = false);
+  void RegularizeTransform(
+      LaGenMatDouble &T,
+      double &conditionNum,
+      double &rnorm);
 
   /**
    * @brief  Converts a non-orthonormal matrix to the "nearest" orthonormal
@@ -277,14 +258,11 @@ namespace image_util
    *                               rot matrix
    * @param[out]     rnorm         Returns ||RtR - StS|| where S is diagonal of
    *                               the singular value matrix
-   * @param[out]     scaleOK       If set, allows scale changes, Rot = USVt
-   *                               where S is diagonal with equal entries
    */
-  void regularizeRotationMatrix(LaGenMatDouble &rot,
-                                double &conditionNum,
-                                double &rnorm,
-                                bool scaleOK = false);
-
+  void RegularizeRotation(
+      LaGenMatDouble &rot,
+      double &conditionNum,
+      double &rnorm);
 
   /**
    * @brief  Generates a set of non-repeating indices from set of ordered
@@ -299,9 +277,10 @@ namespace image_util
    * @param[in]   total_samples         Total number of samples to draw
    * @param[out]  indices               A vector of indices
    */
-  void rand_perm_set(uint32_t max_num,
-                     uint32_t total_samples,
-                     std::vector<uint32_t>& indices);
+  void RandPermSet(
+      uint32_t max_num,
+      uint32_t total_samples,
+      std::vector<uint32_t>& indices);
 
   /**
    * @brief  Extracts the rotation matrix from a transformation matrix
@@ -309,40 +288,7 @@ namespace image_util
    * @param[in]  T  Transformation matrix
    * @param[out] R  Rotation matrix
    */
-  void getR(const LaGenMatDouble& T,
-            LaGenMatDouble& R);
-
-  /**
-   * @brief      Returns the transpose of a matrix
-   *
-   * @param[in]  mat    The matrix to transpose
-   *
-   * @retval     Returns the transpose of the matrix
-   */
-  LaGenMatDouble transpose(const LaGenMatDouble& mat);
-
-
-  /**
-   * @brief      Converts keypoints in the form used for rigid transformations
-   *             to a vector of cv::KeyPoints
-   *
-   * @param[in]  kp_in    The input keypoints
-   * @param[out] kp_out   The output keyponts
-   */
-  void keypoint_conversion(const cv::Mat& kp_in,
-                           std::vector<cv::KeyPoint>& kp_out,
-                           double x_offset = 0.0,
-                           double y_offset = 0.0);
-
-  /**
-   * @brief      Converts keypoints from a vector of cv::KeyPoints to the form
-   *             used for rigid transformations
-   *
-   * @param[in]  kp_out   The input keyponts
-   * @param[out] kp_in    The output keypoints
-   */
-  void keypoint_conversion(const std::vector<cv::KeyPoint>& kp_out,
-                           cv::Mat& kp_in);
+  void GetR(const LaGenMatDouble& T, LaGenMatDouble& R);
 }
 
 #endif  // IMAGE_UTIL_MOTION_ESTIMATION_H_
