@@ -346,7 +346,7 @@ namespace image_util
     PrintMat1(Rtemp4);
   }
 
-  cv::Mat computeRigid2DTransformation2(
+  cv::Mat computeRigid2DTransformation(
       const cv::Mat& points1,
       const cv::Mat& points2,
       cv::Mat& inliers1,

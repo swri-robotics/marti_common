@@ -114,7 +114,7 @@ namespace image_util
    * @retval  Returns the transformation matrix, which will be empty if no valid
    *          transformation was found
    */
-  cv::Mat computeRigid2DTransformation2(const cv::Mat& points1,
+  cv::Mat computeRigid2DTransformation(const cv::Mat& points1,
                                         const cv::Mat& points2,
                                         cv::Mat& inliers1,
                                         cv::Mat& inliers2,
@@ -148,7 +148,7 @@ namespace image_util
       cv::Mat inliers1;
       cv::Mat inliers2;
       std::vector<uint32_t> good_points;
-      return(computeRigid2DTransformation2(points1,
+      return(computeRigid2DTransformation(points1,
                                             points2,
                                             inliers1,
                                             inliers2,
@@ -174,7 +174,6 @@ namespace image_util
    *                      and the second channel corresponding to the y values
    * @param[out] inliers1
    * @param[out] inliers2
-   * @param[in]  unknow
    *
    * @retval  Returns the transformation matrix, which will be empty if no valid
    *          transformation was found
@@ -182,11 +181,10 @@ namespace image_util
   inline  cv::Mat computeRigid2DTransformation(const cv::Mat& points1,
                                                const cv::Mat& points2,
                                                cv::Mat& inliers1,
-                                               cv::Mat& inliers2,
-                                               int unknow)
+                                               cv::Mat& inliers2)
   {
       std::vector<uint32_t> good_points;
-      return(computeRigid2DTransformation2(points1,
+      return(computeRigid2DTransformation(points1,
                                             points2,
                                             inliers1,
                                             inliers2,
