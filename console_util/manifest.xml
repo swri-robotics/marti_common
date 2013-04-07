@@ -1,0 +1,20 @@
+<package>
+  <description brief="console_util">
+
+     console_util
+
+  </description>
+  <author>Marc Alban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+
+  <depend package="roscpp"/> 
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lconsole_util -Wl,-rpath,${prefix}/lib" />
+  </export>
+
+</package>
+
+
