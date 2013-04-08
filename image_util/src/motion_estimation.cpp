@@ -880,14 +880,16 @@ namespace image_util
     // First build the input vectors
     if (points1.cols != points2.cols || points1.cols  < points1.rows)
     {
-      ROS_ERROR("Input to computeRigid2DTransformation incorrect.  Be sure that"
+      ROS_ERROR("Input to computeRigid3DTransform incorrect.  Be sure that"
                 " the points are interlaced in a single row for each array.");
+      return T;
     }
     if ((points1.type() != CV_32FC2 && points1.type() != CV_32FC3)
         || (points2.type() != CV_32FC2 && points2.type() != CV_32FC3))
     {
       ROS_ERROR("Input Mat type must be either CV_32FC2 (for 2D) or CV_32FC3 "
                 "(for 3D)");
+      return T;
     }
 
     uint32_t NumPoints = points1.cols;
@@ -953,8 +955,8 @@ namespace image_util
 
     // Setup the matrices for doing the sample estimates of the Transformation
     // Matrix
-    LaGenMatDouble A(NumberOfPointsToSample, 3);
-    LaGenMatDouble B(NumberOfPointsToSample, 2);
+    LaGenMatDouble A(NumberOfPointsToSample, 4);
+    LaGenMatDouble B(NumberOfPointsToSample, 3);
     LaGenMatDouble X(4, 3);
     LaGenMatDouble X_good(4, 3);
 
