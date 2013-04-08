@@ -53,6 +53,38 @@ namespace image_util
   cv::Mat WarpImage(const cv::Mat& image, double roll, double pitch);
 
   /**
+   * Warps a matrix of points (in the same form as the inliers)
+   *
+   * @param[in]  pitch      The pitch used to warp the point
+   * @param[in]  roll       The roll used to warp the point
+   * @param[in]  image_size The size of the (unwarped) image
+   * @param[in]  pts_in     The points to warp
+   * @param[out] pts_out    The warped points
+   */
+  void WarpPoints(
+      double pitch,
+      double roll,
+      const cv::Size& image_size,
+      const cv::Mat& pts_in,
+      cv::Mat& pts_out);
+
+  /**
+   * Warps a matrix of points (in the same form as the inliers)
+   *
+   * @param[in]  pitch      The pitch used to warp the point
+   * @param[in]  roll       The roll used to warp the point
+   * @param[in]  image_size The size of the (unwarped) image
+   * @param[in]  pts_in     The points to warp
+   * @param[out] pts_out    The warped points
+   */
+  void WarpPoints(
+      double pitch,
+      double roll,
+      const cv::Size& image_size,
+      const std::vector<cv::KeyPoint>& pts_in,
+      std::vector<cv::KeyPoint>& pts_out);
+
+  /**
    * @brief      Gets the rotation matrix associated with the specified pitch
    *             and roll values
    *
@@ -125,36 +157,6 @@ namespace image_util
                                         double& nominal_pitch,
                                         double& nominal_roll);
 
-
-    /**
-     * @brief      Warps a matrix of points (in the same form as the inliers)
-     *
-     * @param[in]  pitch      The pitch used to warp the point
-     * @param[in]  roll       The roll used to warp the point
-     * @param[in]  image_size The size of the (unwarped) image
-     * @param[in]  pts_in     The points to warp
-     * @param[out] pts_out    The warped points
-     */
-    static void WarpPoints(double pitch,
-                           double roll,
-                           const cv::Size& image_size,
-                           const cv::Mat& pts_in,
-                           cv::Mat& pts_out);
-
-    /**
-     * @brief      Warps a matrix of points (in the same form as the inliers)
-     *
-     * @param[in]  pitch      The pitch used to warp the point
-     * @param[in]  roll       The roll used to warp the point
-     * @param[in]  image_size The size of the (unwarped) image
-     * @param[in]  pts_in     The points to warp
-     * @param[out] pts_out    The warped points
-     */
-    static void WarpPoints(double pitch,
-                           double roll,
-                           const cv::Size& image_size,
-                           const std::vector<cv::KeyPoint>& pts_in,
-                           std::vector<cv::KeyPoint>& pts_out);
   private:
     cv::Mat im1_;
     cv::Mat im2_;

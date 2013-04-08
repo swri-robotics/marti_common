@@ -52,6 +52,62 @@ namespace image_util
     return warped;
   }
 
+  void WarpPoints(
+      double pitch,
+      double roll,
+      const cv::Size& image_size,
+      const cv::Mat& pts_in,
+      cv::Mat& pts_out)
+  {
+    // Initialize the camera matrix:
+    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    K.at<float>(0, 2) = static_cast<double>(image_size.width - 1) / 2.0;
+    K.at<float>(1, 2) = static_cast<double>(image_size.height - 1) / 2.0;
+
+    cv::detail::PlaneWarper warper;
+
+    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
+    cv::Mat R = GetR(pitch, roll);
+    pts_in.copyTo(pts_out);
+    for (int32_t i = 0; i < pts_in.rows; ++i)
+    {
+      cv::Point2f pt;
+      pt.x = pts_in.at<cv::Vec2f>(i, 0).val[0];
+      pt.y = pts_in.at<cv::Vec2f>(i, 0).val[1];
+      cv::Point2f pt2 = warper.warpPoint(pt, K, R, T);
+      pts_out.at<cv::Vec2f>(i, 0).val[0] = pt2.x + K.at<float>(0, 2);
+      pts_out.at<cv::Vec2f>(i, 0).val[1] = pt2.y + K.at<float>(1, 2);
+    }
+  }
+
+  void WarpPoints(
+      double pitch,
+      double roll,
+      const cv::Size& image_size,
+      const std::vector<cv::KeyPoint>& pts_in,
+      std::vector<cv::KeyPoint>& pts_out)
+  {
+    pts_out = pts_in;
+
+    // Initialize the camera matrix:
+    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
+    K.at<float>(0, 2) = static_cast<double>(image_size.width - 1) / 2.0;
+    K.at<float>(1, 2) = static_cast<double>(image_size.height - 1) / 2.0;
+
+    cv::detail::PlaneWarper warper;
+
+    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
+    cv::Mat R = GetR(pitch, roll);
+
+    for (int32_t i = 0; i < (int)pts_in.size(); ++i)
+    {
+      pts_out[i].pt = warper.warpPoint(pts_in[i].pt, K, R, T);
+      pts_out[i].pt.x += K.at<float>(0, 2);
+      pts_out[i].pt.y += K.at<float>(1, 2);
+    }
+  }
+
+
   cv::Mat GetR(double pitch, double roll, double yaw)
   {
     cv::Mat R1 = cv::Mat::eye(cv::Size(3, 3), CV_32F);
@@ -228,14 +284,14 @@ namespace image_util
           double cur_roll = min_roll + dr * roll_idx;
 
           cv::Mat kp1_warped;
-          WarpPoints(cur_pitch,
+          image_util::WarpPoints(cur_pitch,
                      cur_roll,
                      image_size,
                      points1,
                      kp1_warped);
 
           cv::Mat kp2_warped;
-          WarpPoints(cur_pitch,
+          image_util::WarpPoints(cur_pitch,
                      cur_roll,
                      image_size,
                      points2,
@@ -282,60 +338,6 @@ namespace image_util
                      nominal_roll);
 
     return T_rigid_final;
-  }
-
-  void PitchAndRollEstimator::WarpPoints(double pitch,
-                                         double roll,
-                                         const cv::Size& image_size,
-                                         const cv::Mat& pts_in,
-                                         cv::Mat& pts_out)
-  {
-    // Initialize the camera matrix:
-    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
-    K.at<float>(0, 2) = static_cast<double>(image_size.width - 1) / 2.0;
-    K.at<float>(1, 2) = static_cast<double>(image_size.height - 1) / 2.0;
-
-    cv::detail::PlaneWarper warper;
-
-    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
-    cv::Mat R = GetR(pitch, roll);
-    pts_in.copyTo(pts_out);
-    for (int32_t i = 0; i < pts_in.rows; ++i)
-    {
-      cv::Point2f pt;
-      pt.x = pts_in.at<cv::Vec2f>(i, 0).val[0];
-      pt.y = pts_in.at<cv::Vec2f>(i, 0).val[1];
-      cv::Point2f pt2 = warper.warpPoint(pt, K, R, T);
-      pts_out.at<cv::Vec2f>(i, 0).val[0] = pt2.x + K.at<float>(0, 2);
-      pts_out.at<cv::Vec2f>(i, 0).val[1] = pt2.y + K.at<float>(1, 2);
-    }
-  }
-
-  void PitchAndRollEstimator::WarpPoints(
-      double pitch,
-      double roll,
-      const cv::Size& image_size,
-      const std::vector<cv::KeyPoint>& pts_in,
-      std::vector<cv::KeyPoint>& pts_out)
-  {
-    pts_out = pts_in;
-
-    // Initialize the camera matrix:
-    cv::Mat K = cv::Mat::eye(cv::Size(3, 3), CV_32F);
-    K.at<float>(0, 2) = static_cast<double>(image_size.width - 1) / 2.0;
-    K.at<float>(1, 2) = static_cast<double>(image_size.height - 1) / 2.0;
-
-    cv::detail::PlaneWarper warper;
-
-    cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
-    cv::Mat R = GetR(pitch, roll);
-
-    for (int32_t i = 0; i < (int)pts_in.size(); ++i)
-    {
-      pts_out[i].pt = warper.warpPoint(pts_in[i].pt, K, R, T);
-      pts_out[i].pt.x += K.at<float>(0, 2);
-      pts_out[i].pt.y += K.at<float>(1, 2);
-    }
   }
 
   bool PitchAndRollEstimator::GetKeypoints(
@@ -488,7 +490,7 @@ namespace image_util
       return;
     }
 
-    WarpPoints(pitch,
+    image_util::WarpPoints(pitch,
                roll,
                cv::Size(im1_.cols, im1_.rows),
                pts_in,
@@ -575,11 +577,7 @@ namespace image_util
       GetMeanPitchAndRoll(pitch, roll);
     }
 
-    PitchAndRollEstimator::WarpPoints(pitch,
-                                      roll,
-                                      image_size,
-                                      points_in,
-                                      points_out);
+    image_util::WarpPoints(pitch, roll, image_size, points_in, points_out);
   }
 
   //////////////////////////////////////////////////////////////////////////////
