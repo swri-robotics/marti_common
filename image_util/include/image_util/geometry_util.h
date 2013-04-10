@@ -20,17 +20,46 @@
 #ifndef IMAGE_UTIL_GEOMETRY_UTIL_H_
 #define IMAGE_UTIL_GEOMETRY_UTIL_H_
 
+#include <vector>
+
 #include <opencv2/core/core.hpp>
 
 namespace image_util
 {
   typedef cv::Rect_<double> BoundingBox;
 
+  /**
+   * Calculate the overlapping area of a rectangle an a rigidly transformed
+   * version of itself.
+   *
+   * @param[in]  rect             The rectangle.
+   * @param[in]  rigid_transform  The rigid transform.
+   *
+   * @returns The area of intersection of the two rectangles.
+   */
   double GetOverlappingArea(
       const cv::Rect& rect,
       const cv::Mat& rigid_transform);
 
+  /**
+   * Determine if two aligned rectangles intersect one another.
+   *
+   * @param[in]  box1  The first rectangle.
+   * @param[in]  box2  The second rectangle.
+   *
+   * @returns True if box1 intersects with box2.  False otherwise.
+   */
   bool Intersects(const BoundingBox& box1, const BoundingBox& box2);
+
+  /**
+   * Projects a 3D ellipsoid to an ellipse on the XY-plane.
+   *
+   * @param[in]  ellipsoid  The ellipsoid represented as a 3x3 matrix.
+   *
+   * @returns The ellipse as a 2x2 matrix if successful.  An empty matrix
+   *          otherwise.
+   */
+  cv::Mat ProjectEllipsoid(const cv::Mat& ellipsiod);
 }
 
 #endif  // IMAGE_UTIL_GEOMETRY_UTIL_H_

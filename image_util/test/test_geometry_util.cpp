@@ -26,7 +26,7 @@
 #include <math_util/constants.h>
 #include <image_util/geometry_util.h>
 
-TEST(ImageUtilTests, Intersects)
+TEST(GeometryUtilTests, Intersects)
 {
   image_util::BoundingBox b1(-2, -2, 4, 4);
   image_util::BoundingBox b2(-1, -1, 2, 2);
@@ -60,7 +60,7 @@ TEST(ImageUtilTests, Intersects)
   EXPECT_TRUE(image_util::Intersects(b5, b4));
 }
 
-TEST(ImageUtilTests, GetOverlappingArea1)
+TEST(GeometryUtilTests, GetOverlappingArea1)
 {
   cv::Rect rect(-5, -5, 10, 10);
   cv::Rect rect2(-10, -5, 20, 10);
@@ -110,7 +110,7 @@ TEST(ImageUtilTests, GetOverlappingArea1)
   EXPECT_FLOAT_EQ(75, image_util::GetOverlappingArea(rect2, shift_5_xy));
 }
 
-TEST(ImageUtilTests, GetOverlappingArea2)
+TEST(GeometryUtilTests, GetOverlappingArea2)
 {
   cv::Rect rect(-5, -5, 10, 10);
   cv::Rect rect2(-10, -5, 20, 10);
@@ -147,6 +147,104 @@ TEST(ImageUtilTests, GetOverlappingArea2)
 
   EXPECT_FLOAT_EQ(82.842712, image_util::GetOverlappingArea(rect, rotate45));
   EXPECT_FLOAT_EQ(136.3961, image_util::GetOverlappingArea(rect2, rotate45));
+}
+
+TEST(GeometryUtilTests, TestProjectEllipse1)
+{
+  cv::Mat ellipsoid1(3, 3, CV_32FC1);
+  ellipsoid1.at<float>(0,0) = 1;
+  ellipsoid1.at<float>(0,1) = 0;
+  ellipsoid1.at<float>(0,2) = 0;
+  ellipsoid1.at<float>(1,0) = 0;
+  ellipsoid1.at<float>(1,1) = 1;
+  ellipsoid1.at<float>(1,2) = 0;
+  ellipsoid1.at<float>(2,0) = 0;
+  ellipsoid1.at<float>(2,1) = 0;
+  ellipsoid1.at<float>(2,2) = 1;
+
+  cv::Mat ellipse1(2, 2, CV_32FC1);
+  ellipse1.at<float>(0,0) = 1;
+  ellipse1.at<float>(0,1) = 0;
+  ellipse1.at<float>(1,0) = 0;
+  ellipse1.at<float>(1,1) = 1;
+
+  cv::Mat projected1 = image_util::ProjectEllipsoid(ellipsoid1);
+
+  EXPECT_EQ(ellipse1.at<float>(0, 0), projected1.at<float>(0, 0));
+  EXPECT_EQ(ellipse1.at<float>(0, 1), projected1.at<float>(0, 1));
+  EXPECT_EQ(ellipse1.at<float>(1, 0), projected1.at<float>(1, 0));
+  EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
+}
+
+TEST(GeometryUtilTests, TestProjectEllipse2)
+{
+  cv::Mat ellipsoid1(3, 3, CV_32FC1);
+  ellipsoid1.at<float>(0,0) = 10;
+  ellipsoid1.at<float>(0,1) = 0;
+  ellipsoid1.at<float>(0,2) = 0;
+  ellipsoid1.at<float>(1,0) = 0;
+  ellipsoid1.at<float>(1,1) = 15;
+  ellipsoid1.at<float>(1,2) = 0;
+  ellipsoid1.at<float>(2,0) = 0;
+  ellipsoid1.at<float>(2,1) = 0;
+  ellipsoid1.at<float>(2,2) = -35;
+
+  cv::Mat ellipse1(2, 2, CV_32FC1);
+  ellipse1.at<float>(0,0) = 10;
+  ellipse1.at<float>(0,1) = 0;
+  ellipse1.at<float>(1,0) = 0;
+  ellipse1.at<float>(1,1) = 15;
+
+  cv::Mat projected1 = image_util::ProjectEllipsoid(ellipsoid1);
+
+  EXPECT_EQ(ellipse1.at<float>(0, 0), projected1.at<float>(0, 0));
+  EXPECT_EQ(ellipse1.at<float>(0, 1), projected1.at<float>(0, 1));
+  EXPECT_EQ(ellipse1.at<float>(1, 0), projected1.at<float>(1, 0));
+  EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
+}
+
+TEST(GeometryUtilTests, TestProjectEllipseInvalid1)
+{
+  cv::Mat ellipsoid2(3, 3, CV_32FC1);
+  ellipsoid2.at<float>(0,0) = 1;
+  ellipsoid2.at<float>(0,1) = 0;
+  ellipsoid2.at<float>(0,2) = 0;
+  ellipsoid2.at<float>(1,0) = 0;
+  ellipsoid2.at<float>(1,1) = 1;
+  ellipsoid2.at<float>(1,2) = 0;
+  ellipsoid2.at<float>(2,0) = 0;
+  ellipsoid2.at<float>(2,1) = 0;
+  ellipsoid2.at<float>(2,2) = 0;
+
+  cv::Mat projected2 = image_util::ProjectEllipsoid(ellipsoid2);
+
+  EXPECT_TRUE(projected2.empty());
+}
+
+TEST(GeometryUtilTests, TestProjectEllipseInvalid2)
+{
+  cv::Mat ellipsoid2(2, 2, CV_32FC1);
+  ellipsoid2.at<float>(0,0) = 1;
+  ellipsoid2.at<float>(0,1) = 0;
+  ellipsoid2.at<float>(1,0) = 0;
+  ellipsoid2.at<float>(1,1) = 1;
+
+  cv::Mat projected2 = image_util::ProjectEllipsoid(ellipsoid2);
+
+  EXPECT_TRUE(projected2.empty());
+}
+
+TEST(GeometryUtilTests, TestProjectEllipseInvalid3)
+{
+  cv::Mat ellipsoid2(2, 2, CV_32SC1);
+  ellipsoid2.at<int32_t>(0,0) = 1;
+  ellipsoid2.at<int32_t>(0,1) = 0;
+  ellipsoid2.at<int32_t>(1,0) = 0;
+  ellipsoid2.at<int32_t>(1,1) = 1;
+
+  cv::Mat projected2 = image_util::ProjectEllipsoid(ellipsoid2);
+
+  EXPECT_TRUE(projected2.empty());
 }
 
 // Run all the tests that were declared with TEST()
