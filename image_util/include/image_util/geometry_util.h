@@ -24,6 +24,8 @@
 
 #include <opencv2/core/core.hpp>
 
+#include <tf/transform_datatypes.h>
+
 namespace image_util
 {
   typedef cv::Rect_<double> BoundingBox;
@@ -54,12 +56,29 @@ namespace image_util
   /**
    * Projects a 3D ellipsoid to an ellipse on the XY-plane.
    *
-   * @param[in]  ellipsoid  The ellipsoid represented as a 3x3 matrix.
+   * @param[in]  ellipsoid  The ellipsoid represented as a 3x3 float matrix.
    *
-   * @returns The ellipse as a 2x2 matrix if successful.  An empty matrix
+   * @returns The ellipse as a 2x2 float matrix if successful.  An empty matrix
    *          otherwise.
    */
   cv::Mat ProjectEllipsoid(const cv::Mat& ellipsiod);
+
+  /**
+   * Gets a list of points on the perimeter of an ellipse.
+   *
+   * @param[in]  ellipse     The ellipse represented as a 2x2 float matrix.
+   * @param[in]  center      The center of the ellipse.
+   * @param[in]  scale       A scale factor.
+   * @param[in]  num_points  The number of points to use.
+   *
+   * @returns A list of points on the perimeter of the ellipse if successful.
+   *          An empty list otherwise.
+   */
+  std::vector<tf::Vector3> GetEllipsePoints(
+      const cv::Mat& ellipse,
+      const tf::Vector3& center,
+      double scale,
+      int32_t num_points);
 }
 
 #endif  // IMAGE_UTIL_GEOMETRY_UTIL_H_

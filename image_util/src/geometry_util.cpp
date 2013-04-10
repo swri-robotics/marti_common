@@ -19,6 +19,7 @@
 
 #include <image_util/geometry_util.h>
 
+#include <cmath>
 #include <vector>
 
 #include <QPolygonF>
@@ -27,6 +28,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <lapackpp.h>
+
+#include <math_util/constants.h>
 
 namespace image_util
 {
@@ -240,5 +243,63 @@ namespace image_util
     }
 
     return ellipse;
+  }
+
+  std::vector<tf::Vector3> GetEllipsePoints(
+      const cv::Mat& ellipse,
+      const tf::Vector3& center,
+      double scale,
+      int32_t num_points)
+  {
+    std::vector<tf::Vector3> perimeter;
+
+    if (ellipse.rows == 2 && ellipse.cols == 2 && ellipse.type() == CV_32FC1 &&
+        num_points > 2)
+    {
+      LaGenMatDouble Dprime(2, 2);
+      Dprime(0, 0) = ellipse.at<float>(0, 0);
+      Dprime(0, 1) = ellipse.at<float>(0, 1);
+      Dprime(1, 0) = ellipse.at<float>(1, 0);
+      Dprime(1, 1) = ellipse.at<float>(1, 1);
+
+      LaVectorDouble Sigma(2);
+      LaGenMatDouble U(2, 2);
+      LaGenMatDouble Vt(2, 2);
+
+      LaSVD_IP(Dprime, Sigma, U, Vt);
+
+      double xprime_scale = sqrt(Sigma(0));
+      double yprime_scale = sqrt(Sigma(1));
+
+      if (xprime_scale <= 0 || yprime_scale <= 0)
+      {
+        return perimeter;
+      }
+
+      LaGenMatDouble Xp1 = LaGenMatDouble::zeros(num_points, 2);
+      for (int32_t i = 0; i < num_points; i++)
+      {
+        double phi =
+            (static_cast<double>(i) / static_cast<double>(num_points))
+            * math_util::_2pi;
+
+        Xp1(i, 0) = xprime_scale * std::cos(phi) * scale;
+        Xp1(i, 1) = yprime_scale * std::sin(phi) * scale;
+      }
+
+      LaGenMatDouble Xell(num_points, 2);
+
+      // Xell = Xp1*(V')'
+      Blas_Mat_Mat_Trans_Mult(Xp1, Vt, Xell);
+
+      perimeter.resize(num_points);
+      for (int32_t i = 0; i < num_points; i++)
+      {
+        perimeter[i].setX(Xell(i, 0) + center.x());
+        perimeter[i].setY(Xell(i, 1) + center.y());
+      }
+    }
+
+    return perimeter;
   }
 }

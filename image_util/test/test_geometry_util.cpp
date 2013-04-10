@@ -18,10 +18,13 @@
 // *****************************************************************************
 
 #include <cmath>
+#include <vector>
 
 #include <gtest/gtest.h>
 
 #include <opencv2/core/core.hpp>
+
+#include <tf/transform_datatypes.h>
 
 #include <math_util/constants.h>
 #include <image_util/geometry_util.h>
@@ -203,6 +206,8 @@ TEST(GeometryUtilTests, TestProjectEllipse2)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
+// TODO(malban): Test projecting an ellipsoid that is not axis aligned.
+
 TEST(GeometryUtilTests, TestProjectEllipseInvalid1)
 {
   cv::Mat ellipsoid2(3, 3, CV_32FC1);
@@ -245,6 +250,44 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid3)
   cv::Mat projected2 = image_util::ProjectEllipsoid(ellipsoid2);
 
   EXPECT_TRUE(projected2.empty());
+}
+
+TEST(GeometryUtilTests, TestGetEllipsePoints1)
+{
+  cv::Mat ellipse(2, 2, CV_32FC1);
+  ellipse.at<float>(0,0) = 1;
+  ellipse.at<float>(0,1) = 0;
+  ellipse.at<float>(1,0) = 0;
+  ellipse.at<float>(1,1) = 1;
+
+  std::vector<tf::Vector3> points = image_util::GetEllipsePoints(
+      ellipse, tf::Vector3(0, 0, 0), 1, 8);
+
+  ASSERT_EQ(8, points.size());
+
+  EXPECT_FLOAT_EQ(1, points[0].x());
+  EXPECT_NEAR(0, points[0].y(), 0.000000001);
+
+  EXPECT_NEAR(0.7071067811865475243818940365, points[1].x(),  0.000000001);
+  EXPECT_NEAR(0.7071067811865475243818940365, points[1].y(),  0.000000001);
+
+  EXPECT_NEAR(0, points[2].x(), 0.000000001);
+  EXPECT_FLOAT_EQ(1, points[2].y());
+
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[3].x(),  0.000000001);
+  EXPECT_NEAR(0.7071067811865475243818940365, points[3].y(),  0.000000001);
+
+  EXPECT_FLOAT_EQ(-1, points[4].x());
+  EXPECT_NEAR(0, points[4].y(), 0.000000001);
+
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[5].x(),  0.000000001);
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[5].y(),  0.000000001);
+
+  EXPECT_NEAR(0, points[6].x(), 0.000000001);
+  EXPECT_FLOAT_EQ(-1, points[6].y());
+
+  EXPECT_NEAR(0.7071067811865475243818940365, points[7].x(),  0.000000001);
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[7].y(),  0.000000001);
 }
 
 // Run all the tests that were declared with TEST()
