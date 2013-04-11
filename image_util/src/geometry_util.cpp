@@ -20,6 +20,7 @@
 #include <image_util/geometry_util.h>
 
 #include <cmath>
+#include <limits>
 #include <vector>
 
 #include <QPolygonF>
@@ -123,6 +124,17 @@ namespace image_util
 
     if (ellipsoid.rows == 3 && ellipsoid.cols == 3 && ellipsoid.type() == CV_32FC1)
     {
+      if (ellipsoid.at<float>(2, 2) >= std::numeric_limits<double>::max() * 0.5)
+      {
+        ellipse.create(2, 2, CV_32FC1);
+        ellipse.at<float>(0, 0) = ellipsoid.at<float>(0, 0);
+        ellipse.at<float>(0, 1) = ellipsoid.at<float>(0, 1);
+        ellipse.at<float>(1, 0) = ellipsoid.at<float>(1, 0);
+        ellipse.at<float>(1, 1) = ellipsoid.at<float>(1, 1);
+
+        return ellipse;
+      }
+
       LaGenMatDouble A(3, 3);
       for (int32_t r = 0; r < 3; r++)
       {

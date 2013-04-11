@@ -18,6 +18,7 @@
 // *****************************************************************************
 
 #include <cmath>
+#include <limits>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -205,6 +206,34 @@ TEST(GeometryUtilTests, TestProjectEllipse2)
   EXPECT_EQ(ellipse1.at<float>(1, 0), projected1.at<float>(1, 0));
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
+
+TEST(GeometryUtilTests, TestProjectEllipse3)
+{
+  cv::Mat ellipsoid1(3, 3, CV_32FC1);
+  ellipsoid1.at<float>(0,0) = 10;
+  ellipsoid1.at<float>(0,1) = 0;
+  ellipsoid1.at<float>(0,2) = 0;
+  ellipsoid1.at<float>(1,0) = 0;
+  ellipsoid1.at<float>(1,1) = 15;
+  ellipsoid1.at<float>(1,2) = 0;
+  ellipsoid1.at<float>(2,0) = 0;
+  ellipsoid1.at<float>(2,1) = 0;
+  ellipsoid1.at<float>(2,2) = std::numeric_limits<double>::max() * 0.5;
+
+  cv::Mat ellipse1(2, 2, CV_32FC1);
+  ellipse1.at<float>(0,0) = 10;
+  ellipse1.at<float>(0,1) = 0;
+  ellipse1.at<float>(1,0) = 0;
+  ellipse1.at<float>(1,1) = 15;
+
+  cv::Mat projected1 = image_util::ProjectEllipsoid(ellipsoid1);
+
+  EXPECT_EQ(ellipse1.at<float>(0, 0), projected1.at<float>(0, 0));
+  EXPECT_EQ(ellipse1.at<float>(0, 1), projected1.at<float>(0, 1));
+  EXPECT_EQ(ellipse1.at<float>(1, 0), projected1.at<float>(1, 0));
+  EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
+}
+
 
 // TODO(malban): Test projecting an ellipsoid that is not axis aligned.
 
