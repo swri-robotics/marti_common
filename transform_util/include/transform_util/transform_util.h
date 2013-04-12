@@ -88,6 +88,25 @@ namespace transform_util
   tf::Matrix3x3 GetLowerRight(const boost::array<double, 36>& matrix);
 
   /**
+   * Converts the 3x3 covariance matrices from Imu messages to a Matrix3x3
+   *
+   * @param[in]  matrix   The input matrix
+   *
+   * @retval     Returns the input matrix as a Matrix3x3 object
+   */
+  tf::Matrix3x3 Get3x3Cov(const boost::array<double, 9>& matrix);
+
+  /**
+   * Converts the Matrix3x3 matrix into a 9 element covariance matrix from Imu
+   * messages
+   *
+   * @param[in]  matrix_in    The input matrix
+   * @param[out] matrix_out   The output matrix
+   *
+   */
+  void Set3x3Cov(const tf::Matrix3x3& matrix_in,
+                          boost::array<double, 9>& matrix_out);
+  /**
    * Sets the upper-left quadrant of a 6x6 matrix with the specified 3x3
    * sub-matrix
    *
@@ -111,3 +130,4 @@ namespace transform_util
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_
+
