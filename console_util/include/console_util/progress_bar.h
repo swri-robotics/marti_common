@@ -39,11 +39,12 @@ namespace console_util
     void CheckForPause();
     char ReadCharFromStdin();
 
+    static std::string GetTimeString(double seconds);
+    static std::string IntToString(int64_t i, int width = 0);
+
   private:
     void SetupTerminal();
     void RestoreTerminal();
-    std::string GetTimeString(double seconds);
-    std::string IntToString(int64_t i, int width = 0);
 
     bool paused_;
 
