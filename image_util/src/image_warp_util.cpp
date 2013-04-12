@@ -330,9 +330,6 @@ namespace image_util
       min_roll = nominal_roll - std::abs(dr * 2 / 3);
       max_roll = nominal_roll + std::abs(dr * 2 / 3);
     }
-    ROS_ERROR("Final pitch and roll: (%g, %g)",
-              nominal_pitch * 180.0 / 3.14159,
-              nominal_roll * 180.0 / 3.14159);
 
     cv::Mat R = GetR(nominal_pitch,
                      nominal_roll);
