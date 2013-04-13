@@ -229,7 +229,7 @@ namespace transform_util
     return sub_matrix;
   }
 
-  tf::Matrix3x3 GetLowerRight (const boost::array<double, 36>& matrix)
+  tf::Matrix3x3 GetLowerRight (const boost::array<double, 9>& matrix)
   {
     tf::Matrix3x3 sub_matrix;
 
@@ -244,6 +244,39 @@ namespace transform_util
     sub_matrix[2][2] = matrix[35];
 
     return sub_matrix;
+  }
+
+  tf::Matrix3x3 Get3x3Cov(const boost::array<double, 9>& matrix)
+  {
+    tf::Matrix3x3 matrix_out;
+
+    matrix_out[0][0] = matrix[0];
+    matrix_out[0][1] = matrix[1];
+    matrix_out[0][2] = matrix[2];
+    matrix_out[1][0] = matrix[3];
+    matrix_out[1][1] = matrix[4];
+    matrix_out[1][2] = matrix[5];
+    matrix_out[2][0] = matrix[6];
+    matrix_out[2][1] = matrix[7];
+    matrix_out[2][2] = matrix[8];
+
+    return matrix_out;
+  }
+
+  void Set3x3Cov(
+      const tf::Matrix3x3& matrix_in,
+      boost::array<double, 9>& matrix_out)
+  {
+    matrix_out[0] = matrix_in[0][0];
+    matrix_out[1] = matrix_in[0][1];
+    matrix_out[2] = matrix_in[0][2];
+    matrix_out[3] = matrix_in[1][0];
+    matrix_out[4] = matrix_in[1][1];
+    matrix_out[5] = matrix_in[1][2];
+    matrix_out[6] = matrix_in[2][0];
+    matrix_out[7] = matrix_in[2][1];
+    matrix_out[8] = matrix_in[2][2];
+
   }
 
   void SetUpperLeft (
