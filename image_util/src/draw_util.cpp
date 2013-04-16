@@ -19,6 +19,7 @@
 
 #include <image_util/draw_util.h>
 
+#include <cstdlib>
 #include <algorithm>
 
 #include <QPolygonF>
@@ -32,6 +33,15 @@
 
 namespace image_util
 {
+  void RandomColor(int32_t seed, double& r, double& g, double& b)
+  {
+    std::srand(seed);
+
+    r = ((double)std::rand() / RAND_MAX);
+    g = ((double)std::rand() / RAND_MAX);
+    b = ((double)std::rand() / RAND_MAX);
+  }
+
   void DrawOverlap(
       const std::string& title,
       const cv::Mat& image1,
