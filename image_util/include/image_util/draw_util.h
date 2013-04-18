@@ -26,6 +26,8 @@
 
 namespace image_util
 {
+  void RandomColor(int32_t seed, double& r, double& g, double& b);
+
   void DrawOverlap(
       const std::string& title,
       const cv::Mat& image1,

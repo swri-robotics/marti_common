@@ -229,7 +229,7 @@ namespace transform_util
     return sub_matrix;
   }
 
-  tf::Matrix3x3 GetLowerRight (const boost::array<double, 9>& matrix)
+  tf::Matrix3x3 GetLowerRight (const boost::array<double, 36>& matrix)
   {
     tf::Matrix3x3 sub_matrix;
 
