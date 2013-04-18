@@ -42,4 +42,34 @@ namespace math_util
   {
     return std::fabs(v1 - v2) <= epsilon;
   }
+
+  double unWrapAngle(double static_angle,
+                     double variable_angle,
+                     double threshold)
+  {
+    if(std::abs(static_angle - variable_angle) > threshold)
+    {
+      if(variable_angle < static_angle)
+      {
+        variable_angle += math_util::_2pi;
+      }
+      else
+      {
+        variable_angle -= math_util::_2pi;
+      }
+    }
+    return variable_angle;
+  }
+
+  double fixAngle0to2Pi(double radians)
+  {
+    double val = std::fmod(radians, static_cast<double>(math_util::_2pi));
+    if (val < 0.0)
+    {
+      val += math_util::_2pi;
+    }
+    return val;
+  }
+
+
 }

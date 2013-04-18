@@ -20,6 +20,7 @@
 #ifndef MATH_UTIL_MATH_UTIL_H_
 #define MATH_UTIL_MATH_UTIL_H_
 
+#include <math_util/constants.h>
 namespace math_util
 {
   /**
@@ -52,6 +53,47 @@ namespace math_util
    * @returns True if v1 is near v2.
    */
   bool IsNear(double v1, double v2, double epsilon);
+
+  /**
+   * Unwraps the variable_angle across 0-2pi or +/-pi boundaries to avoid large
+   * differences between the static and variable angles (when the difference may
+   * be small.  For example a static angle of 2pi - epsilon and a variable angle
+   * of epsilon would result in the variable angle being unwrapped to 2pi +
+   * epsilon.
+   *
+   * @param[in]  static_angle     The reference angle
+   * @param[in]  variable_angle   The angle to unwrap
+   * @param[in]  threshold        A threshold on the angle (default is pi)
+   *
+   * @retval     Returns the resultant angle
+   */
+  double unWrapAngle(double static_angle,
+                     double variable_angle,
+                     double threshold = _pi);
+
+  /**
+   * Forces the angle to be between 0 and 2pi
+   *
+   * @param[in]  radians    The angle to fix in radians
+   *
+   * @retval     The fixed angle
+   */
+  double fixAngle0to2Pi(double radians);
+
+
+  /**
+   * Forces the angle to be between 0 and 2pi
+   *
+   * @param[in]  radians    The angle to fix in radians
+   *
+   * @retval     The fixed angle
+   */
+  double fixAngleMinusPitoPi(double radians)
+  {
+    // TODO(kkozak): Check this implementation
+    return fixAngle0to2Pi(radians + _pi) - _pi;
+  }
+
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_
