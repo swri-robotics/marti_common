@@ -1103,55 +1103,23 @@ namespace image_util
       double &rnorm)
   {
     uint32_t N = rot.cols();
+    LaGenMatDouble rot_temp = rot;
     LaVectorDouble Sigma(N);
     LaGenMatDouble U(N, N);
     LaGenMatDouble Vt(N, N);
     LaGenMatDouble RtR(N, N);
 
-    LaSVD_IP(rot, Sigma, U, Vt);
+    LaSVD_IP(rot_temp, Sigma, U, Vt);
     conditionNum = Sigma(0) / Sigma(N-1);
 
-    // find the diagonal matrix S whose values are either 1, when scaling is
-    // not allowed, or the average singular value when it is
-    double diagonal = 0;
-    for (uint32_t i = 0; i < N; i++)
-    {
-      diagonal += Sigma(i);
-    }
+    // Compute the rotation as rot = U*Vt
+    Blas_Mat_Mat_Mult(U, Vt, rot);
 
-    // set diagonal to 1
-    diagonal = 1.0;
-
-    // compute the diagonal matrix
-    LaGenMatDouble S(N, N);
-    for (uint32_t i = 0; i < N; i++)
-    {
-      for (uint32_t j = 0; j < N; j++)
-      {
-        if (i == j)
-        {
-          S(i, j) = diagonal;
-        }
-        else
-        {
-          S(i, j) = 0;
-        }
-      }
-    }
-
-    // Compute the rotation as USVt
-    LaGenMatDouble US(U.rows(), S.cols());
-    Blas_Mat_Mat_Mult(U, S, US);
-    Blas_Mat_Mat_Mult(US, Vt, rot);
-//    rot = U * S * Vt;
-    LaGenMatDouble SS(RtR.rows(), RtR.cols());
-    Blas_Mat_Trans_Mat_Mult(S,S,SS);
-
-    // compute the rotation measure as ||RtR - StS||
+    // compute the rotation measure as ||RtR - I||
     Blas_Mat_Trans_Mat_Mult(rot, rot, RtR);
 
     //rnorm = Blas_NormF(RtR - S * S);
-    rnorm = Blas_NormF(RtR - SS);
+    rnorm = Blas_NormF(RtR - LaGenMatDouble::eye(RtR.rows()));
   }
 
   void RandPermSet(
