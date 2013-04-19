@@ -1140,11 +1140,18 @@ namespace image_util
     }
 
     // Compute the rotation as USVt
-    rot = U * S * Vt;
+    LaGenMatDouble US(U.rows(), S.cols());
+    Blas_Mat_Mat_Mult(U, S, US);
+    Blas_Mat_Mat_Mult(US, Vt, rot);
+//    rot = U * S * Vt;
+    LaGenMatDouble SS(RtR.rows(), RtR.cols());
+    Blas_Mat_Trans_Mat_Mult(S,S,SS);
 
     // compute the rotation measure as ||RtR - StS||
     Blas_Mat_Trans_Mat_Mult(rot, rot, RtR);
-    rnorm = Blas_NormF(RtR - S * S);
+
+    //rnorm = Blas_NormF(RtR - S * S);
+    rnorm = Blas_NormF(RtR - SS);
   }
 
   void RandPermSet(
