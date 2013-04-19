@@ -60,16 +60,4 @@ namespace math_util
     }
     return variable_angle;
   }
-
-  double fixAngle0to2Pi(double radians)
-  {
-    double val = std::fmod(radians, static_cast<double>(math_util::_2pi));
-    if (val < 0.0)
-    {
-      val += math_util::_2pi;
-    }
-    return val;
-  }
-
-
 }

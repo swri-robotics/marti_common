@@ -70,30 +70,6 @@ namespace math_util
   double unWrapAngle(double static_angle,
                      double variable_angle,
                      double threshold = _pi);
-
-  /**
-   * Forces the angle to be between 0 and 2pi
-   *
-   * @param[in]  radians    The angle to fix in radians
-   *
-   * @retval     The fixed angle
-   */
-  double fixAngle0to2Pi(double radians);
-
-
-  /**
-   * Forces the angle to be between 0 and 2pi
-   *
-   * @param[in]  radians    The angle to fix in radians
-   *
-   * @retval     The fixed angle
-   */
-  double fixAngleMinusPitoPi(double radians)
-  {
-    // TODO(kkozak): Check this implementation
-    return fixAngle0to2Pi(radians + _pi) - _pi;
-  }
-
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_
