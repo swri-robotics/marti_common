@@ -124,8 +124,11 @@ namespace transform_util
     // Initialize LocalXY util with an origin.
     local_xy_util_ = ParseLocalXyOrigin();
 
-    utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
-    utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
+    if (local_xy_util_)
+    {
+      utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
+      utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
+    }
 
     return local_xy_util_;
   }
