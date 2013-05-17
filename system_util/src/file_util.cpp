@@ -42,14 +42,14 @@ namespace system_util
     boost::filesystem::path::iterator path_it = path.begin();
     boost::filesystem::path::iterator base_it = base.begin();
 
-    if ((path_it ==  path.end()) || (base_it == base.end()))
+    if ((path_it == path.end()) || (base_it == base.end()))
     {
       return "";
     }
 
     while (true)
     {
-      if ((path_it == base.end()) || (base_it == base.end()) || (*path_it != *base_it))
+      if (*path_it != *base_it)
       {
         for (; base_it != base.end(); ++base_it)
         {
