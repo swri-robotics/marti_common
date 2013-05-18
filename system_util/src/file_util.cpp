@@ -19,6 +19,8 @@
 
 #include <system_util/file_util.h>
 
+#include <string>
+
 namespace system_util
 {
   boost::filesystem::path NaiveUncomplete(
