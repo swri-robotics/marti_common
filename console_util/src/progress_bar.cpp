@@ -19,7 +19,7 @@
 
 #include <console_util/progress_bar.h>
 
-#include <time.h>
+#include <ctime>
 #include <sstream>
 
 namespace console_util
