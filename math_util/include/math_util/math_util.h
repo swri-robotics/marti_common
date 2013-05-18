@@ -72,4 +72,4 @@ namespace math_util
                      double threshold = _pi);
 }
 
-#endif  // MATH_UTIL_TRIG_UTIL_H_
+#endif  // MATH_UTIL_MATH_UTIL_H_
