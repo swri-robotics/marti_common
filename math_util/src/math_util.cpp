@@ -47,9 +47,9 @@ namespace math_util
                      double variable_angle,
                      double threshold)
   {
-    if(std::abs(static_angle - variable_angle) > threshold)
+    if (std::abs(static_angle - variable_angle) > threshold)
     {
-      if(variable_angle < static_angle)
+      if (variable_angle < static_angle)
       {
         variable_angle += math_util::_2pi;
       }

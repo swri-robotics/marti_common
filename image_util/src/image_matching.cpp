@@ -43,11 +43,11 @@ namespace image_util
   {
     std::vector<uint32_t> indices;
     GetFundamentalInliers(
-      points1, points2, 
-      fundamental_matrix, 
+      points1, points2,
+      fundamental_matrix,
       inliers1, inliers2,
       indices,
-      max_distance, 
+      max_distance,
       confidence);
   }
 
@@ -115,6 +115,5 @@ namespace image_util
       kp1_out.at<cv::Vec2f>(0, i) = kp1[matches[i].queryIdx].pt;
       kp2_out.at<cv::Vec2f>(0, i) = kp2[matches[i].trainIdx].pt;
     }
-
   }
 }

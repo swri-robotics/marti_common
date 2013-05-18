@@ -36,7 +36,6 @@ namespace transform_util
   Transform::Transform(boost::shared_ptr<TransformImpl> transform) :
     transform_(transform)
   {
-
   }
 
   Transform& Transform::operator=(const tf::Transform transform)
@@ -70,17 +69,17 @@ namespace transform_util
 
     return transformed;
   }
-  
+
   void IdentityTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     v_out = v_in;
   }
-  
+
   TfTransform::TfTransform(const tf::Transform& transform) :
     transform_(transform)
   {
   }
-  
+
   void TfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     v_out = transform_ * v_in;
