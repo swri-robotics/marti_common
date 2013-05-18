@@ -80,10 +80,10 @@ namespace transform_util
     char args[64];
     for (int i = 0; i < 60; i++)
     {
-      snprintf(args, 63, "+proj=utm +ellps=WGS84 +zone=%d", i + 1);
+      snprintf(args, sizeof(args), "+proj=utm +ellps=WGS84 +zone=%d", i + 1);
       utm_north_[i] = pj_init_plus(args);
 
-      snprintf(args, 63, "+proj=utm +ellps=WGS84 +zone=%d +south", i + 1);
+      snprintf(args, sizeof(args), "+proj=utm +ellps=WGS84 +zone=%d +south", i + 1);
       utm_south_[i] = pj_init_plus(args);
     }
   }
