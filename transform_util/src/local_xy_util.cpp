@@ -241,7 +241,7 @@ namespace transform_util
       ROS_ERROR("[local_xy]: Exception parsing LocalXY origin parameters: %s",
           e.getMessage().c_str());
     }
-    catch(...)
+    catch (...)
     {
       ROS_ERROR("[local_xy]: Exception parsing LocalXY origin parameters.");
       return local_xy;
