@@ -17,6 +17,9 @@
 //
 // *****************************************************************************
 
+#ifndef TRANSFORM_UTIL_FRAMES_H_
+#define TRANSFORM_UTIL_FRAMES_H_
+
 #include <string>
 
 namespace transform_util
@@ -43,3 +46,5 @@ namespace transform_util
 
   static const std::string _tf_frame = "/tf";
 }
+
+#endif  // TRANSFORM_UTIL_FRAMES_H_
