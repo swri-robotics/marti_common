@@ -26,6 +26,8 @@
 #ifndef IMAGE_UTIL_IMAGE_WARP_UTIL_H_
 #define IMAGE_UTIL_IMAGE_WARP_UTIL_H_
 
+#include <vector>
+
 // Boost Libraries
 #include <boost/circular_buffer.hpp>
 
