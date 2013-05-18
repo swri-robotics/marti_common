@@ -53,7 +53,7 @@ namespace transform_util
           }
         }
       }
-      catch (pluginlib::CreateClassException& e)
+      catch (const pluginlib::CreateClassException& e)
       {
         ROS_ERROR("[transform_manager]: Failed to load transformer plugin '%s': %s",
             class_names[i].c_str(), e.what());
