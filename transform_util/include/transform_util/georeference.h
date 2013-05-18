@@ -25,7 +25,6 @@
 #include <yaml-cpp/yaml.h>
 #include <opencv/cv.h>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 
 namespace transform_util
@@ -33,7 +32,7 @@ namespace transform_util
   class GeoReference
   {
   public:
-    GeoReference(const std::string& path);
+    explicit GeoReference(const std::string& path);
     GeoReference(const GeoReference& geo);
     ~GeoReference();
 
@@ -54,7 +53,7 @@ namespace transform_util
 
   private:
     bool loaded_;
-  
+
     // Image properties
     std::string path_;
     std::string image_path_;

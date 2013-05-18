@@ -22,6 +22,7 @@
 #include <cmath>
 #include <algorithm>
 #include <limits>
+#include <utility>
 #include <vector>
 
 #include <boost/math/special_functions/sign.hpp>
@@ -212,7 +213,7 @@ namespace transform_util
     return true;
   }
 
-  tf::Matrix3x3 GetUpperLeft (const boost::array<double, 36>& matrix)
+  tf::Matrix3x3 GetUpperLeft(const boost::array<double, 36>& matrix)
   {
     tf::Matrix3x3 sub_matrix;
 
@@ -229,7 +230,7 @@ namespace transform_util
     return sub_matrix;
   }
 
-  tf::Matrix3x3 GetLowerRight (const boost::array<double, 36>& matrix)
+  tf::Matrix3x3 GetLowerRight(const boost::array<double, 36>& matrix)
   {
     tf::Matrix3x3 sub_matrix;
 
@@ -276,10 +277,9 @@ namespace transform_util
     matrix_out[6] = matrix_in[2][0];
     matrix_out[7] = matrix_in[2][1];
     matrix_out[8] = matrix_in[2][2];
-
   }
 
-  void SetUpperLeft (
+  void SetUpperLeft(
       const tf::Matrix3x3& sub_matrix,
       boost::array<double, 36>& matrix)
   {
@@ -294,7 +294,7 @@ namespace transform_util
     matrix[14] = sub_matrix[2][2];
   }
 
-  void SetLowerRight (
+  void SetLowerRight(
       const tf::Matrix3x3& sub_matrix,
       boost::array<double, 36>& matrix)
   {
