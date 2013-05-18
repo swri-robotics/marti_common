@@ -20,6 +20,8 @@
 #ifndef IMAGE_UTIL_MOTION_ESTIMATION_H_
 #define IMAGE_UTIL_MOTION_ESTIMATION_H_
 
+#include <vector>
+
 // ROS Libraries
 #include <ros/ros.h>
 #include <tf/transform_datatypes.h>
