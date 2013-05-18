@@ -23,12 +23,10 @@ namespace transform_util
 {
   Transformer::Transformer() : initialized_(false)
   {
-
   }
 
   Transformer::~Transformer()
   {
-
   }
 
   void Transformer::Initialize(
@@ -71,15 +69,15 @@ namespace transform_util
 
       has_transform = true;
     }
-    catch (tf::LookupException& e)
+    catch (const tf::LookupException& e)
     {
       ROS_ERROR("[transformer]: %s", e.what());
     }
-    catch (tf::ConnectivityException& e)
+    catch (const tf::ConnectivityException& e)
     {
       ROS_ERROR("[transformer]: %s", e.what());
     }
-    catch (tf::ExtrapolationException& e)
+    catch (const tf::ExtrapolationException& e)
     {
       ROS_ERROR("[transformer]: %s", e.what());
     }

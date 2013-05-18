@@ -99,7 +99,7 @@ namespace image_util
     cv::Mat T = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
     cv::Mat R = GetR(pitch, roll);
 
-    for (int32_t i = 0; i < (int)pts_in.size(); ++i)
+    for (uint32_t i = 0; i < pts_in.size(); i++)
     {
       pts_out[i].pt = warper.warpPoint(pts_in[i].pt, K, R, T);
       pts_out[i].pt.x += K.at<float>(0, 2);
