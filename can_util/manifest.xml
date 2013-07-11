@@ -1,0 +1,16 @@
+<package>
+  <description brief="can_util">
+
+     can_util
+
+  </description>
+  <author>Elliot Johnson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/can_util</url>
+  <depend package="roscpp"/>
+  <depend package="marti_can_msgs"/>
+
+</package>
+
+
