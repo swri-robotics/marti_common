@@ -70,7 +70,7 @@ class CanBusExampleNode
 
  private:
   ros::Timer timer_;
-  sumet_util::CanBus can_bus_;
+  can_util::CanBus can_bus_;
   int can_id_;
 };
 

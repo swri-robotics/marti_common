@@ -12,7 +12,7 @@
 
 #include <marti_can_msgs/CanFrame.h>
 
-namespace sumet_util
+namespace can_util
 {
 /* @brief Emulate a CAN bus over a ROS topic.
  *
@@ -100,5 +100,5 @@ void CanBus::CanFrameCallback(const marti_can_msgs::CanFrame &msg)
   if (!EchoedMessage(msg))
     callback_fn_(msg);
 }
-}  // namespace sumet_util
+}  // namespace can_util
 #endif  // CAN_UTIL_CAN_BUS_H_
