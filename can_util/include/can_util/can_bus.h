@@ -17,9 +17,16 @@ namespace sumet_util
 /* @brief Emulate a CAN bus over a ROS topic.
  *
  * This class allows a node to use a single topic to transmit and
- * receive can messages.  It keeps track of outgoing messages and
- * filters incoming messages to prevent the node from receiving
- * messages that it sent out.
+ * receive can messages.  When a message is transmitted, it sets
+ * header.frame_id to the node name.  When a message is received, it
+ * filters out any messages with the same name to prevent the node
+ * from receiving messages that it sent out.
+ *
+ * This scheme is not as robust as saving outgoing messages to a
+ * buffer and filtering them for equality, but it is faster, uses less
+ * memory, and has the side effect that we can tell from where each
+ * frame originated.  It also makes this class thread-safe without
+ * needing locks.
  */
 class CanBus
 {
@@ -37,13 +44,14 @@ class CanBus
   void Publish(const marti_can_msgs::CanFrame &msg);
 
  protected:
-  void CanFrameCallback(const marti_can_msgs::CanFrame &msg);
+  bool EchoedMessage(const marti_can_msgs::CanFrame &msg);
+  void CanFrameCallback(const marti_can_msgs::CanFrame &msg);  
 
  private:
   ros::Subscriber can_frame_sub_;
   ros::Publisher can_frame_pub_;
-  std::list<marti_can_msgs::CanFrame> outgoing_msgs_;
   boost::function<void(const marti_can_msgs::CanFrame &msg)> callback_fn_;
+  std::string node_name_;
 };
 
 template<class T>
@@ -64,54 +72,33 @@ void CanBus::Initialize(
                                                           queue_size);
 
   callback_fn_ = boost::bind(fp, obj, _1);
+  node_name_ = ros::this_node::getName();
 }
 
 void CanBus::Shutdown()
 {
   can_frame_sub_.shutdown();
   can_frame_pub_.shutdown();
-  outgoing_msgs_.clear();
 }
 
 void CanBus::Publish(const marti_can_msgs::CanFrame &msg)
 {
-  outgoing_msgs_.push_back(msg);
-  can_frame_pub_.publish(msg);
+  marti_can_msgs::CanFrame modified_msg = msg;
+  modified_msg.header.frame_id = node_name_;
+  can_frame_pub_.publish(modified_msg);
+}
+
+bool CanBus::EchoedMessage(const marti_can_msgs::CanFrame &msg)
+{
+  if (msg.header.frame_id == node_name_)
+    return true;
+  return false;
 }
 
 void CanBus::CanFrameCallback(const marti_can_msgs::CanFrame &msg)
 {
-  for (std::list<marti_can_msgs::CanFrame>::iterator
-         it = outgoing_msgs_.begin();
-       it != outgoing_msgs_.end();
-       ++it)
-  {
-    // These are ordered to test the most likely differing fields
-    // first.  We don't test against header.seq since ros::Publisher
-    // modifies this field.
-    if (msg.header.stamp != it->header.stamp)
-      break;
-    if (msg.ID != it->ID)
-      break;
-    if (msg.data != it->data)
-      break;
-    if (msg.data_length != it->data_length)
-      break;
-    if (msg.header.frame_id != it->header.frame_id)
-      break;
-    if (msg.msg_type != it->msg_type)
-      break;
-
-    // This message is equal to an outgoing message so it will not be
-    // passed on.  We also assume that earlier messages in the queue
-    // were not received and delete those too. This could result in a
-    // transmitted message being received again, but eliminates the
-    // buffer from growing too large as long as we get occaisional
-    // matches.
-    outgoing_msgs_.erase(outgoing_msgs_.begin(), ++it);
-    return;
-  }
-  callback_fn_(msg);
+  if (!EchoedMessage(msg))
+    callback_fn_(msg);
 }
 }  // namespace sumet_util
 #endif  // CAN_UTIL_CAN_BUS_H_
