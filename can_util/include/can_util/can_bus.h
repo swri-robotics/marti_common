@@ -41,7 +41,7 @@ class CanBus
 
   void Shutdown();
 
-  void Publish(const marti_can_msgs::CanFrame &msg);
+  void Publish(const marti_can_msgs::CanFrame &msg) const;
 
  protected:
   bool EchoedMessage(const marti_can_msgs::CanFrame &msg);
@@ -81,7 +81,7 @@ void CanBus::Shutdown()
   can_frame_pub_.shutdown();
 }
 
-void CanBus::Publish(const marti_can_msgs::CanFrame &msg)
+void CanBus::Publish(const marti_can_msgs::CanFrame &msg) const
 {
   marti_can_msgs::CanFrame modified_msg = msg;
   modified_msg.header.frame_id = node_name_;
