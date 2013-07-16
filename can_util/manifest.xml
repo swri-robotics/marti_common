@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/can_util</url>
   <depend package="roscpp"/>
+  <depend package="rospy"/>
   <depend package="marti_can_msgs"/>
 
   <export>
