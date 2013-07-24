@@ -6,6 +6,7 @@
 *.tgz
 *.orig
 *.bag
+*.pyc
 *~
 lib/
 _gtest_from_src/
