@@ -50,6 +50,11 @@ namespace transform_util
   {
     if (!initialized_)
     {
+      Initialize();
+    }
+
+    if (!initialized_)
+    {
       return false;
     }
 

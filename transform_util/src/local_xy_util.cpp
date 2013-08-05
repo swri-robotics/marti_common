@@ -154,9 +154,14 @@ namespace transform_util
     longitude = rlon * math_util::_rad_2_deg;
   }
 
-  LocalXyWgs84UtilPtr ParseLocalXyOrigin()
+  LocalXyWgs84UtilPtr ParseLocalXyOrigin(bool* waiting_for_auto_origin)
   {
     LocalXyWgs84UtilPtr local_xy;
+
+    if (waiting_for_auto_origin)
+    {
+      *waiting_for_auto_origin = false;
+    }
 
     try
     {
@@ -174,66 +179,122 @@ namespace transform_util
         return local_xy;
       }
 
-      XmlRpc::XmlRpcValue local_xy_origins;
-      if (!ros::param::get("/local_xy_origins", local_xy_origins))
+      if (local_xy_name != "auto")
       {
-        ROS_ERROR("[local_xy]: Undefined /local_xy_origins parameter.");
-        return local_xy;
-      }
 
-      if (local_xy_origins.getType() != XmlRpc::XmlRpcValue::TypeArray)
-      {
-        ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
-        return local_xy;
-      }
+        XmlRpc::XmlRpcValue local_xy_origins;
+        if (!ros::param::get("/local_xy_origins", local_xy_origins))
+        {
+          ROS_ERROR("[local_xy]: Undefined /local_xy_origins parameter.");
+          return local_xy;
+        }
 
-      for (int32_t i = 0; i < local_xy_origins.size(); ++i)
-      {
-        if (local_xy_origins[i].getType() != XmlRpc::XmlRpcValue::TypeStruct)
+        if (local_xy_origins.getType() != XmlRpc::XmlRpcValue::TypeArray)
         {
           ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
           return local_xy;
         }
 
-        if (!local_xy_origins[i].hasMember("name"))
+        for (int32_t i = 0; i < local_xy_origins.size(); ++i)
         {
-          ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter: Missing name");
-          return local_xy;
-        }
-
-        std::string name = static_cast<std::string>(local_xy_origins[i]["name"]);
-
-        if (name == local_xy_name)
-        {
-          if (!local_xy_origins[i].hasMember("latitude") ||
-              !local_xy_origins[i].hasMember("longitude") ||
-              !local_xy_origins[i].hasMember("altitude") ||
-              !local_xy_origins[i].hasMember("heading"))
+          if (local_xy_origins[i].getType() != XmlRpc::XmlRpcValue::TypeStruct)
           {
             ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
             return local_xy;
           }
 
-          double lat = static_cast<double>(local_xy_origins[i]["latitude"]);
-          if (lat < -90 || lat > 90)
+          if (!local_xy_origins[i].hasMember("name"))
           {
-            ROS_ERROR("[local_xy]: Invalid LocalXY latitude: Out of range [-90, 90]");
+            ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter: Missing name");
             return local_xy;
           }
 
-          double lon = static_cast<double>(local_xy_origins[i]["longitude"]);
-          if (lon < -180 || lon > 180)
+          std::string name = static_cast<std::string>(local_xy_origins[i]["name"]);
+
+          if (name == local_xy_name)
           {
-            ROS_ERROR("[local_xy]: Invalid LocalXY longitude: Out of range [-180, 180]");
-            return local_xy;
+            if (!local_xy_origins[i].hasMember("latitude") ||
+                !local_xy_origins[i].hasMember("longitude") ||
+                !local_xy_origins[i].hasMember("altitude") ||
+                !local_xy_origins[i].hasMember("heading"))
+            {
+              ROS_ERROR("[local_xy]: Invalid /local_xy_origins parameter.");
+              return local_xy;
+            }
+
+            double lat = static_cast<double>(local_xy_origins[i]["latitude"]);
+            if (lat < -90 || lat > 90)
+            {
+              ROS_ERROR("[local_xy]: Invalid latitude: %lf out of range [-90, 90]", lat);
+              return local_xy;
+            }
+
+            double lon = static_cast<double>(local_xy_origins[i]["longitude"]);
+            if (lon < -180 || lon > 180)
+            {
+              ROS_ERROR("[local_xy]: Invalid longitude: %lf out of range [-180, 180]", lon);
+              return local_xy;
+            }
+
+            double alt = static_cast<double>(local_xy_origins[i]["altitude"]);
+            double heading = static_cast<double>(local_xy_origins[i]["heading"]);
+
+            local_xy = boost::make_shared<LocalXyWgs84Util>(
+                lat, lon, heading, alt, local_xy_frame);
           }
-
-          double alt = static_cast<double>(local_xy_origins[i]["altitude"]);
-          double heading = static_cast<double>(local_xy_origins[i]["heading"]);
-
-          local_xy = boost::make_shared<LocalXyWgs84Util>(
-              lat, lon, heading, alt, local_xy_frame);
         }
+      }
+      else
+      {
+        double lat, lon, alt;
+        if (!ros::param::get("/local_xy_auto_latitude", lat))
+        {
+          ROS_WARN("[local_xy]: (auto) local_xy latitude not set.");
+
+          if (waiting_for_auto_origin)
+          {
+            *waiting_for_auto_origin = true;
+          }
+
+          return local_xy;
+        }
+        if (lat < -90 || lat > 90)
+        {
+          ROS_ERROR("[local_xy]: (auto) Invalid latitude: %lf out of range [-90, 90]", lat);
+
+          return local_xy;
+        }
+
+        if (!ros::param::get("/local_xy_auto_longitude", lon))
+        {
+          ROS_WARN("[local_xy]: (auto) local_xy longitude not set.");
+
+          if (waiting_for_auto_origin)
+          {
+            *waiting_for_auto_origin = true;
+          }
+          return local_xy;
+        }
+        if (lon < -180 || lon > 180)
+        {
+          ROS_ERROR("[local_xy]: (auto) Invalid longitude: %lf out of range [-180, 180]", lon);
+          return local_xy;
+        }
+
+        if (!ros::param::get("/local_xy_auto_altitude", alt))
+        {
+          ROS_WARN("[local_xy]: (auto) local_xy altitude not set.");
+
+          if (waiting_for_auto_origin)
+          {
+            *waiting_for_auto_origin = true;
+          }
+
+          return local_xy;
+        }
+
+        local_xy = boost::make_shared<LocalXyWgs84Util>(
+            lat, lon, 0, alt, local_xy_frame);
       }
     }
     catch (const XmlRpc::XmlRpcException& e)

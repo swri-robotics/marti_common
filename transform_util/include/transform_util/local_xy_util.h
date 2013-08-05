@@ -144,7 +144,7 @@ namespace transform_util
   };
   typedef boost::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
 
-  LocalXyWgs84UtilPtr ParseLocalXyOrigin();
+  LocalXyWgs84UtilPtr ParseLocalXyOrigin(bool* waiting_for_auto_origin = 0);
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_

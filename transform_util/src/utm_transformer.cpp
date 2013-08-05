@@ -63,57 +63,71 @@ namespace transform_util
 
         return true;
       }
-      else if (initialized_)
+      else
       {
-        tf::StampedTransform tf_transform;
-        if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+        if (!initialized_)
         {
-          return false;
+          Initialize();
         }
 
-        transform = boost::make_shared<TfToUtmTransform>(
-                tf_transform,
-                utm_util_,
-                local_xy_util_);
+        if (initialized_)
+        {
+          tf::StampedTransform tf_transform;
+          if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+          {
+            return false;
+          }
 
-        return true;
+          transform = boost::make_shared<TfToUtmTransform>(
+                  tf_transform,
+                  utm_util_,
+                  local_xy_util_);
+
+          return true;
+        }
       }
     }
     else if (target_frame == _wgs84_frame && source_frame == _utm_frame)
     {
       if (!initialized_)
       {
-        return false;
+        Initialize();
       }
 
-      transform = boost::make_shared<UtmToWgs84Transform>(
-              utm_util_,
-              utm_zone_,
-              utm_band_);
+      if (initialized_)
+      {
+        transform = boost::make_shared<UtmToWgs84Transform>(
+                utm_util_,
+                utm_zone_,
+                utm_band_);
 
-      return true;
+        return true;
+      }
     }
     else if (source_frame == _utm_frame)
     {
       if (!initialized_)
       {
-        return false;
+        Initialize();
       }
 
-      tf::StampedTransform tf_transform;
-      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+      if (initialized_)
       {
-        return false;
+        tf::StampedTransform tf_transform;
+        if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+        {
+          return false;
+        }
+
+        transform = boost::make_shared<UtmToTfTransform>(
+                tf_transform,
+                utm_util_,
+                local_xy_util_,
+                utm_zone_,
+                utm_band_);
+
+        return true;
       }
-
-      transform = boost::make_shared<UtmToTfTransform>(
-              tf_transform,
-              utm_util_,
-              local_xy_util_,
-              utm_zone_,
-              utm_band_);
-
-      return true;
     }
 
     return false;
