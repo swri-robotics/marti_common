@@ -43,6 +43,43 @@ namespace transform_util
       double destination_longitude);
 
   /**
+   * Calculates the heading in degrees from a source and destination point in
+   * a north-oriented (+y = north, +x = east), ortho-rectified coordinate
+   * system. The heading is positive clock-wise with 0 degrees at north.
+   *
+   * @param[in] src_x The source X coordinate.
+   * @param[in] src_y The source Y coordinate.
+   * @param[in] dst_x The destination X coordinate.
+   * @param[in] dst_y The destination Y coordinate.
+   *
+   * @returns The heading in degrees along the vector between the source and
+   * destination points.
+   */
+  double GetHeading(double src_x, double src_y, double dst_x, double dst_y);
+
+  /**
+   * Convert yaw to heading, where yaw is in radians, counter-clockwise, with 0
+   * on the positive x-axis and heading is in degrees, clockwise, with 0 on the
+   * positive y-axis.
+   *
+   * @param[in] yaw The yaw in radians.
+   *
+   * @return The heading in degrees.
+   */
+  double ToHeading(double yaw);
+
+  /**
+   * Convert heading to yaw, where yaw is in radians, counter-clockwise, with 0
+   * on the positive x-axis and heading is in degrees, clockwise, with 0 on the
+   * positive y-axis.
+   *
+   * @param[in] heading The heading in degrees.
+   *
+   * @return The yaw in radians.
+   */
+  double ToYaw(double heading);
+
+  /**
    * Snaps a quaternion rotation to the closest right angle rotation.
    *
    * @param[in]  rotation  The input quaternion rotation.
