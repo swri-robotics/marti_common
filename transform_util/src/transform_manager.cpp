@@ -86,7 +86,9 @@ namespace transform_util
       const ros::Time& time,
       Transform& transform)
   {
-    if (target_frame == source_frame)
+    std::string src_frame = source_frame;
+    std::string tgt_frame = target_frame;
+    if (tgt_frame == src_frame)
     {
       transform = Transform();
       return true;
@@ -99,17 +101,36 @@ namespace transform_util
     }
 
     // Check if the source frame is in the TF tree.
-    std::string source = source_frame;
-    if (tf_listener_->frameExists(source_frame))
+    std::string source = src_frame;
+    if (tf_listener_->frameExists(src_frame))
     {
       source = _tf_frame;
     }
 
     // Check if the target frame is in the TF tree.
-    std::string target = target_frame;
-    if (tf_listener_->frameExists(target_frame))
+    std::string target = tgt_frame;
+    if (tf_listener_->frameExists(tgt_frame))
     {
       target = _tf_frame;
+    }
+
+    // Check if either of the frames is local_xy
+    if (source == _local_xy_frame)
+    {
+      source = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", src_frame))
+      {
+        return false;
+      }
+    }
+
+    if (target == _local_xy_frame)
+    {
+      target = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", tgt_frame))
+      {
+        return false;
+      }
     }
 
     if (source == target)
@@ -117,18 +138,19 @@ namespace transform_util
       // Both frames are in the TF tree.
 
       tf::StampedTransform tf_transform;
-      if (GetTransform(target_frame, source_frame, time, tf_transform))
+      if (GetTransform(tgt_frame, src_frame, time, tf_transform))
       {
         transform = tf_transform;
         return true;
       }
 
+      ROS_ERROR("Failed to get tf transform.");
       return false;
     }
 
     if (transformers_[source].count(target) == 0)
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
@@ -137,13 +159,13 @@ namespace transform_util
     boost::shared_ptr<Transformer> transformer = transformers_[source][target];
     if (!transformer)
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
     }
 
-    return transformer->GetTransform(target_frame, source_frame, time, transform);
+    return transformer->GetTransform(tgt_frame, src_frame, time, transform);
   }
 
   bool TransformManager::GetTransform(
