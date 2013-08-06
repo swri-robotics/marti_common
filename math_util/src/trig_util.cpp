@@ -38,4 +38,14 @@ namespace math_util
 
     return wrapped;
   }
+
+  double ToRadians(double degrees)
+  {
+    return degrees * _pi / 180.0;
+  }
+
+  double ToDegrees(double radians)
+  {
+    return radians * 180.0 / _pi;
+  }
 }
