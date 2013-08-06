@@ -123,8 +123,8 @@ TEST(TransformManagerTests, UtmToWgs84)
 
   tf::Vector3 wgs84 = transform * utm;
 
-  EXPECT_FLOAT_EQ(29.526667, wgs84.x());
-  EXPECT_FLOAT_EQ(-98.471944, wgs84.y());
+  EXPECT_FLOAT_EQ(29.526667, wgs84.y());
+  EXPECT_FLOAT_EQ(-98.471944, wgs84.x());
 }
 
 TEST(TransformManagerTests, TfToUtm1)

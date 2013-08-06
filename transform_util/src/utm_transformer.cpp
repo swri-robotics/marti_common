@@ -215,7 +215,7 @@ namespace transform_util
   {
     double lat, lon;
     utm_util_->ToLatLon(utm_zone_, utm_band_, v_in.x(), v_in.y(), lat, lon);
-    v_out.setValue(lat, lon, v_in.z());
+    v_out.setValue(lon, lat, v_in.z());
   }
 
 
