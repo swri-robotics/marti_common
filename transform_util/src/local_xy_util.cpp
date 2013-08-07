@@ -181,7 +181,6 @@ namespace transform_util
 
       if (local_xy_name != "auto")
       {
-
         XmlRpc::XmlRpcValue local_xy_origins;
         if (!ros::param::get("/local_xy_origins", local_xy_origins))
         {
@@ -246,10 +245,17 @@ namespace transform_util
       }
       else
       {
+        bool auto_set = false;
+        if (!ros::param::get("/local_xy_auto_set", auto_set) || !auto_set)
+        {
+          ROS_WARN("[local_xy]: (auto) local_xy origin not set.");
+          return local_xy;
+        }
+
         double lat, lon, alt;
         if (!ros::param::get("/local_xy_auto_latitude", lat))
         {
-          ROS_WARN("[local_xy]: (auto) local_xy latitude not set.");
+          ROS_ERROR("[local_xy]: (auto) local_xy latitude not set.");
 
           if (waiting_for_auto_origin)
           {
@@ -267,7 +273,7 @@ namespace transform_util
 
         if (!ros::param::get("/local_xy_auto_longitude", lon))
         {
-          ROS_WARN("[local_xy]: (auto) local_xy longitude not set.");
+          ROS_ERROR("[local_xy]: (auto) local_xy longitude not set.");
 
           if (waiting_for_auto_origin)
           {
@@ -283,7 +289,7 @@ namespace transform_util
 
         if (!ros::param::get("/local_xy_auto_altitude", alt))
         {
-          ROS_WARN("[local_xy]: (auto) local_xy altitude not set.");
+          ROS_ERROR("[local_xy]: (auto) local_xy altitude not set.");
 
           if (waiting_for_auto_origin)
           {
