@@ -77,17 +77,17 @@ def initialize_origin():
                         
             value1 = KeyValue()
             value1.key = "Latitude"
-            value1.value = _latitude
+            value1.value = "%f" % _latitude
             status.values.append(value1)
         
             value2 = KeyValue()
             value2.key = "Longitude"
-            value2.value = _longitude
+            value2.value = "%f" % _longitude
             status.values.append(value2)
         
             value3 = KeyValue()
             value3.key = "Altitude"
-            value3.value = _altitude
+            value3.value = "%f" % _altitude
             status.values.append(value3)
         
             diagnostic.status.append(status)
