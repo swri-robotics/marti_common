@@ -34,6 +34,7 @@ def gps_callback(data):
         rospy.set_param('/local_xy_auto_altitude', _altitude)
         rospy.set_param('/local_xy_auto_set', _has_origin)
         
+        global _sub
         _sub.unregister()
         _sub = None
 
