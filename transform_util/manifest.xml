@@ -10,9 +10,12 @@
   <review status="unreviewed" notes=""/>
   <url></url>
   
-  <depend package="roscpp"/> 
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
   <depend package="tf"/>
   <depend package="pluginlib"/>
+  <depend package="gps_common"/>
+  <depend package="diagnostic_msgs"/>
   <depend package="math_util"/>
   
   <rosdep name="opencv2.3"/>
