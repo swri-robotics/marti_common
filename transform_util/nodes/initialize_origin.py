@@ -22,7 +22,7 @@ def gps_callback(data):
     global _altitude
     global _has_origin
     
-    if not has_origin:
+    if not _has_origin:
         _latitude = data.latitude
         _longitude = data.longitude
         _altitude = data.altitude
