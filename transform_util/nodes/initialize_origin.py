@@ -41,7 +41,7 @@ def initialize_origin():
     rospy.init_node('initialize_origin', anonymous=True)
    
     global _sub
-    _sub = rospy.Subscriber("gps", GpsFix, gps_callback)
+    _sub = rospy.Subscriber("gps", GPSFix, gps_callback)
     pub = rospy.Publisher('/diagnostics', DiagnosticArray)
    
     hw_id = rospy.get_param('~hw_id', 'none') 
