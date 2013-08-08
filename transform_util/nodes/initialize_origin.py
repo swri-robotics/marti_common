@@ -31,13 +31,12 @@ def gps_callback(data):
         _latitude = data.latitude
         _longitude = data.longitude
         _altitude = data.altitude
+        _has_origin = True
         
         rospy.set_param('/local_xy_auto_latitude', _latitude)
         rospy.set_param('/local_xy_auto_longitude', _longitude)
         rospy.set_param('/local_xy_auto_altitude', _altitude)
         rospy.set_param('/local_xy_auto_set', _has_origin)
-        
-        _has_origin = True
         
         global _sub
         _sub.unregister()
