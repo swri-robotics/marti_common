@@ -132,8 +132,13 @@ namespace transform_util
 
         return true;
       }
+      else
+      {
+        ROS_WARN("Failed to initialize LocalXY origin");
+      }
     }
 
+    ROS_WARN("Failed to get UTM transform");
     return false;
   }
 
@@ -148,7 +153,9 @@ namespace transform_util
       utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
     }
 
-    return local_xy_util_;
+    initialized_ = local_xy_util_;
+
+    return initialized_;
   }
 
   UtmToTfTransform::UtmToTfTransform(

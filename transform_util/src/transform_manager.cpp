@@ -120,6 +120,7 @@ namespace transform_util
       source = _tf_frame;
       if (!ros::param::get("/local_xy_frame", src_frame))
       {
+        ROS_ERROR("[transform_manager]: Failed to parse /local_xy_frame.");
         return false;
       }
     }
@@ -129,6 +130,7 @@ namespace transform_util
       target = _tf_frame;
       if (!ros::param::get("/local_xy_frame", tgt_frame))
       {
+        ROS_ERROR("[transform_manager]: Failed to parse /local_xy_frame.");
         return false;
       }
     }
@@ -144,7 +146,7 @@ namespace transform_util
         return true;
       }
 
-      ROS_ERROR("Failed to get tf transform.");
+      ROS_ERROR("[transform_manager]: Failed to get tf transform.");
       return false;
     }
 
@@ -157,6 +159,7 @@ namespace transform_util
     }
 
     boost::shared_ptr<Transformer> transformer = transformers_[source][target];
+
     if (!transformer)
     {
       ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",

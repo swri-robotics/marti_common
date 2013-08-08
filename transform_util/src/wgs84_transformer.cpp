@@ -97,7 +97,9 @@ namespace transform_util
     // Initialize LocalXY util with an origin.
     local_xy_util_ = ParseLocalXyOrigin();
 
-    return local_xy_util_;
+    initialized_ = local_xy_util_;
+
+    return initialized_;
   }
 
   TfToWgs84Transform::TfToWgs84Transform(
