@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+#
+# Copyright (C) 2013 All Right Reserved, Southwest Research Institute® (SwRI®)
+#
+
 import subprocess
 import roslib; roslib.load_manifest('transform_util')
 import rospy
@@ -27,12 +32,12 @@ def gps_callback(data):
         _longitude = data.longitude
         _altitude = data.altitude
         
-        _has_origin = True
-        
         rospy.set_param('/local_xy_auto_latitude', _latitude)
         rospy.set_param('/local_xy_auto_longitude', _longitude)
         rospy.set_param('/local_xy_auto_altitude', _altitude)
         rospy.set_param('/local_xy_auto_set', _has_origin)
+        
+        _has_origin = True
         
         global _sub
         _sub.unregister()
@@ -72,7 +77,7 @@ def initialize_origin():
             status.name = "LocalXY Origin"
             status.hardware_id = hw_id
         
-            status.level = DiagnosticStatus.ERROR
+            status.level = DiagnosticStatus.OK
             status.message = "Has Origin"
                         
             value1 = KeyValue()
