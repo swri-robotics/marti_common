@@ -75,6 +75,8 @@ namespace transform_util
           tf::StampedTransform tf_transform;
           if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
           {
+            ROS_ERROR("Failed to get transform from %s to local_xy(%s)",
+                source_frame.c_str(), local_xy_util_->FrameId().c_str());
             return false;
           }
 
@@ -116,6 +118,8 @@ namespace transform_util
         tf::StampedTransform tf_transform;
         if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
         {
+          ROS_ERROR("Failed to get transform from local_xy(%s) to %s",
+              local_xy_util_->FrameId().c_str(), target_frame.c_str());
           return false;
         }
 
