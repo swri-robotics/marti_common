@@ -305,7 +305,11 @@ int main(int argc, char **argv)
 
   _tf_manager.Initialize();
 
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
   sleep(1);
 
-  return RUN_ALL_TESTS();
+  bool result = RUN_ALL_TESTS();
+  spinner.stop();
+  return result;
 }

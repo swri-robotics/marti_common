@@ -73,10 +73,10 @@ namespace transform_util
         if (initialized_)
         {
           tf::StampedTransform tf_transform;
-          if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+          if (!Transformer::GetTransform(local_xy_frame_, source_frame, time, tf_transform))
           {
             ROS_ERROR("Failed to get transform from %s to local_xy(%s)",
-                source_frame.c_str(), local_xy_util_->FrameId().c_str());
+                source_frame.c_str(), local_xy_frame_.c_str());
             return false;
           }
 
@@ -116,10 +116,10 @@ namespace transform_util
       if (initialized_)
       {
         tf::StampedTransform tf_transform;
-        if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+        if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
         {
           ROS_ERROR("Failed to get transform from local_xy(%s) to %s",
-              local_xy_util_->FrameId().c_str(), target_frame.c_str());
+              local_xy_frame_.c_str(), target_frame.c_str());
           return false;
         }
 
@@ -144,16 +144,24 @@ namespace transform_util
 
   bool UtmTransformer::Initialize()
   {
-    // Initialize LocalXY util with an origin.
-    local_xy_util_ = ParseLocalXyOrigin();
+    if (!ros::param::get("/local_xy_frame", local_xy_frame_))
+    {
+      return false;
+    }
 
-    if (local_xy_util_)
+    if (!local_xy_util_)
+    {
+      local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
+    }
+
+    // Initialize LocalXY util with an origin.
+    if (local_xy_util_->Initialized())
     {
       utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
       utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
     }
 
-    initialized_ = local_xy_util_;
+    initialized_ = local_xy_util_->Initialized();
 
     return initialized_;
   }
