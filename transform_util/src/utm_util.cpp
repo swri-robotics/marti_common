@@ -71,7 +71,7 @@ namespace transform_util
     return band;
   }
 
-  UtmUtil::UtmUtil()
+  UtmUtil::UtmData::UtmData()
   {
     // Initialize lat long projection.
     lat_lon_ = pj_init_plus("+proj=latlong +ellps=WGS84");
@@ -87,8 +87,8 @@ namespace transform_util
       utm_south_[i] = pj_init_plus(args);
     }
   }
-
-  UtmUtil::~UtmUtil()
+  
+  UtmUtil::UtmData::~UtmData()
   {
     pj_free(lat_lon_);
 
@@ -100,7 +100,7 @@ namespace transform_util
     }
   }
 
-  void UtmUtil::ToUtm(
+  void UtmUtil::UtmData::ToUtm(
       double latitude,
       double longitude,
       int& zone,
@@ -108,6 +108,8 @@ namespace transform_util
       double& easting,
       double& northing) const
   {
+    boost::unique_lock<boost::mutex> lock(mutex_);
+    
     zone = GetZone(longitude);
     band = GetBand(latitude);
 
@@ -128,7 +130,7 @@ namespace transform_util
     northing = y;
   }
 
-  void UtmUtil::ToUtm(
+  void UtmUtil::UtmData::ToUtm(
       double latitude,
       double longitude,
       double& easting,
@@ -140,7 +142,7 @@ namespace transform_util
     ToUtm(latitude, longitude, zone, band, easting, northing);
   }
 
-  void UtmUtil::ToLatLon(
+  void UtmUtil::UtmData::ToLatLon(
       int zone,
       char band,
       double easting,
@@ -148,6 +150,8 @@ namespace transform_util
       double& latitude,
       double& longitude) const
   {
+    boost::unique_lock<boost::mutex> lock(mutex_);
+    
     double x = easting;
     double y = northing;
 
@@ -162,5 +166,41 @@ namespace transform_util
 
     longitude = x * math_util::_rad_2_deg;
     latitude = y * math_util::_rad_2_deg;
+  }
+  
+  UtmUtil::UtmUtil() :
+    utm_data_(UtmDataSingleton::get_const_instance())
+  {
+  }
+  
+  void UtmUtil::ToUtm(
+      double latitude,
+      double longitude,
+      int& zone,
+      char& band,
+      double& easting,
+      double& northing) const
+  {
+    utm_data_.ToUtm(latitude, longitude, zone, band, easting, northing);
+  }
+
+  void UtmUtil::ToUtm(
+      double latitude,
+      double longitude,
+      double& easting,
+      double& northing) const
+  {
+    utm_data_.ToUtm(latitude, longitude, easting, northing);
+  }
+
+  void UtmUtil::ToLatLon(
+      int zone,
+      char band,
+      double easting,
+      double northing,
+      double& latitude,
+      double& longitude) const
+  {
+    utm_data_.ToLatLon(zone, band, easting, northing, latitude, longitude);
   }
 }
