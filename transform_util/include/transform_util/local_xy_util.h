@@ -24,6 +24,10 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <ros/ros.h>
+
+#include <gps_common/GPSFix.h>
+
 namespace transform_util
 {
 /**
@@ -85,9 +89,12 @@ namespace transform_util
         double reference_latitude,
         double reference_longitude,
         double reference_heading = 0,
-        double reference_altitude = 0,
-        const std::string& frame_id = std::string(""));
+        double reference_altitude = 0);
     // TODO(malban): What is the heading referenced from?
+
+    LocalXyWgs84Util();
+
+    bool Initialized() { return initialized_; }
 
     double ReferenceLongitude() const;
 
@@ -96,8 +103,6 @@ namespace transform_util
     double ReferenceHeading() const;
 
     double ReferenceAltitude() const;
-
-    std::string FrameId() const;
 
     /**
      * Convert WGS84 latitude and longitude to LocalXY.
@@ -122,8 +127,10 @@ namespace transform_util
      * @param[in]  y          Y coordinate in meters from origin.
      * @param[out] latitude   Latitude value in degrees.
      * @param[out] longitude  Longitude value in degrees.
+     *
+     * @returns True if the conversion is possible.
      */
-    void ToWgs84(
+    bool ToWgs84(
         double x,
         double y,
         double& latitude,
@@ -135,16 +142,19 @@ namespace transform_util
     double reference_heading_;    //< Reference heading in radians.
     double reference_altitude_;   //< Reference altitude in meters.
 
-    std::string frame_id_;
-
     double rho_lat_;
     double rho_lon_;
     double cos_heading_;
     double sin_heading_;
+
+    ros::Subscriber origin_sub_;
+    bool initialized_;
+
+    void Initialize();
+
+    void HandleOrigin(const gps_common::GPSFixConstPtr origin);
   };
   typedef boost::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
-
-  LocalXyWgs84UtilPtr ParseLocalXyOrigin(bool* waiting_for_auto_origin = 0);
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
