@@ -52,6 +52,7 @@ class CanBus
   ros::Publisher can_frame_pub_;
   boost::function<void(const marti_can_msgs::CanFrame &msg)> callback_fn_;
   std::string node_name_;
+  bool timestamp_messages_;
 };
 
 template<class T>
@@ -85,6 +86,8 @@ void CanBus::Publish(const marti_can_msgs::CanFrame &msg) const
 {
   marti_can_msgs::CanFrame modified_msg = msg;
   modified_msg.header.frame_id = node_name_;
+  if (timestamp_messages_)
+    modified_msg.header.stamp = ros::Time::now();
   can_frame_pub_.publish(modified_msg);
 }
 
