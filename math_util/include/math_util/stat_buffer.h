@@ -16,26 +16,31 @@ namespace math_util
   class StatBuffer: public GenRingBuffer<T>
   {
   public:
-    void modifyBufferSize(int NumElements) // moved from private 04/02/2008 JJC
+    void modifyBufferSize(int NumElements)  // moved from private 04/02/2008 JJC
     {
       this->realloc_mem(NumElements);
     }
+    
     StatBuffer()
     {
       this->modifyBufferSize(30);
     }
-    StatBuffer(int NumElements)
+    
+    explicit StatBuffer(int NumElements)
     {
       this->modifyBufferSize(NumElements);
     }
+    
     ~StatBuffer()
     {
       this->modifyBufferSize(0);
     }
+    
     bool UpdateStats()
     {
       return this->computeStats();
     }
+    
     bool UpdateDiffStats()
     {
       return this->computeDiffStats();
@@ -117,11 +122,11 @@ namespace math_util
     T computeMean(int NumToAvg)
     {
       int NumElems = this->size();
-      if(NumElems<=0) return (T)(0.0);
+      if (NumElems <= 0) return (T)(0.0);
       T CurVal = *this->getTail(0);
       T sum = 0;
-      NumToAvg = std::min(NumToAvg,NumElems);
-      for(int i=0; i<NumToAvg; ++i)
+      NumToAvg = std::min(NumToAvg, NumElems);
+      for (int i = 0; i < NumToAvg; ++i)
       {
         CurVal = *this->getTail(i);
         sum += CurVal;
@@ -133,8 +138,8 @@ namespace math_util
     bool computeStats()
     {
       int NumElems = this->size();
-      if(NumElems<=0) return false;
-      
+      if (NumElems <= 0) return false;
+
       T sum = 0;
       T &min = RetainedStats.min;
       T &max = RetainedStats.max;
@@ -142,7 +147,7 @@ namespace math_util
       T &median = RetainedStats.median;
       T &std = RetainedStats.std;
       T &var = RetainedStats.variance;
-      
+
       T CurVal = *this->get(0);
       sum += CurVal;
       min = CurVal;
@@ -153,32 +158,32 @@ namespace math_util
       var = std*std;
 
       // compute mean, min and max
-      for(int i=1; i<NumElems; i++)
+      for (int i = 1; i < NumElems; i++)
       {
         CurVal = *this->get(i);
         sum += CurVal;
-        if(CurVal > max) max = CurVal;
-        else if(CurVal < min) min = CurVal;
+        if (CurVal > max) max = CurVal;
+        else if (CurVal < min) min = CurVal;
       }
       mean = sum/((T)NumElems);
-      sum=0;
+      sum = 0;
 
       // compute
-      if(NumElems>1)
+      if (NumElems > 1)
       {
-        T *vec1 = new T[NumElems]; // for median calculation
-        for(int i=0; i<NumElems; i++)
+        T *vec1 = new T[NumElems];  // for median calculation
+        for (int i = 0; i < NumElems; i++)
         {
           CurVal = *this->get(i);
           sum += (CurVal-mean)*(CurVal-mean);
-          vec1[i] = CurVal; // for median calculation
+          vec1[i] = CurVal;  // for median calculation
         }
         std=(T)sqrt((double)(sum/(NumElems-1)));
         var = std*std;
 
         // Compute Median
-        std::sort(vec1,vec1+NumElems); // first sort the data
-        if(NumElems % 2 == 0)
+        std::sort(vec1, vec1+NumElems);  // first sort the data
+        if (NumElems % 2 == 0)
         {
           median = (vec1[NumElems/2-1] + vec1[NumElems/2])/2;
         }
@@ -186,7 +191,7 @@ namespace math_util
         {
           median = vec1[NumElems/2];
         }
-        if(NumElems <= 1)
+        if (NumElems <= 1)
         {
           delete vec1;
         }
@@ -194,7 +199,6 @@ namespace math_util
         {
           delete [] vec1;
         }
-
       }
 
       return true;
@@ -203,22 +207,20 @@ namespace math_util
     bool computeDiffStats()
     {
       int NumElems = this->size();
-      if(NumElems<=1) return false;
-      
+      if (NumElems <= 1) return false;
+
       T sum    = 0;
       T &min    = RetainedDiffStats.min;
       T &max    = RetainedDiffStats.max;
       T &mean    = RetainedDiffStats.mean;
       T &median  = RetainedDiffStats.median;
-      //T &std    = RetainedDiffStats.std;
-      //T &var    = RetainedStats.variance;
-      
+
       T *vec1 = new T[NumElems];
 
       T CurVal1 = *this->get(0);
       T CurVal2 = *this->get(1);
       T CVDiff = CurVal2-CurVal1;
-      
+
       vec1[0] = CVDiff;
 
       sum += CVDiff;
@@ -226,21 +228,21 @@ namespace math_util
       max = CVDiff;
       mean = CVDiff;
       median = CVDiff;
-      for(int i=1; i<NumElems-1; i++)
+      for (int i = 1; i < NumElems-1; i++)
       {
         CurVal1 = *this->get(i);
         CurVal2 = *this->get(i+1);
         CVDiff = CurVal2-CurVal1;
         vec1[i] = CVDiff;
         sum += CVDiff;
-        if(CVDiff > max) max = CVDiff;
-        else if(CVDiff < min) min = CVDiff;
+        if (CVDiff > max) max = CVDiff;
+        else if (CVDiff < min) min = CVDiff;
       }
       mean = sum/((T)NumElems);
 
-      NumElems--; // we put in one fewer than NumElems into the vector
-      std::sort(vec1, vec1+NumElems); // first sort the data
-      if(NumElems % 2 == 0)
+      NumElems--;  // we put in one fewer than NumElems into the vector
+      std::sort(vec1, vec1+NumElems);  // first sort the data
+      if (NumElems % 2 == 0)
       {
         median = (vec1[NumElems/2-1] + vec1[NumElems/2])/2;
       }
@@ -248,7 +250,6 @@ namespace math_util
       {
         median = vec1[NumElems/2];
       }
-
 
       delete [] vec1;
 

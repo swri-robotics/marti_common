@@ -6,14 +6,15 @@
 #define GEN_RING_BUFF_DEFAULT_NUM_ELEMENTS 16
 
 #include <cassert>
+#include <algorithm>
 
 namespace math_util
 {
   template <class T>
-  class GenRingBuffer 
+  class GenRingBuffer
   {
   public:
-    //Default constructor
+    // Default constructor
     GenRingBuffer()
     {
       NumElements = 0;
@@ -21,14 +22,14 @@ namespace math_util
       this->init_array();
     }
 
-    GenRingBuffer(int NumElements2Alloc)
+    explicit GenRingBuffer(int NumElements2Alloc)
     {
       NumElements = 0;
       this->alloc_mem(NumElements2Alloc);
       this->init_array();
     }
 
-    GenRingBuffer(GenRingBuffer<T>& src)
+    GenRingBuffer(const GenRingBuffer<T>& src)
     {
       this->alloc_mem(src.MaxNumElements);
       this->init_array();
@@ -36,14 +37,13 @@ namespace math_util
     }
 
     // Copy Assignment
-    GenRingBuffer<T>& operator=(GenRingBuffer<T>& src)
+    GenRingBuffer<T>& operator=(const GenRingBuffer<T>& src)
     {
       this->copyRB(src);
       return *this;
     }
 
-
-    ~GenRingBuffer()
+    virtual ~GenRingBuffer()
     {
       delete [] HEAD;
     }
@@ -68,16 +68,16 @@ namespace math_util
       return this->get(i);
     }
 
-    virtual T* get(int i=0) const
+    virtual T* get(int i = 0) const
     {
-      if(i>=NumElements) return NULL;
+      if (i >= NumElements) return NULL;
       int j = ((consumePtr-HEAD)+i)%MaxNumElements;
       return (&HEAD[j].Data);
     }
 
     T* getRaw(int i) const
     {
-      if(i>=MaxNumElements)
+      if (i >= MaxNumElements)
       {
         return NULL;
       }
@@ -92,15 +92,15 @@ namespace math_util
     // getTail searches backward from index i
     T* getTail(int i = 0) const
     {
-      if(i>=NumElements) return NULL;
+      if (i >= NumElements) return NULL;
       int j = ((loadPtr-1-HEAD)-i);
-      if(j < 0){
+      if (j < 0){
         j += MaxNumElements;
       }
       return (&HEAD[j].Data);
     }
 
-    void load(T &newElem)
+    void load(const T &newElem)
     {
       this->push(newElem);
     }
@@ -111,9 +111,9 @@ namespace math_util
     }
 
     T* pop()
-        {
+    {
       T* temp;
-      if(this->size() == 0)
+      if (this->size() == 0)
       {
         return 0;
       }
@@ -124,7 +124,7 @@ namespace math_util
         NumElements--;
       }
       return temp;
-        }
+    }
 
     bool indexValid(int i)
     {
@@ -133,21 +133,21 @@ namespace math_util
 
     void clear()
     {
-      while(this->pop());
+      while (this->pop());
     }
 
   protected:
     void realloc_mem(int NumElements2Alloc)
     {
-      temp = new ctr[std::max(2,NumElements2Alloc)];
-      this->copy_elems(temp,NumElements2Alloc);
+      temp = new ctr[std::max(2, NumElements2Alloc)];
+      this->copy_elems(temp, NumElements2Alloc);
       delete [] HEAD;
       HEAD = temp;
       TAIL = HEAD+NumElements2Alloc;
       loadPtr = HEAD;
       consumePtr = HEAD;
       MaxNumElements = NumElements2Alloc;
-      if(MaxNumElements < NumElements)
+      if (MaxNumElements < NumElements)
       {
         NumElements = MaxNumElements;
       }
@@ -175,7 +175,7 @@ namespace math_util
     {
       bool success;
       int Num2Copy = std::min(NumElements, MaxNum2Copy);
-      if(Num2Copy !=NumElements)
+      if (Num2Copy !=NumElements)
       {
         success = false;
       }
@@ -183,18 +183,18 @@ namespace math_util
       {
         success = true;
       }
-      for(int i=0; i<Num2Copy; i++)
+      for (int i = 0; i < Num2Copy; i++)
       {
         dest[i].Data = *(this->get(i));
       }
       return success;
     }
 
-    void push(T &newElem)
+    void push(const T &newElem)
     {
       assert(NumElements <= MaxNumElements);
       loadPtr->Data = newElem;
-      if(NumElements >= MaxNumElements)
+      if (NumElements >= MaxNumElements)
       {
         this->incLoadPtr();
         this->incConsumePtr();
@@ -217,19 +217,19 @@ namespace math_util
     }
 
     ctr* alloc_mem(int NumElems)
-        {
-      HEAD = new ctr[std::max(NumElems,2)];
+    {
+      HEAD = new ctr[std::max(NumElems, 2)];
       TAIL = HEAD+NumElems;
       loadPtr = HEAD;
       consumePtr = HEAD;
       MaxNumElements = NumElems;
       return HEAD;
-        }
+    }
 
     void init_array()
     {
       int j, k;
-      for(int i=0; i<MaxNumElements; i++)
+      for (int i = 0; i < MaxNumElements; i++)
       {
         j = (i+1)%MaxNumElements;
         k = (i-1)%MaxNumElements;
@@ -241,7 +241,7 @@ namespace math_util
     void copyRB(GenRingBuffer<T>& src)
     {
       this->clear();
-      if(src.MaxNumElements != this->MaxNumElements)
+      if (src.MaxNumElements != this->MaxNumElements)
       {
         this->realloc_mem(src.MaxNumElements);
       }
@@ -253,7 +253,7 @@ namespace math_util
       // copied-to buffer incorrectly having a NumElements greater than the
       // copy-from buffer by 1:
       // this->NumElements = src.NumElements;
-      for (int i=0; i<src.NumElements; ++i)
+      for (int i = 0; i < src.NumElements; ++i)
       {
         this->load(*(src[i]));
       }
