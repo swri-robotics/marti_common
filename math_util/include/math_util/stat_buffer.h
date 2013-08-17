@@ -12,175 +12,234 @@
 
 namespace math_util
 {
-
-template <class T>
-class StatBuffer: public GenRingBuffer<T> 
-{
-public:
-  void modifyBufferSize(int NumElements) // moved from private 04/02/2008 JJC
+  template <class T>
+  class StatBuffer: public GenRingBuffer<T>
   {
-    this->realloc_mem(NumElements);
-  }
-  StatBuffer()
-  {
-    this->modifyBufferSize(30);
-  }
-  StatBuffer(int NumElements)
-  {
-    this->modifyBufferSize(NumElements);
-  }
-  ~StatBuffer()
-  {
-    this->modifyBufferSize(0);
-  }
-  bool UpdateStats()
-  {
-    return this->computeStats();
-  }
-  bool UpdateDiffStats()
-  {
-    return this->computeDiffStats();
-  }
-
-  T reportDiffMean()
-  {
-    return RetainedDiffStats.mean;
-  }
-
-  T reportDiffMedian()
-  {
-    return RetainedDiffStats.median;
-  }
-
-  T reportDiffMin()
-  {
-    return RetainedDiffStats.min;
-  }
-
-  T reportDiffMax()
-  {
-    return RetainedDiffStats.max;
-  }
-
-  T reportMean()
-  {
-    return RetainedStats.mean;
-  }
-
-  // Computes the mean of the last NumToAvg items in the buffer
-  T reportPartialMean(int NumToAvg)
-  {
-    return this->computeMean(NumToAvg);
-  }
-
-  T reportMedian()
-  {
-    return RetainedStats.median;
-  }
-
-  T reportMin()
-  {
-    return RetainedStats.min;
-  }
-
-  T reportMax()
-  {
-    return RetainedStats.max;
-  }
-  T reportStd()
-  {
-    return RetainedStats.std;
-  }
-
-  T reportVar()
-  {
-    return RetainedStats.variance;
-  }
-  T reportRetainedStats()
-  {
-    return RetainedStats;
-  }
-
-
-private:
-
-  typedef struct
-  {
-    T mean;
-    T min;
-    T max;
-    T median;
-    T std;
-    T variance;
-  } StatPack;
-
-  StatPack RetainedStats;
-  StatPack RetainedDiffStats;
-  
-  T computeMean(int NumToAvg)
-  {
-    int NumElems = this->size();
-    if(NumElems<=0) return (T)(0.0);
-    T CurVal = *this->getTail(0);
-    T sum = 0;
-    NumToAvg = std::min(NumToAvg,NumElems);
-    for(int i=0; i<NumToAvg; ++i)
+  public:
+    void modifyBufferSize(int NumElements) // moved from private 04/02/2008 JJC
     {
-      CurVal = *this->getTail(i);
-      sum += CurVal;
+      this->realloc_mem(NumElements);
     }
-    T mean = sum/((T)NumToAvg);
-    return mean;
-  }
-
-  bool computeStats()
-  {
-    int NumElems = this->size();
-    if(NumElems<=0) return false;
-    
-    T sum = 0;
-    T &min = RetainedStats.min;
-    T &max = RetainedStats.max;
-    T &mean = RetainedStats.mean;
-    T &median = RetainedStats.median;
-    T &std = RetainedStats.std;
-    T &var = RetainedStats.variance;
-    
-    T CurVal = *this->get(0);
-    sum += CurVal;
-    min = CurVal;
-    max = CurVal;
-    mean = CurVal;
-    median = CurVal;
-    std = 0;
-    var = std*std;
-
-    // compute mean, min and max
-    for(int i=1; i<NumElems; i++)
+    StatBuffer()
     {
-      CurVal = *this->get(i);
-      sum += CurVal;
-      if(CurVal > max) max = CurVal;
-      else if(CurVal < min) min = CurVal;
+      this->modifyBufferSize(30);
     }
-    mean = sum/((T)NumElems);
-    sum=0;
-
-    // compute
-    if(NumElems>1)
+    StatBuffer(int NumElements)
     {
-      T *vec1 = new T[NumElems]; // for median calculation
-      for(int i=0; i<NumElems; i++)
+      this->modifyBufferSize(NumElements);
+    }
+    ~StatBuffer()
+    {
+      this->modifyBufferSize(0);
+    }
+    bool UpdateStats()
+    {
+      return this->computeStats();
+    }
+    bool UpdateDiffStats()
+    {
+      return this->computeDiffStats();
+    }
+
+    T reportDiffMean()
+    {
+      return RetainedDiffStats.mean;
+    }
+
+    T reportDiffMedian()
+    {
+      return RetainedDiffStats.median;
+    }
+
+    T reportDiffMin()
+    {
+      return RetainedDiffStats.min;
+    }
+
+    T reportDiffMax()
+    {
+      return RetainedDiffStats.max;
+    }
+
+    T reportMean()
+    {
+      return RetainedStats.mean;
+    }
+
+    // Computes the mean of the last NumToAvg items in the buffer
+    T reportPartialMean(int NumToAvg)
+    {
+      return this->computeMean(NumToAvg);
+    }
+
+    T reportMedian()
+    {
+      return RetainedStats.median;
+    }
+
+    T reportMin()
+    {
+      return RetainedStats.min;
+    }
+
+    T reportMax()
+    {
+      return RetainedStats.max;
+    }
+    T reportStd()
+    {
+      return RetainedStats.std;
+    }
+
+    T reportVar()
+    {
+      return RetainedStats.variance;
+    }
+    T reportRetainedStats()
+    {
+      return RetainedStats;
+    }
+
+  private:
+    typedef struct
+    {
+      T mean;
+      T min;
+      T max;
+      T median;
+      T std;
+      T variance;
+    } StatPack;
+
+    StatPack RetainedStats;
+    StatPack RetainedDiffStats;
+
+    T computeMean(int NumToAvg)
+    {
+      int NumElems = this->size();
+      if(NumElems<=0) return (T)(0.0);
+      T CurVal = *this->getTail(0);
+      T sum = 0;
+      NumToAvg = std::min(NumToAvg,NumElems);
+      for(int i=0; i<NumToAvg; ++i)
       {
-        CurVal = *this->get(i);
-        sum += (CurVal-mean)*(CurVal-mean);
-        vec1[i] = CurVal; // for median calculation
+        CurVal = *this->getTail(i);
+        sum += CurVal;
       }
-      std=(T)sqrt((double)(sum/(NumElems-1)));
+      T mean = sum/((T)NumToAvg);
+      return mean;
+    }
+
+    bool computeStats()
+    {
+      int NumElems = this->size();
+      if(NumElems<=0) return false;
+      
+      T sum = 0;
+      T &min = RetainedStats.min;
+      T &max = RetainedStats.max;
+      T &mean = RetainedStats.mean;
+      T &median = RetainedStats.median;
+      T &std = RetainedStats.std;
+      T &var = RetainedStats.variance;
+      
+      T CurVal = *this->get(0);
+      sum += CurVal;
+      min = CurVal;
+      max = CurVal;
+      mean = CurVal;
+      median = CurVal;
+      std = 0;
       var = std*std;
 
-      // Compute Median
-      std::sort(vec1,vec1+NumElems); // first sort the data
+      // compute mean, min and max
+      for(int i=1; i<NumElems; i++)
+      {
+        CurVal = *this->get(i);
+        sum += CurVal;
+        if(CurVal > max) max = CurVal;
+        else if(CurVal < min) min = CurVal;
+      }
+      mean = sum/((T)NumElems);
+      sum=0;
+
+      // compute
+      if(NumElems>1)
+      {
+        T *vec1 = new T[NumElems]; // for median calculation
+        for(int i=0; i<NumElems; i++)
+        {
+          CurVal = *this->get(i);
+          sum += (CurVal-mean)*(CurVal-mean);
+          vec1[i] = CurVal; // for median calculation
+        }
+        std=(T)sqrt((double)(sum/(NumElems-1)));
+        var = std*std;
+
+        // Compute Median
+        std::sort(vec1,vec1+NumElems); // first sort the data
+        if(NumElems % 2 == 0)
+        {
+          median = (vec1[NumElems/2-1] + vec1[NumElems/2])/2;
+        }
+        else
+        {
+          median = vec1[NumElems/2];
+        }
+        if(NumElems <= 1)
+        {
+          delete vec1;
+        }
+        else
+        {
+          delete [] vec1;
+        }
+
+      }
+
+      return true;
+    }
+
+    bool computeDiffStats()
+    {
+      int NumElems = this->size();
+      if(NumElems<=1) return false;
+      
+      T sum    = 0;
+      T &min    = RetainedDiffStats.min;
+      T &max    = RetainedDiffStats.max;
+      T &mean    = RetainedDiffStats.mean;
+      T &median  = RetainedDiffStats.median;
+      //T &std    = RetainedDiffStats.std;
+      //T &var    = RetainedStats.variance;
+      
+      T *vec1 = new T[NumElems];
+
+      T CurVal1 = *this->get(0);
+      T CurVal2 = *this->get(1);
+      T CVDiff = CurVal2-CurVal1;
+      
+      vec1[0] = CVDiff;
+
+      sum += CVDiff;
+      min = CVDiff;
+      max = CVDiff;
+      mean = CVDiff;
+      median = CVDiff;
+      for(int i=1; i<NumElems-1; i++)
+      {
+        CurVal1 = *this->get(i);
+        CurVal2 = *this->get(i+1);
+        CVDiff = CurVal2-CurVal1;
+        vec1[i] = CVDiff;
+        sum += CVDiff;
+        if(CVDiff > max) max = CVDiff;
+        else if(CVDiff < min) min = CVDiff;
+      }
+      mean = sum/((T)NumElems);
+
+      NumElems--; // we put in one fewer than NumElems into the vector
+      std::sort(vec1, vec1+NumElems); // first sort the data
       if(NumElems % 2 == 0)
       {
         median = (vec1[NumElems/2-1] + vec1[NumElems/2])/2;
@@ -189,76 +248,13 @@ private:
       {
         median = vec1[NumElems/2];
       }
-      if(NumElems <= 1)
-      {
-        delete vec1;
-      }
-      else
-      {
-        delete [] vec1;
-      }
 
+
+      delete [] vec1;
+
+      return true;
     }
-
-    return true;
-  }
-
-  bool computeDiffStats()
-  {
-    int NumElems = this->size();
-    if(NumElems<=1) return false;
-    
-    T sum    = 0;
-    T &min    = RetainedDiffStats.min;
-    T &max    = RetainedDiffStats.max;
-    T &mean    = RetainedDiffStats.mean;
-    T &median  = RetainedDiffStats.median;
-    //T &std    = RetainedDiffStats.std;
-    //T &var    = RetainedStats.variance;
-    
-    T *vec1 = new T[NumElems];
-
-    T CurVal1 = *this->get(0);
-    T CurVal2 = *this->get(1);
-    T CVDiff = CurVal2-CurVal1;
-    
-    vec1[0] = CVDiff;
-
-    sum += CVDiff;
-    min = CVDiff;
-    max = CVDiff;
-    mean = CVDiff;
-    median = CVDiff;
-    for(int i=1; i<NumElems-1; i++)
-    {
-      CurVal1 = *this->get(i);
-      CurVal2 = *this->get(i+1);
-      CVDiff = CurVal2-CurVal1;
-      vec1[i] = CVDiff;
-      sum += CVDiff;
-      if(CVDiff > max) max = CVDiff;
-      else if(CVDiff < min) min = CVDiff;
-    }
-    mean = sum/((T)NumElems);
-
-    NumElems--; // we put in one fewer than NumElems into the vector
-    std::sort(vec1,vec1+NumElems); // first sort the data
-    if(NumElems % 2 == 0)
-    {
-      median = (vec1[NumElems/2-1] + vec1[NumElems/2])/2;
-    }
-    else
-    {
-      median = vec1[NumElems/2];
-    }
-
-
-    delete [] vec1;
-
-    return true;
-  }
-};
-
+  };
 }
 
 
