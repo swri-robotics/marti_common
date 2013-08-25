@@ -7,494 +7,493 @@
 
 namespace marti_data_structures
 {
-
-template<class T>
-class LinkedList
-{
-public:
-  // Default constructor
-  LinkedList()
+  template<class T>
+  class LinkedList
   {
-    NumElements = 0;
-  }
-
-  // Copy Constructor
-  LinkedList(LinkedList<T> &src)
-  {
-    NumElements = 0;
-    this->CopyList(src, *this);
-  }
-
-  ~LinkedList()
-  {
-    ctr *tptr;
-    while (this->size() > 0)
+  public:
+    // Default constructor
+    LinkedList()
     {
-      tptr = HEAD;
-      HEAD = HEAD->next;
-      this->remove(tptr);
+      NumElements = 0;
     }
-  }
 
-  // Copy Assignment
-  LinkedList<T>& operator=(LinkedList<T>& src)
-  {
-    this->CopyList(src, *this);
-    return *this;
-  }
-
-  void initialize()
-  {
-    ctr *tptr;
-    while (this->size() > 0)
+    // Copy Constructor
+    LinkedList(LinkedList<T> &src)
     {
-      tptr = HEAD;
-      HEAD = HEAD->next;
-      this->remove(tptr);
+      NumElements = 0;
+      this->CopyList(src, *this);
     }
-  }
 
-  int size()
-  {
-    return NumElements;
-  }
-
-  void add(T &newElem)
-  {
-    if (this->size() == 0)
+    ~LinkedList()
     {
-      this->CreateNewLinkedList(&newElem);
-    }
-    else
-    {
-      this->addToTail(&newElem);
-    }
-  }
-
-  void addCopy(T &newElem)
-  {
-    T* copyElem = new T;
-    *copyElem = newElem;
-    this->add(*copyElem);
-  }
-
-  // Adds a new element at location i, and moves previous i (and all above) to i+1 (and so on)
-  // If i >= Size the new element will be added to the end of the list
-  void insertAt(T &newElem, int i)
-  {
-    this->addInPosition(&newElem, i);
-  }
-
-  void insertCopyAt(T &newElem, int i)
-  {
-    T* copyElem = new T;
-    *copyElem = newElem;
-    this->addInPosition(copyElem, i);
-  }
-
-  void remove(int i)
-  {
-    ctr *tptr;
-    tptr = this->get(i);
-    if (tptr) // if tptr!=NULL
-    {
-      this->remove(tptr);
-    }
-  }
-
-  T* ReturnElement(int i)
-  {
-    // returns NULL if index out of bounds
-    ctr* temp = this->get(i);
-    if (NULL == temp)
-    {
-      return NULL;
-    }
-    else
-    {
-      return (temp->Data);
-    }
-  }
-
-  // Crops list by removing all elements from i to the end (i inclusive)
-  void CropList(int i)
-  {
-    while (this->ReturnElement(i))
-    {
-      this->remove(i);
-    }
-  }
-
-private:
-  struct ctr
-  {
-    T *Data;
-    ctr *next;
-    ctr *prev;
-  };
-  ctr *temp;
-  ctr *HEAD;
-  ctr *TAIL;
-  int NumElements;
-
-  // void UpdatePointers()
-  void CreateNewLinkedList(T *firstElement)
-  {
-    temp = this->alloc_elem(firstElement);
-    HEAD = temp;
-    TAIL = temp;
-    temp->next = NULL;
-    temp->prev = NULL;
-    NumElements++;
-  }
-
-  void addToTail(T *newElem)
-  {
-    temp = this->alloc_elem(newElem);
-    temp->prev = TAIL;
-    TAIL = temp;
-    temp->next = NULL;
-    temp->prev->next = temp;
-    NumElements++;
-  }
-
-  void addInPosition(T *elem, int i)
-  {
-    ctr *itemToMove = this->get(i);
-    if (itemToMove == NULL)
-    {
-      this->add(*elem); // KCK modified
-    }
-    else
-    {
-      temp = this->alloc_elem(elem);
-      temp->next = itemToMove;
-      temp->prev = itemToMove->prev;
-      if (temp->prev != NULL)
+      ctr *tptr;
+      while (this->size() > 0)
       {
-        itemToMove->prev->next = temp;
+        tptr = HEAD;
+        HEAD = HEAD->next;
+        this->remove(tptr);
+      }
+    }
+
+    // Copy Assignment
+    LinkedList<T>& operator=(LinkedList<T>& src)
+    {
+      this->CopyList(src, *this);
+      return *this;
+    }
+
+    void initialize()
+    {
+      ctr *tptr;
+      while (this->size() > 0)
+      {
+        tptr = HEAD;
+        HEAD = HEAD->next;
+        this->remove(tptr);
+      }
+    }
+
+    int size()
+    {
+      return NumElements;
+    }
+
+    void add(T &newElem)
+    {
+      if (this->size() == 0)
+      {
+        this->CreateNewLinkedList(&newElem);
       }
       else
       {
-        this->HEAD = temp;
-      }
-      itemToMove->prev = temp;
-      NumElements++;
-    }
-  }
-
-  ctr* alloc_elem(T *elem)
-  {
-    ctr *tptr = new ctr;
-    tptr->Data = elem;
-    return tptr;
-  }
-
-  void release_elem(ctr *elem)
-  {
-    delete elem->Data;
-    delete elem;
-  }
-
-  ctr* get(int i)
-  {
-    if (i >= this->size() || i < 0)
-    {
-      return NULL;
-    }
-    ctr* temp = HEAD;
-    for (int j = 0; j < i; j++)
-    {
-      temp = temp->next;
-    }
-    return temp;
-  }
-
-  void remove(ctr *node)
-  {
-    if (node->prev != NULL)
-    {
-      node->prev->next = node->next;
-    }
-    else
-    {
-      HEAD = node->next;
-      if (HEAD != NULL)
-      {
-        HEAD->prev = NULL;  // KCK -- added (2008/05/23)
+        this->addToTail(&newElem);
       }
     }
-    if (node->next != NULL)
+
+    void addCopy(T &newElem)
     {
-      node->next->prev = node->prev;
+      T* copyElem = new T;
+      *copyElem = newElem;
+      this->add(*copyElem);
     }
-    else
+
+    // Adds a new element at location i, and moves previous i (and all above) to
+    // i+1 (and so on).  If i >= Size the new element will be added to the end
+    // of the list
+    void insertAt(T &newElem, int i)
     {
-      TAIL = node->prev;
-      if (TAIL != NULL)
+      this->addInPosition(&newElem, i);
+    }
+
+    void insertCopyAt(T &newElem, int i)
+    {
+      T* copyElem = new T;
+      *copyElem = newElem;
+      this->addInPosition(copyElem, i);
+    }
+
+    void remove(int i)
+    {
+      ctr *tptr;
+      tptr = this->get(i);
+      if (tptr)  // if tptr!=NULL
       {
-        TAIL->next = NULL;  // KCK -- added (2008/05/23)
+        this->remove(tptr);
       }
     }
-    this->release_elem(node);
-    NumElements--;
-  }
 
-  // Copy function
-  void CopyList(LinkedList<T> &src, LinkedList<T> &dest)
-  {
-    dest.initialize();
-    int N = src.size();
-    for (int i = 0; i < N; ++i)
+    T* ReturnElement(int i)
     {
-      dest.addCopy(*(src.ReturnElement(i)));
-    }
-  }
-};
-
-template<class T>
-class LinkedList_NoDealloc
-{
- public:
-  // Default constructor
-  LinkedList_NoDealloc()
-  {
-    NumElements = 0;
-  }
-
-  // Copy Constructor
-  LinkedList_NoDealloc(LinkedList_NoDealloc<T> &src)
-  {
-    this->CopyList(src, *this);
-  }
-
-  ~LinkedList_NoDealloc()
-  {
-    ctr *tptr;
-    while (this->size() > 0)
-    {
-      tptr = HEAD;
-      HEAD = HEAD->next;
-      this->remove(tptr);
-    }
-  }
-
-  // Copy Assignment
-  LinkedList_NoDealloc<T>& operator=(LinkedList_NoDealloc<T>& src)
-  {
-    this->CopyList(src, *this);
-    return *this;
-  }
-
-  void initialize()
-  {
-    ctr *tptr;
-    while (this->size() > 0)
-    {
-      tptr = HEAD;
-      HEAD = HEAD->next;
-      this->remove(tptr);
-    }
-  }
-
-  int size()
-  {
-    return NumElements;
-  }
-
-  void add(T &newElem)
-  {
-    if (this->size() == 0)
-    {
-      this->CreateNewLinkedList(&newElem);
-    }
-    else
-    {
-      this->addToTail(&newElem);
-    }
-  }
-
-  void addCopy(T &newElem)
-  {
-    T* copyElem = new T;
-    *copyElem = newElem;
-    this->add(*copyElem);
-  }
-
-  // Adds a new element at location i, and moves previous i (and all above) to i+1 (and so on)
-  // If i >= Size the new element will be added to the end of the list
-  void insertAt(T &newElem, int i)
-  {
-    this->addInPosition(&newElem, i);
-  }
-
-  void insertCopyAt(T &newElem, int i)
-  {
-    T* copyElem = new T;
-    *copyElem = newElem;
-    this->addInPosition(copyElem, i);
-  }
-
-  void remove(int i)
-  {
-    ctr *tptr;
-    tptr = this->get(i);
-    if (tptr) // if tptr!=NULL
-    {
-      this->remove(tptr);
-    }
-  }
-
-  T* ReturnElement(int i)
-  {
-    // returns NULL if index out of bounds
-    ctr* temp = this->get(i);
-    if (NULL == temp)
-    {
-      return NULL;
-    }
-    else
-    {
-      return (temp->Data);
-    }
-  }
-
-  // Crops list by removing all elements from i to the end (i inclusive)
-  void CropList(int i)
-  {
-    while (this->ReturnElement(i))
-    {
-      this->remove(i);
-    }
-  }
-
- private:
-
-  struct ctr
-  {
-    T *Data;
-    ctr *next;
-    ctr *prev;
-  };
-  ctr *temp;
-  ctr *HEAD;
-  ctr *TAIL;
-  int NumElements;
-
-  // void UpdatePointers()
-  void CreateNewLinkedList(T *firstElement)
-  {
-    temp = this->alloc_elem(firstElement);
-    HEAD = temp;
-    TAIL = temp;
-    temp->next = NULL;
-    temp->prev = NULL;
-    NumElements++;
-  }
-
-  void addToTail(T *newElem)
-  {
-    temp = this->alloc_elem(newElem);
-    temp->prev = TAIL;
-    TAIL = temp;
-    temp->next = NULL;
-    temp->prev->next = temp;
-    NumElements++;
-  }
-
-  void addInPosition(T *elem, int i)
-  {
-    ctr *itemToMove = this->get(i);
-    if (itemToMove == NULL)
-    {
-      this->add(*elem);  // KCK modified
-    }
-    else
-    {
-      temp = this->alloc_elem(elem);
-      temp->next = itemToMove;
-      temp->prev = itemToMove->prev;
-      if (temp->prev != NULL)
+      // returns NULL if index out of bounds
+      ctr* temp = this->get(i);
+      if (NULL == temp)
       {
-        itemToMove->prev->next = temp;
+        return NULL;
       }
       else
       {
-        this->HEAD = temp;
+        return (temp->Data);
       }
-      itemToMove->prev = temp;
+    }
+
+    // Crops list by removing all elements from i to the end (i inclusive)
+    void CropList(int i)
+    {
+      while (this->ReturnElement(i))
+      {
+        this->remove(i);
+      }
+    }
+
+  private:
+    struct ctr
+    {
+      T *Data;
+      ctr *next;
+      ctr *prev;
+    };
+    ctr *temp;
+    ctr *HEAD;
+    ctr *TAIL;
+    int NumElements;
+
+    // void UpdatePointers()
+    void CreateNewLinkedList(T *firstElement)
+    {
+      temp = this->alloc_elem(firstElement);
+      HEAD = temp;
+      TAIL = temp;
+      temp->next = NULL;
+      temp->prev = NULL;
       NumElements++;
     }
-  }
 
-  ctr* alloc_elem(T *elem)
-  {
-    ctr *tptr = new ctr;
-    tptr->Data = elem;
-    return tptr;
-  }
-
-  void release_elem(ctr *elem)
-  {
-    delete elem;
-  }
-
-  ctr* get(int i)
-  {
-    if (i >= this->size() || i < 0)
+    void addToTail(T *newElem)
     {
-      return NULL;
+      temp = this->alloc_elem(newElem);
+      temp->prev = TAIL;
+      TAIL = temp;
+      temp->next = NULL;
+      temp->prev->next = temp;
+      NumElements++;
     }
-    ctr* temp = HEAD;
-    for (int j = 0; j < i; j++)
-    {
-      temp = temp->next;
-    }
-    return temp;
-  }
 
-  void remove(ctr *node)
-  {
-    if (node->prev != NULL)
+    void addInPosition(T *elem, int i)
     {
-      node->prev->next = node->next;
-    }
-    else
-    {
-      HEAD = node->next;
-      if (HEAD != NULL)
+      ctr *itemToMove = this->get(i);
+      if (itemToMove == NULL)
       {
-        HEAD->prev = NULL;  // KCK -- added (2008/05/23)
+        this->add(*elem); // KCK modified
+      }
+      else
+      {
+        temp = this->alloc_elem(elem);
+        temp->next = itemToMove;
+        temp->prev = itemToMove->prev;
+        if (temp->prev != NULL)
+        {
+          itemToMove->prev->next = temp;
+        }
+        else
+        {
+          this->HEAD = temp;
+        }
+        itemToMove->prev = temp;
+        NumElements++;
       }
     }
-    if (node->next != NULL)
+
+    ctr* alloc_elem(T *elem)
     {
-      node->next->prev = node->prev;
+      ctr *tptr = new ctr;
+      tptr->Data = elem;
+      return tptr;
     }
-    else
+
+    void release_elem(ctr *elem)
     {
-      TAIL = node->prev;
-      if (TAIL != NULL)
+      delete elem->Data;
+      delete elem;
+    }
+
+    ctr* get(int i)
+    {
+      if (i >= this->size() || i < 0)
       {
-        TAIL->next = NULL;  // KCK -- added (2008/05/23)
+        return NULL;
+      }
+      ctr* temp = HEAD;
+      for (int j = 0; j < i; j++)
+      {
+        temp = temp->next;
+      }
+      return temp;
+    }
+
+    void remove(ctr *node)
+    {
+      if (node->prev != NULL)
+      {
+        node->prev->next = node->next;
+      }
+      else
+      {
+        HEAD = node->next;
+        if (HEAD != NULL)
+        {
+          HEAD->prev = NULL;  // KCK -- added (2008/05/23)
+        }
+      }
+      if (node->next != NULL)
+      {
+        node->next->prev = node->prev;
+      }
+      else
+      {
+        TAIL = node->prev;
+        if (TAIL != NULL)
+        {
+          TAIL->next = NULL;  // KCK -- added (2008/05/23)
+        }
+      }
+      this->release_elem(node);
+      NumElements--;
+    }
+
+    // Copy function
+    void CopyList(LinkedList<T> &src, LinkedList<T> &dest)
+    {
+      dest.initialize();
+      int N = src.size();
+      for (int i = 0; i < N; ++i)
+      {
+        dest.addCopy(*(src.ReturnElement(i)));
       }
     }
-    this->release_elem(node);
-    NumElements--;
-  }
+  };
 
-  // Copy function
-  void CopyList(LinkedList_NoDealloc<T> &src, LinkedList_NoDealloc<T> &dest)
+  template<class T>
+  class LinkedList_NoDealloc
   {
-    dest.initialize();
-    int N = src.size();
-    for (int i = 0; i < N; ++i)
+   public:
+    // Default constructor
+    LinkedList_NoDealloc()
     {
-      dest.addCopy(*(src.ReturnElement(i)));
+      NumElements = 0;
     }
-  }
-};
 
+    // Copy Constructor
+    LinkedList_NoDealloc(LinkedList_NoDealloc<T> &src)
+    {
+      this->CopyList(src, *this);
+    }
+
+    ~LinkedList_NoDealloc()
+    {
+      ctr *tptr;
+      while (this->size() > 0)
+      {
+        tptr = HEAD;
+        HEAD = HEAD->next;
+        this->remove(tptr);
+      }
+    }
+
+    // Copy Assignment
+    LinkedList_NoDealloc<T>& operator=(LinkedList_NoDealloc<T>& src)
+    {
+      this->CopyList(src, *this);
+      return *this;
+    }
+
+    void initialize()
+    {
+      ctr *tptr;
+      while (this->size() > 0)
+      {
+        tptr = HEAD;
+        HEAD = HEAD->next;
+        this->remove(tptr);
+      }
+    }
+
+    int size()
+    {
+      return NumElements;
+    }
+
+    void add(T &newElem)
+    {
+      if (this->size() == 0)
+      {
+        this->CreateNewLinkedList(&newElem);
+      }
+      else
+      {
+        this->addToTail(&newElem);
+      }
+    }
+
+    void addCopy(T &newElem)
+    {
+      T* copyElem = new T;
+      *copyElem = newElem;
+      this->add(*copyElem);
+    }
+
+    // Adds a new element at location i, and moves previous i (and all above) to
+    // i+1 (and so on).  If i >= Size the new element will be added to the end
+    // of the list
+    void insertAt(T &newElem, int i)
+    {
+      this->addInPosition(&newElem, i);
+    }
+
+    void insertCopyAt(T &newElem, int i)
+    {
+      T* copyElem = new T;
+      *copyElem = newElem;
+      this->addInPosition(copyElem, i);
+    }
+
+    void remove(int i)
+    {
+      ctr *tptr;
+      tptr = this->get(i);
+      if (tptr)  // if tptr!=NULL
+      {
+        this->remove(tptr);
+      }
+    }
+
+    T* ReturnElement(int i)
+    {
+      // returns NULL if index out of bounds
+      ctr* temp = this->get(i);
+      if (NULL == temp)
+      {
+        return NULL;
+      }
+      else
+      {
+        return (temp->Data);
+      }
+    }
+
+    // Crops list by removing all elements from i to the end (i inclusive)
+    void CropList(int i)
+    {
+      while (this->ReturnElement(i))
+      {
+        this->remove(i);
+      }
+    }
+
+   private:
+    struct ctr
+    {
+      T *Data;
+      ctr *next;
+      ctr *prev;
+    };
+    ctr *temp;
+    ctr *HEAD;
+    ctr *TAIL;
+    int NumElements;
+
+    // void UpdatePointers()
+    void CreateNewLinkedList(T *firstElement)
+    {
+      temp = this->alloc_elem(firstElement);
+      HEAD = temp;
+      TAIL = temp;
+      temp->next = NULL;
+      temp->prev = NULL;
+      NumElements++;
+    }
+
+    void addToTail(T *newElem)
+    {
+      temp = this->alloc_elem(newElem);
+      temp->prev = TAIL;
+      TAIL = temp;
+      temp->next = NULL;
+      temp->prev->next = temp;
+      NumElements++;
+    }
+
+    void addInPosition(T *elem, int i)
+    {
+      ctr *itemToMove = this->get(i);
+      if (itemToMove == NULL)
+      {
+        this->add(*elem);  // KCK modified
+      }
+      else
+      {
+        temp = this->alloc_elem(elem);
+        temp->next = itemToMove;
+        temp->prev = itemToMove->prev;
+        if (temp->prev != NULL)
+        {
+          itemToMove->prev->next = temp;
+        }
+        else
+        {
+          this->HEAD = temp;
+        }
+        itemToMove->prev = temp;
+        NumElements++;
+      }
+    }
+
+    ctr* alloc_elem(T *elem)
+    {
+      ctr *tptr = new ctr;
+      tptr->Data = elem;
+      return tptr;
+    }
+
+    void release_elem(ctr *elem)
+    {
+      delete elem;
+    }
+
+    ctr* get(int i)
+    {
+      if (i >= this->size() || i < 0)
+      {
+        return NULL;
+      }
+      ctr* temp = HEAD;
+      for (int j = 0; j < i; j++)
+      {
+        temp = temp->next;
+      }
+      return temp;
+    }
+
+    void remove(ctr *node)
+    {
+      if (node->prev != NULL)
+      {
+        node->prev->next = node->next;
+      }
+      else
+      {
+        HEAD = node->next;
+        if (HEAD != NULL)
+        {
+          HEAD->prev = NULL;  // KCK -- added (2008/05/23)
+        }
+      }
+      if (node->next != NULL)
+      {
+        node->next->prev = node->prev;
+      }
+      else
+      {
+        TAIL = node->prev;
+        if (TAIL != NULL)
+        {
+          TAIL->next = NULL;  // KCK -- added (2008/05/23)
+        }
+      }
+      this->release_elem(node);
+      NumElements--;
+    }
+
+    // Copy function
+    void CopyList(LinkedList_NoDealloc<T> &src, LinkedList_NoDealloc<T> &dest)
+    {
+      dest.initialize();
+      int N = src.size();
+      for (int i = 0; i < N; ++i)
+      {
+        dest.addCopy(*(src.ReturnElement(i)));
+      }
+    }
+  };
 }
 
 #endif  // MARTI_DATA_STRUCTURES_LINKED_LIST_H_
