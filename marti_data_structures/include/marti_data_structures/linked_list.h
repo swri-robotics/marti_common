@@ -18,7 +18,7 @@ namespace marti_data_structures
     }
 
     // Copy Constructor
-    LinkedList(LinkedList<T> &src)
+    LinkedList(const LinkedList<T> &src)
     {
       NumElements = 0;
       this->CopyList(src, *this);
@@ -36,7 +36,7 @@ namespace marti_data_structures
     }
 
     // Copy Assignment
-    LinkedList<T>& operator=(LinkedList<T>& src)
+    LinkedList<T>& operator=(const LinkedList<T>& src)
     {
       this->CopyList(src, *this);
       return *this;
@@ -70,7 +70,7 @@ namespace marti_data_structures
       }
     }
 
-    void addCopy(T &newElem)
+    void addCopy(const T &newElem)
     {
       T* copyElem = new T;
       *copyElem = newElem;
@@ -85,7 +85,7 @@ namespace marti_data_structures
       this->addInPosition(&newElem, i);
     }
 
-    void insertCopyAt(T &newElem, int i)
+    void insertCopyAt(const T &newElem, int i)
     {
       T* copyElem = new T;
       *copyElem = newElem;
@@ -163,7 +163,7 @@ namespace marti_data_structures
       ctr *itemToMove = this->get(i);
       if (itemToMove == NULL)
       {
-        this->add(*elem); // KCK modified
+        this->add(*elem);  // KCK modified
       }
       else
       {
@@ -241,7 +241,7 @@ namespace marti_data_structures
     }
 
     // Copy function
-    void CopyList(LinkedList<T> &src, LinkedList<T> &dest)
+    void CopyList(const LinkedList<T> &src, LinkedList<T> &dest)
     {
       dest.initialize();
       int N = src.size();
@@ -263,7 +263,7 @@ namespace marti_data_structures
     }
 
     // Copy Constructor
-    LinkedList_NoDealloc(LinkedList_NoDealloc<T> &src)
+    LinkedList_NoDealloc(const LinkedList_NoDealloc<T> &src)
     {
       this->CopyList(src, *this);
     }
@@ -280,7 +280,7 @@ namespace marti_data_structures
     }
 
     // Copy Assignment
-    LinkedList_NoDealloc<T>& operator=(LinkedList_NoDealloc<T>& src)
+    LinkedList_NoDealloc<T>& operator=(const LinkedList_NoDealloc<T>& src)
     {
       this->CopyList(src, *this);
       return *this;
@@ -314,7 +314,7 @@ namespace marti_data_structures
       }
     }
 
-    void addCopy(T &newElem)
+    void addCopy(const T &newElem)
     {
       T* copyElem = new T;
       *copyElem = newElem;
@@ -329,7 +329,7 @@ namespace marti_data_structures
       this->addInPosition(&newElem, i);
     }
 
-    void insertCopyAt(T &newElem, int i)
+    void insertCopyAt(const T &newElem, int i)
     {
       T* copyElem = new T;
       *copyElem = newElem;
@@ -484,7 +484,9 @@ namespace marti_data_structures
     }
 
     // Copy function
-    void CopyList(LinkedList_NoDealloc<T> &src, LinkedList_NoDealloc<T> &dest)
+    void CopyList(
+      const LinkedList_NoDealloc<T> &src,
+      LinkedList_NoDealloc<T> &dest)
     {
       dest.initialize();
       int N = src.size();
