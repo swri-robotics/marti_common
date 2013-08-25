@@ -87,7 +87,7 @@ namespace transform_util
       utm_south_[i] = pj_init_plus(args);
     }
   }
-  
+
   UtmUtil::UtmData::~UtmData()
   {
     pj_free(lat_lon_);
@@ -109,7 +109,7 @@ namespace transform_util
       double& northing) const
   {
     boost::unique_lock<boost::mutex> lock(mutex_);
-    
+
     zone = GetZone(longitude);
     band = GetBand(latitude);
 
@@ -151,7 +151,7 @@ namespace transform_util
       double& longitude) const
   {
     boost::unique_lock<boost::mutex> lock(mutex_);
-    
+
     double x = easting;
     double y = northing;
 
@@ -167,12 +167,12 @@ namespace transform_util
     longitude = x * math_util::_rad_2_deg;
     latitude = y * math_util::_rad_2_deg;
   }
-  
+
   UtmUtil::UtmUtil() :
     utm_data_(UtmDataSingleton::get_const_instance())
   {
   }
-  
+
   void UtmUtil::ToUtm(
       double latitude,
       double longitude,

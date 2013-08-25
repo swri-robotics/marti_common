@@ -31,7 +31,8 @@ namespace transform_util
   public:
     TransformImpl() {}
     virtual ~TransformImpl() {}
-    virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
+    virtual void Transform(
+      const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
   };
 
   /**

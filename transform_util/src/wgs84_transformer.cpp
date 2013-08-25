@@ -34,7 +34,6 @@ namespace transform_util
 {
   Wgs84Transformer::Wgs84Transformer()
   {
-
   }
 
   std::map<std::string, std::vector<std::string> > Wgs84Transformer::Supports() const

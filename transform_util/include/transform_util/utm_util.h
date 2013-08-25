@@ -37,7 +37,7 @@ namespace transform_util
   {
   public:
     UtmUtil();
-  
+
     /**
      * Convert WGS84 latitude and longitude to UTM.
      * 
@@ -48,7 +48,9 @@ namespace transform_util
      * @param[out] easting    UTM easting in meters.
      * @param[out] northing   UTM northing in meters.
      */
-    void ToUtm(double latitude, double longitude, int& zone, char& band, double& easting, double& northing) const;
+    void ToUtm(
+      double latitude, double longitude, 
+      int& zone, char& band, double& easting, double& northing) const;
 
     /**
      * Convert WGS84 latitude and longitude to UTM.
@@ -58,7 +60,9 @@ namespace transform_util
      * @param[out] easting    UTM easting in meters.
      * @param[out] northing   UTM northing in meters.
      */
-    void ToUtm(double latitude, double longitude, double& easting, double& northing) const;
+    void ToUtm(
+      double latitude, double longitude, 
+      double& easting, double& northing) const;
 
     /**
      * Convert UTM easting and northing to WGS84 latitude and longitude.
@@ -70,10 +74,11 @@ namespace transform_util
      * @param[out] latitude   WGS84 latitude in degrees.
      * @param[out] longitude  WGS84 longitude in degrees.
      */
-    void ToLatLon(int zone, char band, double easting, double northing, double& latitude, double& longitude) const;
+    void ToLatLon(
+      int zone, char band, double easting, double northing, 
+      double& latitude, double& longitude) const;
 
   private:
-  
     /**
      * The actual UTM conversion processing takes place in this helper class
      * which is a singlton due to the large memory footprint of the underlying
@@ -86,34 +91,33 @@ namespace transform_util
     {
       public:
         ~UtmData();
-        
+
         void ToUtm(
-          double latitude, double longitude, 
+          double latitude, double longitude,
           int& zone, char& band, double& easting, double& northing) const;
-        
+
         void ToUtm(
-          double latitude, double longitude, 
+          double latitude, double longitude,
           double& easting, double& northing) const;
 
         void ToLatLon(
-          int zone, char band, double easting, double northing, 
+          int zone, char band, double easting, double northing,
           double& latitude, double& longitude) const;
 
         friend class boost::serialization::detail::singleton_wrapper<transform_util::UtmUtil::UtmData>;
       private:
         UtmData();
-        
+
         projPJ lat_lon_;
         projPJ utm_north_[60];
         projPJ utm_south_[60];
-        
+
         mutable boost::mutex mutex_;
     };
     typedef boost::serialization::singleton<UtmData> UtmDataSingleton;
-    
+
     const UtmData& utm_data_;
   };
-  
 }
 
 #endif  // TRANSFORM_UTIL_UTM_UTIL_H_

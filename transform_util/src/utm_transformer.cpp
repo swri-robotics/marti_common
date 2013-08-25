@@ -177,8 +177,8 @@ namespace transform_util
       local_xy_util_(local_xy_util),
       utm_zone_(utm_zone),
       utm_band_(utm_band)
-   {
-   }
+  {
+  }
 
   void UtmToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
