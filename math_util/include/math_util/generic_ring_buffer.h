@@ -94,7 +94,8 @@ namespace math_util
     {
       if (i >= NumElements) return NULL;
       int j = ((loadPtr-1-HEAD)-i);
-      if (j < 0){
+      if (j < 0)
+      {
         j += MaxNumElements;
       }
       return (&HEAD[j].Data);

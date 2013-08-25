@@ -49,7 +49,7 @@ namespace transform_util
      * @param[out] northing   UTM northing in meters.
      */
     void ToUtm(
-      double latitude, double longitude, 
+      double latitude, double longitude,
       int& zone, char& band, double& easting, double& northing) const;
 
     /**
@@ -61,7 +61,7 @@ namespace transform_util
      * @param[out] northing   UTM northing in meters.
      */
     void ToUtm(
-      double latitude, double longitude, 
+      double latitude, double longitude,
       double& easting, double& northing) const;
 
     /**
@@ -75,7 +75,7 @@ namespace transform_util
      * @param[out] longitude  WGS84 longitude in degrees.
      */
     void ToLatLon(
-      int zone, char band, double easting, double northing, 
+      int zone, char band, double easting, double northing,
       double& latitude, double& longitude) const;
 
   private:

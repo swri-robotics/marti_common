@@ -20,27 +20,27 @@ namespace math_util
     {
       this->realloc_mem(NumElements);
     }
-    
+
     StatBuffer()
     {
       this->modifyBufferSize(30);
     }
-    
+
     explicit StatBuffer(int NumElements)
     {
       this->modifyBufferSize(NumElements);
     }
-    
+
     ~StatBuffer()
     {
       this->modifyBufferSize(0);
     }
-    
+
     bool UpdateStats()
     {
       return this->computeStats();
     }
-    
+
     bool UpdateDiffStats()
     {
       return this->computeDiffStats();

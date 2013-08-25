@@ -202,8 +202,8 @@ namespace transform_util
       transform_(transform),
       utm_util_(utm_util),
       local_xy_util_(local_xy_util)
-   {
-   }
+  {
+  }
 
   void TfToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
