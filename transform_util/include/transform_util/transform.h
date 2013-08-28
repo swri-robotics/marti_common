@@ -116,6 +116,8 @@ namespace transform_util
 
     tf::Vector3 GetOrigin() const;
 
+    tf::Quaternion GetOrientation() const;
+
   private:
     boost::shared_ptr<TransformImpl> transform_;
   };
