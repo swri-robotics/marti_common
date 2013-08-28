@@ -14,6 +14,7 @@ class CanBus(object):
         
     def publish(self, can_frame):
         can_frame.header.frame_id = rospy.get_name()
+        can_frame.header.stamp = rospy.Time.now()
         self.can_pub.publish(can_frame)
 
     def can_frame_callback(self, can_frame):
