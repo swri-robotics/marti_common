@@ -84,7 +84,7 @@ namespace transform_util
       const std::string& target_frame,
       const std::string& source_frame,
       const ros::Time& time,
-      Transform& transform)
+      Transform& transform) const
   {
     std::string src_frame = source_frame;
     std::string tgt_frame = target_frame;
@@ -174,7 +174,7 @@ namespace transform_util
   bool TransformManager::GetTransform(
       const std::string& target_frame,
       const std::string& source_frame,
-      Transform& transform)
+      Transform& transform) const
   {
     return GetTransform(target_frame, source_frame, ros::Time(0), transform);
   }
