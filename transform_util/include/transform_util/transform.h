@@ -114,6 +114,8 @@ namespace transform_util
      */
     Transform Inverse() const;
 
+    tf::Vector3 GetOrigin() const;
+
   private:
     boost::shared_ptr<TransformImpl> transform_;
   };

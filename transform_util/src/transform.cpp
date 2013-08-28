@@ -70,6 +70,15 @@ namespace transform_util
     return transformed;
   }
 
+  tf::Vector3 Transform::GetOrigin() const
+  {
+    tf::Vector3 origin;
+
+    transform_->Transform(tf::Vector3(0, 0, 0), origin);
+
+    return origin;
+  }
+
   void IdentityTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     v_out = v_in;
