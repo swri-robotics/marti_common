@@ -6,6 +6,7 @@
 
 #include <boost/bind.hpp>
 
+#include <ros/this_node.h>
 #include <ros/node_handle.h>
 #include <ros/publisher.h>
 #include <ros/subscriber.h>
