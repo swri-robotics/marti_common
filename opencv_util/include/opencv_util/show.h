@@ -25,6 +25,7 @@
 namespace opencv_util
 {
   void ShowScaled(
+      const std::string& name,
       const cv::Mat& mat,
       const cv::Mat& mask = cv::Mat(),
       double a = -1.0, // assume auto-scaling
