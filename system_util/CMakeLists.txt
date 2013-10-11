@@ -20,7 +20,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_library(${PROJECT_NAME}
   src/file_util.cpp)
-rosbuild_link_boost(${PROJECT_NAME} system filesystem)
+rosbuild_link_boost(${PROJECT_NAME} system filesystem regex)
   
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 

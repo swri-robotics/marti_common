@@ -24,6 +24,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/regex.hpp>
 
 namespace system_util
 {
@@ -38,6 +39,15 @@ namespace system_util
   boost::filesystem::path NaiveUncomplete(
     boost::filesystem::path const path,
     boost::filesystem::path const base);
+
+  /**
+   * Return a list of all file names within a directory (handles wildcard character "*").
+   *
+   * @param[in]  path  The absolute path containing the files (Add wildcard to filename).
+   *
+   * @returns The list of filenames of all found files
+   */
+  std::vector<std::string> load_all_files(const std::string& path, std::string& directory);
 }
 
 #endif  // SYSTEM_UTIL_FILE_UTIL_H_

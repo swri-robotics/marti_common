@@ -87,4 +87,34 @@ namespace system_util
 
     return output;
   }
+
+  std::vector<std::string> load_all_files(const std::string& path, std::string& directory)
+  {
+	std::vector< std::string > all_matching_files;
+
+	// Extract the directory from the path
+	std::string direct = path.substr(0, path.find_last_of("/\\"));
+	// Extract the filename from the path
+	std::string filename = path.substr(path.find_last_of("/\\")+1);
+	const boost::regex my_filter(filename.replace(filename.find("*"), std::string("*").length(), ".*\\") );
+
+	boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
+	for( boost::filesystem::directory_iterator i( direct ); i != end_itr; ++i )
+	{
+		// Skip if not a file
+		if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
+
+		boost::smatch what;
+
+		// Skip if no match
+		if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
+
+		// File matches, store it
+		all_matching_files.push_back( i->leaf() );
+		std::sort(all_matching_files.begin(), all_matching_files.end());
+	}
+	directory = direct;
+	  return all_matching_files;
+
+  }
 }
