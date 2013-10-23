@@ -32,6 +32,10 @@ PLUGINLIB_DECLARE_CLASS(
 
 namespace transform_util
 {
+  Wgs84Transformer::Wgs84Transformer()
+  {
+  }
+
   std::map<std::string, std::vector<std::string> > Wgs84Transformer::Supports() const
   {
     std::map<std::string, std::vector<std::string> >  supports;
@@ -50,14 +54,22 @@ namespace transform_util
   {
     if (!initialized_)
     {
+      Initialize();
+    }
+
+    if (!initialized_)
+    {
+      ROS_ERROR("Wgs84Transformer not initialized");
       return false;
     }
 
     if (target_frame == _wgs84_frame)
     {
       tf::StampedTransform tf_transform;
-      if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame , time, tf_transform))
+      if (!Transformer::GetTransform(local_xy_frame_, source_frame , time, tf_transform))
       {
+        ROS_ERROR("Failed to get transform between %s and %s",
+            source_frame.c_str(), local_xy_frame_.c_str());
         return false;
       }
 
@@ -68,8 +80,10 @@ namespace transform_util
     else if (source_frame == _wgs84_frame)
     {
       tf::StampedTransform tf_transform;
-      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+      if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
       {
+        ROS_ERROR("Failed to get transform between %s and %s",
+            local_xy_frame_.c_str(), target_frame.c_str());
         return false;
       }
 
@@ -78,15 +92,26 @@ namespace transform_util
       return true;
     }
 
+    ROS_ERROR("Failed to get WGS84 transform.");
     return false;
   }
 
   bool Wgs84Transformer::Initialize()
   {
-    // Initialize LocalXY util with an origin.
-    local_xy_util_ = ParseLocalXyOrigin();
+    if (!ros::param::get("/local_xy_frame", local_xy_frame_))
+    {
+      ROS_ERROR("Failed to parse /local_xy_frame");
+      return false;
+    }
 
-    return local_xy_util_;
+    if (!local_xy_util_)
+    {
+      local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
+    }
+
+    initialized_ = local_xy_util_->Initialized();
+
+    return initialized_;
   }
 
   TfToWgs84Transform::TfToWgs84Transform(

@@ -198,7 +198,9 @@ namespace transform_util
     inverse_transform_ = cv::estimateRigidTransform(dst, src, true);
   }
 
-  void GeoReference::GetCoordinate(int x_pixel, int y_pixel, double& x_coordinate, double& y_coordinate) const
+  void GeoReference::GetCoordinate(
+    int x_pixel, int y_pixel,
+    double& x_coordinate, double& y_coordinate) const
   {
     cv::Mat src(1, 1, CV_32FC2);
     cv::Mat dst(1, 1, CV_32FC2);
@@ -212,7 +214,9 @@ namespace transform_util
     y_coordinate = dst.at<cv::Vec2f>(0, 0)[1] + y_offset_;
   }
 
-  void GeoReference::GetPixel(double x_coordinate, double y_coordinate, int& x_pixel, int& y_pixel) const
+  void GeoReference::GetPixel(
+    double x_coordinate, double y_coordinate,
+    int& x_pixel, int& y_pixel) const
   {
     cv::Mat src(1, 1, CV_32FC2);
     cv::Mat dst(1, 1, CV_32FC2);

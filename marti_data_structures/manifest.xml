@@ -1,0 +1,18 @@
+<package>
+  <description brief="marti_data_structures">
+
+     marti_data_structures
+
+  </description>
+  <author>malban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/marti_data_structures</url>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+
+</package>
+
+

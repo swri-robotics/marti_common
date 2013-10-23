@@ -56,6 +56,7 @@ namespace transform_util
 
       int32_t utm_zone_;
       char utm_band_;
+      std::string local_xy_frame_;
   };
 
   class UtmToTfTransform : public TransformImpl

@@ -17,35 +17,19 @@
 //
 // *****************************************************************************
 
-#include <math_util/trig_util.h>
+#ifndef OPENCV_UTIL_SHOW_H_
+#define OPENCV_UTIL_SHOW_H_
 
-#include <math_util/constants.h>
+#include <opencv2/core/core.hpp>
 
-namespace math_util
+namespace opencv_util
 {
-  double WrapRadians(double angle, double center)
-  {
-    double wrapped = angle;
-    while (wrapped < center && center - wrapped > _pi)
-    {
-      wrapped += _2pi;
-    }
-
-    while (wrapped > center && wrapped - center > _pi)
-    {
-      wrapped -= _2pi;
-    }
-
-    return wrapped;
-  }
-
-  double ToRadians(double degrees)
-  {
-    return degrees * _pi / 180.0;
-  }
-
-  double ToDegrees(double radians)
-  {
-    return radians * 180.0 / _pi;
-  }
+  void ShowScaled(
+      const std::string& name,
+      const cv::Mat& mat,
+      const cv::Mat& mask = cv::Mat(),
+      double a = -1.0, // assume auto-scaling
+      double b = 0.0);
 }
+
+#endif  // OPENCV_UTIL_SHOW_H_
