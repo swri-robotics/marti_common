@@ -66,6 +66,11 @@ namespace opencv_util
       double a,
       double b)
   {
+    if (mat.empty())
+    {
+      return;
+    }
+
     CvWindowsSingleton::get_mutable_instance().RegisterWindow(name);
 
     cv::Mat scaled;
@@ -84,13 +89,13 @@ namespace opencv_util
       }
       else if(mat.type() == CV_32FC1)
       {
-        a = std::max(max - min, DBL_EPSILON);
+        a = 255.0 / std::max(max - min, DBL_EPSILON);
         b = -min * a;
         mat.convertTo(scaled, CV_8U, a, b);
       }
       else if(mat.type() == CV_32FC3)
       {
-        a = std::max(max - min, DBL_EPSILON);
+        a = 255.0 / std::max(max - min, DBL_EPSILON);
         b = -min * a;
         mat.convertTo(scaled, CV_8UC3, a, b);
       }
