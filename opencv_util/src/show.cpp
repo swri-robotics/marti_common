@@ -26,6 +26,9 @@
 #include <boost/thread/mutex.hpp>
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <ros/ros.h>
 
 namespace opencv_util
 {
@@ -91,6 +94,13 @@ namespace opencv_util
         a = 255.0 / std::max(max - min, DBL_EPSILON);
         b = -min * a;
         mat.convertTo(scaled, CV_8U, a, b);
+        if (!mask.empty())
+        {
+          cv::Mat color;
+          cv::cvtColor(scaled, color, CV_GRAY2BGR);
+          color.setTo(cv::Scalar(0.0,0.0,255.0), mask == 0);
+          scaled = color;
+        }
       }
       else if(mat.type() == CV_32FC3)
       {
