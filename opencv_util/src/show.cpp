@@ -109,6 +109,12 @@ namespace opencv_util
         b = -min * a;
         mat.convertTo(scaled, CV_8UC3, a, b);
       }
+      else if(mat.type() == CV_8UC3)
+      {
+        a = 255.0 / std::max(max - min, DBL_EPSILON);
+        b = -min * a;
+        mat.convertTo(scaled, CV_8UC3, a, b);
+      }
     }
     else
     {
