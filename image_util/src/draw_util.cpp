@@ -31,6 +31,8 @@
 
 #include <ros/ros.h>
 
+#include <opencv_util/show.h>
+
 namespace image_util
 {
   void RandomColor(int32_t seed, double& r, double& g, double& b)
@@ -59,7 +61,7 @@ namespace image_util
 
       cv::Mat sub = image1 - image2_warped;
 
-      cv::imshow(title, sub);
+      opencv_util::ShowScaled(title, sub);
     }
   }
 
@@ -149,7 +151,7 @@ namespace image_util
                 color,
                 draw_image_borders);
 
-    imshow(title, image_out);
+    opencv_util::ShowScaled(title, image_out);
   }
 
   void DrawMatches(
@@ -183,6 +185,6 @@ namespace image_util
       line(draw_image, center1, center2, color2, 1, CV_AA, 4);
     }
 
-    imshow(title, draw_image);
+    opencv_util::ShowScaled(title, draw_image);
   }
 }
