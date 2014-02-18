@@ -22,6 +22,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <ros/ros.h>
+
 #include <tf/transform_datatypes.h>
 
 namespace transform_util
@@ -33,6 +35,8 @@ namespace transform_util
     virtual ~TransformImpl() {}
     virtual void Transform(
       const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
+    
+    ros::Time stamp_;
   };
 
   /**
@@ -61,6 +65,15 @@ namespace transform_util
      * @param[in]  transform  The input transform.
      */
     explicit Transform(const tf::Transform& transform);
+    
+    /**
+     * Constructor.
+     *
+     * Generates a standard rigid transform from a tf::Transform.
+     *
+     * @param[in]  transform  The input transform.
+     */
+    explicit Transform(const tf::StampedTransform& transform);
 
     /**
      * Constructor.
@@ -117,6 +130,8 @@ namespace transform_util
     tf::Vector3 GetOrigin() const;
 
     tf::Quaternion GetOrientation() const;
+    
+    ros::Time GetStamp() { return transform_->stamp_; }
 
   private:
     boost::shared_ptr<TransformImpl> transform_;
@@ -125,6 +140,7 @@ namespace transform_util
   class IdentityTransform : public TransformImpl
   {
   public:
+    IdentityTransform() { stamp_ = ros::Time::now(); }
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
   };
 
@@ -132,6 +148,7 @@ namespace transform_util
   {
   public:
     explicit TfTransform(const tf::Transform& transform);
+    explicit TfTransform(const tf::StampedTransform& transform);
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
   protected:

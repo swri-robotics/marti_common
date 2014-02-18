@@ -32,6 +32,11 @@ namespace transform_util
     transform_(boost::make_shared<TfTransform>(transform))
   {
   }
+  
+  Transform::Transform(const tf::StampedTransform& transform) :
+    transform_(boost::make_shared<TfTransform>(transform))
+  {
+  }
 
   Transform::Transform(boost::shared_ptr<TransformImpl> transform) :
     transform_(transform)
@@ -102,10 +107,17 @@ namespace transform_util
   {
     v_out = v_in;
   }
-
+  
   TfTransform::TfTransform(const tf::Transform& transform) :
     transform_(transform)
   {
+    stamp_ = ros::Time::now();
+  }
+  
+  TfTransform::TfTransform(const tf::StampedTransform& transform) :
+    transform_(transform)
+  {
+    stamp_ = transform.stamp_;
   }
 
   void TfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
