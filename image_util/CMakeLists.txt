@@ -22,6 +22,7 @@ include_directories(${QT_INCLUDE_DIR})
 rosbuild_add_library(${PROJECT_NAME} 
   src/motion_estimation.cpp 
   src/image_normalization.cpp 
+  src/rolling_normalization.cpp 
   src/image_matching.cpp
   src/draw_util.cpp
   src/geometry_util.cpp

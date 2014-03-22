@@ -97,4 +97,80 @@ namespace image_util
 
     return norm_image;
   }
+  
+  void ContrastStretch(
+    int32_t grid_size, 
+    const cv::Mat& source_image,
+    cv::Mat& dest_image)
+  {   
+    int x_bin_w = source_image.cols / grid_size;
+    int y_bin_h = source_image.rows / grid_size;
+    
+    cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_64F);
+    cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_64F);
+    
+    for(int i = 0; i < grid_size + 1; i++)
+    {
+      for(int j = 0; j < grid_size + 1; j++)
+      {
+        double minVal, maxVal;
+        
+        cv::Rect roi = cv::Rect(j * x_bin_w  - x_bin_w / 2,
+                       i * y_bin_h - y_bin_h / 2, x_bin_w, y_bin_h);
+        roi.x = std::max(0, roi.x);
+        roi.y = std::max(0, roi.y);
+        roi.width = std::min(source_image.cols - roi.x, roi.width);
+        roi.height = std::min(source_image.rows - roi.y, roi.height);
+                       
+        cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0);
+        max_vals.at<double>(i, j) = maxVal;
+        min_vals.at<double>(i, j) = minVal;
+      }
+    }
+    
+    // Stretch contrast accordingly
+    for(int i = 0; i < source_image.rows; i++)
+    {
+      int ii = i / y_bin_h;
+      double py = (i - ii * y_bin_h) / ((double) y_bin_h);
+      
+      for(int j = 0; j < source_image.cols; j++)
+      {
+        // Find relevant min and max values
+        int jj = j / x_bin_w;
+
+        // Stretch histogram
+        //double minVal = min_vals.at<double>(ii, jj);
+        double maxVal = max_vals.at<double>(ii, jj);
+
+        // interp x
+        double px = (j - jj * x_bin_w) / ((double) x_bin_w);
+
+        //4-point interpolation
+        double xM1 = maxVal + px * (max_vals.at<double>(ii, jj+1) - maxVal);
+        double xM2 = max_vals.at<double>(ii+1, jj) + px * (max_vals.at<double>(ii+1, jj+1) - max_vals.at<double>(ii+1, jj));
+        double M = xM1 + py * (xM2 - xM1);
+
+        //double xm1 = minVal + px*(min_vals.at<double>(ii, jj+1) - minVal);
+        //double xm2 = min_vals.at<double>(ii+1, jj) + px*(min_vals.at<double>(ii+1, jj+1) - min_vals.at<double>(ii+1, jj));
+        //double m = xm1 + py*(xm2 - xm1);
+        //minVal = m;
+        maxVal = M;
+
+        if(maxVal > 255) maxVal = 255;
+        //if(minVal < 0) minVal = 0;
+        
+        //minVal = 0; // Care about bringing up brightness rather than full contrast stretching?
+
+        // TODO: put a bound on maxVal (we don't want to stretch a value of 20 all the way to 255)
+        // (same applies to minVal if we aren't setting to 0 above
+
+        double val = source_image.at<uint8_t>(i,j);
+        val = val * 255.0 / maxVal;
+        if(val > 255) val = 255;
+        if(val < 0) val = 0;
+        dest_image.at<uint8_t>(i,j) = val;
+      }
+    }
+  }
 }
