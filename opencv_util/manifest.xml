@@ -1,0 +1,20 @@
+<package>
+  <description brief="opencv_util">
+
+     opencv_util
+
+  </description>
+  <author>malban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/opencv_util</url>
+
+  <rosdep name="opencv2.3"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lopencv_util -Wl,-rpath,${prefix}/lib" />
+  </export>
+
+</package>
+
+
