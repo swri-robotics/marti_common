@@ -21,6 +21,7 @@
   <depend package="nav_msgs" />
   <depend package="camera_calibration_parsers"/>
   <depend package="math_util"/>
+  <depend package="opencv_util"/>
   
   <depend package="lapackpp" />
   
