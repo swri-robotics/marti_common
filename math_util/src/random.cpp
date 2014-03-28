@@ -33,6 +33,6 @@ namespace math_util
     std::vector<int32_t>& sample)
   {
     boost::unique_lock<boost::mutex> lock(mutex_);
-    math_util::GetUniformRandomSample<boost::random::mt19937>(rng_, min, max, count, sample);
+    math_util::GetUniformRandomSample<boost_random::mt19937>(rng_, min, max, count, sample);
   }
 }

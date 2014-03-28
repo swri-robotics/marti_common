@@ -11,6 +11,15 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 
+rosbuild_add_boost_directories()
+
+# The Boost Random library headers and namespaces changed between version
+# 1.46 and 1.47
+find_package(Boost COMPONENTS random) 
+if(${Boost_LIB_VERSION} MATCHES "1_46*")
+  add_definitions( -DBOOST_1_46 )
+endif(${Boost_LIB_VERSION} MATCHES "1_46*")
+
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory

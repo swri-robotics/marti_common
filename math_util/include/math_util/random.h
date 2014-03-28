@@ -23,13 +23,24 @@
 #include <vector>
 
 #include <boost/random/mersenne_twister.hpp>
-#include <boost/random/random_device.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 
+#ifdef BOOST_1_46
+  #include <boost/nondet_random.hpp>
+#else
+  #include <boost/random/random_device.hpp>
+#endif
+
 namespace math_util
 {
+  #ifdef BOOST_1_46
+  namespace boost_random = boost;
+  #else
+  namespace boost_random = boost::random;
+  #endif
+
   class RandomGenerator
   {
     public:
@@ -42,8 +53,8 @@ namespace math_util
         std::vector<int32_t>& sample);
       
     private:
-      boost::random::random_device seed_;
-      boost::random::mt19937 rng_;
+      boost_random::random_device seed_;
+      boost_random::mt19937 rng_;
       boost::mutex mutex_;
   };
   typedef boost::shared_ptr<RandomGenerator> RandomGeneratorPtr;
@@ -93,7 +104,7 @@ namespace math_util
 
     sample.resize(count);
       
-    boost::random::uniform_int_distribution<> dist(min, max);
+    boost::uniform_int<> dist(min, max);
     for (int32_t i = 0; i < count; i++)
     {
       bool has_sample = false;
