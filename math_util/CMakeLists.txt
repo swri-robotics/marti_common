@@ -18,7 +18,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_library(${PROJECT_NAME}
   src/math_util.cpp
-  src/trig_util.cpp)
+  src/trig_util.cpp
+  src/random.cpp)
+rosbuild_link_boost(${PROJECT_NAME} random)
   
 # Tests
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -31,5 +33,10 @@ rosbuild_add_executable(test_math_util test/test_math_util.cpp)
 rosbuild_add_gtest_build_flags(test_math_util)
 target_link_libraries(test_math_util ${PROJECT_NAME})
 
+rosbuild_add_executable(test_random test/test_random.cpp)
+rosbuild_add_gtest_build_flags(test_random)
+target_link_libraries(test_random ${PROJECT_NAME})
+
 rosbuild_add_rostest(launch/trig_util.test)
 rosbuild_add_rostest(launch/math_util.test)
+rosbuild_add_rostest(launch/random.test)
