@@ -19,8 +19,47 @@
 
 #include <opencv_util/models.h>
 
+#include <opencv2/imgproc/imgproc.hpp>
+
 namespace opencv_util
 {
+  bool AffineTransform2d::GetModel(const std::vector<T>& data, M& model)
+  {
+    if (data.size() != 3)
+    {
+      return false;
+    }
+    
+    cv::Point2f src[3];
+    cv::Point2f dst[3];
+    
+    for (int32_t i = 0; i < 3; i++)
+    {
+      src[i].x = data[i][0];
+      src[i].y = data[i][1];
+      dst[i].x = data[i][2];
+      dst[i].y = data[i][3];
+    }
+    
+    model = cv::getAffineTransform(src, dst);
+    
+    return true;
+  }
+  
+  double AffineTransform2d::GetError(const T& data, const M& model)
+  {
+    cv::Mat src(1, 1, CV_32FC2);
+    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
+    
+    cv::Mat dst;
+    cv::transform(src, dst, model);
+    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
+    
+    return std::sqrt(
+      std::pow(data[2] - estimated[0], 2) + 
+      std::pow(data[3] - estimated[1], 2));
+  }
+
   bool RigidTransform2d::GetModel(const std::vector<T>& data, M& model)
   {
     // TODO(malban)

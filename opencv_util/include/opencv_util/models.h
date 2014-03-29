@@ -26,6 +26,18 @@
 
 namespace opencv_util
 {
+
+  class AffineTransform2d
+  {
+  public:
+    typedef cv::Vec4f T;
+    typedef cv::Mat M;
+    enum { MIN_SIZE = 3 };
+    
+    static bool GetModel(const std::vector<T>& data, M& model);
+    static double GetError(const T& data, const M& model);
+  };
+
   class RigidTransform2d
   {
   public:
