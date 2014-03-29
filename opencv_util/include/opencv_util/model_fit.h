@@ -38,6 +38,8 @@ namespace opencv_util
     double confidence = 0.9,
     int32_t max_iterations = 1000,
     math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr());
+    
+  cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2);
 }
 
 #endif  // OPENCV_UTIL_MODEL_FIT_H_

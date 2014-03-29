@@ -73,6 +73,23 @@ namespace opencv_util
       }
     }
     
+    model = FitRigidTransform2d(inliers1, inliers2);
+
+    return model;
+  }
+  
+  cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2)
+  {
+    cv::Mat transform;
+    
+    if (!Valid2dPointCorrespondences(points1, points2))
+    {
+      return transform;
+    }
+    
+    bool row_order = points1.rows > 1;
+    int32_t size = row_order ? points1.rows : points1.cols;
+    
     // Perform least squares fit on inliers to refine model.
     //    For least squares there are several decomposition methods:
     //       DECOMP_LU
@@ -80,13 +97,13 @@ namespace opencv_util
     //       DECOMP_EIG ([A] must be symmetrical)
     //       DECOMP_SVD
     //       DECOMP_QR
-    cv::Mat A(good_points.size(), 3, CV_32F);
-    cv::Mat B = inliers2.reshape(1, 2);
+    cv::Mat A(size, 3, CV_32F);
+    cv::Mat B = points2.reshape(1, 2);
     if (row_order)
     {
-      for (size_t i = 0; i < good_points.size(); ++i)
+      for (int32_t i = 0; i < size; ++i)
       {
-        const cv::Vec2f& point = inliers1.at<cv::Vec2f>(i, 0);
+        const cv::Vec2f& point = points1.at<cv::Vec2f>(i, 0);
         cv::Vec3f& A_i = A.at<cv::Vec3f>(i, 0);
         A_i[0] = point[0];
         A_i[1] = point[1];
@@ -95,12 +112,12 @@ namespace opencv_util
     }
     else
     {
-      B = inliers2.t();
+      B = points2.t();
       B = B.reshape(1, 2);
       
-      for (size_t i = 0; i < good_points.size(); ++i)
+      for (int32_t i = 0; i < size; ++i)
       {
-        const cv::Vec2f& point = inliers1.at<cv::Vec2f>(0, i);
+        const cv::Vec2f& point = points1.at<cv::Vec2f>(0, i);
         cv::Vec3f& A_i = A.at<cv::Vec3f>(i, 0);
         A_i[0] = point[0];
         A_i[1] = point[1];
@@ -111,9 +128,9 @@ namespace opencv_util
     cv::Mat x;
     if (cv::solve(A, B, x))
     {
-      model = x;
+      transform = x;
     }
 
-    return model;
+    return transform;
   }
 }

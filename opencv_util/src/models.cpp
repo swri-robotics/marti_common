@@ -32,14 +32,12 @@ namespace opencv_util
     // TODO(malban)
     return 0.0;
   }
-  
-  bool ConvertToVec4f(
+
+
+  bool Valid2dPointCorrespondences(
     const cv::Mat& points1,
-    const cv::Mat& points2,
-    std::vector<cv::Vec4f>& matched_points)
+    const cv::Mat& points2)
   {
-    matched_points.clear();
-    
     if (points1.type() != points2.type())
     {
       return false;
@@ -56,6 +54,21 @@ namespace opencv_util
     }
     
     if (points1.cols != 1 && points1.rows != 1)
+    {
+      return false;
+    }
+    
+    return true;
+  }
+  
+  bool ConvertToVec4f(
+    const cv::Mat& points1,
+    const cv::Mat& points2,
+    std::vector<cv::Vec4f>& matched_points)
+  {
+    matched_points.clear();
+    
+    if (!Valid2dPointCorrespondences(points1, points2))
     {
       return false;
     }
@@ -90,5 +103,7 @@ namespace opencv_util
         matched_points[i][3] = points2.at<cv::Vec2f>(0, i)[1];
       }
     }
+    
+    return true;
   }
 }

@@ -37,6 +37,10 @@ namespace opencv_util
     static double GetError(const T& data, const M& model);
   };
   
+  bool Valid2dPointCorrespondences(
+    const cv::Mat& points1, 
+    const cv::Mat& points2);
+  
   bool ConvertToVec4f(
     const cv::Mat& points1,
     const cv::Mat& points2,
