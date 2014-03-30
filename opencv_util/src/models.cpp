@@ -30,6 +30,8 @@ namespace opencv_util
       return false;
     }
     
+    // TODO(malban): Test to make sure points aren't co-linear?
+    
     cv::Point2f src[3];
     cv::Point2f dst[3];
     
@@ -62,14 +64,84 @@ namespace opencv_util
 
   bool RigidTransform2d::GetModel(const std::vector<T>& data, M& model)
   {
-    // TODO(malban)
-    return false;
+    if (data.size() != 3)
+    {
+      return false;
+    }
+  
+    // TODO(malban): Test to make sure points aren't co-linear?
+  
+    cv::Point2f src[3];
+    cv::Point2f dst[3];
+    
+    for (int32_t i = 0; i < 3; i++)
+    {
+      src[i].x = data[i][0];
+      src[i].y = data[i][1];
+      dst[i].x = data[i][2];
+      dst[i].y = data[i][3];
+    }
+    
+    // Construct a x-axis for both sets.
+    cv::Point2f src_x = (src[1] - src[0]) * (1.0 / cv::norm(src[1] - src[0]));
+    cv::Point2f dst_x = (dst[1] - dst[0]) * (1.0 / cv::norm(dst[1] - dst[0]));
+    
+    // Construct a y-axis for both sets.
+    cv::Point2f src_y = (src[2] - src[0]) - src_x * ((src[2] - src[0]).dot(src_x));
+    src_y *= 1.0 / cv::norm(src_y);
+    
+    cv::Point2f dst_y = (dst[2] - dst[0]) - dst_x * ((dst[2] - dst[0]).dot(dst_x));
+    dst_y *= 1.0 / cv::norm(dst_y);
+    
+    // Build rotation matrices for both sets.
+    cv::Mat src_r(2, 2, CV_32F);
+    src_r.at<float>(0, 0) = src_x.x;
+    src_r.at<float>(1, 0) = src_x.y;
+    src_r.at<float>(0, 1) = src_y.x;
+    src_r.at<float>(1, 1) = src_y.y;
+    
+    cv::Mat dst_r(2, 2, CV_32F);
+    dst_r.at<float>(0, 0) = dst_x.x;
+    dst_r.at<float>(1, 0) = dst_x.y;
+    dst_r.at<float>(0, 1) = dst_y.x;
+    dst_r.at<float>(1, 1) = dst_y.y;
+    
+    // Solve for the rotation between src and dst
+    //    R R_src = R_dst
+    //    R = R_dst R_src^T
+    cv::Mat rotation = dst_r * src_r.t();
+    
+    // Calculate the translation between src (rotated) and dst.
+    cv::Mat src0_rotated(2, 1, CV_32F);
+    src0_rotated.at<float>(0, 0) = src[0].x;
+    src0_rotated.at<float>(1, 0) = src[0].y;
+    src0_rotated = rotation * src0_rotated;
+    float t_x = dst[0].x - src0_rotated.at<float>(0, 0);
+    float t_y = dst[0].y - src0_rotated.at<float>(1, 0);
+    
+    model.create(2, 3, CV_32F);
+    model.at<float>(0, 0) = rotation.at<float>(0, 0);
+    model.at<float>(0, 1) = rotation.at<float>(0, 1);
+    model.at<float>(1, 0) = rotation.at<float>(1, 0);
+    model.at<float>(1, 1) = rotation.at<float>(1, 1);
+    model.at<float>(0, 2) = t_x;
+    model.at<float>(1, 2) = t_y;
+    
+    return true;
   }
   
   double RigidTransform2d::GetError(const T& data, const M& model)
   {
-    // TODO(malban)
-    return 0.0;
+    cv::Mat src(1, 1, CV_32FC2);
+    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
+    
+    cv::Mat dst;
+    cv::transform(src, dst, model);
+    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
+    
+    return std::sqrt(
+      std::pow(data[2] - estimated[0], 2) + 
+      std::pow(data[3] - estimated[1], 2));
   }
 
 
