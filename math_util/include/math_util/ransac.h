@@ -21,6 +21,7 @@
 #define MATH_UTIL_RANSAC_H_
 
 #include <cmath>
+#include <limits>
 #include <vector>
 
 #include <boost/make_shared.hpp>
@@ -47,7 +48,13 @@ namespace math_util
     {
       ModelType best_fit;
       inliers.clear();
-      int32_t breakout = 1;
+      
+      if (data.size() < Model::MIN_SIZE)
+      {
+        return best_fit;
+      }
+      
+      int32_t breakout = std::numeric_limits<int32_t>::max();
       
       if (!rng_)
       {
@@ -65,18 +72,29 @@ namespace math_util
           sample[j] = data[indices[j]];
         }
         
+        // Generate a hypothesis model from the random sample.
+        // If the sample is not degenerate, calculate the number of inliers.
         ModelType hypothesis;
         if (Model::GetModel(sample, hypothesis))
         {
           std::vector<uint32_t> consensus_set;
-          for (size_t j = 0; j < data.size(); j++)
+          
+          // Check that the hypothesis is even valid for the sample set used
+          // to generate it before testing the full data set.
+          if (Model::GetError(sample, hypothesis) < max_error)
           {
-            if (Model::GetError(data[j], hypothesis) < max_error)
+            // Find all the inliers in the full data set.
+            for (size_t j = 0; j < data.size(); j++)
             {
-              consensus_set.push_back(j);
+              if (Model::GetError(data[j], hypothesis) < max_error)
+              {
+                consensus_set.push_back(j);
+              }
             }
           }
           
+          // Update the best fit hypothesis and inliers if this hypothesis has
+          // the most inliers so far.
           if (consensus_set.size() > inliers.size())
           {
             inliers = consensus_set;
@@ -94,12 +112,6 @@ namespace math_util
               breakout = std::log(1 - confidence) / std::log(p_no_outliers);
             }
           }
-        }
-        else
-        {
-          // Since this iteration was degenerate, increase the breakout 
-          // threshold.
-          breakout++;
         }
       }
       

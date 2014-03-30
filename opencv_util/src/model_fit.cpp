@@ -50,6 +50,11 @@ namespace opencv_util
     model = ransac.FitModel(
       matched_points, max_error, confidence, max_iterations, good_points);
     
+    if (good_points.empty())
+    {
+      return model;
+    }
+    
     // Populate output data.
     bool row_order = points1.rows > 1;
     if (row_order)
@@ -74,7 +79,7 @@ namespace opencv_util
     }
     
     // Calculate the refined transform using least squares on the inlier points.
-    model = FitRigidTransform2d(inliers1, inliers2);
+    //model = FitRigidTransform2d(inliers1, inliers2);
 
     return model;
   }
@@ -83,54 +88,7 @@ namespace opencv_util
   {
     cv::Mat transform;
     
-    if (!Valid2dPointCorrespondences(points1, points2))
-    {
-      return transform;
-    }
-    
-    bool row_order = points1.rows > 1;
-    int32_t size = row_order ? points1.rows : points1.cols;
-    
-    // Perform least squares fit on inliers to refine model.
-    //    For least squares there are several decomposition methods:
-    //       DECOMP_LU
-    //       DECOMP_CHOLESKY ([A] must be symmetrical)
-    //       DECOMP_EIG ([A] must be symmetrical)
-    //       DECOMP_SVD
-    //       DECOMP_QR
-    cv::Mat A(size, 3, CV_32F);
-    cv::Mat B = points2.reshape(1, 2);
-    if (row_order)
-    {
-      for (int32_t i = 0; i < size; ++i)
-      {
-        const cv::Vec2f& point = points1.at<cv::Vec2f>(i, 0);
-        cv::Vec3f& A_i = A.at<cv::Vec3f>(i, 0);
-        A_i[0] = point[0];
-        A_i[1] = point[1];
-        A_i[2] = 1.0;
-      }
-    }
-    else
-    {
-      B = points2.t();
-      B = B.reshape(1, 2);
-      
-      for (int32_t i = 0; i < size; ++i)
-      {
-        const cv::Vec2f& point = points1.at<cv::Vec2f>(0, i);
-        cv::Vec3f& A_i = A.at<cv::Vec3f>(i, 0);
-        A_i[0] = point[0];
-        A_i[1] = point[1];
-        A_i[2] = 1.0;
-      }
-    }
-    
-    cv::Mat x;
-    if (cv::solve(A, B, x))
-    {
-      transform = x;
-    }
+
 
     return transform;
   }
@@ -185,7 +143,7 @@ namespace opencv_util
     }
     
     // Calculate the refined transform using least squares on the inlier points.
-    model = FitAffineTransform2d(inliers1, inliers2);
+    //model = FitAffineTransform2d(inliers1, inliers2);
 
     return model;
   }
