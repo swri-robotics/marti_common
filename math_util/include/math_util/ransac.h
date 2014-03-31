@@ -77,11 +77,17 @@ namespace math_util
         ModelType hypothesis;
         if (Model::GetModel(sample, hypothesis))
         {
-          std::vector<uint32_t> consensus_set;
-          
           // Check that the hypothesis is even valid for the sample set used
           // to generate it before testing the full data set.
-          if (Model::GetError(sample, hypothesis) < max_error)
+          double max_sample_error = 0;
+          for (size_t j = 0; j < sample.size(); j++)
+          {
+            double sample_error = Model::GetError(sample[j], hypothesis);
+            max_sample_error = std::max(sample_error, max_sample_error);
+          }
+          
+          std::vector<uint32_t> consensus_set;
+          if (max_sample_error < max_error)
           {
             // Find all the inliers in the full data set.
             for (size_t j = 0; j < data.size(); j++)
