@@ -43,7 +43,7 @@ namespace opencv_util
   public:
     typedef cv::Vec4f T;
     typedef cv::Mat M;
-    enum { MIN_SIZE = 3 };
+    enum { MIN_SIZE = 2 };
     
     static bool GetModel(const std::vector<T>& data, M& model);
     static double GetError(const T& data, const M& model);

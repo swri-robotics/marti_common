@@ -87,10 +87,10 @@ namespace opencv_util
     cv::Point2f dst_x = (dst[1] - dst[0]) * (1.0 / cv::norm(dst[1] - dst[0]));
     
     // Construct a y-axis for both sets.
-    cv::Point2f src_y = (src[2] - src[0]) - src_x * ((src[2] - src[0]).dot(src_x));
+    cv::Point2f src_y(src_x.y, -src_x.x);
     src_y *= 1.0 / cv::norm(src_y);
     
-    cv::Point2f dst_y = (dst[2] - dst[0]) - dst_x * ((dst[2] - dst[0]).dot(dst_x));
+    cv::Point2f dst_y(dst_x.y, -dst_x.x);
     dst_y *= 1.0 / cv::norm(dst_y);
     
     // Build rotation matrices for both sets.
@@ -143,7 +143,6 @@ namespace opencv_util
       std::pow(data[2] - estimated[0], 2) + 
       std::pow(data[3] - estimated[1], 2));
   }
-
 
   bool Valid2dPointCorrespondences(
     const cv::Mat& points1,
