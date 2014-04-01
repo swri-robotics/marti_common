@@ -48,12 +48,12 @@ namespace transform_util
         const std::string& target_frame,
         const std::string& source_frame,
         const ros::Time& time,
-        Transform& transform);
+        Transform& transform) const;
 
     bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
-        Transform& transform);
+        Transform& transform) const;
 
     bool GetTransform(
         const std::string& target_frame,
@@ -69,7 +69,11 @@ namespace transform_util
   private:
     pluginlib::ClassLoader<transform_util::Transformer> loader_;
     boost::shared_ptr<tf::TransformListener> tf_listener_;
-    std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > > transformers_;
+
+    // NOTE: Transformers map is marked as mutable since it doesn't change after
+    // initialization, but its access functions are not technically const.  In
+    // this use case it can be considered const safely.
+    mutable std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > > transformers_;
   };
 }
 

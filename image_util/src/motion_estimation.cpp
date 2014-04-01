@@ -350,8 +350,9 @@ namespace image_util
       const cv::Mat& points2,
       cv::Mat& inliers1,
       cv::Mat& inliers2,
-      std::vector<uint32_t> &good_points,
-      int32_t max_iterations)
+      std::vector<uint32_t> &good_points, 
+      int32_t max_iterations,
+      double max_error)
   {
     cv::Mat T;
     // Here we are trying to compute the transformation matrix T, where T most
@@ -434,7 +435,7 @@ namespace image_util
     uint32_t MinNumValidPointsNeeded = 6;
     double   EscapeLevel = 0.8;
     // Perhaps change this to be a fraction of max range or make it a parameter
-    double   MaxReprojError = 20;
+    double   MaxReprojError = max_error;
     double   maxRNorm = 0.000000000000001;
 
 

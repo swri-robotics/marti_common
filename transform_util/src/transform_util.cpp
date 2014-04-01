@@ -29,6 +29,7 @@
 
 #include <math_util/constants.h>
 #include <math_util/math_util.h>
+#include <math_util/trig_util.h>
 
 namespace transform_util
 {
@@ -89,6 +90,21 @@ namespace transform_util
         std::sin(lat1) * std::cos(lat2) * std::cos(d_lon);
 
     return std::atan2(y, x) * math_util::_rad_2_deg;
+  }
+
+  double GetHeading(double src_x, double src_y, double dst_x, double dst_y)
+  {
+    return ToHeading(std::atan2(dst_y - src_y, dst_x - src_x));
+  }
+
+  double ToHeading(double yaw)
+  {
+    return math_util::ToDegrees(math_util::_half_pi - yaw);
+  }
+
+  double ToYaw(double heading)
+  {
+    return math_util::ToRadians(-(heading - 90.0));
   }
 
   tf::Quaternion SnapToRightAngle(const tf::Quaternion& rotation)

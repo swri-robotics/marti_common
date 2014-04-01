@@ -43,6 +43,59 @@ namespace image_util
     b = ((double)std::rand() / RAND_MAX);
   }
 
+  void JetColorMap(
+      unsigned char &r,
+      unsigned char &g,
+      unsigned char &b,
+      float value,
+      float min,
+      float max)
+  {
+    float max4 = (max - min) / 4.0;
+    value -= min;
+
+    if (value == HUGE_VAL)
+    {
+      r = g = b = 255;
+    }
+    else if (value < 0)
+    {
+      r = g = b = 0;
+    }
+    else if (value < max4)
+    {
+      unsigned char c1 = 144;
+
+      r = 0;
+      g = 0;
+      b = c1 + (unsigned char) ((255 - c1) * value / max4);
+    }
+    else if (value < 2 * max4)
+    {
+      r = 0;
+      g = (unsigned char) (255 * (value - max4) / max4);
+      b = 255;
+    }
+    else if (value < 3 * max4)
+    {
+      r = (unsigned char) (255 * (value - 2 * max4) / max4);
+      g = 255;
+      b = 255 - r;
+    }
+    else if (value < max)
+    {
+      r = 255;
+      g = (unsigned char) (255 - 255 * (value - 3 * max4) / max4);
+      b = 0;
+    }
+    else
+    {
+      r = 255;
+      g = 0;
+      b = 0;
+    }
+  }
+
   void DrawOverlap(
       const std::string& title,
       const cv::Mat& image1,
@@ -118,13 +171,13 @@ namespace image_util
     {
       cv::Scalar match_color = rand_color ? cv::Scalar(rng(256), rng(256), rng(256)) : color;
       cv::Point2f center1(
-        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f center2(
-        cvRound(points2.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        cvRound(points2.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f dcenter2(
-        std::min(center2.x + draw_image1.cols * 16.0, 
+        std::min(center2.x + draw_image1.cols * 16.0,
         float(image_out.cols - 1) * 16.0), center2.y);
       circle(draw_image1, center1, 48, match_color, 1, CV_AA, 4);
       circle(draw_image2, center2, 48, match_color, 1, CV_AA, 4);
@@ -175,10 +228,10 @@ namespace image_util
     for (int i = 0; i < points1.rows; i++)
     {
       cv::Point2f center1(
-        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f center2(cvRound(
-        points2.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        points2.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
       circle(draw_image, center1, 48, color1, 1, CV_AA, 4);
       line(draw_image, center1, center2, color2, 1, CV_AA, 4);

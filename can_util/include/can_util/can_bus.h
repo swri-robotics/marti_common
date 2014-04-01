@@ -6,6 +6,7 @@
 
 #include <boost/bind.hpp>
 
+#include <ros/this_node.h>
 #include <ros/node_handle.h>
 #include <ros/publisher.h>
 #include <ros/subscriber.h>
@@ -52,10 +53,11 @@ class CanBus
   ros::Publisher can_frame_pub_;
   boost::function<void(const marti_can_msgs::CanFrame &msg)> callback_fn_;
   std::string node_name_;
+  bool timestamp_messages_;
 };
 
 template<class T>
-void CanBus::Initialize(
+inline void CanBus::Initialize(
   const ros::NodeHandle &node_handle,
   const std::string &can_topic,
   uint32_t queue_size,
@@ -75,27 +77,29 @@ void CanBus::Initialize(
   node_name_ = ros::this_node::getName();
 }
 
-void CanBus::Shutdown()
+inline void CanBus::Shutdown()
 {
   can_frame_sub_.shutdown();
   can_frame_pub_.shutdown();
 }
 
-void CanBus::Publish(const marti_can_msgs::CanFrame &msg) const
+inline void CanBus::Publish(const marti_can_msgs::CanFrame &msg) const
 {
   marti_can_msgs::CanFrame modified_msg = msg;
   modified_msg.header.frame_id = node_name_;
+  if (timestamp_messages_)
+    modified_msg.header.stamp = ros::Time::now();
   can_frame_pub_.publish(modified_msg);
 }
 
-bool CanBus::EchoedMessage(const marti_can_msgs::CanFrame &msg)
+inline bool CanBus::EchoedMessage(const marti_can_msgs::CanFrame &msg)
 {
   if (msg.header.frame_id == node_name_)
     return true;
   return false;
 }
 
-void CanBus::CanFrameCallback(const marti_can_msgs::CanFrame &msg)
+inline void CanBus::CanFrameCallback(const marti_can_msgs::CanFrame &msg)
 {
   if (!EchoedMessage(msg))
     callback_fn_(msg);

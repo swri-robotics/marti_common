@@ -63,78 +63,111 @@ namespace transform_util
 
         return true;
       }
-      else if (initialized_)
+      else
       {
-        tf::StampedTransform tf_transform;
-        if (!Transformer::GetTransform(local_xy_util_->FrameId(), source_frame, time, tf_transform))
+        if (!initialized_)
         {
-          return false;
+          Initialize();
         }
 
-        transform = boost::make_shared<TfToUtmTransform>(
-                tf_transform,
-                utm_util_,
-                local_xy_util_);
+        if (initialized_)
+        {
+          tf::StampedTransform tf_transform;
+          if (!Transformer::GetTransform(local_xy_frame_, source_frame, time, tf_transform))
+          {
+            ROS_ERROR("Failed to get transform from %s to local_xy(%s)",
+                source_frame.c_str(), local_xy_frame_.c_str());
+            return false;
+          }
 
-        return true;
+          transform = boost::make_shared<TfToUtmTransform>(
+                  tf_transform,
+                  utm_util_,
+                  local_xy_util_);
+
+          return true;
+        }
       }
     }
     else if (target_frame == _wgs84_frame && source_frame == _utm_frame)
     {
       if (!initialized_)
       {
-        return false;
+        Initialize();
       }
 
-      transform = boost::make_shared<UtmToWgs84Transform>(
-              utm_util_,
-              utm_zone_,
-              utm_band_);
+      if (initialized_)
+      {
+        transform = boost::make_shared<UtmToWgs84Transform>(
+                utm_util_,
+                utm_zone_,
+                utm_band_);
 
-      return true;
+        return true;
+      }
     }
     else if (source_frame == _utm_frame)
     {
       if (!initialized_)
       {
-        return false;
+        Initialize();
       }
 
-      tf::StampedTransform tf_transform;
-      if (!Transformer::GetTransform(target_frame, local_xy_util_->FrameId(), time, tf_transform))
+      if (initialized_)
       {
-        return false;
+        tf::StampedTransform tf_transform;
+        if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
+        {
+          ROS_ERROR("Failed to get transform from local_xy(%s) to %s",
+              local_xy_frame_.c_str(), target_frame.c_str());
+          return false;
+        }
+
+        transform = boost::make_shared<UtmToTfTransform>(
+                tf_transform,
+                utm_util_,
+                local_xy_util_,
+                utm_zone_,
+                utm_band_);
+
+        return true;
       }
-
-      transform = boost::make_shared<UtmToTfTransform>(
-              tf_transform,
-              utm_util_,
-              local_xy_util_,
-              utm_zone_,
-              utm_band_);
-
-      return true;
+      else
+      {
+        ROS_WARN("Failed to initialize LocalXY origin");
+      }
     }
 
+    ROS_WARN("Failed to get UTM transform");
     return false;
   }
 
   bool UtmTransformer::Initialize()
   {
-    // Initialize LocalXY util with an origin.
-    local_xy_util_ = ParseLocalXyOrigin();
+    if (!ros::param::get("/local_xy_frame", local_xy_frame_))
+    {
+      return false;
+    }
 
-    if (local_xy_util_)
+    if (!local_xy_util_)
+    {
+      local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
+    }
+
+    // Initialize LocalXY util with an origin.
+    if (local_xy_util_->Initialized())
     {
       utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
       utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
     }
 
-    return local_xy_util_;
+    initialized_ = local_xy_util_->Initialized();
+
+    return initialized_;
   }
 
   UtmToTfTransform::UtmToTfTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util,
       int32_t utm_zone,
@@ -144,8 +177,9 @@ namespace transform_util
       local_xy_util_(local_xy_util),
       utm_zone_(utm_zone),
       utm_band_(utm_band)
-   {
-   }
+  {
+    stamp_ = transform.stamp_;
+  }
 
   void UtmToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
@@ -163,14 +197,15 @@ namespace transform_util
   }
 
   TfToUtmTransform::TfToUtmTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
       transform_(transform),
       utm_util_(utm_util),
       local_xy_util_(local_xy_util)
-   {
-   }
+  {
+    stamp_ = transform.stamp_;
+  }
 
   void TfToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
@@ -195,13 +230,14 @@ namespace transform_util
     utm_zone_(utm_zone),
     utm_band_(utm_band)
   {
+    stamp_ = ros::Time::now();
   }
 
   void UtmToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     double lat, lon;
     utm_util_->ToLatLon(utm_zone_, utm_band_, v_in.x(), v_in.y(), lat, lon);
-    v_out.setValue(lat, lon, v_in.z());
+    v_out.setValue(lon, lat, v_in.z());
   }
 
 
@@ -209,6 +245,7 @@ namespace transform_util
     boost::shared_ptr<UtmUtil> utm_util) :
     utm_util_(utm_util)
   {
+    stamp_ = ros::Time::now();
   }
 
   void Wgs84ToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const

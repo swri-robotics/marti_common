@@ -44,6 +44,16 @@ namespace math_util
   double ToNearest(double value, double multiple);
 
   /**
+   * Round up the value to the nearest provided multiple.
+   *
+   * @param[in]  value     The number to round.
+   * @param[in]  multiple  The multiple.
+   *
+   * @returns The rounded value.
+   */
+  double UpToNearest(double value, double multiple);
+
+  /**
    * Check if v1 is within +/- epsilon of v2
    *
    * @param[in]  v1       The first value.

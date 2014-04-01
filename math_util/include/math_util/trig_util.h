@@ -31,6 +31,25 @@ namespace math_util
    * @returns An equivalent angle in the desired range.
    */
   double WrapRadians(double angle, double center);
+
+  /**
+   * Convert radians to degrees.
+   *
+   * @param[in] degrees Input angle.
+
+   *
+   * @return The angle in radians.
+   */
+  double ToRadians(double degrees);
+
+  /**
+   * Convert degrees to radians.
+   *
+   * @param[in] radians Input angle.
+   *
+   * @return The angle in degrees.
+   */
+  double ToDegrees(double radians);
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_

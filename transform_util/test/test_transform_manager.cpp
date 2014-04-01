@@ -123,8 +123,8 @@ TEST(TransformManagerTests, UtmToWgs84)
 
   tf::Vector3 wgs84 = transform * utm;
 
-  EXPECT_FLOAT_EQ(29.526667, wgs84.x());
-  EXPECT_FLOAT_EQ(-98.471944, wgs84.y());
+  EXPECT_FLOAT_EQ(29.526667, wgs84.y());
+  EXPECT_FLOAT_EQ(-98.471944, wgs84.x());
 }
 
 TEST(TransformManagerTests, TfToUtm1)
@@ -305,7 +305,11 @@ int main(int argc, char **argv)
 
   _tf_manager.Initialize();
 
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
   sleep(1);
 
-  return RUN_ALL_TESTS();
+  bool result = RUN_ALL_TESTS();
+  spinner.stop();
+  return result;
 }

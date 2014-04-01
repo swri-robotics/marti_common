@@ -122,7 +122,8 @@ namespace image_util
       cv::Mat& inliers1,
       cv::Mat& inliers2,
       std::vector<uint32_t> &good_points,
-      int32_t max_iterations=4000);
+      int32_t max_iterations=4000,
+      double max_error = 20.0);
 
   /**
    * @brief Computes the rigid planar transformation given the points passed in

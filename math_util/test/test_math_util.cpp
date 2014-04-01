@@ -42,6 +42,8 @@ TEST(MathUtilTests, ToNearest)
   EXPECT_EQ(90.0, math_util::ToNearest(89.7, 1));
   EXPECT_EQ(-10.0, math_util::ToNearest(-9.9, 1));
   EXPECT_EQ(-10.0, math_util::ToNearest(-10.1, 1));
+  EXPECT_EQ(4, math_util::ToNearest(4, 2));
+  EXPECT_EQ(-4, math_util::ToNearest(-4, 2));
 
   EXPECT_EQ(90.0, math_util::ToNearest(85.4, 90));
   EXPECT_EQ(270.0, math_util::ToNearest(301.4, 90));
@@ -62,6 +64,39 @@ TEST(MathUtilTests, ToNearest)
   EXPECT_FLOAT_EQ(math_util::_pi, math_util::ToNearest(2.4, math_util::_half_pi));
   EXPECT_FLOAT_EQ(math_util::_pi, math_util::ToNearest(math_util::_pi, math_util::_half_pi));
   EXPECT_FLOAT_EQ(math_util::_2pi, math_util::ToNearest(6.1, math_util::_half_pi));
+}
+
+TEST(MathUtilTests, UpToNearest)
+{
+  EXPECT_EQ(1.0, math_util::UpToNearest(0.1, 1));
+  EXPECT_EQ(0.0, math_util::UpToNearest(-0.1, 1));
+  EXPECT_EQ(1.0, math_util::UpToNearest(0.45, 1));
+  EXPECT_EQ(91.0, math_util::UpToNearest(90.1, 1));
+  EXPECT_EQ(90.0, math_util::UpToNearest(89.7, 1));
+  EXPECT_EQ(-9.0, math_util::UpToNearest(-9.9, 1));
+  EXPECT_EQ(-10.0, math_util::UpToNearest(-10.1, 1));
+  EXPECT_EQ(4, math_util::UpToNearest(4, 2));
+  EXPECT_EQ(-4, math_util::UpToNearest(-4, 2));
+
+  EXPECT_EQ(90.0, math_util::UpToNearest(85.4, 90));
+  EXPECT_EQ(360.0, math_util::UpToNearest(301.4, 90));
+  EXPECT_EQ(90.0, math_util::UpToNearest(35.4, 90));
+  EXPECT_EQ(0.0, math_util::UpToNearest(-35.3, 90));
+  EXPECT_EQ(-270.0, math_util::UpToNearest(-301.4, 90));
+
+  EXPECT_EQ(0.0, math_util::UpToNearest(85.4, 0));
+  EXPECT_EQ(0.0, math_util::UpToNearest(301.4, 0));
+  EXPECT_EQ(0.0, math_util::UpToNearest(35.4, 0));
+  EXPECT_EQ(0.0, math_util::UpToNearest(-35.3, 0));
+  EXPECT_EQ(0.0, math_util::UpToNearest(-301.4, 0));
+
+  EXPECT_EQ(0, math_util::UpToNearest(-0.45, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_half_pi, math_util::UpToNearest(0.45, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_half_pi, math_util::UpToNearest(1.2, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::UpToNearest(1.6, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::UpToNearest(2.4, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_pi, math_util::UpToNearest(math_util::_pi, math_util::_half_pi));
+  EXPECT_FLOAT_EQ(math_util::_2pi, math_util::UpToNearest(6.1, math_util::_half_pi));
 }
 
 TEST(MathUtilTests, IsNear)

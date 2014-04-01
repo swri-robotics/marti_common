@@ -37,6 +37,8 @@ namespace transform_util
   class Wgs84Transformer : public Transformer
   {
     public:
+      Wgs84Transformer();
+
       virtual std::map<std::string, std::vector<std::string> > Supports() const;
 
       virtual bool GetTransform(
@@ -49,33 +51,34 @@ namespace transform_util
       virtual bool Initialize();
 
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+      std::string local_xy_frame_;
   };
 
   class TfToWgs84Transform : public TransformImpl
   {
-  public:
+  public:    
     TfToWgs84Transform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
   protected:
-    tf::Transform transform_;
+    tf::StampedTransform transform_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
 
   class Wgs84ToTfTransform : public TransformImpl
   {
-  public:
+  public:      
     Wgs84ToTfTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
   protected:
-    tf::Transform transform_;
+    tf::StampedTransform transform_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
 }

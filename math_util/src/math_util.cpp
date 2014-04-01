@@ -38,6 +38,16 @@ namespace math_util
     return Round(value / multiple) * multiple;
   }
 
+  double UpToNearest(double value, double multiple)
+  {
+    if (multiple == 0)
+    {
+      return 0;
+    }
+
+    return std::ceil(value / multiple) * multiple;
+  }
+
   bool IsNear(double v1, double v2, double epsilon)
   {
     return std::fabs(v1 - v2) <= epsilon;

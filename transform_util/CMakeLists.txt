@@ -31,6 +31,10 @@ rosbuild_add_library(transformer_plugins
   src/wgs84_transformer.cpp)
 target_link_libraries(transformer_plugins ${PROJECT_NAME})
 
+### Nodes ###
+rosbuild_add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
+target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
+
 # Tests
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 

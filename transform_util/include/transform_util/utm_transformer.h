@@ -56,13 +56,14 @@ namespace transform_util
 
       int32_t utm_zone_;
       char utm_band_;
+      std::string local_xy_frame_;
   };
 
   class UtmToTfTransform : public TransformImpl
   {
   public:
     UtmToTfTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util,
       int32_t utm_zone,
@@ -71,7 +72,7 @@ namespace transform_util
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
   protected:
-    tf::Transform transform_;
+    tf::StampedTransform transform_;
     boost::shared_ptr<UtmUtil> utm_util_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
     int32_t utm_zone_;
@@ -82,14 +83,14 @@ namespace transform_util
   {
   public:
     TfToUtmTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
   protected:
-    tf::Transform transform_;
+    tf::StampedTransform transform_;
     boost::shared_ptr<UtmUtil> utm_util_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
