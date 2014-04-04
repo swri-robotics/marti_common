@@ -9,6 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/opencv_util</url>
 
+  <depend package="math_util"/>
+
   <rosdep name="opencv2.3"/>
 
   <export>
