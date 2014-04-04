@@ -28,6 +28,17 @@
 
 namespace opencv_util
 {
+  cv::Mat FindTranslation2d(
+    const cv::Mat& points1, 
+    const cv::Mat& points2,
+    cv::Mat& inliers1,
+    cv::Mat& inliers2,
+    std::vector<uint32_t> &good_points,
+    double max_error = 1.0,
+    double confidence = 0.9,
+    int32_t max_iterations = 1000,
+    math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr());
+
   cv::Mat FindRigidTransform2d(
     const cv::Mat& points1, 
     const cv::Mat& points2,

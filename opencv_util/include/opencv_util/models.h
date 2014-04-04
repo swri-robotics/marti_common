@@ -49,6 +49,17 @@ namespace opencv_util
     static double GetError(const T& data, const M& model);
   };
   
+  class Translation2d
+  {
+  public:
+    typedef cv::Vec4f T;
+    typedef cv::Mat M;
+    enum { MIN_SIZE = 1 };
+    
+    static bool GetModel(const std::vector<T>& data, M& model);
+    static double GetError(const T& data, const M& model);
+  };
+  
   bool Valid2dPointCorrespondences(
     const cv::Mat& points1, 
     const cv::Mat& points2);

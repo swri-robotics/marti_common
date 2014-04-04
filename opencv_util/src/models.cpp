@@ -25,17 +25,17 @@ namespace opencv_util
 {
   bool AffineTransform2d::GetModel(const std::vector<T>& data, M& model)
   {
-    if (data.size() != 3)
+    if (data.size() != MIN_SIZE)
     {
       return false;
     }
     
     // TODO(malban): Test to make sure points aren't co-linear?
     
-    cv::Point2f src[3];
-    cv::Point2f dst[3];
+    cv::Point2f src[MIN_SIZE];
+    cv::Point2f dst[MIN_SIZE];
     
-    for (int32_t i = 0; i < 3; i++)
+    for (int32_t i = 0; i < MIN_SIZE; i++)
     {
       src[i].x = data[i][0];
       src[i].y = data[i][1];
@@ -64,17 +64,15 @@ namespace opencv_util
 
   bool RigidTransform2d::GetModel(const std::vector<T>& data, M& model)
   {
-    if (data.size() != 3)
+    if (data.size() != MIN_SIZE)
     {
       return false;
     }
-  
-    // TODO(malban): Test to make sure points aren't co-linear?
-  
-    cv::Point2f src[3];
-    cv::Point2f dst[3];
     
-    for (int32_t i = 0; i < 3; i++)
+    cv::Point2f src[MIN_SIZE];
+    cv::Point2f dst[MIN_SIZE];
+    
+    for (int32_t i = 0; i < MIN_SIZE; i++)
     {
       src[i].x = data[i][0];
       src[i].y = data[i][1];
@@ -131,6 +129,50 @@ namespace opencv_util
   }
   
   double RigidTransform2d::GetError(const T& data, const M& model)
+  {
+    cv::Mat src(1, 1, CV_32FC2);
+    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
+    
+    cv::Mat dst;
+    cv::transform(src, dst, model);
+    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
+    
+    return std::sqrt(
+      std::pow(data[2] - estimated[0], 2) + 
+      std::pow(data[3] - estimated[1], 2));
+  }
+  
+  bool Translation2d::GetModel(const std::vector<T>& data, M& model)
+  {
+    if (data.size() != MIN_SIZE)
+    {
+      return false;
+    }
+  
+    cv::Point2f src;
+    cv::Point2f dst;
+    
+    src.x = data[0][0];
+    src.y = data[0][1];
+    dst.x = data[0][2];
+    dst.y = data[0][3];
+    
+    // Calculate the translation between src (rotated) and dst.
+    float t_x = dst.x - src.x;
+    float t_y = dst.y - src.y;
+    
+    model.create(2, 3, CV_32F);
+    model.at<float>(0, 0) = 1.0f;
+    model.at<float>(0, 1) = 0.0f;
+    model.at<float>(1, 0) = 0.0f;
+    model.at<float>(1, 1) = 1.0f;
+    model.at<float>(0, 2) = t_x;
+    model.at<float>(1, 2) = t_y;
+    
+    return true;
+  }
+  
+  double Translation2d::GetError(const T& data, const M& model)
   {
     cv::Mat src(1, 1, CV_32FC2);
     src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
