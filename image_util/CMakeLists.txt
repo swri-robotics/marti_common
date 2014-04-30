@@ -33,6 +33,8 @@ target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 rosbuild_add_executable(normalization_image_generator_node src/nodes/normalization_image_generator_node.cpp)
 target_link_libraries(normalization_image_generator_node ${PROJECT_NAME})
 
+rosbuild_add_executable(dummy_image_publisher src/nodes/dummy_image_publisher.cpp)
+
 # TESTS
 rosbuild_add_executable(test_geometry_util test/test_geometry_util.cpp)
 rosbuild_add_gtest_build_flags(test_geometry_util)
