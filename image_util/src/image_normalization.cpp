@@ -97,4 +97,29 @@ namespace image_util
 
     return norm_image;
   }
+
+  cv::Mat scale_2_8bit(const cv::Mat& image)
+	{
+		if (image.type() == CV_8UC1)
+		  return image;
+		cv::Mat Image8Bit(image.rows, image.cols, CV_8U), Image8BitColor; //Define an 8bit image
+		//Convert the image to 32bit float
+		cv::Mat ImageFloat;
+		image.convertTo(ImageFloat, CV_32F, 1, 0);
+		double maxVal; //Define the max value of image
+		cv::minMaxLoc(ImageFloat.reshape(1,1), NULL, &maxVal);//Extract the max value of image
+		//ReScale the image to 0 to 255
+		ImageFloat = ImageFloat*((1 << 8)/pow(2, ceil(log(maxVal)/log(2))));
+		ImageFloat.convertTo(Image8Bit,CV_8U, 1, 0);
+		return Image8Bit;
+	}
+
+	cv::Mat scale_2_8bit_color(const cv::Mat& image)
+	{
+		if (image.type() == CV_8UC3)
+		  return image;
+		cv::Mat Image8Bit = scale_2_8bit(image), Image8BitColor;
+		cvtColor(Image8Bit, Image8BitColor, CV_GRAY2BGR);
+		return Image8BitColor;
+	}
 }
