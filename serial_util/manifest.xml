@@ -1,0 +1,14 @@
+<package>
+  <description brief="serial_util">
+
+     serial_util
+
+  </description>
+  <author>malban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/serial_util</url>
+
+</package>
+
+
