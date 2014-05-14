@@ -23,7 +23,9 @@
 
 namespace serial_util
 {
-
+  /**
+   * Structure defining serial port configuration parameters.
+   */
   struct SerialConfig
   {
     enum Parity
@@ -33,6 +35,16 @@ namespace serial_util
       ODD_PARITY
     };
 
+    /**
+     * Default constructor.
+     *
+     * baud = 115200
+     * parity = NO_PARITY
+     * flow control = false
+     * data bits = 8
+     * stop bits = 1
+     * low latency mode = false
+     */
     SerialConfig();
 
     SerialConfig(
@@ -66,7 +78,16 @@ namespace serial_util
     int fd_;
     std::string error_msg_;
 
+    /**
+     * Constructor.
+     */
     SerialPort();
+
+    /**
+     * Destructor.
+     *
+     * Closes serial port if open.
+     */
     ~SerialPort();
 
     /**
@@ -74,11 +95,14 @@ namespace serial_util
      *
      * The default configuration is:
      *   baud = 115200
-     *   parity = false
+     *   parity = NO_PARITY
      *   flow control = false
      *   data bits = 8
      *   stop bits = 1
      *   low latency mode = false
+     *
+     * @param[in]  device  The OS path of the device.
+     * @param[in]  config  The port configuration settings.
      */
     bool Open(const std::string &device, SerialConfig config = SerialConfig());
 
@@ -90,11 +114,21 @@ namespace serial_util
     /**
      * Read bytes from the serial port.
      *
-     * Appends up to max_bytes into the provided vector.  If max_bytes
-     * is 0, it reads all available bytes.
+     * Appends up to max_bytes into the provided vector.  If max_bytes is 0,
+     * it reads all available bytes.
+     *
+     * @param[out]  output     The output buffer for bytes read in.
+     * @param[in]   max_bytes  The maximum number of bytes to read.  If set
+     *                         to 0, all available bytes are read.
+     * @param[in]   timeout    The maximum time to block in milliseconds
+     *
+     * @returns Read result (SUCCESS, TIMEOUT, INTERRUPTED, or ERROR).
      */
     Result ReadBytes(std::vector<uint8_t>* output, size_t max_bytes, int32_t timeout);
 
+    /**
+     * Get the most recent error message.
+     */
     std::string ErrorMsg() const { return error_msg_; }
 
    private:
@@ -103,6 +137,13 @@ namespace serial_util
      */
     bool SetLowLatencyMode(bool enabled = true);
 
+    /**
+     * Parses integer and enumerated baud rates into enumerated baud rates.
+     *
+     * @param[in]  baud  The baud rate (either integer or enumerated)
+     *
+     * @returns  The enumerated baud rate or -1 if invalid.
+     */
     int32_t ParseBaudRate(int32_t baud);
   };
 }
