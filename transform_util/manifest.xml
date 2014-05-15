@@ -18,6 +18,11 @@
   <depend package="diagnostic_msgs"/>
   <depend package="math_util"/>
   
+  <!--  For the NovatelPosition message, needed by novatel_position2odometry.
+        Either the tranlator node should move elsewhere or the message should 
+        because this package should not depend on a driver package. -->
+  <depend package="novatel_oem628" /> 
+  
   <rosdep name="opencv2.3"/>
   <rosdep name="proj"/>
   <rosdep name="yaml-cpp"/>
