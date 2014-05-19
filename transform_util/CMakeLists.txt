@@ -35,9 +35,6 @@ target_link_libraries(transformer_plugins ${PROJECT_NAME})
 rosbuild_add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
-rosbuild_add_executable(novatel_position2odometry src/nodes/novatel_position2odometry.cpp)
-target_link_libraries(novatel_position2odometry ${PROJECT_NAME})
-
 # Tests
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
