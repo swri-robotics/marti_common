@@ -124,7 +124,7 @@ namespace serial_util
      *
      * @returns Read result (SUCCESS, TIMEOUT, INTERRUPTED, or ERROR).
      */
-    Result ReadBytes(std::vector<uint8_t>* output, size_t max_bytes, int32_t timeout);
+    Result ReadBytes(std::vector<uint8_t>& output, size_t max_bytes, int32_t timeout);
 
     /**
      * Get the most recent error message.

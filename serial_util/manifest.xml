@@ -13,7 +13,6 @@
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lserial_util -Wl,-rpath,${prefix}/lib" />
   </export>
 
-
 </package>
 
 

@@ -259,7 +259,7 @@ namespace serial_util
     return value;
   }
 
-  SerialPort::Result SerialPort::ReadBytes(std::vector<uint8_t>* output, size_t max_bytes, int32_t timeout)
+  SerialPort::Result SerialPort::ReadBytes(std::vector<uint8_t>& output, size_t max_bytes, int32_t timeout)
   {
     if (fd_ < 0)
     {
@@ -298,18 +298,18 @@ namespace serial_util
       to_read = static_cast<size_t>(bytes);
     }
 
-    size_t output_size = output->size();
-    output->resize(output_size + to_read);
+    size_t output_size = output.size();
+    output.resize(output_size + to_read);
 
-    int result = read(fd_, output->data() + output_size, to_read);
+    int result = read(fd_, output.data() + output_size, to_read);
 
     if (result > 0)
     {
-      output->resize(output_size + result);
+      output.resize(output_size + result);
     }
     else
     {
-      output->resize(output_size);
+      output.resize(output_size);
     }
 
     if (result > 0)
