@@ -91,7 +91,7 @@ namespace serial_util
       return false;
     }
 
-    if (config.data_bits != 7 && config.stop_bits != 8)
+    if (config.data_bits != 7 && config.data_bits != 8)
     {
       error_msg_ = "Invalid data bits: " + boost::lexical_cast<std::string>(config.data_bits);
       return false;
