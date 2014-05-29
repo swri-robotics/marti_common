@@ -53,7 +53,8 @@ namespace serial_util
         int32_t stop_bits,
         Parity parity,
         bool flow_control,
-        bool low_latency_mode);
+        bool low_latency_mode,
+        bool writable);
 
     int32_t baud;
     int32_t data_bits;
@@ -61,6 +62,7 @@ namespace serial_util
     Parity parity;
     bool flow_control;
     bool low_latency_mode;
+    bool writable;
   };
 
   class SerialPort
@@ -126,6 +128,8 @@ namespace serial_util
      */
     Result ReadBytes(std::vector<uint8_t>& output, size_t max_bytes, int32_t timeout);
 
+    int32_t Write(const std::vector<uint8_t>& input);
+
     /**
      * Get the most recent error message.
      */
@@ -135,7 +139,7 @@ namespace serial_util
     /**
      * Attempts to put serial port in low latency mode.
      */
-    bool SetLowLatencyMode(bool enabled = true);
+    bool SetLowLatencyMode();
 
     /**
      * Parses integer and enumerated baud rates into enumerated baud rates.

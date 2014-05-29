@@ -34,7 +34,8 @@ namespace serial_util
       stop_bits(1),
       parity(NO_PARITY),
       flow_control(false),
-      low_latency_mode(false)
+      low_latency_mode(false),
+      writable(false)
   {
   }
 
@@ -44,13 +45,15 @@ namespace serial_util
       int32_t stop_bits,
       Parity parity,
       bool flow_control,
-      bool low_latency_mode) :
+      bool low_latency_mode,
+      bool writable) :
           baud(baud),
           data_bits(data_bits),
           stop_bits(stop_bits),
           parity(parity),
           flow_control(flow_control),
-          low_latency_mode(low_latency_mode)
+          low_latency_mode(low_latency_mode),
+          writable(writable)
   {
   }
 
@@ -105,7 +108,7 @@ namespace serial_util
       return false;
     }
 
-    fd_ = open(device.c_str(), O_RDONLY);
+    fd_ = open(device.c_str(), config.writable ? O_RDWR : O_RDONLY);
     if (fd_ == -1)
     {
       error_msg_ = "Error opening serial port <" + device + ">: " + strerror(errno);
@@ -172,7 +175,7 @@ namespace serial_util
       return false;
     }
 
-    if (!SetLowLatencyMode(config.low_latency_mode))
+    if (config.low_latency_mode && !SetLowLatencyMode())
     {
       Close();
       return false;
@@ -181,7 +184,7 @@ namespace serial_util
     return true;
   }
 
-  bool SerialPort::SetLowLatencyMode(bool enabled)
+  bool SerialPort::SetLowLatencyMode()
   {
     if (fd_ < 0)
     {
@@ -197,14 +200,7 @@ namespace serial_util
       return false;
     }
 
-    if (enabled)
-    {
-      serial_info.flags |= ASYNC_LOW_LATENCY;
-    }
-    else
-    {
-      serial_info.flags &= ~ASYNC_LOW_LATENCY;
-    }
+    serial_info.flags |= ASYNC_LOW_LATENCY;
 
     if (ioctl(fd_, TIOCSSERIAL, &serial_info) < 0)
     {
@@ -333,5 +329,10 @@ namespace serial_util
           return ERROR;
       }
     }
+  }
+
+  int32_t SerialPort::Write(const std::vector<uint8_t>& input)
+  {
+    return write(fd_, input.data(), input.size());
   }
 }
