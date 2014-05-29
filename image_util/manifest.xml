@@ -32,6 +32,7 @@
     <rosdoc config="rosdoc.yaml" />
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -limage_util -Wl,-rpath,${prefix}/lib" />
   </export>
+  <depend package="build_tools"/>
 </package>
 
 
