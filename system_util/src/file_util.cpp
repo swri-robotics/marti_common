@@ -18,7 +18,6 @@
 // *****************************************************************************
 
 #include <system_util/file_util.h>
-
 #include <string>
 
 namespace system_util
@@ -91,30 +90,43 @@ namespace system_util
   std::vector<std::string> load_all_files(const std::string& path, std::string& directory)
   {
 	std::vector< std::string > all_matching_files;
-
 	// Extract the directory from the path
 	std::string direct = path.substr(0, path.find_last_of("/\\"));
 	// Extract the filename from the path
 	std::string filename = path.substr(path.find_last_of("/\\")+1);
+	boost::filesystem::path p(direct);
+	if ( !exists( p ) )
+	{
+		printf("Path %s does not exists\n", p.string().c_str());
+		return all_matching_files;
+	}
 	const boost::regex my_filter(filename.replace(filename.find("*"), std::string("*").length(), ".*\\") );
 
-	boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
-	for( boost::filesystem::directory_iterator i( direct ); i != end_itr; ++i )
+	boost::filesystem::directory_iterator end_itr; // Default construction yields past-the-end
+	for( boost::filesystem::directory_iterator i( p ); i != end_itr; ++i )
 	{
 		// Skip if not a file
-		if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
+//		if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
 
-		boost::smatch what;
-
-		// Skip if no match
-		if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
-
-		// File matches, store it
-		all_matching_files.push_back( i->leaf() );
+		//It it is a directory then search within
+		if ( boost::filesystem::is_directory(i->status()) )
+		{
+		  std::string path2 = i->path().string() + std::string("/") + path.substr(path.find_last_of("/\\")+1);
+		  std::string directory2;
+		  std::vector<std::string> matching_files = load_all_files( path2, directory2 );
+		  all_matching_files.insert(all_matching_files.end(), matching_files.begin(), matching_files.end());
+		}else if (boost::filesystem::is_regular_file( i->status())) // Check if a file
+	    {
+			boost::smatch what;
+			// Skip if no match
+			if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
+			// File matches, store it
+			all_matching_files.push_back( i->path().string() );
+	    }
 		std::sort(all_matching_files.begin(), all_matching_files.end());
 	}
 	directory = direct;
-	  return all_matching_files;
+    return all_matching_files;
 
   }
 }
