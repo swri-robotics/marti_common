@@ -1,0 +1,9 @@
+<library path="lib/libimage_util_nodelets">
+  
+  <class name="image_util/rotate_image" type="image_util::RotateImageNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to rotate an image a multiple of 90 degrees.
+    </description>
+  </class>
+  
+</library>
