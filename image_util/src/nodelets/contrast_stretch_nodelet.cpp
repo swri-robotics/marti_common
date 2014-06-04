@@ -49,8 +49,8 @@ namespace image_util
       priv.param("bins", bins_, bins_);
 
       image_transport::ImageTransport it(node);
-      image_sub_ = it.subscribe("image", 1, &ContrastStretchNodelet::ImageCallback, this);
       image_pub_ = it.advertise("normalized_image", 1);
+      image_sub_ = it.subscribe("image", 1, &ContrastStretchNodelet::ImageCallback, this);
     }
 
     void ImageCallback(const sensor_msgs::ImageConstPtr& image)

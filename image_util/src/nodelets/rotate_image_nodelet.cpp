@@ -54,8 +54,8 @@ namespace image_util
       operations_ = std::abs(angle_90 / 90);
 
       image_transport::ImageTransport it(node);
-      image_sub_ = it.subscribe("image", 1, &RotateImageNodelet::ImageCallback, this);
       image_pub_ = it.advertise("rotated_image", 1);
+      image_sub_ = it.subscribe("image", 1, &RotateImageNodelet::ImageCallback, this);
     }
 
     void ImageCallback(const sensor_msgs::ImageConstPtr& image)

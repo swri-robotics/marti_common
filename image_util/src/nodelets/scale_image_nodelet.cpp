@@ -48,8 +48,8 @@ namespace image_util
       priv.param("scale", scale_, scale_);
 
       image_transport::ImageTransport it(node);
-      image_sub_ = it.subscribe("image", 1, &ScaleImageNodelet::ImageCallback, this);
       image_pub_ = it.advertise("scaled_image", 1);
+      image_sub_ = it.subscribe("image", 1, &ScaleImageNodelet::ImageCallback, this);
     }
 
     void ImageCallback(const sensor_msgs::ImageConstPtr& image)
