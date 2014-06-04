@@ -6,6 +6,12 @@
     </description>
   </class>
   
+  <class name="image_util/scale_image" type="image_util::ScaleImageNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to scale an image.
+    </description>
+  </class>
+  
   <class name="image_util/contrast_stretch" type="image_util::ContrastStretchNodelet" base_class_type="nodelet::Nodelet">
     <description>
       Nodelet to contrast stretch an image.
