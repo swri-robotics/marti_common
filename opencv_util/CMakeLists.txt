@@ -12,6 +12,8 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 find_package(OpenCV REQUIRED)
 
 rosbuild_init()
+rosbuild_find_ros_package(build_tools)
+include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
 rosbuild_add_boost_directories()
 

@@ -96,9 +96,13 @@ def initialize_origin():
         
             status.name = "LocalXY Origin"
             status.hardware_id = hw_id
-        
-            status.level = DiagnosticStatus.OK
-            status.message = "Has Origin"
+
+            if _gps_fix.status.header.frame_id == 'auto':
+                status.level = DiagnosticStatus.OK
+                status.message = "Has Origin (auto)"
+            else:
+                status.level = DiagnosticStatus.WARN
+                status.message = "Origin is static (non-auto)"
                     
             value0 = KeyValue()
             value0.key = "Origin"
