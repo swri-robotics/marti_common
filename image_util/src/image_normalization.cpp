@@ -103,8 +103,8 @@ namespace image_util
     const cv::Mat& source_image,
     cv::Mat& dest_image)
   {   
-    int x_bin_w = source_image.cols / grid_size;
-    int y_bin_h = source_image.rows / grid_size;
+    int x_bin_w = std::ceil(static_cast<double>(source_image.cols) / grid_size);
+    int y_bin_h = std::ceil(static_cast<double>(source_image.rows) / grid_size);
     
     cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_64F);
     cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_64F);
@@ -127,13 +127,13 @@ namespace image_util
         min_vals.at<double>(i, j) = minVal;
       }
     }
-    
+
     // Stretch contrast accordingly
     for(int i = 0; i < source_image.rows; i++)
     {
       int ii = i / y_bin_h;
       double py = (i - ii * y_bin_h) / ((double) y_bin_h);
-      
+
       for(int j = 0; j < source_image.cols; j++)
       {
         // Find relevant min and max values
