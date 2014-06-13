@@ -34,3 +34,4 @@ rosbuild_add_library(${PROJECT_NAME}
   src/model_fit.cpp
   src/show.cpp)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
+rosbuild_link_boost(${PROJECT_NAME} random)
