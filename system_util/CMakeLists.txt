@@ -9,6 +9,16 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+if(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
+  add_definitions( -DBOOST_FILESYSTEM_VERSION=2 )
+  message ("  Using Boost Filesystem Version 2")
+else(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
+  add_definitions( -DBOOST_FILESYSTEM_VERSION=3 )
+  message ("  Using Boost Filesystem Version 3")
+endif(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
+
 rosbuild_init()
 rosbuild_find_ros_package(build_tools)
 include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)

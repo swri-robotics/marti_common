@@ -31,11 +31,13 @@ namespace system_util
     //   https://svn.boost.org/trac/boost/ticket/1976#comment:2
 
     // Cache system-dependent dot, double-dot and slash strings
-    const std::string _dot  = std::string(1, boost::filesystem::dot<boost::filesystem::path>::value);
-    const std::string _dots = std::string(2, boost::filesystem::dot<boost::filesystem::path>::value);
-    const std::string _sep = std::string(1, boost::filesystem::slash<boost::filesystem::path>::value);
+    const boost::filesystem::path _dot  = boost::filesystem::path(".").native();
+    const boost::filesystem::path _dot_sep  = boost::filesystem::path("./").native();
+    const boost::filesystem::path _dots = boost::filesystem::path("..").native();
+    const boost::filesystem::path _dots_sep = boost::filesystem::path("../").native();
+    const boost::filesystem::path _sep = boost::filesystem::path("/").native();
 
-    if (path == base) return _dot + _sep;
+    if (path == base) return _dot_sep;
 
     boost::filesystem::path from_path;
     boost::filesystem::path from_base;
@@ -59,7 +61,7 @@ namespace system_util
             continue;
           else if (*base_it == _sep)
             continue;
-          output /= _dots + _sep;
+          output /= _dots_sep;
         }
 
         boost::filesystem::path::iterator path_it_start = path_it;
