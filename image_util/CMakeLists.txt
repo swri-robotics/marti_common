@@ -16,6 +16,9 @@ include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 find_package(Qt4 REQUIRED)
 
 include(${QT_USE_FILE})
@@ -29,7 +32,7 @@ rosbuild_add_library(${PROJECT_NAME}
   src/draw_util.cpp
   src/geometry_util.cpp
   src/image_warp_util.cpp)
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} ${OpenCV_LIBRARIES})
 
 rosbuild_add_library(${PROJECT_NAME}_nodelets
   src/nodelets/rotate_image_nodelet.cpp

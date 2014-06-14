@@ -42,10 +42,6 @@
 #include <opencv2/legacy/legacy.hpp>
 #include <opencv2/stitching/detail/warpers.hpp>
 
-#if CV_MAJOR_VERSION >= 2 && CV_MINOR_VERSION >= 4
-#include <opencv2/nonfree/features2d.hpp>
-#endif
-
 // RANGER Libraries
 #include <image_util/motion_estimation.h>
 #include <image_util/image_matching.h>
@@ -112,29 +108,6 @@ namespace image_util
      */
     PitchAndRollEstimator() {}
 
-    /**
-     * @brief      Constructor
-     *
-     * @param[in]  im1      The first image
-     * @param[in]  im2      The second image
-     */
-    PitchAndRollEstimator(const cv::Mat& im1,
-                          const cv::Mat& im2);
-
-
-    /**
-     * @brief      Loads two images into the object.  This is a required first
-     *             step in order to use the other functions in the class
-     *
-     * @param[in]  im1      An image of a roughly planar surface
-     * @param[in]  im2      An image that partially overlaps the first image
-     *
-     * @retval     Returns false if unsuccessful anywhere in the process of
-     *             initializing the images, keypoints and matches.
-     */
-    bool LoadImages(const cv::Mat& im1,
-                    const cv::Mat& im2);
-
 
     /**
      * @brief      Estimates the nominal pitch and roll of the camera (from
@@ -175,27 +148,6 @@ namespace image_util
     cv::Mat kp2_matched_;
 
     cv::detail::PlaneWarper warper_;
-
-    /**
-     * @brief      Detects features in the specified image using a SURF feature
-     *             detector (the hessian threshold will be adjusted adaptively
-     *             to detect a number of features within the specified min-max
-     *             range.
-     *
-     * @param[in]  image          The image in which to detect features
-     * @param[out] keypoints      The detected keypoints
-     * @param[out] descriptors    The descriptors extracted for each keypoint
-     * @param[in]  min_keypoints  The minimum number of keypoints to find
-     * @param[in]  max_keypoints  The maximum number to find
-     *
-     * @retval     Returns false if unable to detect keypoints, or number of
-     *             keypoints detected falls outside of the specified range
-     */
-    static bool GetKeypoints(const cv::Mat& image,
-                             std::vector<cv::KeyPoint>& keypoints,
-                             cv::Mat& descriptors,
-                             int32_t min_keypoints = 500,
-                             int32_t max_keypoints = 800);
 
     /**
      * @brief      Matches keypoints using loose geometric constraints and
@@ -302,16 +254,6 @@ namespace image_util
     void GenerateNewEstimate(const cv::Mat& points1,
                              const cv::Mat& points2,
                              const cv::Size& image_size);
-
-    /**
-     * @brief      Estimates pitch and roll from two overlapping images and
-     *             loads the pitch and roll data onto the buffer
-     *
-     * @param[in]  im1      Points from first image
-     * @param[in]  im2      Corresponding points from second image
-     */
-    void GenerateNewEstimate(const cv::Mat& im1,
-                             const cv::Mat& im2);
 
     /**
      * @brief      Loads new pitch and roll data directly onto the buffer
