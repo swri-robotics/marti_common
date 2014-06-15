@@ -1,1 +1,0 @@
-#undef YAMLCPP_OLD_API

@@ -13,12 +13,12 @@
 //
 // *****************************************************************************
 
+#include <yaml_util/yaml_util.h>
+
 // C++ standard libraries
 #ifdef YAMLCPP_OLD_API
 #include <fstream>
 #endif  // YAMLCPP_OLD_API
-
-#include <yaml_util/yaml_util.h>
 
 #ifndef YAMLCPP_OLD_API
 namespace YAML
