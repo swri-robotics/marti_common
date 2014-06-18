@@ -16,6 +16,7 @@
 #include <string>
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
@@ -47,6 +48,13 @@ namespace image_util
       ros::NodeHandle &priv = getPrivateNodeHandle();
 
       priv.param("bins", bins_, bins_);
+      
+      std::string mask;
+      priv.param("mask", mask, std::string(""));
+      if (!mask.empty())
+      {
+        mask_ = cv::imread(mask, 0);
+      }
 
       image_transport::ImageTransport it(node);
       image_pub_ = it.advertise("normalized_image", 1);
@@ -57,13 +65,15 @@ namespace image_util
     {
       cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-      image_util::ContrastStretch(bins_, cv_image->image, cv_image->image);
+      image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask_);
 
       image_pub_.publish(cv_image->toImageMsg());
     }
 
   private:
     int32_t bins_;
+    
+    cv::Mat mask_;
 
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
