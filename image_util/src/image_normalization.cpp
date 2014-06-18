@@ -101,7 +101,8 @@ namespace image_util
   void ContrastStretch(
     int32_t grid_size, 
     const cv::Mat& source_image,
-    cv::Mat& dest_image)
+    cv::Mat& dest_image,
+    const cv::Mat& mask)
   {   
     int x_bin_w = std::ceil(static_cast<double>(source_image.cols) / grid_size);
     int y_bin_h = std::ceil(static_cast<double>(source_image.rows) / grid_size);
@@ -109,11 +110,14 @@ namespace image_util
     cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_64F);
     cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_64F);
     
+    bool has_mask = !mask.empty();
+    
     for(int i = 0; i < grid_size + 1; i++)
     {
       for(int j = 0; j < grid_size + 1; j++)
       {
-        double minVal, maxVal;
+        double minVal = 0;
+        double maxVal = 255;
         
         cv::Rect roi = cv::Rect(j * x_bin_w  - x_bin_w / 2,
                        i * y_bin_h - y_bin_h / 2, x_bin_w, y_bin_h);
@@ -122,7 +126,14 @@ namespace image_util
         roi.width = std::min(source_image.cols - roi.x, roi.width);
         roi.height = std::min(source_image.rows - roi.y, roi.height);
                        
-        cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0);
+        if (has_mask)
+        {
+          cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0, mask(roi));
+        }
+        else
+        {
+          cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0);
+        }
         max_vals.at<double>(i, j) = maxVal;
         min_vals.at<double>(i, j) = minVal;
       }
