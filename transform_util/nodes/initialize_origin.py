@@ -89,6 +89,7 @@ def initialize_origin():
         
             diagnostic_pub.publish(diagnostic)
         else:
+            _origin_pub.publish(_gps_fix) # Publish this at 1Hz for bag convenience
             diagnostic = DiagnosticArray()
             diagnostic.header.stamp = rospy.Time.now()
         
@@ -127,7 +128,6 @@ def initialize_origin():
             diagnostic.status.append(status)
         
             diagnostic_pub.publish(diagnostic)
-        
         rospy.sleep(1.0)
 if __name__ == '__main__':
     try:
