@@ -55,6 +55,25 @@ namespace image_util
    * @retval     Returns the normalization image
    */
   cv::Mat generate_normalization_image(const std::vector<cv::Mat>& image_list);
+
+	/**
+	 * @brief Convert the input Mat to 8 bit
+	 *
+	 *
+	 * @param[in] image  The input image
+	 *
+	 * @returns The 8-bit Mat.
+	 */
+	cv::Mat scale_2_8bit(const cv::Mat& image);
+	/**
+	 * @brief Convert the input Mat to 8 bit color
+	 *
+	 *
+	 * @param[in] image  The input image
+	 *
+	 * @returns The 8-bit color Mat.
+	 */
+	cv::Mat scale_2_8bit_color(const cv::Mat& image);
 }
 
 

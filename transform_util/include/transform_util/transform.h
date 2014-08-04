@@ -31,7 +31,8 @@ namespace transform_util
   public:
     TransformImpl() {}
     virtual ~TransformImpl() {}
-    virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
+    virtual void Transform(
+      const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
   };
 
   /**
@@ -112,6 +113,10 @@ namespace transform_util
      * @returns The inverse transform.
      */
     Transform Inverse() const;
+
+    tf::Vector3 GetOrigin() const;
+
+    tf::Quaternion GetOrientation() const;
 
   private:
     boost::shared_ptr<TransformImpl> transform_;

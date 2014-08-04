@@ -117,13 +117,13 @@ namespace image_util
     {
       cv::Scalar match_color = rand_color ? cv::Scalar(rng(256), rng(256), rng(256)) : color;
       cv::Point2f center1(
-        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f center2(
-        cvRound(points2.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        cvRound(points2.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f dcenter2(
-        std::min(center2.x + draw_image1.cols * 16.0, 
+        std::min(center2.x + draw_image1.cols * 16.0,
         float(image_out.cols - 1) * 16.0), center2.y);
       circle(draw_image1, center1, 48, match_color, 1, CV_AA, 4);
       circle(draw_image2, center2, 48, match_color, 1, CV_AA, 4);
@@ -174,10 +174,10 @@ namespace image_util
     for (int i = 0; i < points1.rows; i++)
     {
       cv::Point2f center1(
-        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f center2(cvRound(
-        points2.at<cv::Vec2f>(0, i)[0] * 16.0), 
+        points2.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
       circle(draw_image, center1, 48, color1, 1, CV_AA, 4);
       line(draw_image, center1, center2, color2, 1, CV_AA, 4);

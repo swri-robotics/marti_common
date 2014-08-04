@@ -14,7 +14,6 @@
   <depend package="roslib"/>
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>
-  <depend package="bullet"/>
   <depend package="tf" />
   <depend package="geometry_msgs" />
   <depend package="image_geometry" />
