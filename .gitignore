@@ -6,13 +6,15 @@
 *.tgz
 *.orig
 *.bag
+*.pyc
 *~
 lib/
 _gtest_from_src/
 bin/
 build/
 docs/
+.settings/
 msg_gen/
 srv_gen/
 *.cfgc
-
+version.txt
