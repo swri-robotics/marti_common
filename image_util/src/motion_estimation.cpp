@@ -350,7 +350,9 @@ namespace image_util
       const cv::Mat& points2,
       cv::Mat& inliers1,
       cv::Mat& inliers2,
-      std::vector<uint32_t> &good_points, double max_error)
+      std::vector<uint32_t> &good_points, 
+      int32_t max_iterations,
+      double max_error)
   {
     cv::Mat T;
     // Here we are trying to compute the transformation matrix T, where T most
@@ -430,7 +432,6 @@ namespace image_util
 
     // Specify RANSAC Parameters:
     uint32_t NumberOfPointsToSample = 3;
-    uint32_t MaxNumberOfIterations = 4000;
     uint32_t MinNumValidPointsNeeded = 6;
     double   EscapeLevel = 0.8;
     // Perhaps change this to be a fraction of max range or make it a parameter
@@ -447,7 +448,7 @@ namespace image_util
 
 
     // Do RANSAC
-    for (uint32_t i = 0; i < MaxNumberOfIterations; ++i)
+    for (uint32_t i = 0; i < max_iterations; ++i)
     {
       std::vector<uint32_t> p1;
 

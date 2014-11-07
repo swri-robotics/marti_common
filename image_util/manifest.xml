@@ -10,11 +10,10 @@
   <url></url>
   <depend package="std_msgs"/>
   <depend package="rospy"/>
+  <depend package="nodelet"/>
   <depend package="roscpp"/> 
   <depend package="roslib"/>
-  <depend package="opencv2"/>
   <depend package="cv_bridge"/>
-  <depend package="bullet"/>
   <depend package="tf" />
   <depend package="geometry_msgs" />
   <depend package="image_geometry" />
@@ -22,6 +21,7 @@
   <depend package="camera_calibration_parsers"/>
   <depend package="math_util"/>
   <depend package="opencv_util"/>
+  <depend package="image_transport"/>
   
   <depend package="lapackpp" />
   
@@ -31,6 +31,7 @@
   <export>
     <rosdoc config="rosdoc.yaml" />
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -limage_util -Wl,-rpath,${prefix}/lib" />
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
   </export>
   <depend package="build_tools"/>
 </package>

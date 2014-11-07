@@ -17,6 +17,7 @@
   <depend package="gps_common"/>
   <depend package="diagnostic_msgs"/>
   <depend package="math_util"/>
+  <depend package="yaml_util"/>
   
   <rosdep name="opencv2.3"/>
   <rosdep name="proj"/>

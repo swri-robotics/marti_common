@@ -54,7 +54,8 @@ namespace image_util
   void ContrastStretch(
       int32_t grid_size,
       const cv::Mat& source_image,
-      cv::Mat& dest_image);
+      cv::Mat& dest_image,
+      const cv::Mat& mask=cv::Mat());
 
 
   /**

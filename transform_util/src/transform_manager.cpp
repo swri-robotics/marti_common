@@ -102,14 +102,22 @@ namespace transform_util
 
     // Check if the source frame is in the TF tree.
     std::string source = src_frame;
-    if (tf_listener_->frameExists(src_frame))
+    if (tf_listener_->frameExists(source))
+    {
+      source = _tf_frame;
+    }
+    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
     {
       source = _tf_frame;
     }
 
     // Check if the target frame is in the TF tree.
     std::string target = tgt_frame;
-    if (tf_listener_->frameExists(tgt_frame))
+    if (tf_listener_->frameExists(target))
+    {
+      target = _tf_frame;
+    }
+    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
     {
       target = _tf_frame;
     }
