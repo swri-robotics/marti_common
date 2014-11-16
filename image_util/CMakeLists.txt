@@ -37,7 +37,8 @@ target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} ${OpenCV_LIBRARIES})
 rosbuild_add_library(${PROJECT_NAME}_nodelets
   src/nodelets/rotate_image_nodelet.cpp
   src/nodelets/contrast_stretch_nodelet.cpp
-  src/nodelets/scale_image_nodelet.cpp)
+  src/nodelets/scale_image_nodelet.cpp
+  src/nodelets/draw_text_nodelet.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
 
 # NODES
@@ -49,6 +50,8 @@ rosbuild_add_executable(dummy_image_publisher src/nodes/dummy_image_publisher.cp
 rosbuild_add_executable(rotate_image src/nodes/rotate_image.cpp)
 
 rosbuild_add_executable(scale_image src/nodes/scale_image.cpp)
+
+rosbuild_add_executable(draw_text src/nodes/draw_text.cpp)
 
 rosbuild_add_executable(contrast_stretch src/nodes/contrast_stretch.cpp)
 
