@@ -104,8 +104,10 @@ namespace image_util
     cv::Mat& dest_image,
     const cv::Mat& mask)
   {   
-    int x_bin_w = std::ceil(static_cast<double>(source_image.cols) / grid_size);
-    int y_bin_h = std::ceil(static_cast<double>(source_image.rows) / grid_size);
+    int x_bin_w = std::floor(static_cast<double>(source_image.cols) / grid_size);
+    int y_bin_h = std::floor(static_cast<double>(source_image.rows) / grid_size);
+    
+    //ROS_ERROR("x_bin_w:%d  y_bin_h:%d", x_bin_w, y_bin_h);
     
     cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_64F);
     cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_64F);
@@ -128,6 +130,7 @@ namespace image_util
                        
         if (has_mask)
         {
+          //ROS_ERROR("x:%d  y:%d  w:%d  h:%d", roi.x, roi.y, roi.width, roi.height);
           cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0, mask(roi));
         }
         else

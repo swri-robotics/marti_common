@@ -18,4 +18,10 @@
     </description>
   </class>
   
+  <class name="image_util/draw_text" type="image_util::DrawTextNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to draw text on an image.
+    </description>
+  </class>
+  
 </library>
