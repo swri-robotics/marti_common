@@ -1,36 +1,31 @@
-// -----------------------------------------------------------------------------
-// SECURITY CLASSIFICATION: UNCLASSIFIED
-// -----------------------------------------------------------------------------
+// *****************************************************************************
 //
-// Copyright (C) 2014 Southwest Research Institute
+// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// All rights reserved.
 //
-// Notwithstanding any copyright notice, U.S. Government rights in this work are
-// defined by 252.227-7013 (f)(2) and 252.227-7014 (f)(2) as detailed below. Use
-// of this work other than as specifically authorized by the U.S. Government may
-// violate any copyrights that exist in this work.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of the <organization> nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 //
-// UNLIMITED RIGHTS
-// DFARS Clause reference: 252.227-7013 (a)(15) and 252.227-7014 (a)(15)
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Unlimited Rights. The Government has the right to use, modify, reproduce,
-// perform, display, release or disclose this (technical data or computer
-// software) in whole or in part, in any manner, and for any purpose whatsoever,
-// and to have or authorize others to do so.
-//
-// Contract No.  N00178-11-C-1005
-// Contractor    Southwest Research Institute® (SwRI®)
-// Address       6220 Culebra Road, San Antonio, Texas 78228-0510
-//
-// Distribution Statement D. Distribution authorized to the Department of
-// Defense and U.S. DoD Contractors only in support of US DoD efforts. Other
-// requests shall be referred to [PEO].
-//
-// Warning: - This document contains data whose export is restricted by the Arms
-// Export Control Act (Title 22, U.S.C., Sec 2751, et seq.) as amended, or the
-// Export Administration Act (Title 50, U.S.C., App 2401 et seq.) as amended.
-// Violations of these export laws are subject to severe criminal and civil
-// penalties. Disseminate in accordance with provisions of DoD Directive 5230.25
-//
+// *****************************************************************************
 
 #include <boost/smart_ptr.hpp>
 
