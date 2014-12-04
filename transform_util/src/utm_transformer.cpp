@@ -167,7 +167,7 @@ namespace transform_util
   }
 
   UtmToTfTransform::UtmToTfTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util,
       int32_t utm_zone,
@@ -178,6 +178,7 @@ namespace transform_util
       utm_zone_(utm_zone),
       utm_band_(utm_band)
   {
+    stamp_ = transform.stamp_;
   }
 
   void UtmToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
@@ -196,13 +197,14 @@ namespace transform_util
   }
 
   TfToUtmTransform::TfToUtmTransform(
-      const tf::Transform& transform,
+      const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
       transform_(transform),
       utm_util_(utm_util),
       local_xy_util_(local_xy_util)
   {
+    stamp_ = transform.stamp_;
   }
 
   void TfToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
@@ -228,6 +230,7 @@ namespace transform_util
     utm_zone_(utm_zone),
     utm_band_(utm_band)
   {
+    stamp_ = ros::Time::now();
   }
 
   void UtmToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
@@ -242,6 +245,7 @@ namespace transform_util
     boost::shared_ptr<UtmUtil> utm_util) :
     utm_util_(utm_util)
   {
+    stamp_ = ros::Time::now();
   }
 
   void Wgs84ToUtmTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const

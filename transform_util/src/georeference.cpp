@@ -22,11 +22,11 @@
 // C++ standard libraries
 #include <fstream>
 
-#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 
 // ROS libraries
 #include <ros/ros.h>
+#include <yaml_util/yaml_util.h>
 
 namespace transform_util
 {
@@ -73,11 +73,8 @@ namespace transform_util
 
   bool GeoReference::Load()
   {
-    if (loaded_)
-      return true;
-
-    std::ifstream fin(path_.c_str());
-    if (fin.fail())
+    YAML::Node doc;
+    if (!yaml_util::LoadFile(path_, doc))
     {
       ROS_ERROR("Failed to load file: %s", path_.c_str());
       return false;
@@ -85,11 +82,6 @@ namespace transform_util
 
     try
     {
-      YAML::Parser parser(fin);
-
-      YAML::Node doc;
-      parser.GetNextDocument(doc);
-
       doc["image_path"] >> image_path_;
 
       boost::filesystem::path imagePath(image_path_);

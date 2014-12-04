@@ -18,7 +18,10 @@
 // *****************************************************************************
 
 #include <system_util/file_util.h>
+
 #include <string>
+
+#include <boost/regex.hpp>
 
 namespace system_util
 {
@@ -30,11 +33,22 @@ namespace system_util
     //   https://svn.boost.org/trac/boost/ticket/1976#comment:2
 
     // Cache system-dependent dot, double-dot and slash strings
-    const std::string _dot  = std::string(1, boost::filesystem::dot<boost::filesystem::path>::value);
-    const std::string _dots = std::string(2, boost::filesystem::dot<boost::filesystem::path>::value);
-    const std::string _sep = std::string(1, boost::filesystem::slash<boost::filesystem::path>::value);
+    
+    #if BOOST_FILESYSTEM_VERSION == 3
+    const boost::filesystem::path _dot = boost::filesystem::path(".").native();
+    const boost::filesystem::path _dot_sep = boost::filesystem::path("./").native();
+    const boost::filesystem::path _dots = boost::filesystem::path("..").native();
+    const boost::filesystem::path _dots_sep = boost::filesystem::path("../").native();
+    const boost::filesystem::path _sep = boost::filesystem::path("/").native();
+    #else
+    const boost::filesystem::path _dot = std::string(1, boost::filesystem::dot<boost::filesystem::path>::value);
+    const boost::filesystem::path _sep = std::string(1, boost::filesystem::slash<boost::filesystem::path>::value);
+    const boost::filesystem::path _dot_sep = _dot.string() + _sep.string();
+    const boost::filesystem::path _dots = std::string(2, boost::filesystem::dot<boost::filesystem::path>::value);
+    const boost::filesystem::path _dots_sep = _dots.string() + _sep.string();
+    #endif  // BOOST_FILESYSTE_VERSION == 3
 
-    if (path == base) return _dot + _sep;
+    if (path == base) return _dot_sep;
 
     boost::filesystem::path from_path;
     boost::filesystem::path from_base;
@@ -58,7 +72,7 @@ namespace system_util
             continue;
           else if (*base_it == _sep)
             continue;
-          output /= _dots + _sep;
+          output /= _dots_sep;
         }
 
         boost::filesystem::path::iterator path_it_start = path_it;
@@ -89,44 +103,44 @@ namespace system_util
 
   std::vector<std::string> load_all_files(const std::string& path, std::string& directory)
   {
-	std::vector< std::string > all_matching_files;
-	// Extract the directory from the path
-	std::string direct = path.substr(0, path.find_last_of("/\\"));
-	// Extract the filename from the path
-	std::string filename = path.substr(path.find_last_of("/\\")+1);
-	boost::filesystem::path p(direct);
-	if ( !exists( p ) )
-	{
-		printf("Path %s does not exists\n", p.string().c_str());
-		return all_matching_files;
-	}
-	const boost::regex my_filter(filename.replace(filename.find("*"), std::string("*").length(), ".*\\") );
+    std::vector< std::string > all_matching_files;
+    // Extract the directory from the path
+    std::string direct = path.substr(0, path.find_last_of("/\\"));
+    // Extract the filename from the path
+    std::string filename = path.substr(path.find_last_of("/\\")+1);
+    boost::filesystem::path p(direct);
+    if ( !exists( p ) )
+    {
+      printf("Path %s does not exists\n", p.string().c_str());
+      return all_matching_files;
+    }
+    const boost::regex my_filter(filename.replace(filename.find("*"), std::string("*").length(), ".*\\") );
 
-	boost::filesystem::directory_iterator end_itr; // Default construction yields past-the-end
-	for( boost::filesystem::directory_iterator i( p ); i != end_itr; ++i )
-	{
-		// Skip if not a file
-//		if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
+    boost::filesystem::directory_iterator end_itr; // Default construction yields past-the-end
+    for( boost::filesystem::directory_iterator i( p ); i != end_itr; ++i )
+    {
+      // Skip if not a file
+      // if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
 
-		//It it is a directory then search within
-		if ( boost::filesystem::is_directory(i->status()) )
-		{
-		  std::string path2 = i->path().string() + std::string("/") + path.substr(path.find_last_of("/\\")+1);
-		  std::string directory2;
-		  std::vector<std::string> matching_files = load_all_files( path2, directory2 );
-		  all_matching_files.insert(all_matching_files.end(), matching_files.begin(), matching_files.end());
-		}else if (boost::filesystem::is_regular_file( i->status())) // Check if a file
-	    {
-			boost::smatch what;
-			// Skip if no match
-			if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
-			// File matches, store it
-			all_matching_files.push_back( i->path().string() );
-	    }
-		std::sort(all_matching_files.begin(), all_matching_files.end());
-	}
-	directory = direct;
+      //It it is a directory then search within
+      if ( boost::filesystem::is_directory(i->status()) )
+      {
+        std::string path2 = i->path().string() + std::string("/") + path.substr(path.find_last_of("/\\")+1);
+        std::string directory2;
+        std::vector<std::string> matching_files = load_all_files( path2, directory2 );
+        all_matching_files.insert(all_matching_files.end(), matching_files.begin(), matching_files.end());
+      }
+      else if (boost::filesystem::is_regular_file( i->status())) // Check if a file
+      {
+        boost::smatch what;
+        // Skip if no match
+        if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
+        // File matches, store it
+        all_matching_files.push_back( i->path().string() );
+      }
+      std::sort(all_matching_files.begin(), all_matching_files.end());
+    }
+    directory = direct;
     return all_matching_files;
-
   }
 }

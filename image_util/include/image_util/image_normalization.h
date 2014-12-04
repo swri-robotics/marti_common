@@ -32,8 +32,8 @@
 namespace image_util
 {
   /**
-   * @brief      Normalizes the illumination in an image using a normalization
-   *             image as a template
+   * Normalizes the illumination in an image using a normalization image as a 
+   * template
    *
    * @param[in]  NormImage      A normalization image
    * @param[in]  SourceImage    The image to normalize
@@ -43,6 +43,19 @@ namespace image_util
       cv::Mat NormImage,
       cv::Mat SourceImage,
       cv::Mat& DestImage);
+
+  /**
+   * Normalizes the illumination in an image using contrast stretching.
+   *
+   * @param[in]  grid_size     The grid size to normalize on
+   * @param[in]  source_image  The image to normalize
+   * @param[out] dest_image    The resulting normalized image
+   */
+  void ContrastStretch(
+      int32_t grid_size,
+      const cv::Mat& source_image,
+      cv::Mat& dest_image,
+      const cv::Mat& mask=cv::Mat());
 
 
   /**

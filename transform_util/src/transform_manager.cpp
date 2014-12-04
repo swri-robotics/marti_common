@@ -102,14 +102,22 @@ namespace transform_util
 
     // Check if the source frame is in the TF tree.
     std::string source = src_frame;
-    if (tf_listener_->frameExists(src_frame))
+    if (tf_listener_->frameExists(source))
+    {
+      source = _tf_frame;
+    }
+    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
     {
       source = _tf_frame;
     }
 
     // Check if the target frame is in the TF tree.
     std::string target = tgt_frame;
-    if (tf_listener_->frameExists(tgt_frame))
+    if (tf_listener_->frameExists(target))
+    {
+      target = _tf_frame;
+    }
+    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
     {
       target = _tf_frame;
     }
@@ -177,6 +185,86 @@ namespace transform_util
       Transform& transform) const
   {
     return GetTransform(target_frame, source_frame, ros::Time(0), transform);
+  }
+
+  bool TransformManager::SupportsTransform(
+      const std::string& target_frame,
+      const std::string& source_frame) const
+  {
+    std::string src_frame = source_frame;
+    std::string tgt_frame = target_frame;
+    if (tgt_frame == src_frame)
+    {
+      return true;
+    }
+
+    if (!tf_listener_)
+    {
+      return false;
+    }
+
+    // Check if the source frame is in the TF tree.
+    std::string source = src_frame;
+    if (tf_listener_->frameExists(source))
+    {
+      source = _tf_frame;
+    }
+    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
+    {
+      source = _tf_frame;
+    }
+
+    // Check if the target frame is in the TF tree.
+    std::string target = tgt_frame;
+    if (tf_listener_->frameExists(target))
+    {
+      target = _tf_frame;
+    }
+    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
+    {
+      target = _tf_frame;
+    }
+
+    // Check if either of the frames is local_xy
+    if (source == _local_xy_frame)
+    {
+      source = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", src_frame))
+      {
+        return false;
+      }
+    }
+
+    if (target == _local_xy_frame)
+    {
+      target = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", tgt_frame))
+      {
+        return false;
+      }
+    }
+
+    if (source == target)
+    {
+      return true;
+    }
+
+    if (transformers_[source].count(target) == 0)
+    {
+      return false;
+    }
+
+    boost::shared_ptr<Transformer> transformer = transformers_[source][target];
+
+    if (!transformer)
+    {
+      ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",
+          source.c_str(), target.c_str());
+
+      return false;
+    }
+
+    return true;
   }
 
   bool TransformManager::GetTransform(

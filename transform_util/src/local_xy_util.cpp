@@ -79,7 +79,7 @@ namespace transform_util
   {
     ros::NodeHandle node;
 
-    ROS_ERROR("Subscribing to /local_xy_origin");
+    ROS_WARN("Subscribing to /local_xy_origin");
     origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
   }
 
@@ -106,7 +106,7 @@ namespace transform_util
 
   void LocalXyWgs84Util::HandleOrigin(const gps_common::GPSFixConstPtr origin)
   {
-    ROS_ERROR("HandleOrigin");
+    ROS_WARN("HandleOrigin");
     if (!initialized_)
     {
       reference_latitude_ = origin->latitude * math_util::_deg_2_rad;

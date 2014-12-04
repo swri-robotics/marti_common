@@ -26,10 +26,11 @@
 #include <QPointF>
 
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
 #include <ros/ros.h>
+
+#include <opencv_util/show.h>
 
 namespace image_util
 {
@@ -40,6 +41,59 @@ namespace image_util
     r = ((double)std::rand() / RAND_MAX);
     g = ((double)std::rand() / RAND_MAX);
     b = ((double)std::rand() / RAND_MAX);
+  }
+
+  void JetColorMap(
+      unsigned char &r,
+      unsigned char &g,
+      unsigned char &b,
+      float value,
+      float min,
+      float max)
+  {
+    float max4 = (max - min) / 4.0;
+    value -= min;
+
+    if (value == HUGE_VAL)
+    {
+      r = g = b = 255;
+    }
+    else if (value < 0)
+    {
+      r = g = b = 0;
+    }
+    else if (value < max4)
+    {
+      unsigned char c1 = 144;
+
+      r = 0;
+      g = 0;
+      b = c1 + (unsigned char) ((255 - c1) * value / max4);
+    }
+    else if (value < 2 * max4)
+    {
+      r = 0;
+      g = (unsigned char) (255 * (value - max4) / max4);
+      b = 255;
+    }
+    else if (value < 3 * max4)
+    {
+      r = (unsigned char) (255 * (value - 2 * max4) / max4);
+      g = 255;
+      b = 255 - r;
+    }
+    else if (value < max)
+    {
+      r = 255;
+      g = (unsigned char) (255 - 255 * (value - 3 * max4) / max4);
+      b = 0;
+    }
+    else
+    {
+      r = 255;
+      g = 0;
+      b = 0;
+    }
   }
 
   void DrawOverlap(
@@ -59,7 +113,7 @@ namespace image_util
 
       cv::Mat sub = image1 - image2_warped;
 
-      cv::imshow(title, sub);
+      opencv_util::ShowScaled(title, sub);
     }
   }
 
@@ -149,7 +203,7 @@ namespace image_util
                 color,
                 draw_image_borders);
 
-    imshow(title, image_out);
+    opencv_util::ShowScaled(title, image_out);
   }
 
   void DrawMatches(
@@ -183,6 +237,6 @@ namespace image_util
       line(draw_image, center1, center2, color2, 1, CV_AA, 4);
     }
 
-    imshow(title, draw_image);
+    opencv_util::ShowScaled(title, draw_image);
   }
 }

@@ -89,6 +89,7 @@ def initialize_origin():
         
             diagnostic_pub.publish(diagnostic)
         else:
+            _origin_pub.publish(_gps_fix) # Publish this at 1Hz for bag convenience
             diagnostic = DiagnosticArray()
             diagnostic.header.stamp = rospy.Time.now()
         
@@ -96,9 +97,13 @@ def initialize_origin():
         
             status.name = "LocalXY Origin"
             status.hardware_id = hw_id
-        
-            status.level = DiagnosticStatus.OK
-            status.message = "Has Origin"
+
+            if _gps_fix.status.header.frame_id == 'auto':
+                status.level = DiagnosticStatus.OK
+                status.message = "Has Origin (auto)"
+            else:
+                status.level = DiagnosticStatus.WARN
+                status.message = "Origin is static (non-auto)"
                     
             value0 = KeyValue()
             value0.key = "Origin"
@@ -123,7 +128,6 @@ def initialize_origin():
             diagnostic.status.append(status)
         
             diagnostic_pub.publish(diagnostic)
-        
         rospy.sleep(1.0)
 if __name__ == '__main__':
     try:

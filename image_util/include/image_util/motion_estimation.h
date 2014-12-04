@@ -111,6 +111,7 @@ namespace image_util
    *                      transform.
    * @param[in]  good_points     This is just to maintain similarity to the
    *                             estimateRigidTransform from openCV.
+   * @param[in]  max_interations   Max RANSAC iterations.
    *
    * @retval  Returns the transformation matrix, which will be empty if no valid
    *          transformation was found
@@ -120,7 +121,9 @@ namespace image_util
       const cv::Mat& points2,
       cv::Mat& inliers1,
       cv::Mat& inliers2,
-      std::vector<uint32_t> &good_points);
+      std::vector<uint32_t> &good_points,
+      int32_t max_iterations=4000,
+      double max_error = 20.0);
 
   /**
    * @brief Computes the rigid planar transformation given the points passed in

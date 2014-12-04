@@ -55,6 +55,10 @@ namespace transform_util
         const std::string& source_frame,
         Transform& transform) const;
 
+    bool SupportsTransform(
+        const std::string& target_frame,
+        const std::string& source_frame) const;
+
     bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,

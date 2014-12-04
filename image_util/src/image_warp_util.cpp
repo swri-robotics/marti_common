@@ -137,52 +137,6 @@ namespace image_util
     return R;
   }
 
-  PitchAndRollEstimator::PitchAndRollEstimator(
-      const cv::Mat& im1,
-      const cv::Mat& im2)
-  {
-    LoadImages(im1, im2);
-  }
-
-  bool PitchAndRollEstimator::LoadImages(const cv::Mat& im1, const cv::Mat& im2)
-  {
-    kp1_.clear();
-    kp2_.clear();
-
-    // Set the images;
-    im1_ = im1;
-    im2_ = im2;
-
-    // Get the keypoints and descriptors
-    GetKeypoints(im1_, kp1_, descriptors1_, 200, 500);
-
-    GetKeypoints(im2_, kp2_, descriptors2_, 200, 500);
-
-    // Match the keypoints
-    bool success = ComputeGeometricMatches();
-
-    // If not successful clear out the variables
-    if (!success)
-    {
-      ROS_ERROR("Loaded images are unsuitable for computing warp parameters");
-      im1_.release();
-      im2_.release();
-      kp1_.clear();
-      kp2_.clear();
-      descriptors1_.release();
-      descriptors2_.release();
-    }
-
-    // Initialize the camera matrix:
-    K_ = cv::Mat::eye(cv::Size(3, 3), CV_32F);
-    K_.at<float>(0, 2) = static_cast<double>(im1_.cols - 1) / 2.0;
-    K_.at<float>(1, 2) = static_cast<double>(im1_.rows - 1) / 2.0;
-
-    T_ = cv::Mat::zeros(cv::Size(3, 1), CV_32F);
-
-    return success;
-  }
-
   cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
       double& nominal_pitch,
       double& nominal_roll,
@@ -335,62 +289,6 @@ namespace image_util
                      nominal_roll);
 
     return T_rigid_final;
-  }
-
-  bool PitchAndRollEstimator::GetKeypoints(
-      const cv::Mat& image,
-      std::vector<cv::KeyPoint>& keypoints,
-      cv::Mat& descriptors,
-      int32_t min_keypoints,
-      int32_t max_keypoints)
-  {
-    double auto_hessian = 1000.0;
-    double min_hessian = 50;
-    double max_hessian = 6000.0;
-
-    const int32_t max_iterations = 10;
-    int32_t cur_iter = 0;
-
-    // Detect SURF keypoints in the frame.  Tune the hessian threshold to keep
-    // the number of points between the specified number of points and the
-    // specified bounds of the hessian threshold.
-    while (auto_hessian < max_hessian &&
-           auto_hessian > min_hessian &&
-           cur_iter++ < max_iterations)
-    {
-      cv::SurfFeatureDetector detector(auto_hessian);
-      keypoints.clear();
-      detector.detect(image, keypoints);
-      if ((int)keypoints.size() >= min_keypoints
-          && (int)keypoints.size() <= max_keypoints)
-      {
-        break;
-      }
-      else if ((int)keypoints.size() < min_keypoints)
-      {
-        auto_hessian *= .90;
-        ROS_ERROR("   Not enough features: %d < %d.  Changing hessian "
-                  "threshold to %lf",
-                  (int)keypoints.size(),
-                  min_keypoints,
-                  auto_hessian);
-      }
-      else
-      {
-        auto_hessian *= 1.2;
-        ROS_ERROR("   To many features: %d > %d.  Changing hessian threshold "
-                  "to %lf",
-                  (int)keypoints.size(),
-                  max_keypoints,
-                  auto_hessian);
-      }
-    }
-
-    // Extract SURF descriptors for each keypoint.
-    cv::SurfDescriptorExtractor extractor;
-    extractor.compute(image, keypoints, descriptors);
-
-    return (cur_iter <= max_iterations);
   }
 
   bool PitchAndRollEstimator::ComputeGeometricMatches()
@@ -614,28 +512,6 @@ namespace image_util
       ComputeStats();
     }
   }
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // GenerateNewEstimate()
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  void PitchAndRollEstimatorQueue::GenerateNewEstimate(const cv::Mat& im1,
-                                                       const cv::Mat& im2)
-  {
-    PitchAndRollEstimator est(im1, im2);
-    double pitch = 0.0;
-    double roll = 0.0;
-    cv::Mat T = est.EstimateNominalAngle(pitch, roll);
-
-    if (!T.empty())
-    {
-      LoadNewData(pitch, roll);
-      ComputeStats();
-    }
-  }
-
 
   //////////////////////////////////////////////////////////////////////////////
   //

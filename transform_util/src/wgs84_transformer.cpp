@@ -113,13 +113,14 @@ namespace transform_util
 
     return initialized_;
   }
-
+  
   TfToWgs84Transform::TfToWgs84Transform(
-    const tf::Transform& transform,
+    const tf::StampedTransform& transform,
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
     transform_(transform),
     local_xy_util_(local_xy_util)
   {
+    stamp_ = transform.stamp_;
   }
 
   void TfToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
@@ -132,13 +133,14 @@ namespace transform_util
     local_xy_util_->ToWgs84(local_xy.x(), local_xy.y(), latitude, longitude);
     v_out.setValue(longitude, latitude, local_xy.z());
   }
-
+  
   Wgs84ToTfTransform::Wgs84ToTfTransform(
-    const tf::Transform& transform,
+    const tf::StampedTransform& transform,
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
     transform_(transform),
     local_xy_util_(local_xy_util)
   {
+    stamp_ = transform.stamp_;
   }
 
   void Wgs84ToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const

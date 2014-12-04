@@ -20,12 +20,21 @@
 #ifndef SYSTEM_UTIL_FILE_UTIL_H_
 #define SYSTEM_UTIL_FILE_UTIL_H_
 
-#define BOOST_FILESYSTEM_VERSION 2
-#include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
+#include <vector>
+
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 namespace system_util
 {
+
+  #if BOOST_FILESYSTEM_VERSION == 2
+    typedef boost::filesystem::basic_filesystem_error<boost::filesystem::path> PathException;
+  #else
+    typedef boost::filesystem::filesystem_error PathException;
+  #endif
+
   /**
    * Generate a relative file path between two absolute paths.
    *

@@ -28,6 +28,27 @@ namespace image_util
 {
   void RandomColor(int32_t seed, double& r, double& g, double& b);
 
+  /**
+   * @brief Map a scalar value to a color gradient.
+   *
+   * Return a color gradient RGB value by mapping an input value to a specified
+   * scale.
+   *
+   * @param[out] r Red channel of the output gradient color.
+   * @param[out] g Green channel of the output gradient color.
+   * @param[out] b Blue channel of the output gradient color.
+   * @param[in] value The input value to be mapped to a color.
+   * @param[in] min The minimum value on the gradient scale.
+   * @param[in] max The maximum value on the gradient scale.
+   */
+  void JetColorMap(
+      unsigned char &r,
+      unsigned char &g,
+      unsigned char &b,
+      float value,
+      float min,
+      float max);
+
   void DrawOverlap(
       const std::string& title,
       const cv::Mat& image1,
