@@ -1,20 +1,22 @@
 cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+project(yaml_util)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+find_package(catkin REQUIRED COMPONENTS build_tools)
 
-rosbuild_init()
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME} yaml-cpp
+)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+execute_process(
+  COMMAND rospack find build_tools
+  ERROR_VARIABLE __null
+  OUTPUT_VARIABLE build_tools_PACKAGE_PATH
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
+
+
+
 
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
@@ -27,8 +29,21 @@ else( ${YamlCpp_VERSION} MATCHES "0.[23].*")
   message ("  Using new yaml-cpp API.")
 endif( ${YamlCpp_VERSION} MATCHES "0.[23].*")
 
-rosbuild_add_library(${PROJECT_NAME}
+include_directories(include ${catkin_INCLUDE_DIRS} ${YamlCpp_INCLUDE_DIR})
+
+add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${YamlCpp_LIBRARY})
+  
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+)
 
-target_link_libraries(${PROJECT_NAME} ${YAMLCPP_LIBRARY})
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+

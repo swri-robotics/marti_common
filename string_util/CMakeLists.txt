@@ -1,25 +1,40 @@
 cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+project(string_util)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+find_package(catkin REQUIRED COMPONENTS build_tools)
 
-rosbuild_init()
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+execute_process(
+  COMMAND rospack find build_tools
+  ERROR_VARIABLE __null
+  OUTPUT_VARIABLE build_tools_PACKAGE_PATH
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
-rosbuild_add_library(${PROJECT_NAME} src/string_util.cpp)
+include_directories(include ${catkin_INCLUDE_DIRS})
+  
+add_library(${PROJECT_NAME} 
+    src/string_util.cpp) 
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-rosbuild_add_executable(test_string_util test/test_string_util.cpp)
-rosbuild_add_gtest_build_flags(test_string_util)
-target_link_libraries(test_string_util ${PROJECT_NAME})
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  
+  add_rostest_gtest(test_string_util test/test_string_util.cpp)
+  target_link_libraries(test_string_util ${PROJECT_NAME})
+endif()
 
-rosbuild_add_rostest(test/string_util.test)
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+)
+
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)

@@ -1,0 +1,53 @@
+<package>
+  <name>image_util</name>
+  <version>0.0.1</version>
+  <description>
+
+     image_util
+
+  </description>
+  <author>Kris Kozak</author>
+  <maintainer email="kkozak@swri.org">Kris Kozak</maintainer>
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nodelet</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>image_geometry</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>camera_calibration_parsers</build_depend>
+  <build_depend>math_util</build_depend>
+  <build_depend>opencv_util</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>lapackpp</build_depend>
+  <build_depend>build_tools</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>nodelet</run_depend>
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>image_geometry</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>camera_calibration_parsers</run_depend>
+  <run_depend>math_util</run_depend>
+  <run_depend>opencv_util</run_depend>
+  <run_depend>image_transport</run_depend>
+  
+  <export>
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+  </export>
+</package>
+

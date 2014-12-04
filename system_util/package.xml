@@ -1,0 +1,20 @@
+<package>
+  <name>system_util</name>
+  <version>0.0.1</version>
+  <description>
+
+     system_util
+
+  </description>
+  <author>Marc Alban</author>
+  <maintainer email="malban@swri.org">Marc Alban</maintainer>
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>roscpp</build_depend>
+  <build_depend>build_tool</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+</package>

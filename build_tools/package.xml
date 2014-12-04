@@ -1,0 +1,21 @@
+<package>
+  <name>build_tools</name>
+  <version>0.0.1</version>
+  <description>
+
+    Contains tools and scripts for building Southwest Research Institutes MARTI
+    autonomous vehicle software and its derivatives. This repository should be
+    used to store any and call CMake scripts, as well as packaging and build
+    scripts that need to be referenced using rospack or run on vehicles.
+
+  </description>
+  <author>Edward Venator</author>
+  <maintainer email="evenator@swri.org">Edward Venator</maintainer>
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+</package>
+
+
