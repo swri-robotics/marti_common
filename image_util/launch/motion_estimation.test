@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="test_motion_estimation" pkg="image_util" type="test_motion_estimation" />
+</launch>

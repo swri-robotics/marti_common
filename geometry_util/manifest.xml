@@ -1,0 +1,19 @@
+<package>
+  <description brief="geometry_util">
+
+     geometry_util
+
+  </description>
+  <author>Marc Alban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+
+  <depend package="roscpp"/> 
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lgeometry_util -Wl,-rpath,${prefix}/lib" />
+  </export>
+
+  <depend package="build_tools"/>
+</package>

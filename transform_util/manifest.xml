@@ -1,0 +1,33 @@
+<package>
+  <description brief="transform_util">
+
+     The transform_util package contains utility functions and classes for
+     transforming between coordinate frames.
+
+  </description>
+  <author>Marc Alban</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="tf"/>
+  <depend package="pluginlib"/>
+  <depend package="gps_common"/>
+  <depend package="diagnostic_msgs"/>
+  <depend package="math_util"/>
+  <depend package="yaml_util"/>
+  
+  <rosdep name="opencv2.3"/>
+  <rosdep name="proj"/>
+  <rosdep name="yaml-cpp"/>
+  
+  <export>
+    <transform_util plugin="${prefix}/transformer_plugins.xml" />
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ltransform_util -Wl,-rpath,${prefix}/lib" />
+  </export>
+  <depend package="build_tools"/>
+</package>
+
+

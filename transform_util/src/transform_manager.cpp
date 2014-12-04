@@ -1,0 +1,333 @@
+// *****************************************************************************
+//
+// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of the <organization> nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// *****************************************************************************
+
+#include <transform_util/transform_manager.h>
+
+#include <vector>
+
+#include <transform_util/frames.h>
+
+namespace transform_util
+{
+  TransformManager::TransformManager() :
+      loader_("transform_util", "transform_util::Transformer")
+  {
+    std::vector<std::string> class_names = loader_.getDeclaredClasses();
+
+    for (uint32_t i = 0; i < class_names.size(); i++)
+    {
+      try
+      {
+        boost::shared_ptr<Transformer> transformer = loader_.createInstance(class_names[i]);
+
+        std::map<std::string, std::vector<std::string> > supports = transformer->Supports();
+
+        std::map<std::string, std::vector<std::string> >::iterator iter;
+        for (iter = supports.begin(); iter != supports.end(); ++iter)
+        {
+          for (uint32_t j = 0; j < iter->second.size(); j++)
+          {
+            if (transformers_[iter->first].count(iter->second[j]) > 0)
+            {
+              ROS_WARN("[transform_manager]: Transformer conflict for %s to %s",
+                  iter->first.c_str(), iter->second[j].c_str());
+            }
+
+            transformers_[iter->first][iter->second[j]] = transformer;
+          }
+        }
+      }
+      catch (const pluginlib::CreateClassException& e)
+      {
+        ROS_ERROR("[transform_manager]: Failed to load transformer plugin '%s': %s",
+            class_names[i].c_str(), e.what());
+      }
+    }
+  }
+
+  TransformManager::~TransformManager()
+  {
+  }
+
+  void TransformManager::Initialize(boost::shared_ptr<tf::TransformListener> tf)
+  {
+    tf_listener_ = tf;
+
+    std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > >::iterator iter1;
+    for (iter1 = transformers_.begin(); iter1 != transformers_.end(); ++iter1)
+    {
+      std::map<std::string, boost::shared_ptr<Transformer> >::iterator iter2;
+      for (iter2 = iter1->second.begin(); iter2 != iter1->second.end(); ++iter2)
+      {
+        iter2->second->Initialize(tf);
+      }
+    }
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Time& time,
+      Transform& transform) const
+  {
+    std::string src_frame = source_frame;
+    std::string tgt_frame = target_frame;
+    if (tgt_frame == src_frame)
+    {
+      transform = Transform();
+      return true;
+    }
+
+    if (!tf_listener_)
+    {
+      ROS_WARN("[transform_manager]: TF listener not initialized.");
+      return false;
+    }
+
+    // Check if the source frame is in the TF tree.
+    std::string source = src_frame;
+    if (tf_listener_->frameExists(source))
+    {
+      source = _tf_frame;
+    }
+    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
+    {
+      source = _tf_frame;
+    }
+
+    // Check if the target frame is in the TF tree.
+    std::string target = tgt_frame;
+    if (tf_listener_->frameExists(target))
+    {
+      target = _tf_frame;
+    }
+    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
+    {
+      target = _tf_frame;
+    }
+
+    // Check if either of the frames is local_xy
+    if (source == _local_xy_frame)
+    {
+      source = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", src_frame))
+      {
+        ROS_ERROR("[transform_manager]: Failed to parse /local_xy_frame.");
+        return false;
+      }
+    }
+
+    if (target == _local_xy_frame)
+    {
+      target = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", tgt_frame))
+      {
+        ROS_ERROR("[transform_manager]: Failed to parse /local_xy_frame.");
+        return false;
+      }
+    }
+
+    if (source == target)
+    {
+      // Both frames are in the TF tree.
+
+      tf::StampedTransform tf_transform;
+      if (GetTransform(tgt_frame, src_frame, time, tf_transform))
+      {
+        transform = tf_transform;
+        return true;
+      }
+
+      ROS_ERROR("[transform_manager]: Failed to get tf transform.");
+      return false;
+    }
+
+    if (transformers_[source].count(target) == 0)
+    {
+      ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",
+          source.c_str(), target.c_str());
+
+      return false;
+    }
+
+    boost::shared_ptr<Transformer> transformer = transformers_[source][target];
+
+    if (!transformer)
+    {
+      ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",
+          source.c_str(), target.c_str());
+
+      return false;
+    }
+
+    return transformer->GetTransform(tgt_frame, src_frame, time, transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      Transform& transform) const
+  {
+    return GetTransform(target_frame, source_frame, ros::Time(0), transform);
+  }
+
+  bool TransformManager::SupportsTransform(
+      const std::string& target_frame,
+      const std::string& source_frame) const
+  {
+    std::string src_frame = source_frame;
+    std::string tgt_frame = target_frame;
+    if (tgt_frame == src_frame)
+    {
+      return true;
+    }
+
+    if (!tf_listener_)
+    {
+      return false;
+    }
+
+    // Check if the source frame is in the TF tree.
+    std::string source = src_frame;
+    if (tf_listener_->frameExists(source))
+    {
+      source = _tf_frame;
+    }
+    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
+    {
+      source = _tf_frame;
+    }
+
+    // Check if the target frame is in the TF tree.
+    std::string target = tgt_frame;
+    if (tf_listener_->frameExists(target))
+    {
+      target = _tf_frame;
+    }
+    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
+    {
+      target = _tf_frame;
+    }
+
+    // Check if either of the frames is local_xy
+    if (source == _local_xy_frame)
+    {
+      source = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", src_frame))
+      {
+        return false;
+      }
+    }
+
+    if (target == _local_xy_frame)
+    {
+      target = _tf_frame;
+      if (!ros::param::get("/local_xy_frame", tgt_frame))
+      {
+        return false;
+      }
+    }
+
+    if (source == target)
+    {
+      return true;
+    }
+
+    if (transformers_[source].count(target) == 0)
+    {
+      return false;
+    }
+
+    boost::shared_ptr<Transformer> transformer = transformers_[source][target];
+
+    if (!transformer)
+    {
+      ROS_ERROR("[transform_manager]: No transformer for transforming %s to %s",
+          source.c_str(), target.c_str());
+
+      return false;
+    }
+
+    return true;
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Time& time,
+      tf::StampedTransform& transform) const
+  {
+    if (!tf_listener_)
+      return false;
+
+    bool has_transform = false;
+    try
+    {
+      tf_listener_->waitForTransform(
+          target_frame,
+          source_frame,
+          time,
+          ros::Duration(0.1));
+
+      tf_listener_->lookupTransform(
+          target_frame,
+          source_frame,
+          time,
+          transform);
+
+      has_transform = true;
+    }
+    catch (const tf::LookupException& e)
+    {
+      ROS_ERROR("[transform_manager]: %s", e.what());
+    }
+    catch (const tf::ConnectivityException& e)
+    {
+      ROS_ERROR("[transform_manager]: %s", e.what());
+    }
+    catch (const tf::ExtrapolationException& e)
+    {
+      ROS_ERROR("[transform_manager]: %s", e.what());
+    }
+    catch (...)
+    {
+      ROS_ERROR("[transform_manager]: Exception looking up transform");
+    }
+
+    return has_transform;
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      tf::StampedTransform& transform) const
+  {
+    return GetTransform(target_frame, source_frame, ros::Time(0), transform);
+  }
+}

@@ -1,0 +1,19 @@
+<package>
+  <description brief="build_tools">
+
+    Contains tools and scripts for building Southwest Research Institutes MARTI
+    autonomous vehicle software and its derivatives. This repository should be
+    used to store any and call CMake scripts, as well as packaging and build
+    scripts that need to be referenced using rospack or run on vehicles. For 
+    user scripts that don't need to be accessible to rospack or run on vehicles,
+    use the ivs_conf repository.
+
+  </description>
+  <author>Edward Venator</author>
+  <license>SwRI Proprietary</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ivs-redmine.dyn.datasys.swri.edu/projects/sumet/wiki/build_tools</url>
+
+</package>
+
+
