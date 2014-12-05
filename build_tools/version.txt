@@ -1,92 +1,15 @@
-ab61b2a5c2a631077f76766ffa0f74bafe55d9e1
+3533ec0a8c5e5fc2145e06aed89ef72cb87abf1a
+ M build_tools/scripts/build_common.cmake
+ M build_tools/scripts/log_version.cmake
+ M build_tools/scripts/version_file.cmake
  M build_tools/version.txt
-M  can_util/CMakeLists.txt
-M  can_util/manifest.xml
-M  console_util/CMakeLists.txt
-M  console_util/manifest.xml
-A  geometry_util/CMakeLists.txt
-A  geometry_util/FindGEOS.cmake
-A  geometry_util/Makefile
-A  geometry_util/include/geometry_util/intersection.h
-A  geometry_util/include/geometry_util/polygon.h
-A  geometry_util/manifest.xml
-A  geometry_util/src/intersection.cpp
-A  geometry_util/src/polygon.cpp
-M  image_util/CMakeLists.txt
-M  image_util/include/image_util/draw_util.h
-M  image_util/include/image_util/image_normalization.h
-M  image_util/include/image_util/image_warp_util.h
-M  image_util/include/image_util/motion_estimation.h
-A  image_util/include/image_util/rolling_normalization.h
-M  image_util/manifest.xml
-A  image_util/nodelet_plugins.xml
-M  image_util/src/draw_util.cpp
-M  image_util/src/image_normalization.cpp
-M  image_util/src/image_warp_util.cpp
-M  image_util/src/motion_estimation.cpp
-A  image_util/src/nodelets/contrast_stretch_nodelet.cpp
-A  image_util/src/nodelets/draw_text_nodelet.cpp
-A  image_util/src/nodelets/rotate_image_nodelet.cpp
-A  image_util/src/nodelets/scale_image_nodelet.cpp
-A  image_util/src/nodes/contrast_stretch.cpp
-A  image_util/src/nodes/draw_text.cpp
-A  image_util/src/nodes/dummy_image_publisher.cpp
-A  image_util/src/nodes/rotate_image.cpp
-A  image_util/src/nodes/scale_image.cpp
-A  image_util/src/rolling_normalization.cpp
-M  marti_data_structures/CMakeLists.txt
-M  marti_data_structures/manifest.xml
-M  math_util/CMakeLists.txt
-M  math_util/include/math_util/math_util.h
-A  math_util/include/math_util/random.h
-A  math_util/include/math_util/ransac.h
-A  math_util/launch/random.test
-M  math_util/manifest.xml
-M  math_util/src/math_util.cpp
-A  math_util/src/random.cpp
-A  math_util/src/ransac.cpp
-M  math_util/test/test_math_util.cpp
-A  math_util/test/test_random.cpp
-M  opencv_util/CMakeLists.txt
-A  opencv_util/include/opencv_util/model_fit.h
-A  opencv_util/include/opencv_util/models.h
-M  opencv_util/manifest.xml
-A  opencv_util/src/model_fit.cpp
-A  opencv_util/src/models.cpp
-M  opencv_util/src/show.cpp
-A  serial_util/CMakeLists.txt
-A  serial_util/Makefile
-A  serial_util/include/serial_util/serial_port.h
-A  serial_util/manifest.xml
-A  serial_util/src/serial_port.cpp
-A  string_util/CMakeLists.txt
-A  string_util/Makefile
-A  string_util/include/string_util/string_util.h
-A  string_util/manifest.xml
-A  string_util/src/string_util.cpp
-A  string_util/test/string_util.test
-A  string_util/test/test_string_util.cpp
-M  system_util/CMakeLists.txt
-MM system_util/include/system_util/file_util.h
-M  system_util/manifest.xml
-MM system_util/src/file_util.cpp
-M  transform_util/CMakeLists.txt
-M  transform_util/include/transform_util/transform.h
-M  transform_util/include/transform_util/transform_manager.h
-M  transform_util/include/transform_util/utm_transformer.h
-M  transform_util/include/transform_util/wgs84_transformer.h
-M  transform_util/manifest.xml
-M  transform_util/nodes/initialize_origin.py
-M  transform_util/src/georeference.cpp
-M  transform_util/src/local_xy_util.cpp
-A  transform_util/src/nodes/lat_lon_tf_echo.cpp
-M  transform_util/src/transform.cpp
-M  transform_util/src/transform_manager.cpp
-M  transform_util/src/utm_transformer.cpp
-M  transform_util/src/wgs84_transformer.cpp
-A  yaml_util/CMakeLists.txt
-A  yaml_util/Makefile
-A  yaml_util/include/yaml_util/.gitignore
-A  yaml_util/include/yaml_util/yaml_util.h
-A  yaml_util/manifest.xml
-A  yaml_util/src/yaml_util.cpp
+ M can_util/CMakeLists.txt
+ M image_util/CMakeLists.txt
+RM image_util/launch/image_util.test -> image_util/launch/image_normalization.test
+ M image_util/package.xml
+ M math_util/CMakeLists.txt
+ M string_util/CMakeLists.txt
+ M system_util/CMakeLists.txt
+ M system_util/src/file_util.cpp
+ M transform_util/CMakeLists.txt
+?? image_util/launch/warp_util.test

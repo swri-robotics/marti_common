@@ -45,6 +45,7 @@
   <run_depend>math_util</run_depend>
   <run_depend>opencv_util</run_depend>
   <run_depend>image_transport</run_depend>
+  <run_depend>lapackpp</run_depend>
   
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />

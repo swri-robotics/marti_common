@@ -144,7 +144,12 @@ namespace system_util
       {
         boost::smatch what;
         // Skip if no match
+        #if BOOST_FILESYSTEM_VERSION == 3
+        if( !boost::regex_match( i->path().filename().string(), what, my_filter ) ) continue;
+        #else
         if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
+        #endif  // BOOST_FILESYSTE_VERSION == 3
+        
         // File matches, store it
         all_matching_files.push_back( i->path().string() );
       }

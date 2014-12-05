@@ -37,7 +37,7 @@ if(CATKIN_ENABLE_TESTING)
   
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   
-  add_rostest_gtest(test_file_util test/test_file_util.cpp)
+  add_rostest_gtest(test_file_util launch/file_util.test test/test_file_util.cpp)
   target_link_libraries(test_file_util ${PROJECT_NAME})
 endif()
 

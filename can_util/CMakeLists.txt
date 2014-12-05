@@ -17,7 +17,10 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
+include_directories(include ${catkin_INCLUDE_DIRS})
+
 add_executable(can_bus_example src/nodes/can_bus_example.cpp)
+target_link_libraries(can_bus_example ${catkin_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

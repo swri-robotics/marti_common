@@ -59,19 +59,19 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-  add_rostest_gtest(test_local_xy_util test/test_local_xy_util.cpp)
+  add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
   target_link_libraries(test_local_xy_util ${PROJECT_NAME})
 
-  add_rostest_gtest(test_utm_util test/test_utm_util.cpp)
+  add_rostest_gtest(test_utm_util launch/utm_util.test test/test_utm_util.cpp)
   target_link_libraries(test_utm_util ${PROJECT_NAME})
 
-  add_rostest_gtest(test_transform_manager test/test_transform_manager.cpp)
+  add_rostest_gtest(test_transform_manager launch/transform_manager.test test/test_transform_manager.cpp)
   target_link_libraries(test_transform_manager ${PROJECT_NAME})
 
-  add_rostest_gtest(test_georeference test/test_georeference.cpp)
+  add_rostest_gtest(test_georeference launch/georeference.test test/test_georeference.cpp)
   target_link_libraries(test_georeference ${PROJECT_NAME})
 
-  add_rostest_gtest(test_transform_util test/test_transform_util.cpp)
+  add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
   target_link_libraries(test_transform_util ${PROJECT_NAME})
 endif()
 

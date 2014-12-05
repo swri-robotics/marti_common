@@ -36,13 +36,13 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   
-  add_rostest_gtest(test_trig_util test/test_trig_util.cpp)
+  add_rostest_gtest(test_trig_util launch/trig_util.test test/test_trig_util.cpp)
   target_link_libraries(test_trig_util ${PROJECT_NAME})
 
-  add_rostest_gtest(test_math_util test/test_math_util.cpp)
+  add_rostest_gtest(test_math_util launch/math_util.test test/test_math_util.cpp)
   target_link_libraries(test_math_util ${PROJECT_NAME})
 
-  add_rostest_gtest(test_random test/test_random.cpp)
+  add_rostest_gtest(test_random launch/random.test test/test_random.cpp)
   target_link_libraries(test_random ${PROJECT_NAME})
 endif()
 
