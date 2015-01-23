@@ -30,6 +30,8 @@
 #include <yaml_util/yaml_util.h>
 
 // C++ standard libraries
+#include <sstream>
+#include <iomanip>
 #ifdef YAMLCPP_OLD_API
 #include <fstream>
 #endif  // YAMLCPP_OLD_API
@@ -118,5 +120,13 @@ namespace yaml_util
     #else
       return node.FindValue(name);
     #endif  // YAMLCPP_OLD_API
+  }
+  
+  std::string ToString(double value, int32_t precision)
+  {
+    std::stringstream ss;
+    ss << std::setprecision(precision) << value;
+
+    return ss.str();
   }
 }
