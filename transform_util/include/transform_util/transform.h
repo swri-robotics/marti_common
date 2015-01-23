@@ -46,6 +46,28 @@ namespace transform_util
     virtual void Transform(
       const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
     
+    virtual tf::Quaternion GetOrientation() const
+    {
+      // Get the orientation of this transform by getting the vector between
+      // the origin point and a point offset 1 on the x axis.
+
+      tf::Vector3 offset;
+      Transform(tf::Vector3(1, 0, 0), offset);
+
+      tf::Vector3 origin;
+      Transform(tf::Vector3(0, 0, 0), origin);
+
+      tf::Vector3 vector = offset - origin;
+
+      // Use the "half-way quaternion method" of summing and normalizing a
+      // quaternion with twice the rotation between the vector and the x-axis and
+      // the zero rotation.
+
+      tf::Vector3 cross = tf::Vector3(1, 0, 0).cross(vector);
+      double w = vector.length() + tf::Vector3(1, 0, 0).dot(vector);
+      return tf::Quaternion(cross.x(), cross.y(), cross.z(), w).normalized();
+    }
+    
     ros::Time stamp_;
   };
 
@@ -131,6 +153,15 @@ namespace transform_util
     tf::Vector3 operator*(const tf::Vector3& v) const;
 
     /**
+     * Return the transform of the quaternion.
+     *
+     * @param[in]  q  The quaternion.
+     *
+     * @returns The transformed quaternion.
+     */
+    tf::Quaternion operator*(const tf::Quaternion& q) const;
+
+    /**
      * Return the inverse transform.
      *
      * @returns The inverse transform.
@@ -160,6 +191,8 @@ namespace transform_util
     explicit TfTransform(const tf::Transform& transform);
     explicit TfTransform(const tf::StampedTransform& transform);
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+
+    virtual tf::Quaternion GetOrientation() const;
 
   protected:
     tf::Transform transform_;
