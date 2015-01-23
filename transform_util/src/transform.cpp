@@ -84,6 +84,13 @@ namespace transform_util
 
     return transformed;
   }
+  
+  tf::Quaternion Transform::operator*(const tf::Quaternion& q) const
+  {
+    tf::Quaternion transformed = q;
+
+    return q * GetOrientation();
+  }
 
   tf::Vector3 Transform::GetOrigin() const
   {
@@ -96,21 +103,7 @@ namespace transform_util
 
   tf::Quaternion Transform::GetOrientation() const
   {
-    // Get the orientation of this transform by getting the vector between
-    // the origin point and a point offset 1 on the x axis.
-
-    tf::Vector3 offset;
-    transform_->Transform(tf::Vector3(1, 0, 0), offset);
-
-    tf::Vector3 vector = offset - GetOrigin();
-
-    // Use the "half-way quaternion method" of summing and normalizing a
-    // quaternion with twice the rotation between the vector and the x-axis and
-    // the zero rotation.
-
-    tf::Vector3 cross = tf::Vector3(1, 0, 0).cross(vector);
-    double w = vector.length() + tf::Vector3(1, 0, 0).dot(vector);
-    return tf::Quaternion(cross.x(), cross.y(), cross.z(), w).normalized();
+    return transform_->GetOrientation();
   }
 
   void IdentityTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
@@ -133,5 +126,10 @@ namespace transform_util
   void TfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     v_out = transform_ * v_in;
+  }
+  
+  tf::Quaternion TfTransform::GetOrientation() const
+  {
+    return transform_.getRotation();
   }
 }

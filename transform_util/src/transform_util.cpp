@@ -37,6 +37,7 @@
 
 #include <boost/math/special_functions/sign.hpp>
 
+#include <transform_util/earth_constants.h>
 #include <math_util/constants.h>
 #include <math_util/math_util.h>
 #include <math_util/trig_util.h>
@@ -81,6 +82,26 @@ namespace transform_util
     return transform;
   }
 
+  double GreatCircleDistance(
+      double src_latitude,
+      double src_longitude,
+      double dst_latitude,
+      double dst_longitude)
+  {
+    double lat1 = src_latitude * math_util::_deg_2_rad;
+    double lon1 = src_longitude * math_util::_deg_2_rad;
+
+    double lat2 = dst_latitude * math_util::_deg_2_rad;
+    double lon2 = dst_longitude * math_util::_deg_2_rad;
+
+    double distance = 2.0 * std::asin(std::sqrt(
+      std::pow(std::sin((lat1 - lat2) / 2.0), 2.0) +
+      std::cos(lat1) * std::cos(lat2) *
+      std::pow(std::sin((lon1 - lon2) / 2.0), 2.0)));
+
+    return _earth_mean_radius * distance;
+  }
+
   double GetBearing(
       double source_latitude,
       double source_longitude,
@@ -100,6 +121,31 @@ namespace transform_util
         std::sin(lat1) * std::cos(lat2) * std::cos(d_lon);
 
     return std::atan2(y, x) * math_util::_rad_2_deg;
+  }
+
+  void GetMidpointLatLon(
+      double latitude1,
+      double longitude1,
+      double latitude2,
+      double longitude2,
+      double& mid_latitude,
+      double& mid_longitude)
+  {
+    double d_lon = (longitude2 - longitude1) * math_util::_deg_2_rad;
+
+    double lat1 = latitude1 * math_util::_deg_2_rad;
+    double lat2 = latitude2 * math_util::_deg_2_rad;
+    double lon1 = longitude1 * math_util::_deg_2_rad;
+
+    double x = std::cos(lat2) * std::cos(d_lon);
+    double y = std::cos(lat2) * std::sin(d_lon);
+    double tmp = std::cos(lat1) + x;
+    double lat3 = std::atan2(
+        std::sin(lat1) + std::sin(lat2), std::sqrt(tmp * tmp + y * y));
+    double lon3 = lon1 + std::atan2(y, tmp);
+
+    mid_latitude = lat3 * math_util::_rad_2_deg;
+    mid_longitude = lon3 * math_util::_rad_2_deg;
   }
 
   double GetHeading(double src_x, double src_y, double dst_x, double dst_y)
@@ -333,5 +379,21 @@ namespace transform_util
     matrix[33] = sub_matrix[2][0];
     matrix[34] = sub_matrix[2][1];
     matrix[35] = sub_matrix[2][2];
+  }
+  
+  double LongitudeDegreesFromMeters(
+    double latitude,
+    double altitude,
+    double arc_length)
+  {
+    return arc_length / ((altitude + _earth_equator_radius)
+                         * std::cos(latitude * math_util::_deg_2_rad)) * math_util::_rad_2_deg;
+  }
+
+  double LatitudeDegreesFromMeters(
+    double altitude,
+    double arc_length)
+  {
+    return arc_length / (altitude + _earth_equator_radius) * math_util::_rad_2_deg;
   }
 }

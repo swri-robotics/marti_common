@@ -144,6 +144,11 @@ namespace transform_util
     v_out.setValue(longitude, latitude, local_xy.z());
   }
   
+  tf::Quaternion TfToWgs84Transform::GetOrientation() const
+  {
+    return transform_.getRotation();
+  }
+  
   Wgs84ToTfTransform::Wgs84ToTfTransform(
     const tf::StampedTransform& transform,
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
@@ -162,6 +167,11 @@ namespace transform_util
 
     // Transform from the LocalXY coordinate frame using the TF transform.
     v_out = transform_ * v_out;
+  }
+  
+  tf::Quaternion Wgs84ToTfTransform::GetOrientation() const
+  {
+    return transform_.getRotation();
   }
 }
 

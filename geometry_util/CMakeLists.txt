@@ -13,5 +13,6 @@ include_directories(include ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   src/intersection.cpp
-  src/polygon.cpp)
+  src/polygon.cpp
+  src/geometry_util.cpp)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} ${GEOS_LIBRARIES})

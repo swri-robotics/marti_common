@@ -46,11 +46,25 @@ namespace transform_util
       double reference_longitude,
       double reference_yaw);
 
+  double GreatCircleDistance(
+      double src_latitude,
+      double src_longitude,
+      double dst_latitude,
+      double dst_longitude);
+
   double GetBearing(
       double source_latitude,
       double source_longitude,
       double destination_latitude,
       double destination_longitude);
+
+  void GetMidpointLatLon(
+      double latitude1,
+      double longitude1,
+      double latitude2,
+      double longitude2,
+      double& mid_latitude,
+      double& mid_longitude);
 
   /**
    * Calculates the heading in degrees from a source and destination point in
@@ -174,6 +188,34 @@ namespace transform_util
   void SetLowerRight(
       const tf::Matrix3x3& sub_matrix,
       boost::array<double, 36>& matrix);
+
+  /**
+   * Calculate the subtending angle of an arc (aligned with the
+   * longitudinal coordinate axis at the specified latitude and
+   * altitude) with the specied arc length.
+   *
+   * @param[in] latitude     The latitude of the arc.
+   * @param[in] altitude     The radius of the arc.
+   * @param[in] arc_length   The arc length in meters.
+   * @returns The angle subtended by the arc (in degrees)
+   */
+  double LongitudeDegreesFromMeters(
+    double latitude,
+    double altitude,
+    double arc_length);
+
+  /**
+   * Calculate the subtending angle of an arc (aligned with the
+   * latitudinal coordinate axis at the specified altitude) with the
+   * specied arc length.  This conversion is invariant to longitude.
+   *
+   * @param[in] altitude     The radius of the arc.
+   * @param[in] arc_length   The arc length in meters.
+   * @returns The angle subtended by the arc (in degrees)
+   */
+  double LatitudeDegreesFromMeters(
+    double altitude,
+    double arc_length);
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_
