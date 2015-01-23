@@ -25,7 +25,8 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS
 
 add_library(${PROJECT_NAME}
   src/intersection.cpp
-  src/polygon.cpp)
+  src/polygon.cpp
+  src/geometry_util.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${GEOS_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/

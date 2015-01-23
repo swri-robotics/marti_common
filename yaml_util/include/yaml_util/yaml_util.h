@@ -55,6 +55,8 @@ namespace yaml_util
 {
   bool LoadFile(const std::string& path, YAML::Node& yaml);
   bool FindValue(const YAML::Node& node, const std::string& name);
+  
+  std::string ToString(double value, int32_t precision);
 }
 
 #endif  // YAML_UTIL_YAML_UTIL_H_
