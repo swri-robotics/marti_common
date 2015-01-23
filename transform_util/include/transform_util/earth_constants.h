@@ -37,6 +37,8 @@ namespace transform_util
    */
   static const double _earth_equator_radius = 6378137.0;
 
+  static const double _earth_mean_radius = 6371000.0;
+
   /**
    * Earth 'first' eccentricity according to WGS84.
    */

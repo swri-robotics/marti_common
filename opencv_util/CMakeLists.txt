@@ -31,7 +31,8 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 add_library(${PROJECT_NAME} 
   src/models.cpp
   src/model_fit.cpp
-  src/show.cpp)
+  src/show.cpp
+  src/convert.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
