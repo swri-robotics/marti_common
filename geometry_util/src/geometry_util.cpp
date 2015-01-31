@@ -27,28 +27,15 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_CONSTANTS_H_
-#define MATH_UTIL_CONSTANTS_H_
+#include <tf/transform_datatypes.h>
 
-namespace math_util
+namespace geometry_util
 {
-  static const long double _pi = 3.1415926535897932384626433832795029L;
-
-  static const long double _2pi = 6.28318530717958647692528676655900576L;
-
-  static const long double _half_pi = 1.57079632679489661923132169163975144L;
-
-  static const long double _deg_2_rad = 0.01745329251994329576923690768488612L;
-
-  static const long double _rad_2_deg = 57.2957795130823208767981548141051703L;
-
-  static const double _kph_to_mps = 0.2777777777777778;
-
-  static const double _mps_to_mph = 2.2369362920544025;
-
-  static const double _feet_to_meters = 0.3048;
-
-  static const double _yards_to_meters = 0.9144;
+  double DistanceFromPlane(
+      const tf::Vector3& plane_normal,
+      const tf::Vector3& plane_point,
+      const tf::Vector3& point)
+  {
+    return plane_normal.normalized().dot(point - plane_point);
+  }
 }
-
-#endif  // MATH_UTIL_CONSTANTS_H_
