@@ -37,7 +37,12 @@ namespace transform_util
    */
   static const double _earth_equator_radius = 6378137.0;
 
-  static const double _earth_mean_radius = 6371000.0;
+  static const double _earth_mean_radius = 6371009.0;
+
+  /**
+   * Earth equatorial circumference in meters according to WGS84.
+   */
+  static const double _earth_equator_circumference = 40075016.69;
 
   /**
    * Earth 'first' eccentricity according to WGS84.
