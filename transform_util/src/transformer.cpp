@@ -65,19 +65,22 @@ namespace transform_util
     bool has_transform = false;
     try
     {
-      tf_listener_->waitForTransform(
+      if (tf_listener_->frameExists(target_frame) &&
+          tf_listener_->frameExists(source_frame) &&
+          tf_listener_->waitForTransform(
           target_frame,
           source_frame,
           time,
-          ros::Duration(0.1));
+          ros::Duration(0.01)))
+      {
+        tf_listener_->lookupTransform(
+            target_frame,
+            source_frame,
+            time,
+            transform);
 
-      tf_listener_->lookupTransform(
-          target_frame,
-          source_frame,
-          time,
-          transform);
-
-      has_transform = true;
+        has_transform = true;
+      }
     }
     catch (const tf::LookupException& e)
     {
