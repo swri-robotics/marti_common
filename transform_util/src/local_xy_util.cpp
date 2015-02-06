@@ -71,7 +71,12 @@ namespace transform_util
     reference_latitude_(reference_latitude * math_util::_deg_2_rad),
     reference_longitude_(reference_longitude * math_util::_deg_2_rad),
     reference_heading_(reference_heading * math_util::_deg_2_rad),
-    reference_altitude_(reference_altitude)
+    reference_altitude_(reference_altitude),
+    rho_lat_(0),
+    rho_lon_(0),
+    cos_heading_(0),
+    sin_heading_(0),
+    initialized_(false)
   {
     Initialize();
   }
@@ -89,7 +94,7 @@ namespace transform_util
   {
     ros::NodeHandle node;
 
-    ROS_WARN("Subscribing to /local_xy_origin");
+    ROS_INFO("Subscribing to /local_xy_origin");
     origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
   }
 
@@ -116,12 +121,12 @@ namespace transform_util
 
   void LocalXyWgs84Util::HandleOrigin(const gps_common::GPSFixConstPtr origin)
   {
-    ROS_WARN("HandleOrigin");
     if (!initialized_)
     {
       reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
       reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
       reference_altitude_ = origin->altitude;
+      frame_ = origin->header.frame_id;
       Initialize();
     }
     origin_sub_.shutdown();
