@@ -69,7 +69,7 @@ namespace transform_util
 
     if (!initialized_)
     {
-      ROS_ERROR("Wgs84Transformer not initialized");
+      ROS_WARN("Wgs84Transformer not initialized");
       return false;
     }
 
@@ -78,7 +78,7 @@ namespace transform_util
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(local_xy_frame_, source_frame , time, tf_transform))
       {
-        ROS_ERROR("Failed to get transform between %s and %s",
+        ROS_WARN("Failed to get transform between %s and %s",
             source_frame.c_str(), local_xy_frame_.c_str());
         return false;
       }
@@ -92,7 +92,7 @@ namespace transform_util
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
       {
-        ROS_ERROR("Failed to get transform between %s and %s",
+        ROS_WARN("Failed to get transform between %s and %s",
             local_xy_frame_.c_str(), target_frame.c_str());
         return false;
       }
@@ -113,10 +113,24 @@ namespace transform_util
       local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
     }
 
-    initialized_ = local_xy_util_->Initialized();
-    if (initialized_)
+    if (local_xy_util_->Initialized())
     {
-      local_xy_frame_ = local_xy_util_->Frame();
+      std::string local_xy_frame = local_xy_util_->Frame();
+      if (tf_listener_->frameExists(local_xy_frame))
+      {
+        local_xy_frame_ = local_xy_frame;
+        initialized_ = true;
+      }
+      else if (!local_xy_frame.empty() && local_xy_frame[0] == '/' && tf_listener_->frameExists(local_xy_frame.substr(1)))
+      {
+        local_xy_frame_ = local_xy_frame.substr(1);
+        initialized_ = true;
+      }
+      else if (!local_xy_frame.empty() && local_xy_frame[0] != '/' && tf_listener_->frameExists("/" + local_xy_frame))
+      {
+        local_xy_frame_ = "/" + local_xy_frame;
+        initialized_ = true;
+      }
     }
 
     return initialized_;
