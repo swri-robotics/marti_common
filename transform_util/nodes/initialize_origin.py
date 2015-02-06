@@ -15,13 +15,13 @@ from diagnostic_msgs.msg import KeyValue
 
 # Global variables
 _gps_fix = None
+_local_xy_frame = None
 
 _sub = None
 _origin_pub = None
 
 def parse_origin(local_xy_origin):
     global _gps_fix
-    rospy.logerr("parsing local_xy origins")
     
     local_xy_origins = rospy.get_param('~local_xy_origins', [])
     
@@ -29,15 +29,13 @@ def parse_origin(local_xy_origin):
         if origin["name"] == local_xy_origin:
             
             _gps_fix = GPSFix()
-            _gps_fix.header.frame_id = "/wgs84"
+            _gps_fix.header.frame_id = _local_xy_frame
             _gps_fix.status.header.frame_id = local_xy_origin
             _gps_fix.latitude = origin["latitude"]
             _gps_fix.longitude = origin["longitude"]
             _gps_fix.altitude = origin["altitude"]
             
             _origin_pub.publish(_gps_fix)
-            
-            rospy.logerr("published local_xy origin")
 
     return
 
@@ -58,11 +56,13 @@ def initialize_origin():
     rospy.init_node('initialize_origin', anonymous=True)
    
     global _origin_pub
+    global _local_xy_frame
     _origin_pub = rospy.Publisher('/local_xy_origin', GPSFix, latch=True)
     
     diagnostic_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
    
     local_xy_origin = rospy.get_param('~local_xy_origin', 'auto')
+    _local_xy_frame = rospy.get_param('~local_xy_frame', 'map')
    
     if local_xy_origin == "auto":
         global _sub
