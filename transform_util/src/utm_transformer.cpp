@@ -43,7 +43,9 @@ PLUGINLIB_DECLARE_CLASS(
 namespace transform_util
 {
   UtmTransformer::UtmTransformer() :
-    utm_util_(boost::make_shared<UtmUtil>())
+    utm_util_(boost::make_shared<UtmUtil>()),
+    utm_zone_(0),
+    utm_band_(0)
   {
   }
 
@@ -154,11 +156,6 @@ namespace transform_util
 
   bool UtmTransformer::Initialize()
   {
-    if (!ros::param::get("/local_xy_frame", local_xy_frame_))
-    {
-      return false;
-    }
-
     if (!local_xy_util_)
     {
       local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
@@ -169,6 +166,7 @@ namespace transform_util
     {
       utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
       utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
+      local_xy_frame_ = local_xy_util_->Frame();
     }
 
     initialized_ = local_xy_util_->Initialized();
