@@ -104,7 +104,7 @@ namespace transform_util
 
     LocalXyWgs84Util();
 
-    bool Initialized() { return initialized_; }
+    bool Initialized() const { return initialized_; }
 
     double ReferenceLongitude() const;
 
@@ -113,6 +113,8 @@ namespace transform_util
     double ReferenceHeading() const;
 
     double ReferenceAltitude() const;
+
+    std::string Frame() const { return frame_; }
 
     /**
      * Convert WGS84 latitude and longitude to LocalXY.
@@ -156,6 +158,8 @@ namespace transform_util
     double rho_lon_;
     double cos_heading_;
     double sin_heading_;
+
+    std::string frame_;
 
     ros::Subscriber origin_sub_;
     bool initialized_;

@@ -108,18 +108,16 @@ namespace transform_util
 
   bool Wgs84Transformer::Initialize()
   {
-    if (!ros::param::get("/local_xy_frame", local_xy_frame_))
-    {
-      ROS_ERROR("Failed to parse /local_xy_frame");
-      return false;
-    }
-
     if (!local_xy_util_)
     {
       local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
     }
 
     initialized_ = local_xy_util_->Initialized();
+    if (initialized_)
+    {
+      local_xy_frame_ = local_xy_util_->Frame();
+    }
 
     return initialized_;
   }
