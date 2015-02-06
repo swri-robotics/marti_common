@@ -40,11 +40,15 @@
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
 
+#include <transform_util/local_xy_util.h>
 #include <transform_util/transform.h>
 #include <transform_util/transformer.h>
 
 namespace transform_util
 {
+  typedef std::map<std::string, boost::shared_ptr<Transformer> > TransformerMap;
+  typedef std::map<std::string, TransformerMap> SourceTargetMap;
+
   class TransformManager
   {
   public:
@@ -84,10 +88,9 @@ namespace transform_util
     pluginlib::ClassLoader<transform_util::Transformer> loader_;
     boost::shared_ptr<tf::TransformListener> tf_listener_;
 
-    // NOTE: Transformers map is marked as mutable since it doesn't change after
-    // initialization, but its access functions are not technically const.  In
-    // this use case it can be considered const safely.
-    mutable std::map<std::string, std::map<std::string, boost::shared_ptr<Transformer> > > transformers_;
+    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+
+    SourceTargetMap transformers_;
   };
 }
 
