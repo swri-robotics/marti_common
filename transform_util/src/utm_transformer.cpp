@@ -161,15 +161,31 @@ namespace transform_util
       local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
     }
 
-    // Initialize LocalXY util with an origin.
     if (local_xy_util_->Initialized())
+    {
+      std::string local_xy_frame = local_xy_util_->Frame();
+      if (tf_listener_->frameExists(local_xy_frame))
+      {
+        local_xy_frame_ = local_xy_frame;
+        initialized_ = true;
+      }
+      else if (!local_xy_frame.empty() && local_xy_frame[0] == '/' && tf_listener_->frameExists(local_xy_frame.substr(1)))
+      {
+        local_xy_frame_ = local_xy_frame.substr(1);
+        initialized_ = true;
+      }
+      else if (!local_xy_frame.empty() && local_xy_frame[0] != '/' && tf_listener_->frameExists("/" + local_xy_frame))
+      {
+        local_xy_frame_ = "/" + local_xy_frame;
+        initialized_ = true;
+      }
+    }
+
+    if (initialized_)
     {
       utm_zone_ = GetZone(local_xy_util_->ReferenceLongitude());
       utm_band_ = GetBand(local_xy_util_->ReferenceLatitude());
-      local_xy_frame_ = local_xy_util_->Frame();
     }
-
-    initialized_ = local_xy_util_->Initialized();
 
     return initialized_;
   }
