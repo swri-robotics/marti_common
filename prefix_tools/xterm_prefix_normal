@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# xterm_prefix subcommand to run a node directly in xterm.
+
+$@
