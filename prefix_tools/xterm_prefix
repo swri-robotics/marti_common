@@ -1,0 +1,186 @@
+#!/usr/bin/env python
+import sys
+import os
+import time
+import signal
+import psutil
+
+"""
+This is a launch prefix script for running a node in an xterm window.
+
+The ROS recommended way of using 'xterm -c' does not provide the node
+with the proper opportunity to shutdown.  roslaunch sends a SIGINT
+signal to the process group of every process that it launched.  When
+xterm receives SIGINT, it immediately kills the process and closes
+itself, so the node will not receive SIGINT and have the opportunity
+to shutdown properly.
+
+This script provides a workaround by setting up a bridge that receives
+SIGINT and forwards it to the node itself.  It also monitors the node
+so that if the process dies, the bridge will also close so that
+roslaunch is aware that the node had finished.
+
+This prefix script runs arbitrary sub-prefixes that provide different
+functionality.  The name of the sub-prefix is passed as the first
+argument to xterm_prefix and maps to scripts in this package as
+xterm_prefix_NAME.  Available names are:
+
+normal - Run the node directly in the xterm window.
+
+hold - Run the node directly in the xterm window and keep the window
+open after the node finishes.
+
+gdb - Run the node in gdb.  gdb will start the process immediately.
+
+callgrind - Profile the node in callgrind with instrumentation enabled at
+start up.
+
+callgrind_wait - Profile the node in callgrind with instrumentation
+disabled at start up.
+
+
+Note: Requires the python-psutil packagae to be installed.
+"""
+
+def child_func():
+    """
+    The child process is responsible for running the xterm and node.
+    When it is created, it assigns itself to a new process group to be
+    protected from roslaunch.
+    """
+
+    # Find the node name in the arguments
+    name = None
+    for arg in sys.argv[1:]:
+        if arg.startswith('__name:='):
+            name = arg[8:]
+            break
+
+    # If we couldn't find one, use the executable name
+    if name is None:
+        name = sys.argv[1]
+
+    # Use the name to set a useful title on the xterm window.
+    title = '(xterm) {0}'.format(name)
+
+    # This is the most important step.  We have to assign the forked
+    # child process to its own process group.  Otherwise, when
+    # roslaunch sends SIGINT to the original process group, xterm
+    # catches it and kills the node before it has a chance to
+    # shutdown.
+    os.setpgid(0,0)
+
+    # Choose the script we should use to execute the node based on our
+    # first argument.  Look for the files names xterm_prefix_* in the
+    # same directory as this script for options.
+    script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    subscript = os.path.join(script_dir, 'xterm_prefix_' + sys.argv[1])
+
+    if not os.path.exists(subscript):
+        print "Could not find subscript %r" % subscript
+        sys.exit(1)
+
+    # Launch the node in an xterm.  We use exec so that the xterm
+    # process replaces this one.
+    args = ['x-terminal-emulator',
+            '-title', title,
+            '-geometry', '160x60',
+            '-e', subscript] + sys.argv[2:]
+    os.execvp('x-terminal-emulator', args)
+
+
+def get_child(pid, timeout=10.0):
+    """
+    Returns the PID of the first child of the specified PID.  Will
+    return None if no child is found after the provided timeout.  If
+    multiple children are found, prints a warning and returns the
+    first child.
+    """    
+    t = 0.0
+    while t < timeout:
+        proc = psutil.Process(pid)
+        if proc.status == psutil.STATUS_ZOMBIE:
+            print "Warning: process %d is defunct." % pid
+            return None
+        if len(proc.get_children()) > 0:
+            break
+        time.sleep(0.1)
+        t += 0.1
+
+    children = [c.pid for c in proc.get_children()]
+
+    if len(children) == 0:
+        return None
+    elif len(children) > 1:
+        print "Warning: Found multiple children, selecting the first..."
+        
+    return children[0]    
+
+    
+def main_func(child):
+    """
+    The main process is a bridge between roslaunch and the child node.
+    If the node dies, the process will die.  If roslaunch sends
+    shutdown signals, they will be passed onto the node.
+    """
+
+    # First we get the PID of our forked process' child.  This should
+    # be the bash prefix subscript specified as our first argument or
+    # a new process that execed over that script.
+    grandchild = get_child(child)    
+    if grandchild is None:
+        print "Found no running process for node.  Quitting."
+        sys.exit(1)        
+
+    # Next we get the child of the bash script.  This should be the
+    # actual node.
+    great_grandchild = get_child(grandchild)
+    if great_grandchild is None:
+        print "Found no running process for node.  Quitting."
+        sys.exit(1)        
+
+    # Setup the signals that we want to forward to the child node.
+    signals = [
+        signal.SIGHUP,
+        signal.SIGINT,
+        signal.SIGQUIT,
+        signal.SIGTERM
+        ]
+    def handle_signal(signum, frame):
+        # When we get a signal, just send it to the node.
+        os.kill(great_grandchild, signum)
+
+    # Register the signal handlers
+    for sig in signals:
+        signal.signal(sig, handle_signal)
+
+    while True:
+        try:
+            # Check if the node becomes defunct, and quit if it has.
+            gc = psutil.Process(great_grandchild)
+            if gc.status == psutil.STATUS_ZOMBIE:
+                sys.exit(0)
+            # We can't use os.wait() because the node is not a direct
+            # child of this process, so we loop indefinitely instead,
+            # using sleep to limit the cpu usage.
+            time.sleep(0.1)
+        except psutil.NoSuchProcess:
+            # If the process died, then we quit.
+            sys.exit(0)
+        except KeyboardInterrupt:
+            # We just ignore KeyboardInterrupts (SIGINT).  The signal
+            # handler will have passed it along to the node and then
+            # we want to wait for the process to die.  We specifically
+            # should not quit in case the node doesn't die and
+            # roslaunch escalates to SIGTERM so that we can pass that
+            # signal along as well.
+            pass
+
+
+# Fork into the child and master processes.
+child_pid = os.fork()
+if child_pid == 0:
+    child_func()
+else:
+    main_func(child_pid)
+
