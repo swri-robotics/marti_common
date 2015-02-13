@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Run the node in gdb.  The process will start immediately.
+
+# We need to use exec so that the node is the grandchild of
+# xterm_prefix.
+exec gdb -ex run --args $@
