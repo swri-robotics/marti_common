@@ -121,10 +121,10 @@ namespace transform_util
       for (unsigned int i = 0; i < doc["tiepoints"].size(); i++)
       {
         // Parse pixel column value into the pixel list
-        doc["tiepoints"][i]["point"][0] >> pixels_.at<cv::Vec2s>(0, i)[0];
+        doc["tiepoints"][i]["point"][0] >> pixels_.at<cv::Vec2i>(0, i)[0];
 
         // Parse pixel row value into the pixel list
-        doc["tiepoints"][i]["point"][1] >> pixels_.at<cv::Vec2s>(0, i)[1];
+        doc["tiepoints"][i]["point"][1] >> pixels_.at<cv::Vec2i>(0, i)[1];
 
         // Parse the x coordinate into the coordinate list
         doc["tiepoints"][i]["point"][2] >> coordinates_.at<cv::Vec2d>(0, i)[0];
@@ -146,10 +146,10 @@ namespace transform_util
         doc["pixel_scale"][1] >> transform_.at<float>(1, 1);
 
         transform_.at<float>(0, 2) = coordinates_.at<cv::Vec2d>(0, 1)[0] -
-            pixels_.at<cv::Vec2s>(0, 1)[0] * transform_.at<double>(0, 0);
+            pixels_.at<cv::Vec2i>(0, 1)[0] * transform_.at<double>(0, 0);
 
         transform_.at<float>(1, 2) = coordinates_.at<cv::Vec2d>(0, 1)[1] -
-            pixels_.at<cv::Vec2s>(0, 1)[1] * transform_.at<double>(1, 1);
+            pixels_.at<cv::Vec2i>(0, 1)[1] * transform_.at<double>(1, 1);
       }
       else
       {
@@ -180,8 +180,8 @@ namespace transform_util
     cv::Mat src(1, pixels_.cols, CV_32FC2);
     for (int i = 0; i < pixels_.cols; i++)
     {
-      src.at<cv::Vec2f>(0, i)[0] = static_cast<float>(pixels_.at<cv::Vec2s>(0, i)[0]);
-      src.at<cv::Vec2f>(0, i)[1] = static_cast<float>(pixels_.at<cv::Vec2s>(0, i)[1]);
+      src.at<cv::Vec2f>(0, i)[0] = static_cast<float>(pixels_.at<cv::Vec2i>(0, i)[0]);
+      src.at<cv::Vec2f>(0, i)[1] = static_cast<float>(pixels_.at<cv::Vec2i>(0, i)[1]);
     }
 
     // Offset coordinates to a new origin to avoid loss of precision
@@ -246,8 +246,8 @@ namespace transform_util
     for (int i = 0; i < pixels_.cols; i++)
     {
       ROS_INFO("georeference:     [%d, %d, %lf, %lf]",
-          pixels_.at<cv::Vec2s>(0, i)[0],
-          pixels_.at<cv::Vec2s>(0, i)[1],
+          pixels_.at<cv::Vec2i>(0, i)[0],
+          pixels_.at<cv::Vec2i>(0, i)[1],
           coordinates_.at<cv::Vec2d>(0, i)[0],
           coordinates_.at<cv::Vec2d>(0, i)[1]);
     }
