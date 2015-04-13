@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <tf/transform_datatypes.h>
+#include <geometry_util/geometry_util.h>
 
 namespace geometry_util
 {
@@ -37,5 +37,36 @@ namespace geometry_util
       const tf::Vector3& point)
   {
     return plane_normal.normalized().dot(point - plane_point);
+  }
+  
+  double DistanceFromLineSegment(
+      const tf::Vector3& line_start,
+      const tf::Vector3& line_end,
+      const tf::Vector3& point)
+  {    
+    return point.distance(ProjectToLineSegment(line_start, line_end, point));
+  }
+  
+  tf::Vector3 ProjectToLineSegment(
+      const tf::Vector3& line_start,
+      const tf::Vector3& line_end,
+      const tf::Vector3& point)
+  {
+    tf::Vector3 v = line_end - line_start;
+    tf::Vector3 r = point - line_start;
+    
+    double t = r.dot(v);
+    if (t <= 0)
+    {
+      return line_start;
+    }
+    
+    double b = v.dot(v);
+    if (t >= b)
+    {
+      return line_end;
+    }
+    
+    return line_start + (t / b) * v;
   }
 }
