@@ -134,7 +134,8 @@ namespace image_util
       const cv::Mat points1,
       const cv::Mat points2,
       const cv::Scalar& color,
-      bool draw_image_borders)
+      bool draw_image_borders,
+      const cv::Scalar& point_color)
   {
     cv::Size size(image1.cols + image2.cols, std::max(image1.rows, image2.rows));
     image_out.create(size, CV_MAKETYPE(image1.depth(), 3));
@@ -176,10 +177,12 @@ namespace image_util
 
     cv::RNG rng = cv::theRNG();
     bool rand_color = color == cv::Scalar::all(-1);
+    bool has_point_color = point_color != cv::Scalar::all(-1);
 
     for (int i = 0; i < points1.rows; i++)
     {
       cv::Scalar match_color = rand_color ? cv::Scalar(rng(256), rng(256), rng(256)) : color;
+      cv::Scalar match_color2 = has_point_color ? point_color : match_color;
       cv::Point2f center1(
         cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
@@ -189,8 +192,8 @@ namespace image_util
       cv::Point2f dcenter2(
         std::min(center2.x + draw_image1.cols * 16.0,
         float(image_out.cols - 1) * 16.0), center2.y);
-      circle(draw_image1, center1, 48, match_color, 1, CV_AA, 4);
-      circle(draw_image2, center2, 48, match_color, 1, CV_AA, 4);
+      circle(draw_image1, center1, 48, match_color2, 1, CV_AA, 4);
+      circle(draw_image2, center2, 48, match_color2, 1, CV_AA, 4);
       line(image_out, center1, dcenter2, match_color, 1, CV_AA, 4);
     }
   }
