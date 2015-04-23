@@ -9,7 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url></url>
 
-  <depend package="roscpp"/> 
+  <depend package="roscpp" />
+  <depend package="lapackpp" />
 
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lgeometry_util -Wl,-rpath,${prefix}/lib" />
