@@ -72,7 +72,8 @@ namespace image_util
       const cv::Mat points1,
       const cv::Mat points2,
       const cv::Scalar& color = cv::Scalar::all(-1),
-      bool draw_image_borders = false);
+      bool draw_image_borders = false,
+      const cv::Scalar& point_color = cv::Scalar::all(-1));
 
   void DrawMatches(
       const std::string& title,
