@@ -30,7 +30,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 rosbuild_add_library(${PROJECT_NAME}
   src/math_util.cpp
   src/trig_util.cpp
-  src/random.cpp)
+  src/random.cpp
+  src/interpolation_1d.cpp
+  )
 rosbuild_link_boost(${PROJECT_NAME} random)
   
 # Tests
