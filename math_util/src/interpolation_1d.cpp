@@ -90,6 +90,17 @@ Interpolation1D::InterpolationType Interpolation1D::interpolationType()
   return interp_type_;
 }
 
+std::string Interpolation1D::interpolationTypeString() const
+{
+  if (interp_type_ == ZERO_ORDER_HOLD) {
+    return "zero_order_hold";
+  } else if (interp_type_ == LINEAR) {
+    return "linear";
+  } else {
+    return "<unknown>";
+  }
+}
+
 void Interpolation1D::setInterpolationType(InterpolationType type)
 {
   interp_type_ = type;

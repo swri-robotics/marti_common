@@ -54,6 +54,7 @@ class Interpolation1D
   void clear();  
 
   InterpolationType interpolationType();
+  std::string interpolationTypeString() const;
   void setInterpolationType(InterpolationType type);
 
   bool readFromParameter(
