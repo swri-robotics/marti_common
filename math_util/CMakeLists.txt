@@ -53,3 +53,14 @@ target_link_libraries(test_random ${PROJECT_NAME})
 rosbuild_add_rostest(launch/trig_util.test)
 rosbuild_add_rostest(launch/math_util.test)
 rosbuild_add_rostest(launch/random.test)
+
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_PATH})
+link_libraries(${PYTHON_LIBRARIES})
+rosbuild_add_library(py_math_util 
+  src/python_modules/py_math_util
+  src/python_modules/py_interpolation_1d.cpp)
+target_link_libraries(py_math_util ${PROJECT_NAME})
+find_package(PythonLibs REQUIRED)
+set_target_properties(py_math_util PROPERTIES OUTPUT_NAME math_util PREFIX "_" SUFFIX ".so")
+rosbuild_add_compile_flags(math_util -g -Wno-missing-field-initializers)
