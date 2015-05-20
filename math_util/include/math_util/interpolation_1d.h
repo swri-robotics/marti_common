@@ -37,13 +37,13 @@
 namespace math_util
 {
 class Interpolation1D
-{
+{  
+ public:
   enum InterpolationType {
     ZERO_ORDER_HOLD,
     LINEAR
   };
-  
- public:
+
   Interpolation1D();
 
   bool appendPoint(double x, double y);
@@ -53,7 +53,7 @@ class Interpolation1D
 
   void clear();  
 
-  InterpolationType getInterpolationType();
+  InterpolationType interpolationType();
   void setInterpolationType(InterpolationType type);
 
   bool readFromParameter(
@@ -126,7 +126,7 @@ double Interpolation1D::eval(double x) const
    size_t i0 = i_mid;
    size_t i1 = i_mid+1;
    double s = (x - x_[i0]) / (x_[i1] - x_[i0]);
-   return (1.0-s)*y_[i0] + s*y_[i0];   
+   return (1.0-s)*y_[i0] + s*y_[i1];   
  } else {
    // We should always have a valid interpolation type, but just in
    // case we print out an error and use a zero order hold.

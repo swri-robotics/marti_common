@@ -85,7 +85,7 @@ void Interpolation1D::clear()
   y_.clear();
 }
 
-Interpolation1D::InterpolationType Interpolation1D::getInterpolationType()
+Interpolation1D::InterpolationType Interpolation1D::interpolationType()
 {
   return interp_type_;
 }
