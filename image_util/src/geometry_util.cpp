@@ -42,8 +42,6 @@
 
 #include <math_util/constants.h>
 
-#include <ros/ros.h>
-
 namespace image_util
 {
   bool Intersects(const BoundingBox& box1, const BoundingBox& box2)
