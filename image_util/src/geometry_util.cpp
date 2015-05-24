@@ -42,32 +42,13 @@
 
 #include <math_util/constants.h>
 
+#include <ros/ros.h>
+
 namespace image_util
 {
   bool Intersects(const BoundingBox& box1, const BoundingBox& box2)
   {
-    // Create points for each corner of box 1
-    cv::Point_<double> n1(box1.x, box1.y);
-    cv::Point_<double> n2(box1.x + box1.width, box1.y + box1.height);
-    cv::Point_<double> n3(box1.x, box1.y + box1.height);
-    cv::Point_<double> n4(box1.x + box1.width, box1.y);
-
-    // Create points for each corner of box 2
-    cv::Point_<double> m1(box2.x, box2.y);
-    cv::Point_<double> m2(box2.x + box2.width, box2.y + box2.height);
-    cv::Point_<double> m3(box2.x, box2.y + box2.height);
-    cv::Point_<double> m4(box2.x + box2.width, box2.y);
-
-    // Return true if any of the corners of one box are contained within the
-    // other box.
-    return box1.contains(m1) ||
-           box1.contains(m2) ||
-           box1.contains(m3) ||
-           box1.contains(m4) ||
-           box2.contains(n1) ||
-           box2.contains(n2) ||
-           box2.contains(n3) ||
-           box2.contains(n4);
+    return (box1 & box2).area() > 0;
   }
 
   double GetOverlappingArea(const cv::Rect& rect, const cv::Mat& rigid_transform)
