@@ -1,4 +1,4 @@
-<package>
+<package format="2">
   <name>opencv_util</name>
   <version>0.0.1</version>
   <description>
@@ -13,11 +13,10 @@
   
   <buildtool_depend>catkin</buildtool_depend>
   
-  <build_depend>opencv2</build_depend>
-  <build_depend>math_util</build_depend>
   <build_depend>build_tools</build_depend>
   
-  <run_depend>opencv2</run_depend>
-  <run_depend>math_util</run_depend>
+  <depend>opencv2</depend>
+  <depend>math_util</depend>
+
 </package>
 
