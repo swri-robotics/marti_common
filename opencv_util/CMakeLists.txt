@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 2.4.6)
 project(opencv_util)
 
-find_package(catkin REQUIRED COMPONENTS 
-  math_util build_tools)
+find_package(catkin REQUIRED COMPONENTS math_util)
 
 find_package(OpenCV REQUIRED)
 
@@ -18,13 +17,6 @@ catkin_package(
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS math_util
 )
-
-execute_process(
-  COMMAND rospack find build_tools
-  ERROR_VARIABLE __null
-  OUTPUT_VARIABLE build_tools_PACKAGE_PATH
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
   
