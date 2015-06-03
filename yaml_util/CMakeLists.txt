@@ -8,16 +8,6 @@ catkin_package(
   LIBRARIES ${PROJECT_NAME} yaml-cpp
 )
 
-execute_process(
-  COMMAND rospack find build_tools
-  ERROR_VARIABLE __null
-  OUTPUT_VARIABLE build_tools_PACKAGE_PATH
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
-
-
-
-
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
 message ("YAML-CPP VERSION: " ${YamlCpp_VERSION})

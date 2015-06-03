@@ -13,8 +13,6 @@
   
   <buildtool_depend>catkin</buildtool_depend>
   
-  <build_depend>build_tools</build_depend>
-  
   <depend>opencv2</depend>
   <depend>math_util</depend>
 
