@@ -16,8 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   math_util
   opencv_util
   image_transport
-  lapackpp
-  build_tools)
+  lapackpp)
 
 find_package(OpenCV)
 find_package(Qt4 REQUIRED)
@@ -46,13 +45,6 @@ catkin_package(
     image_transport
     lapackpp
 )
-
-execute_process(
-  COMMAND rospack find build_tools
-  ERROR_VARIABLE __null
-  OUTPUT_VARIABLE build_tools_PACKAGE_PATH
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS})
 

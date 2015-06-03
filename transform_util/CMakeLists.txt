@@ -9,8 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   gps_common
   diagnostic_msgs
   math_util
-  yaml_util
-  build_tools)
+  yaml_util)
 
 find_package(OpenCV REQUIRED)
 
@@ -27,13 +26,6 @@ catkin_package(
     math_util
     yaml_util
 )
-
-execute_process(
-  COMMAND rospack find build_tools
-  ERROR_VARIABLE __null
-  OUTPUT_VARIABLE build_tools_PACKAGE_PATH
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 

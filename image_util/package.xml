@@ -12,9 +12,7 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
-  
-  <build_depend>build_tools</build_depend>
-  
+
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>roslib</depend>
