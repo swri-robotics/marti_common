@@ -1,4 +1,4 @@
-<package>
+<package format="2">
   <name>transform_util</name>
   <version>0.0.1</version>
   <description>
@@ -14,24 +14,16 @@
   
   <buildtool_depend>catkin</buildtool_depend>
   
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>tf</build_depend>
-  <build_depend>pluginlib</build_depend>
-  <build_depend>gps_common</build_depend>
-  <build_depend>diagnostic_msgs</build_depend>
-  <build_depend>math_util</build_depend>
-  <build_depend>yaml_util</build_depend>
   <build_depend>build_tool</build_depend>
   
-  <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>pluginlib</run_depend>
-  <run_depend>gps_common</run_depend>
-  <run_depend>diagnostic_msgs</run_depend>
-  <run_depend>math_util</run_depend>
-  <run_depend>yaml_util</run_depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>tf</depend>
+  <depend>pluginlib</depend>
+  <depend>gps_common</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>math_util</depend>
+  <depend>yaml_util</depend>
   
   <export>
     <transform_util plugin="${prefix}/transformer_plugins.xml" />
