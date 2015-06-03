@@ -13,8 +13,6 @@
   
   <buildtool_depend>catkin</buildtool_depend>
   
-  <build_depend>build_tool</build_depend>
-  
   <depend>roscpp</depend>
 
 </package>
