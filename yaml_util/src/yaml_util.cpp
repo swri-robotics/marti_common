@@ -122,6 +122,15 @@ namespace yaml_util
     #endif  // YAMLCPP_OLD_API
   }
   
+  YAML::Node Clone(const YAML::Node& node)
+  {
+    #ifndef YAMLCPP_OLD_API
+      return YAML::Clone(node);
+    #else
+      return node.Clone();
+    #endif  // YAMLCPP_OLD_API
+  }
+  
   std::string ToString(double value, int32_t precision)
   {
     std::stringstream ss;
