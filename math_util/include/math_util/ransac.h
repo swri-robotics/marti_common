@@ -54,8 +54,10 @@ namespace math_util
       double max_error,
       double confidence,
       int32_t max_iterations,
-      std::vector<uint32_t>& inliers)
+      std::vector<uint32_t>& inliers, 
+      int32_t& iterations)
     {
+      iterations = 0;
       ModelType best_fit;
       inliers.clear();
       
@@ -73,6 +75,7 @@ namespace math_util
       
       for (int32_t i = 0; i < max_iterations && i < breakout; i++)
       {
+        iterations++;
         std::vector<int32_t> indices;
         rng_->GetUniformRandomSample(0, data.size(), Model::MIN_SIZE, indices);
         

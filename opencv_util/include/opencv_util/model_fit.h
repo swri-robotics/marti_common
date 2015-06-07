@@ -55,6 +55,7 @@ namespace opencv_util
     cv::Mat& inliers1,
     cv::Mat& inliers2,
     std::vector<uint32_t> &good_points,
+    int32_t& iterations,
     double max_error = 1.0,
     double confidence = 0.9,
     int32_t max_iterations = 1000,
