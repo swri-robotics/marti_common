@@ -57,8 +57,9 @@ namespace opencv_util
     // Run RANSAC to robustly fit a rigid transform model to the set of 
     // corresponding points.
     math_util::Ransac<Translation2d> ransac(rng);
+    int32_t iterations;
     model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points);
+      matched_points, max_error, confidence, max_iterations, good_points, iterations);
     
     if (good_points.empty())
     {
@@ -100,6 +101,7 @@ namespace opencv_util
     cv::Mat& inliers1,
     cv::Mat& inliers2,
     std::vector<uint32_t> &good_points,
+    int32_t& iterations,
     double max_error,
     double confidence,
     int32_t max_iterations,
@@ -117,8 +119,9 @@ namespace opencv_util
     // Run RANSAC to robustly fit a rigid transform model to the set of 
     // corresponding points.
     math_util::Ransac<RigidTransform2d> ransac(rng);
+
     model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points);
+      matched_points, max_error, confidence, max_iterations, good_points, iterations);
     
     if (good_points.empty())
     {
@@ -186,8 +189,9 @@ namespace opencv_util
     // Run RANSAC to robustly fit an affine transform model to the set of 
     // corresponding points.
     math_util::Ransac<AffineTransform2d> ransac(rng);
+    int32_t iterations;
     model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points);
+      matched_points, max_error, confidence, max_iterations, good_points, iterations);
     
     // Populate output data.
     bool row_order = points1.rows > 1;
