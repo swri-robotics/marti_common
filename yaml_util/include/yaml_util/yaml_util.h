@@ -31,6 +31,7 @@
 #define YAML_UTIL_YAML_UTIL_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include <yaml-cpp/yaml.h>
 
