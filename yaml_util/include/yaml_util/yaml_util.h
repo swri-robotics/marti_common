@@ -56,7 +56,7 @@ namespace yaml_util
   bool LoadFile(const std::string& path, YAML::Node& yaml);
   bool FindValue(const YAML::Node& node, const std::string& name);
   
-  YAML::Node Clone(const YAML::Node& node);
+  std::auto_ptr<YAML::Node> Clone(const YAML::Node& node);
   
   std::string ToString(double value, int32_t precision);
 }
