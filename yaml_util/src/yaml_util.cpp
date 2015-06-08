@@ -122,10 +122,10 @@ namespace yaml_util
     #endif  // YAMLCPP_OLD_API
   }
   
-  YAML::Node Clone(const YAML::Node& node)
+  std::auto_ptr<YAML::Node> Clone(const YAML::Node& node)
   {
     #ifndef YAMLCPP_OLD_API
-      return YAML::Clone(node);
+      return std::auto_ptr<YAML::Node>(new YAML::Node(YAML::Clone(node)));
     #else
       return node.Clone();
     #endif  // YAMLCPP_OLD_API
