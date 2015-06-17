@@ -11,7 +11,7 @@ if(_not_git)
     #Try SVN
     execute_process(COMMAND svnversion
         OUTPUT_VARIABLE version_rev_string
-        OUTPUT_STRIP_TRAILING_WHITEPSACE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
         RESULT_VARIABLE _not_svn)
     execute_process(COMMAND svn status
         OUTPUT_VARIABLE version_status_string)
