@@ -84,19 +84,19 @@ namespace transform_util
     }
     catch (const tf::LookupException& e)
     {
-      ROS_ERROR("[transformer]: %s", e.what());
+      ROS_ERROR_THROTTLE(2.0, "[transformer]: %s", e.what());
     }
     catch (const tf::ConnectivityException& e)
     {
-      ROS_ERROR("[transformer]: %s", e.what());
+      ROS_ERROR_THROTTLE(2.0, "[transformer]: %s", e.what());
     }
     catch (const tf::ExtrapolationException& e)
     {
-      ROS_ERROR("[transformer]: %s", e.what());
+      ROS_ERROR_THROTTLE(2.0, "[transformer]: %s", e.what());
     }
     catch (...)
     {
-      ROS_ERROR("[transformer]: Exception looking up transform");
+      ROS_ERROR_THROTTLE(2.0, "[transformer]: Exception looking up transform");
     }
 
     return has_transform;

@@ -108,7 +108,7 @@ namespace transform_util
 
     if (!tf_listener_)
     {
-      ROS_WARN("[transform_manager]: TF listener not initialized.");
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: TF listener not initialized.");
       return false;
     }
 
@@ -161,7 +161,7 @@ namespace transform_util
 
       if (!local_xy_util_->Initialized())
       {
-        ROS_WARN("[transform_manager]: Local XY frame has not been initialized.");
+        ROS_WARN_THROTTLE(2.0, "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
 
@@ -173,7 +173,7 @@ namespace transform_util
       target = _tf_frame;
       if (!local_xy_util_->Initialized())
       {
-        ROS_WARN("[transform_manager]: Local XY frame has not been initialized.");
+        ROS_WARN_THROTTLE(2.0, "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
 
@@ -191,14 +191,14 @@ namespace transform_util
         return true;
       }
 
-      ROS_WARN("[transform_manager]: Failed to get tf transform.");
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: Failed to get tf transform.");
       return false;
     }
 
     SourceTargetMap::const_iterator source_iter = transformers_.find(source);
     if (source_iter == transformers_.end())
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
@@ -207,7 +207,7 @@ namespace transform_util
     TransformerMap::const_iterator target_iter = source_iter->second.find(target);
     if (target_iter == source_iter->second.end())
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
@@ -217,7 +217,7 @@ namespace transform_util
 
     if (!transformer)
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
@@ -292,7 +292,7 @@ namespace transform_util
       source = _tf_frame;
       if (!local_xy_util_->Initialized())
       {
-        ROS_WARN("[transform_manager]: Local XY frame has not been initialized.");
+        ROS_WARN_THROTTLE(2.0, "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
     }
@@ -302,7 +302,7 @@ namespace transform_util
       target = _tf_frame;
       if (!local_xy_util_->Initialized())
       {
-        ROS_WARN("[transform_manager]: Local XY frame has not been initialized.");
+        ROS_WARN_THROTTLE(2.0, "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
     }
@@ -315,7 +315,7 @@ namespace transform_util
     SourceTargetMap::const_iterator source_iter = transformers_.find(source);
     if (source_iter == transformers_.end())
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
@@ -324,7 +324,7 @@ namespace transform_util
     TransformerMap::const_iterator target_iter = source_iter->second.find(target);
     if (target_iter == source_iter->second.end())
     {
-      ROS_WARN("[transform_manager]: No transformer for transforming %s to %s",
+      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
           source.c_str(), target.c_str());
 
       return false;
@@ -361,19 +361,19 @@ namespace transform_util
     }
     catch (const tf::LookupException& e)
     {
-      ROS_ERROR("[transform_manager]: %s", e.what());
+      ROS_ERROR_THROTTLE(2.0, "[transform_manager]: %s", e.what());
     }
     catch (const tf::ConnectivityException& e)
     {
-      ROS_ERROR("[transform_manager]: %s", e.what());
+      ROS_ERROR_THROTTLE(2.0, "[transform_manager]: %s", e.what());
     }
     catch (const tf::ExtrapolationException& e)
     {
-      ROS_ERROR("[transform_manager]: %s", e.what());
+      ROS_ERROR_THROTTLE(2.0, "[transform_manager]: %s", e.what());
     }
     catch (...)
     {
-      ROS_ERROR("[transform_manager]: Exception looking up transform");
+      ROS_ERROR_THROTTLE(2.0, "[transform_manager]: Exception looking up transform");
     }
 
     return has_transform;

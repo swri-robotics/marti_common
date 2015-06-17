@@ -87,7 +87,7 @@ namespace transform_util
           tf::StampedTransform tf_transform;
           if (!Transformer::GetTransform(local_xy_frame_, source_frame, time, tf_transform))
           {
-            ROS_ERROR("Failed to get transform from %s to local_xy(%s)",
+            ROS_WARN_THROTTLE(2.0, "Failed to get transform from %s to local_xy(%s)",
                 source_frame.c_str(), local_xy_frame_.c_str());
             return false;
           }
@@ -130,7 +130,7 @@ namespace transform_util
         tf::StampedTransform tf_transform;
         if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
         {
-          ROS_ERROR("Failed to get transform from local_xy(%s) to %s",
+          ROS_WARN_THROTTLE(2.0, "Failed to get transform from local_xy(%s) to %s",
               local_xy_frame_.c_str(), target_frame.c_str());
           return false;
         }
@@ -146,11 +146,11 @@ namespace transform_util
       }
       else
       {
-        ROS_WARN("Failed to initialize LocalXY origin");
+        ROS_WARN_THROTTLE(2.0, "Failed to initialize LocalXY origin");
       }
     }
 
-    ROS_WARN("Failed to get UTM transform");
+    ROS_WARN_THROTTLE(2.0, "Failed to get UTM transform");
     return false;
   }
 
