@@ -69,7 +69,7 @@ namespace transform_util
 
     if (!initialized_)
     {
-      ROS_WARN("Wgs84Transformer not initialized");
+      ROS_WARN_THROTTLE(2.0, "Wgs84Transformer not initialized");
       return false;
     }
 
@@ -78,7 +78,7 @@ namespace transform_util
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(local_xy_frame_, source_frame , time, tf_transform))
       {
-        ROS_WARN("Failed to get transform between %s and %s",
+        ROS_WARN_THROTTLE(2.0, "Failed to get transform between %s and %s",
             source_frame.c_str(), local_xy_frame_.c_str());
         return false;
       }
@@ -92,7 +92,7 @@ namespace transform_util
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
       {
-        ROS_WARN("Failed to get transform between %s and %s",
+        ROS_WARN_THROTTLE(2.0, "Failed to get transform between %s and %s",
             local_xy_frame_.c_str(), target_frame.c_str());
         return false;
       }
@@ -102,7 +102,7 @@ namespace transform_util
       return true;
     }
 
-    ROS_ERROR("Failed to get WGS84 transform.");
+    ROS_WARN_THROTTLE(2.0, "Failed to get WGS84 transform.");
     return false;
   }
 
