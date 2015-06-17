@@ -76,6 +76,7 @@ namespace transform_util
     rho_lon_(0),
     cos_heading_(0),
     sin_heading_(0),
+    frame_(""),
     initialized_(false)
   {
     Initialize();
@@ -90,10 +91,15 @@ namespace transform_util
     rho_lon_(0),
     cos_heading_(0),
     sin_heading_(0),
+    frame_(""),
     initialized_(false)
   {
     ros::NodeHandle node;
 
+    if (node.getParam("/local_xy_frame", frame_)) {
+      ROS_INFO("Using XY frame at /local_xy_frame: %s", frame_.c_str());
+    }
+    
     ROS_INFO("Subscribing to /local_xy_origin");
     origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
   }
@@ -126,7 +132,15 @@ namespace transform_util
       reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
       reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
       reference_altitude_ = origin->altitude;
-      frame_ = origin->header.frame_id;
+
+      if (frame_.empty()) {
+        frame_ = origin->header.frame_id;
+      } else if (frame_ != origin->header.frame_id) {
+        ROS_WARN("local_xy_frame (%s) was set by parameter and "
+                 "does not match local_xy_origin header (%s).",
+                 frame_.c_str(),
+                 origin->header.frame_id.c_str());        
+      }
       Initialize();
     }
     origin_sub_.shutdown();

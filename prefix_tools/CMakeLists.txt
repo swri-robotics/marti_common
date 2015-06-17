@@ -7,11 +7,9 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-set(ROS_BUILD_TYPE RelWithDebInfo)
+#set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_init()
-rosbuild_find_ros_package(build_tools)
-include(${build_tools_PACKAGE_PATH}/scripts/build_common.cmake)
 
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -30,5 +28,3 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
-
-rosbuild_add_executable(can_bus_example src/nodes/can_bus_example.cpp)
