@@ -38,7 +38,8 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <lapackpp.h>
+#include <Eigen/Dense>
+#include <Eigen/SVD>
 
 #include <math_util/constants.h>
 
@@ -124,110 +125,93 @@ namespace image_util
         return ellipse;
       }
 
-      LaGenMatDouble A(3, 3);
-      for (int32_t r = 0; r < 3; r++)
+      Eigen::Matrix3d A;
+      for (size_t r = 0; r < 3; r++)
       {
-        for (int32_t c = 0; c < 3; c++)
+        for (size_t c = 0; c < 3; c++)
         {
           A(r, c) = ellipsoid.at<float>(r, c);
         }
       }
 
       // Specify the main vector directions (x and y)
-      LaVectorDouble ax1 = LaVectorDouble::zeros(3, 1);
-      LaVectorDouble ax2 = LaVectorDouble::zeros(3, 1);
-      ax1(0) = 1;
-      ax2(1) = 1;
+      Eigen::Vector3d ax1;
+      Eigen::Vector3d ax2;
+      ax1 << 1, 0, 0;
+      ax2 << 0, 1, 0;
 
       // Initialize the normal vector (here the normal vector, in the state
       // space is in the theta direction).
-      LaVectorDouble n_ax = LaVectorDouble::zeros(3, 1);
-      n_ax(2) = 1;
+      Eigen::Vector3d n_ax;
+      n_ax << 0, 0, 1;
 
       ///////////////////////
       // Calculate A prime //
       ///////////////////////
 
-      LaGenMatDouble A_sym_temp = A;
-      LaGenMatDouble temp1 = LaGenMatDouble::eye(A.rows(), A.cols());
-      Blas_Mat_Trans_Mat_Mult(A, temp1, A_sym_temp, 1.0, 1.0);
+      Eigen::Matrix3d A_sym_temp = A.transpose() + A;
 
       // N_ax_temp = (n_ax*n_ax')
-      LaGenMatDouble N_ax_temp = LaGenMatDouble::zeros(3, 3);
-      Blas_R1_Update(N_ax_temp, n_ax, n_ax);
+      Eigen::Matrix3d N_ax_temp = n_ax * n_ax.transpose();
 
       // A_prime_1 = A_sym_temp*N_ax_temp
       //           = (A+A')*(n_ax*n_ax')
-      LaGenMatDouble A_prime_1 = LaGenMatDouble::zeros(3, 3);
-      Blas_Mat_Mat_Mult(A_sym_temp, N_ax_temp, A_prime_1);
+      Eigen::Matrix3d A_prime_1 = A_sym_temp * N_ax_temp;
 
       // A_prime_2 = A_prime_1*A_sym_temp
       //           = (A+A')*(n_ax*n_ax')*(A+A')
-      LaGenMatDouble A_prime_2 = LaGenMatDouble::zeros(3, 3);
-      Blas_Mat_Mat_Mult(A_prime_1, A_sym_temp, A_prime_2);
+      Eigen::Matrix3d A_prime_2 = A_prime_1 * A_sym_temp;
 
       // scale_1 = n_ax'*A
-      LaGenMatDouble scale_1(1, 3);
-      Blas_Mat_Trans_Mat_Mult(n_ax, A, scale_1);
+      Eigen::RowVector3d scale_1 = n_ax.transpose() * A;
 
       // scale_2 = (scale_1*n_ax)*-4
       //         = (n_ax'*A*n_ax)*-4
-      LaGenMatDouble scale_2(1, 1);
-      Blas_Mat_Mat_Mult(scale_1, n_ax, scale_2);
-      scale_2.scale(-4.0);
-
-      // Convert from matrix to scalar
-      double scale = scale_2(0, 0);
+      double scale = (scale_1 * n_ax)(0,0) * -4.0;
 
       // A_temp = scale*A_temp
       //        = scale_2*A = -4*(n_ax'*A*n_ax)*A
-      LaGenMatDouble A_temp = A;
-      A_temp.scale(scale);
+      Eigen::Matrix3d A_temp = A * -4.0;
 
       // Aprime = A_prime_2 + A_temp
       //        = (A+A')*(n_ax*n_ax')*(A+A') - 4*(n_ax'*A*n_ax)*A
-      LaGenMatDouble Aprime(3, 3);
-      Aprime = A_prime_2 + A_temp;
+      Eigen::Matrix3d Aprime = A_prime_2 + A_temp;
 
       ///////////////////////
       // Calculate C prime //
       ///////////////////////
 
       // C_temp = n_ax'*A
-      LaGenMatDouble C_temp(1, 3);
-      Blas_Mat_Trans_Mat_Mult(n_ax, A, C_temp);
+      Eigen::RowVector3d C_temp = n_ax.transpose() * A;
 
       // Cprime = -4.0*C_temp*n_ax
       //        = -4.0*n_ax'*A*n_ax
-      LaGenMatDouble Cprime(1, 1);
-      Blas_Mat_Mat_Mult(C_temp, n_ax, Cprime, -4.0);
-
-      double cp = Cprime(0, 0);
+      double cp = (-4.0 * C_temp) * n_ax;
 
       // Bprime = Aprime/Cprime;
-      LaGenMatDouble Bprime = Aprime;
-      Bprime.scale(1.0 / cp);
+      Eigen::Matrix3d Bprime = Aprime / cp;
 
       // Jp = axes_def;
       //    = [ax1(:),ax2(:)] = [1,0;0,1;0,0];
-      LaGenMatDouble Jp = LaGenMatDouble::eye(3, 2);
+      Eigen::Matrix<double, 3, 2> Jp;
+      Jp << 1, 0,
+            0, 1,
+            0, 0;
 
       ///////////////////////
       // Calculate D prime //
       ///////////////////////
 
       // Dprime_temp = Jp'*Bprime
-      LaGenMatDouble Dprime_temp(2, 3);
-      Blas_Mat_Trans_Mat_Mult(Jp, Bprime, Dprime_temp);
+      Eigen::Matrix<double, 2, 3> Dprime_temp = Jp.transpose() * Bprime;
 
       // Dprime = Dprime_temp * Jp
       //        = Jp'*Bprime*Jp
-      LaGenMatDouble Dprime(2, 2);
-      Blas_Mat_Mat_Mult(Dprime_temp, Jp, Dprime);
+      Eigen::Matrix2d Dprime = Dprime_temp * Jp;
 
-      for (int32_t r = 0; r < 2; r++)
+      for (size_t r = 0; r < 2; r++)
       {
-        for (int32_t c = 0; c < 2; c++)
+        for (size_t c = 0; c < 2; c++)
         {
           if (Dprime(r, c) != Dprime(r, c))
           {
@@ -257,27 +241,26 @@ namespace image_util
     if (ellipse.rows == 2 && ellipse.cols == 2 && ellipse.type() == CV_32FC1 &&
         num_points > 2)
     {
-      LaGenMatDouble Dprime(2, 2);
+      Eigen::Matrix2d Dprime;
       Dprime(0, 0) = ellipse.at<float>(0, 0);
       Dprime(0, 1) = ellipse.at<float>(0, 1);
       Dprime(1, 0) = ellipse.at<float>(1, 0);
       Dprime(1, 1) = ellipse.at<float>(1, 1);
 
-      LaVectorDouble Sigma(2);
-      LaGenMatDouble U(2, 2);
-      LaGenMatDouble Vt(2, 2);
+      Eigen::JacobiSVD<Eigen::Matrix2d> svd(Dprime, Eigen::ComputeFullV);
 
-      LaSVD_IP(Dprime, Sigma, U, Vt);
+      Eigen::Vector2d Sigma = svd.singularValues();
+      Eigen::Matrix2d Vt = svd.matrixV().transpose();
 
-      double xprime_scale = sqrt(Sigma(0));
-      double yprime_scale = sqrt(Sigma(1));
+      double xprime_scale = std::sqrt(Sigma(0));
+      double yprime_scale = std::sqrt(Sigma(1));
 
       if (xprime_scale <= 0 || yprime_scale <= 0)
       {
         return perimeter;
       }
 
-      LaGenMatDouble Xp1 = LaGenMatDouble::zeros(num_points, 2);
+      Eigen::MatrixX2d Xp1(num_points, 2);
       for (int32_t i = 0; i < num_points; i++)
       {
         double phi =
@@ -288,10 +271,8 @@ namespace image_util
         Xp1(i, 1) = yprime_scale * std::sin(phi) * scale;
       }
 
-      LaGenMatDouble Xell(num_points, 2);
-
       // Xell = Xp1*(V')'
-      Blas_Mat_Mat_Trans_Mult(Xp1, Vt, Xell);
+      Eigen::MatrixX2d Xell = Xp1 * Vt;
 
       perimeter.resize(num_points);
       for (int32_t i = 0; i < num_points; i++)
