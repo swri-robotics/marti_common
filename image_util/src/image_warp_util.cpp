@@ -28,6 +28,7 @@
 // *****************************************************************************
 
 #include <image_util/image_warp_util.h>
+#include <opencv_util/model_fit.h>
 
 #include <algorithm>
 
@@ -336,17 +337,16 @@ namespace image_util
 
     ROS_INFO("Found %d fundamental inliers.", fund_inliers1.rows);
 
-    cv::Mat T_affine;
-    cv::Mat T_rigid;
     cv::Mat inliers1;
     cv::Mat inliers2;
-    double rms_error;
-    T_affine =  ComputeLooseAffine2DTransform(
-        fund_inliers1, fund_inliers2, inliers1, inliers2, T_rigid, rms_error);
+    std::vector<uint32_t> good_points;
+    
+    cv::Mat affine = opencv_util::FindAffineTransform2d(
+      fund_inliers1, fund_inliers2, inliers1, inliers2, good_points, 30.0);
 
-    if (T_affine.empty())
+    if (affine.empty())
     {
-      ROS_ERROR("Failed to comput loose 2D rigid transform.");
+      ROS_ERROR("Failed to compute 2D affine transform.");
       return false;
     }
 
@@ -365,10 +365,21 @@ namespace image_util
   {
     cv::Mat inliers1;
     cv::Mat inliers2;
-    T_affine = ComputeLooseAffine2DTransform(
-        pts1, pts2, inliers1, inliers2, T_rigid, rms_error);
+    std::vector<uint32_t> good_points;
+    
+    T_affine = opencv_util::FindAffineTransform2d(
+      pts1, pts2, inliers1, inliers2, good_points, 30.0);
+    
+    int32_t iterations;
+    T_rigid = opencv_util::FindRigidTransform2d(
+      pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
+    
+    cv::Mat inliers1_t;
+    cv::transform(inliers1, inliers1_t, T_rigid);
+    double n = good_points.size();
+    rms_error = cv::norm(inliers2, inliers1_t, cv::NORM_L2) / std::sqrt(n);
 
-    if (T_affine.empty())
+    if (T_rigid.empty())
     {
       return false;
     }
