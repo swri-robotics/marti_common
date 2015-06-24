@@ -9,18 +9,20 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   cv_bridge
   tf
+  cmake_modules
   geometry_msgs
   image_geometry
   nav_msgs
   camera_calibration_parsers
   math_util
   opencv_util
-  image_transport
-  lapackpp)
+  image_transport)
 
 find_package(OpenCV)
 find_package(Qt4 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
+find_package(Eigen REQUIRED)
+add_definitions(${EIGEN_DEFINITIONS})
 
 include(${QT_USE_FILE})
 
@@ -43,13 +45,11 @@ catkin_package(
     math_util
     opencv_util
     image_transport
-    lapackpp
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} 
-  src/motion_estimation.cpp 
   src/image_normalization.cpp 
   src/rolling_normalization.cpp 
   src/image_matching.cpp

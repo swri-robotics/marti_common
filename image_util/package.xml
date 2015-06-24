@@ -20,6 +20,7 @@
   <depend>nodelet</depend>
   <depend>cv_bridge</depend>
   <depend>tf</depend>
+  <depend>cmake_modules</depend>
   <depend>geometry_msgs</depend>
   <depend>image_geometry</depend>
   <depend>nav_msgs</depend>
@@ -27,7 +28,6 @@
   <depend>math_util</depend>
   <depend>opencv_util</depend>
   <depend>image_transport</depend>
-  <depend>lapackpp</depend>
 
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />
