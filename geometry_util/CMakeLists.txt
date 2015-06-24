@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 2.4.6)
 project(geometry_util)
 
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp cmake_modules)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(GEOS REQUIRED)
 find_package(OpenCV)
+
+find_package(Eigen REQUIRED)
+add_definitions(${EIGEN_DEFINITIONS})
 
 catkin_package(
   INCLUDE_DIRS include
@@ -13,12 +16,13 @@ catkin_package(
   CATKIN_DEPENDS roscpp
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   src/intersection.cpp
   src/polygon.cpp
-  src/geometry_util.cpp)
+  src/geometry_util.cpp
+  src/cubic_spline.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${GEOS_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
