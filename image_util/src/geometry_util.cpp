@@ -171,7 +171,7 @@ namespace image_util
 
       // A_temp = scale*A_temp
       //        = scale_2*A = -4*(n_ax'*A*n_ax)*A
-      Eigen::Matrix3d A_temp = A * -4.0;
+      Eigen::Matrix3d A_temp = A * scale;
 
       // Aprime = A_prime_2 + A_temp
       //        = (A+A')*(n_ax*n_ax')*(A+A') - 4*(n_ax'*A*n_ax)*A
