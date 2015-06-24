@@ -23,8 +23,6 @@
   <depend package="opencv_util"/>
   <depend package="image_transport"/>
   
-  <depend package="lapackpp" />
-  
   <rosdep name="opencv2.3"/>
   <rosdep name="qt4"/>
   

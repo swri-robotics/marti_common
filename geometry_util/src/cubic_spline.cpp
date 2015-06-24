@@ -29,7 +29,7 @@
 
 #include <geometry_util/cubic_spline.h>
 
-#include <lapackpp.h>
+#include <Eigen/Dense>
 
 namespace geometry_util
 {
@@ -72,9 +72,9 @@ namespace geometry_util
       s[i] /= totalDistance;
     }
 
-    LaGenMatDouble u(num_points, 2);
-    LaGenMatDouble A(num_points, num_points);
-    LaGenMatDouble z(num_points, 2);
+    Eigen::MatrixX2d u(num_points, 2);
+    Eigen::MatrixXd A(num_points, num_points);
+    Eigen::MatrixX2d z(num_points, 2);
 
     // Set up the z0 equation.
     u(0, 0) = 0;
@@ -119,7 +119,7 @@ namespace geometry_util
     A(num_points - 1, num_points - 1) = 1;
 
     // Solve Az = u
-    LaLinearSolve(A, z, u);
+    z = A.colPivHouseholderQr().solve(u);
 
     for (size_t i = 0; i < num_points - 1; i++)
     {

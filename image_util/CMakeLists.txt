@@ -17,15 +17,23 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 find_package(OpenCV)
-include_directories(${OpenCV_INCLUDE_DIRS})
+
+find_package(Eigen REQUIRED)
+add_definitions(${EIGEN_DEFINITIONS})
 
 find_package(Qt4 REQUIRED)
 
+# The Boost Random library headers and namespaces changed between version
+# 1.46 and 1.47
+find_package(Boost COMPONENTS random) 
+if(${Boost_LIB_VERSION} MATCHES "1_46*")
+  add_definitions( -DBOOST_1_46 )
+endif(${Boost_LIB_VERSION} MATCHES "1_46*")
+
 include(${QT_USE_FILE})
-include_directories(${QT_INCLUDE_DIR})
+include_directories(${QT_INCLUDE_DIR} ${EIGEN_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 rosbuild_add_library(${PROJECT_NAME} 
-  src/motion_estimation.cpp 
   src/image_normalization.cpp 
   src/rolling_normalization.cpp 
   src/image_matching.cpp
@@ -33,6 +41,7 @@ rosbuild_add_library(${PROJECT_NAME}
   src/geometry_util.cpp
   src/image_warp_util.cpp)
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} ${OpenCV_LIBRARIES})
+rosbuild_link_boost(${PROJECT_NAME} random)
 
 rosbuild_add_library(${PROJECT_NAME}_nodelets
   src/nodelets/rotate_image_nodelet.cpp
