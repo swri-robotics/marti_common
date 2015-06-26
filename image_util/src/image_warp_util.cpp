@@ -341,8 +341,9 @@ namespace image_util
     cv::Mat inliers2;
     std::vector<uint32_t> good_points;
     
+    int32_t iterations;
     cv::Mat affine = opencv_util::FindAffineTransform2d(
-      fund_inliers1, fund_inliers2, inliers1, inliers2, good_points, 30.0);
+      fund_inliers1, fund_inliers2, inliers1, inliers2, good_points, iterations, 30.0);
 
     if (affine.empty())
     {
@@ -367,10 +368,10 @@ namespace image_util
     cv::Mat inliers2;
     std::vector<uint32_t> good_points;
     
-    T_affine = opencv_util::FindAffineTransform2d(
-      pts1, pts2, inliers1, inliers2, good_points, 30.0);
-    
     int32_t iterations;
+    T_affine = opencv_util::FindAffineTransform2d(
+      pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
+    
     T_rigid = opencv_util::FindRigidTransform2d(
       pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
     
