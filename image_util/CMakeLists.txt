@@ -9,18 +9,28 @@ find_package(catkin REQUIRED COMPONENTS
   nodelet
   cv_bridge
   tf
+  cmake_modules
   geometry_msgs
   image_geometry
   nav_msgs
   camera_calibration_parsers
   math_util
   opencv_util
-  image_transport
-  lapackpp)
+  image_transport)
 
 find_package(OpenCV)
 find_package(Qt4 REQUIRED)
-find_package(Boost REQUIRED COMPONENTS filesystem system)
+find_package(Boost REQUIRED COMPONENTS filesystem system random)
+
+# The Boost Random library headers and namespaces changed between version
+# 1.46 and 1.47
+find_package(Boost COMPONENTS random) 
+if(${Boost_LIB_VERSION} MATCHES "1_46*")
+  add_definitions( -DBOOST_1_46 )
+endif(${Boost_LIB_VERSION} MATCHES "1_46*")
+
+find_package(Eigen REQUIRED)
+add_definitions(${EIGEN_DEFINITIONS})
 
 include(${QT_USE_FILE})
 
@@ -43,20 +53,18 @@ catkin_package(
     math_util
     opencv_util
     image_transport
-    lapackpp
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} 
-  src/motion_estimation.cpp 
   src/image_normalization.cpp 
   src/rolling_normalization.cpp 
   src/image_matching.cpp
   src/draw_util.cpp
   src/geometry_util.cpp
   src/image_warp_util.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/rotate_image_nodelet.cpp
@@ -92,10 +100,10 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(test_motion_estimation ${PROJECT_NAME})
 
   add_rostest_gtest(image_warp_tests launch/warp_util.test test/image_warp_tests.cpp)
-  target_link_libraries(image_warp_tests ${PROJECT_NAME} ${Boost_LIBRARIES})
+  target_link_libraries(image_warp_tests ${PROJECT_NAME})
 
   add_rostest_gtest(image_normalization_tests launch/image_normalization.test test/image_normalization_tests.cpp)
-  target_link_libraries(image_normalization_tests ${PROJECT_NAME} ${Boost_LIBRARIES})
+  target_link_libraries(image_normalization_tests ${PROJECT_NAME})
 endif()
 
 install(DIRECTORY include/${PROJECT_NAME}/

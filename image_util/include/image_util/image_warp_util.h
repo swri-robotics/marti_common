@@ -47,7 +47,6 @@
 #include <opencv2/stitching/detail/warpers.hpp>
 
 // RANGER Libraries
-#include <image_util/motion_estimation.h>
 #include <image_util/image_matching.h>
 
 namespace image_util

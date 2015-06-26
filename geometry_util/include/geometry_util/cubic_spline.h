@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2015, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,78 +27,13 @@
 //
 // *****************************************************************************
 
-#include <transform_util/transformer.h>
+#include <vector>
+#include <opencv2/core/core.hpp>
 
-namespace transform_util
+namespace geometry_util
 {
-  Transformer::Transformer() : initialized_(false)
-  {
-  }
-
-  Transformer::~Transformer()
-  {
-  }
-
-  void Transformer::Initialize(
-      const boost::shared_ptr<tf::TransformListener> tf)
-  {
-    tf_listener_ = tf;
-    initialized_ = Initialize();
-  }
-
-  bool Transformer::Initialize()
-  {
-    return true;
-  }
-
-  bool Transformer::GetTransform(
-      const std::string& target_frame,
-      const std::string& source_frame,
-      const ros::Time& time,
-      tf::StampedTransform& transform) const
-  {
-    if (!tf_listener_)
-    {
-      return false;
-    }
-
-    bool has_transform = false;
-    try
-    {
-      if (tf_listener_->frameExists(target_frame) &&
-          tf_listener_->frameExists(source_frame) &&
-          tf_listener_->waitForTransform(
-          target_frame,
-          source_frame,
-          time,
-          ros::Duration(0.01)))
-      {
-        tf_listener_->lookupTransform(
-            target_frame,
-            source_frame,
-            time,
-            transform);
-
-        has_transform = true;
-      }
-    }
-    catch (const tf::LookupException& e)
-    {
-      ROS_ERROR_THROTTLE(2.0, "[transformer]: %s", e.what());
-    }
-    catch (const tf::ConnectivityException& e)
-    {
-      ROS_ERROR_THROTTLE(2.0, "[transformer]: %s", e.what());
-    }
-    catch (const tf::ExtrapolationException& e)
-    {
-      ROS_ERROR_THROTTLE(2.0, "[transformer]: %s", e.what());
-    }
-    catch (...)
-    {
-      ROS_ERROR_THROTTLE(2.0, "[transformer]: Exception looking up transform");
-    }
-
-    return has_transform;
-  }
+  bool CubicSplineInterpolation(
+    const std::vector<cv::Vec2d>& points,
+    double delta,
+    std::vector<std::vector<cv::Vec2d> >& splines);
 }
