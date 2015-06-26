@@ -29,9 +29,6 @@
 
 #include <opencv_util/model_fit.h>
 
-#include <opencv_util/models.h>
-#include <math_util/ransac.h>
-
 namespace opencv_util
 {
   cv::Mat FindTranslation2d(
@@ -40,59 +37,15 @@ namespace opencv_util
     cv::Mat& inliers1,
     cv::Mat& inliers2,
     std::vector<uint32_t> &good_points,
+    int32_t& iterations,
     double max_error,
     double confidence,
     int32_t max_iterations,
     math_util::RandomGeneratorPtr rng)
   {
-    cv::Mat model;
-    
-    // Put data into the expected format.
-    std::vector<cv::Vec4f> matched_points;
-    if (!ConvertToVec4f(points1, points2, matched_points))
-    {
-      return model;
-    }
-    
-    // Run RANSAC to robustly fit a rigid transform model to the set of 
-    // corresponding points.
-    math_util::Ransac<Translation2d> ransac(rng);
-    int32_t iterations;
-    model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points, iterations);
-    
-    if (good_points.empty())
-    {
-      return model;
-    }
-    
-    // Populate output data.
-    bool row_order = points1.rows > 1;
-    if (row_order)
-    {
-      inliers1 = cv::Mat(good_points.size(), 1, CV_32FC2);
-      inliers2 = cv::Mat(good_points.size(), 1, CV_32FC2);
-      for (size_t i = 0; i < good_points.size(); ++i)
-      {
-        inliers1.at<cv::Vec2f>(i, 0) = points1.at<cv::Vec2f>(good_points[i], 0);
-        inliers2.at<cv::Vec2f>(i, 0) = points2.at<cv::Vec2f>(good_points[i], 0);
-      }
-    }
-    else
-    {
-      inliers1 = cv::Mat(1, good_points.size(), CV_32FC2);
-      inliers2 = cv::Mat(1, good_points.size(), CV_32FC2);
-      for (size_t i = 0; i < good_points.size(); ++i)
-      {
-        inliers1.at<cv::Vec2f>(0, i) = points1.at<cv::Vec2f>(0, good_points[i]);
-        inliers2.at<cv::Vec2f>(0, i) = points2.at<cv::Vec2f>(0, good_points[i]);
-      }
-    }
-    
-    // Calculate the refined transform using least squares on the inlier points.
-    //model = FitTranslation2d(inliers1, inliers2);
-
-    return model;
+    return FindModel2d<Translation2d>(
+      points1, points2, inliers1, inliers2, good_points, iterations, max_error,
+      confidence, max_iterations, rng);
   }
 
   cv::Mat FindRigidTransform2d(
@@ -107,62 +60,15 @@ namespace opencv_util
     int32_t max_iterations,
     math_util::RandomGeneratorPtr rng)
   {
-    cv::Mat model;
-    
-    // Put data into the expected format.
-    std::vector<cv::Vec4f> matched_points;
-    if (!ConvertToVec4f(points1, points2, matched_points))
-    {
-      return model;
-    }
-    
-    // Run RANSAC to robustly fit a rigid transform model to the set of 
-    // corresponding points.
-    math_util::Ransac<RigidTransform2d> ransac(rng);
-
-    model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points, iterations);
-    
-    if (good_points.empty())
-    {
-      return model;
-    }
-    
-    // Populate output data.
-    bool row_order = points1.rows > 1;
-    if (row_order)
-    {
-      inliers1 = cv::Mat(good_points.size(), 1, CV_32FC2);
-      inliers2 = cv::Mat(good_points.size(), 1, CV_32FC2);
-      for (size_t i = 0; i < good_points.size(); ++i)
-      {
-        inliers1.at<cv::Vec2f>(i, 0) = points1.at<cv::Vec2f>(good_points[i], 0);
-        inliers2.at<cv::Vec2f>(i, 0) = points2.at<cv::Vec2f>(good_points[i], 0);
-      }
-    }
-    else
-    {
-      inliers1 = cv::Mat(1, good_points.size(), CV_32FC2);
-      inliers2 = cv::Mat(1, good_points.size(), CV_32FC2);
-      for (size_t i = 0; i < good_points.size(); ++i)
-      {
-        inliers1.at<cv::Vec2f>(0, i) = points1.at<cv::Vec2f>(0, good_points[i]);
-        inliers2.at<cv::Vec2f>(0, i) = points2.at<cv::Vec2f>(0, good_points[i]);
-      }
-    }
-    
-    // Calculate the refined transform using least squares on the inlier points.
-    //model = FitRigidTransform2d(inliers1, inliers2);
-
-    return model;
+    return FindModel2d<RigidTransform2d>(
+      points1, points2, inliers1, inliers2, good_points, iterations, max_error,
+      confidence, max_iterations, rng);
   }
   
   cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2)
   {
     cv::Mat transform;
     
-
-
     return transform;
   }
   
@@ -172,56 +78,34 @@ namespace opencv_util
     cv::Mat& inliers1,
     cv::Mat& inliers2,
     std::vector<uint32_t> &good_points,
+    int32_t& iterations,
     double max_error,
     double confidence,
     int32_t max_iterations,
     math_util::RandomGeneratorPtr rng)
   {
-    cv::Mat model;
-    
-    // Put data into the expected format.
-    std::vector<cv::Vec4f> matched_points;
-    if (!ConvertToVec4f(points1, points2, matched_points))
-    {
-      return model;
-    }
-    
-    // Run RANSAC to robustly fit an affine transform model to the set of 
-    // corresponding points.
-    math_util::Ransac<AffineTransform2d> ransac(rng);
-    int32_t iterations;
-    model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points, iterations);
-    
-    // Populate output data.
-    bool row_order = points1.rows > 1;
-    if (row_order)
-    {
-      inliers1 = cv::Mat(good_points.size(), 1, CV_32FC2);
-      inliers2 = cv::Mat(good_points.size(), 1, CV_32FC2);
-      for (size_t i = 0; i < good_points.size(); ++i)
-      {
-        inliers1.at<cv::Vec2f>(i, 0) = points1.at<cv::Vec2f>(good_points[i], 0);
-        inliers2.at<cv::Vec2f>(i, 0) = points2.at<cv::Vec2f>(good_points[i], 0);
-      }
-    }
-    else
-    {
-      inliers1 = cv::Mat(1, good_points.size(), CV_32FC2);
-      inliers2 = cv::Mat(1, good_points.size(), CV_32FC2);
-      for (size_t i = 0; i < good_points.size(); ++i)
-      {
-        inliers1.at<cv::Vec2f>(0, i) = points1.at<cv::Vec2f>(0, good_points[i]);
-        inliers2.at<cv::Vec2f>(0, i) = points2.at<cv::Vec2f>(0, good_points[i]);
-      }
-    }
-    
-    // Calculate the refined transform using least squares on the inlier points.
-    //model = FitAffineTransform2d(inliers1, inliers2);
-
-    return model;
+    return FindModel2d<AffineTransform2d>(
+      points1, points2, inliers1, inliers2, good_points, iterations, max_error,
+      confidence, max_iterations, rng);
   }
-    
+
+  cv::Mat FindHomography(
+    const cv::Mat& points1, 
+    const cv::Mat& points2,
+    cv::Mat& inliers1,
+    cv::Mat& inliers2,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t max_iterations,
+    math_util::RandomGeneratorPtr rng)
+  {
+    return FindModel2d<Homography>(
+      points1, points2, inliers1, inliers2, good_points, iterations, max_error,
+      confidence, max_iterations, rng);
+  }
+
   cv::Mat FitAffineTransform2d(const cv::Mat& points1, const cv::Mat& points2)
   {
     cv::Mat transform;

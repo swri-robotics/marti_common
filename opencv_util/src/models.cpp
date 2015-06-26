@@ -33,6 +33,45 @@
 
 namespace opencv_util
 {
+  bool Homography::GetModel(const std::vector<T>& data, M& model)
+  {
+    if (data.size() != MIN_SIZE)
+    {
+      return false;
+    }
+    
+    // TODO(malban): Test to make sure points aren't degenerate?
+    
+    cv::Point2f src[MIN_SIZE];
+    cv::Point2f dst[MIN_SIZE];
+    
+    for (int32_t i = 0; i < MIN_SIZE; i++)
+    {
+      src[i].x = data[i][0];
+      src[i].y = data[i][1];
+      dst[i].x = data[i][2];
+      dst[i].y = data[i][3];
+    }
+    
+    model = cv::getPerspectiveTransform(src, dst);
+    
+    return true;
+  }
+  
+  double Homography::GetError(const T& data, const M& model)
+  {
+    cv::Mat src(1, 1, CV_32FC2);
+    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
+    
+    cv::Mat dst;
+    cv::perspectiveTransform(src, dst, model);
+    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
+    
+    return std::sqrt(
+      std::pow(data[2] - estimated[0], 2) + 
+      std::pow(data[3] - estimated[1], 2));
+  }
+
   bool AffineTransform2d::GetModel(const std::vector<T>& data, M& model)
   {
     if (data.size() != MIN_SIZE)
