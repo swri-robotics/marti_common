@@ -37,6 +37,17 @@
 namespace opencv_util
 {
 
+  class Homography
+  {
+  public:
+    typedef cv::Vec4f T;
+    typedef cv::Mat M;
+    enum { MIN_SIZE = 4 };
+    
+    static bool GetModel(const std::vector<T>& data, M& model);
+    static double GetError(const T& data, const M& model);
+  };
+
   class AffineTransform2d
   {
   public:
