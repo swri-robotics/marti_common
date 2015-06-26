@@ -13,6 +13,7 @@
   <depend package="nodelet"/>
   <depend package="roscpp"/> 
   <depend package="roslib"/>
+  <depend package="cmake_modules" />
   <depend package="cv_bridge"/>
   <depend package="tf" />
   <depend package="geometry_msgs" />
