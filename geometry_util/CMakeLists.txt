@@ -9,7 +9,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(GEOS REQUIRED)
 find_package(OpenCV)
 
-include_directories(include ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS})
+find_package(cmake_modules REQUIRED)
+find_package(Eigen REQUIRED)
+add_definitions(${EIGEN_DEFINITIONS})
+
+include_directories(include ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   src/intersection.cpp
