@@ -33,16 +33,22 @@
 
 #include <ros/ros.h>
 
+#ifdef BOOST_1_46
+namespace boost_random = boost;
+#else
+namespace boost_random = boost::random;
+#endif
+
 TEST(RandomTests, GetUniformRandomSample)
 {
-  boost::random::mt19937 gen;
+  boost_random::mt19937 gen;
 
   std::vector<int32_t> sample;
-  math_util::GetUniformRandomSample<boost::random::mt19937>(gen, 0, 100, 10, sample);
+  math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 10, sample);
   
   EXPECT_EQ(10, sample.size());
   
-  math_util::GetUniformRandomSample<boost::random::mt19937>(gen, 0, 100, 90, sample);
+  math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 90, sample);
   EXPECT_EQ(90, sample.size());
 }
 
