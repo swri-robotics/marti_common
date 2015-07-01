@@ -40,7 +40,6 @@
 #include <boost/filesystem.hpp>
 
 #include <image_util/image_normalization.h>
-#include <image_util/motion_estimation.h>
 #include <image_util/image_warp_util.h> // The library to test
 
 /**
