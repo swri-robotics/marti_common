@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.6)
+cmake_minimum_required(VERSION 2.8.3)
 project(transform_util)
 
 find_package(catkin REQUIRED COMPONENTS 
@@ -49,7 +49,6 @@ target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
   add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
   target_link_libraries(test_local_xy_util ${PROJECT_NAME})
