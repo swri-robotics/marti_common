@@ -13,10 +13,10 @@ find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 if(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
   add_definitions( -DBOOST_FILESYSTEM_VERSION=2 )
-  message ("  Using Boost Filesystem Version 2")
+  message(STATUS "  Using Boost Filesystem Version 2")
 else(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
   add_definitions( -DBOOST_FILESYSTEM_VERSION=3 )
-  message ("  Using Boost Filesystem Version 3")
+  message(STATUS "  Using Boost Filesystem Version 3")
 endif(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
 
 rosbuild_init()
