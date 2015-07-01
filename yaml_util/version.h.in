@@ -1,0 +1,6 @@
+#ifndef YAML_UTIL_VERSION_H_
+#define YAML_UTIL_VERSION_H_
+
+#cmakedefine YAMLCPP_OLD_API
+
+#endif  // YAML_UTIL_VERSION_H_
