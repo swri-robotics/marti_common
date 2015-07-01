@@ -20,12 +20,13 @@ find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
 message ("YAML-CPP VERSION: " ${YamlCpp_VERSION})
 if( ${YamlCpp_VERSION} MATCHES "0.[23].*")
-  file(WRITE ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/version.h "#define YAMLCPP_OLD_API")
+  set(YAMLCPP_OLD_API ON)
   message ("  Using old yaml-cpp API.")
 else( ${YamlCpp_VERSION} MATCHES "0.[23].*")
-  file(WRITE ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/version.h "#undef YAMLCPP_OLD_API")
+  set(YAMLCPP_OLD_API OFF)
   message ("  Using new yaml-cpp API.")
 endif( ${YamlCpp_VERSION} MATCHES "0.[23].*")
+configure_file(version.h.in ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/version.h)
 
 rosbuild_add_library(${PROJECT_NAME}
   src/yaml_util.cpp
