@@ -27,7 +27,6 @@
 //
 // *****************************************************************************
 
-#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem/path.hpp>
 
 #include <gtest/gtest.h>
