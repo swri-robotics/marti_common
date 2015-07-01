@@ -96,12 +96,6 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(test_geometry_util launch/geometry_util.test test/test_geometry_util.cpp)
   target_link_libraries(test_geometry_util ${PROJECT_NAME})
 
-  add_rostest_gtest(test_motion_estimation launch/motion_estimation.test test/test_motion_estimation.cpp)
-  target_link_libraries(test_motion_estimation ${PROJECT_NAME})
-
-  add_rostest_gtest(image_warp_tests launch/warp_util.test test/image_warp_tests.cpp)
-  target_link_libraries(image_warp_tests ${PROJECT_NAME})
-
   add_rostest_gtest(image_normalization_tests launch/image_normalization.test test/image_normalization_tests.cpp)
   target_link_libraries(image_normalization_tests ${PROJECT_NAME})
 endif()
