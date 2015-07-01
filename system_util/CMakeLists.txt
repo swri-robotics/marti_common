@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.6)
+cmake_minimum_required(VERSION 2.8.3)
 project(system_util)
 
 find_package(catkin REQUIRED COMPONENTS roscpp)
@@ -27,9 +27,7 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-  
+    
   add_rostest_gtest(test_file_util launch/file_util.test test/test_file_util.cpp)
   target_link_libraries(test_file_util ${PROJECT_NAME})
 endif()
