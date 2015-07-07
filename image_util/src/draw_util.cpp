@@ -189,8 +189,8 @@ namespace image_util
       cv::Point2f dcenter2(
         std::min(center2.x + draw_image1.cols * 16.0, (image_out.cols - 1) * 16.0), 
         center2.y);
-      circle(draw_image1, center1, 48, match_color2, 1, CV_AA, 4);
-      circle(draw_image2, center2, 48, match_color2, 1, CV_AA, 4);
+      circle(draw_image1, center1, 48, match_color, 1, CV_AA, 4);
+      circle(draw_image2, center2, 48, match_color, 1, CV_AA, 4);
       line(image_out, center1, dcenter2, match_color, 1, CV_AA, 4);
     }
   }
