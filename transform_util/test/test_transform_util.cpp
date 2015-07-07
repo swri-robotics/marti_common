@@ -98,16 +98,16 @@ TEST(TransformUtilTests, SnapToRightAngleRandom)
 
   for (int32_t i = 0; i < 1000; i++)
   {
-    double y = math_util::Round(((double)std::rand() / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
-    double p = math_util::Round(((double)std::rand() / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
-    double r = math_util::Round(((double)std::rand() / RAND_MAX) * 2.0 - 1.0) * math_util::_half_pi;
+    double y = math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
+    double p = math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
+    double r = math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 2.0 - 1.0) * math_util::_half_pi;
 
     tf::Quaternion q1;
     q1.setRPY(r, p, y);
 
-    double dy = ((double)std::rand() / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
-    double dp = ((double)std::rand() / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
-    double dr = ((double)std::rand() / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+    double dy = (static_cast<double>(std::rand()) / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+    double dp = (static_cast<double>(std::rand()) / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+    double dr = (static_cast<double>(std::rand()) / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
 
     tf::Quaternion q2;
     q2.setRPY(r + dr, p + dp, y + dy);
