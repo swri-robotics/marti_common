@@ -207,7 +207,7 @@ namespace math_util
           sum += (CurVal-mean)*(CurVal-mean);
           vec1[i] = CurVal;  // for median calculation
         }
-        std=(T)sqrt((double)(sum/(NumElems-1)));
+        std=(T)sqrt(static_cast<double>(sum/(NumElems-1)));
         var = std*std;
 
         // Compute Median

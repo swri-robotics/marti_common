@@ -103,7 +103,7 @@ namespace geometry_util
       A(i, i - 1) = himl;
       A(i, i) = 2 * (himl + hi);
       A(i, i + 1) = hi;
-      for (int32_t j = i + 2; j < num_points; j++)
+      for (size_t j = i + 2; j < num_points; j++)
       {
         A(i, j) = 0;
       }
