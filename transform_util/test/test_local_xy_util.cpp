@@ -145,10 +145,10 @@ TEST(LocalXyUtilTests, Continuity)
     double new_x;
     double new_y;
 
-    local_xy_util.ToWgs84(x + (double)i * 1.11 / 100.0, y, new_lat, new_lon);
+    local_xy_util.ToWgs84(x + i * 1.11 / 100.0, y, new_lat, new_lon);
     local_xy_util.ToLocalXy(new_lat, new_lon, new_x, new_y);
 
-    EXPECT_FLOAT_EQ(x + (double)i * 1.11 / 100.0, new_x);
+    EXPECT_FLOAT_EQ(x + i * 1.11 / 100.0, new_x);
     EXPECT_FLOAT_EQ(y, new_y);
 
     if (i > 0)
