@@ -156,7 +156,7 @@ namespace image_util
     for(int i = 0; i < source_image.rows; i++)
     {
       int ii = i / y_bin_h;
-      double py = (i - ii * y_bin_h) / ((double) y_bin_h);
+      double py = (i - ii * y_bin_h) / static_cast<double>(y_bin_h);
 
       for(int j = 0; j < source_image.cols; j++)
       {
@@ -168,7 +168,7 @@ namespace image_util
         double maxVal = max_vals.at<double>(ii, jj);
 
         // interp x
-        double px = (j - jj * x_bin_w) / ((double) x_bin_w);
+        double px = (j - jj * x_bin_w) / static_cast<double>(x_bin_w);
 
         //4-point interpolation
         double xM1 = maxVal + px * (max_vals.at<double>(ii, jj+1) - maxVal);

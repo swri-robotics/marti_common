@@ -54,7 +54,7 @@ namespace math_util
   class RandomGenerator
   {
     public:
-      RandomGenerator(int32_t seed = -1);
+      explicit RandomGenerator(int32_t seed = -1);
       
       void GetUniformRandomSample(
         int32_t min, 
