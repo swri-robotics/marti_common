@@ -44,7 +44,7 @@ namespace image_util
   class RollingNormalization
   {
   public:
-    RollingNormalization(int32_t size);
+    explicit RollingNormalization(int32_t size);
     ~RollingNormalization();
     
     cv::Mat AddSample(const cv::Mat& image);

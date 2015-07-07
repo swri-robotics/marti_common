@@ -140,10 +140,10 @@ TEST(UtmUtilTests, Continuity)
     double new_northing;
     int zone;
     char band;
-    utm_util.ToLatLon(24, 'M', easting + (double)i * 1.11 / 100.0, northing, new_lat, new_lon);
+    utm_util.ToLatLon(24, 'M', easting + i * 1.11 / 100.0, northing, new_lat, new_lon);
     utm_util.ToUtm(new_lat, new_lon, zone, band, new_easting, new_northing);
 
-    EXPECT_FLOAT_EQ(easting + (double)i * 1.11 / 100.0, new_easting);
+    EXPECT_FLOAT_EQ(easting + i * 1.11 / 100.0, new_easting);
     EXPECT_FLOAT_EQ(northing, new_northing);
 
     if (i > 0)
@@ -165,8 +165,8 @@ TEST(UtmUtilTests, Random)
 
   for (int i = 0; i < 1000; i++)
   {
-    double lon = ((double)std::rand() / RAND_MAX) * 360.0 - 180;
-    double lat = ((double)std::rand() / RAND_MAX) * 140.0 - 70;
+    double lon = (static_cast<double>(std::rand()) / RAND_MAX) * 360.0 - 180;
+    double lat = (static_cast<double>(std::rand()) / RAND_MAX) * 140.0 - 70;
 
     char band;
     int zone;
