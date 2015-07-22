@@ -100,15 +100,16 @@ namespace opencv_util
     cv::Mat I = cv::Mat::eye(2, 2, CV_32F);
     I.at<float>(1, 1) = d;
     cv::Mat rotation = Vt.t() * I * U.t();
+    rotation = rotation.inv();
     
     // Compute the optimal translation.
-    cv::Mat c1(1, 1, CV_32FC2);
-    c1.at<cv::Vec2f>(0, 0) = cv::Vec2f(centroid1[0], centroid1[1]);
-    cv::Mat c1_r;
-    cv::transform(c1, c1_r, rotation);
-    double t_x = centroid2[0] - c1_r.at<cv::Vec2f>(0, 0)[0];
-    double t_y = centroid2[1] - c1_r.at<cv::Vec2f>(0, 0)[1];
-    
+    cv::Mat c1_r(2, 1, CV_32F);
+    c1_r.at<float>(0, 0) = centroid1[0];
+    c1_r.at<float>(1, 0) = centroid1[1];
+    c1_r = rotation * c1_r;
+    float t_x = centroid2[0] - c1_r.at<float>(0, 0);
+    float t_y = centroid2[1] - c1_r.at<float>(1, 0);
+       
     transform.create(2, 3, CV_32F);
     transform.at<float>(0, 0) = rotation.at<float>(0, 0);
     transform.at<float>(0, 1) = rotation.at<float>(0, 1);
