@@ -69,6 +69,55 @@ namespace opencv_util
   {
     cv::Mat transform;
     
+    if (!Valid2dPointCorrespondences(points1, points2))
+    {
+      return transform;
+    }
+    
+    // The Kabsch algorithm, for calculating the optimal rotation matrix that 
+    // minimizes the RMSD (root mean squared deviation) between two paired sets
+    // of points.  http://en.wikipedia.org/wiki/Kabsch_algorithm
+    
+    // Get the centroids of the points.
+    cv::Scalar centroid1 = cv::mean(points1);
+    cv::Scalar centroid2 = cv::mean(points2);
+    
+    // Center the points around the origin.
+    cv::Mat points1_centered = (points1 - centroid1);
+    cv::Mat points2_centered = (points2 - centroid2);
+    
+    // Reshape the points into 2xN matrices.
+    points1_centered = points1_centered.reshape(1, 2);
+    points2_centered = points2_centered.reshape(1, 2);
+    
+    // Compute the covariance matrix.
+    cv::Mat cov = points1_centered * points2_centered.t();
+    
+    // Compute the optimal rotation matrix.
+    cv::Mat W, U, Vt;
+    cv::SVD::compute(cov, W, U, Vt);
+    double d = cv::determinant(Vt.t() * U.t()) > 0 ? 1.0 : -1.0;
+    cv::Mat I = cv::Mat::eye(2, 2, CV_32F);
+    I.at<float>(1, 1) = d;
+    cv::Mat rotation = Vt.t() * I * U.t();
+    rotation = rotation.inv();
+    
+    // Compute the optimal translation.
+    cv::Mat c1_r(2, 1, CV_32F);
+    c1_r.at<float>(0, 0) = centroid1[0];
+    c1_r.at<float>(1, 0) = centroid1[1];
+    c1_r = rotation * c1_r;
+    float t_x = centroid2[0] - c1_r.at<float>(0, 0);
+    float t_y = centroid2[1] - c1_r.at<float>(1, 0);
+       
+    transform.create(2, 3, CV_32F);
+    transform.at<float>(0, 0) = rotation.at<float>(0, 0);
+    transform.at<float>(0, 1) = rotation.at<float>(0, 1);
+    transform.at<float>(1, 0) = rotation.at<float>(1, 0);
+    transform.at<float>(1, 1) = rotation.at<float>(1, 1);
+    transform.at<float>(0, 2) = t_x;
+    transform.at<float>(1, 2) = t_y;
+    
     return transform;
   }
   
