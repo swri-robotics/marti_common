@@ -35,8 +35,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <ros/ros.h>
-
-#include <gps_common/GPSFix.h>
+#include <topic_tools/shape_shifter.h>
 
 namespace transform_util
 {
@@ -166,7 +165,7 @@ namespace transform_util
 
     void Initialize();
 
-    void HandleOrigin(const gps_common::GPSFixConstPtr origin);
+    void HandleOrigin(const topic_tools::ShapeShifter::ConstPtr origin);
   };
   typedef boost::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
 }

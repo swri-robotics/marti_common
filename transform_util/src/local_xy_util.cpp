@@ -33,6 +33,9 @@
 
 #include <boost/make_shared.hpp>
 
+#include <geographic_msgs/GeoPose.h>
+#include <gps_common/GPSFix.h>
+
 #include <math_util/constants.h>
 #include <math_util/trig_util.h>
 #include <transform_util/earth_constants.h>
@@ -76,6 +79,7 @@ namespace transform_util
     rho_lon_(0),
     cos_heading_(0),
     sin_heading_(0),
+    frame_("map"),
     initialized_(false)
   {
     Initialize();
@@ -90,6 +94,7 @@ namespace transform_util
     rho_lon_(0),
     cos_heading_(0),
     sin_heading_(0),
+    frame_("map"),
     initialized_(false)
   {
     ros::NodeHandle node;
@@ -119,15 +124,52 @@ namespace transform_util
     initialized_ = true;
   }
 
-  void LocalXyWgs84Util::HandleOrigin(const gps_common::GPSFixConstPtr origin)
+  void LocalXyWgs84Util::HandleOrigin(const topic_tools::ShapeShifter::ConstPtr msg)
   {
     if (!initialized_)
     {
-      reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
-      reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
-      reference_altitude_ = origin->altitude;
-      frame_ = origin->header.frame_id;
-      Initialize();
+      try
+      {
+        const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
+        reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
+        reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
+        reference_altitude_ = origin->altitude;
+        std::string frame = origin->header.frame_id;
+
+        if (frame.empty()) 
+        {
+          // If the origin has an empty frame id, look for a frame in
+          // the global parameter /local_xy_frame.  This provides
+          // compatibility with older bag files.
+          ros::NodeHandle node;
+          node.param("/local_xy_frame", frame, frame_);
+        }
+
+        frame_ = frame;
+
+        Initialize();
+        origin_sub_.shutdown();
+        return;
+      }
+      catch (...) {}
+
+      try
+      {
+        const geographic_msgs::GeoPoseConstPtr origin = msg->instantiate<geographic_msgs::GeoPose>();
+        reference_latitude_ = origin->position.latitude * math_util::_deg_2_rad;
+        reference_longitude_ = origin->position.longitude * math_util::_deg_2_rad;
+        reference_altitude_ = origin->position.altitude;
+        
+        ros::NodeHandle node;
+        node.param("/local_xy_frame", frame_, frame_);
+
+        Initialize();
+        origin_sub_.shutdown();
+        return;
+      }
+      catch (...) {}
+
+      ROS_WARN("Invalid /local_xy topic type.");
     }
     origin_sub_.shutdown();
   }

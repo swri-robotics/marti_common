@@ -16,6 +16,8 @@
   <depend package="pluginlib"/>
   <depend package="gps_common"/>
   <depend package="diagnostic_msgs"/>
+  <depend package="geographic_msgs"/>
+  <depend package="topic_tools"/>
   <depend package="math_util"/>
   <depend package="yaml_util"/>
   
