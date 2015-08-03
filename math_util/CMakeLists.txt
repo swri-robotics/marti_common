@@ -21,7 +21,8 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 add_library(${PROJECT_NAME}
   src/math_util.cpp
   src/trig_util.cpp
-  src/random.cpp)
+  src/random.cpp
+  src/interpolation_1d.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
