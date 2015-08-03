@@ -31,6 +31,7 @@
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
+#include <gps_common/GPSFix.h>
 
 #include <math_util/constants.h>
 #include <transform_util/local_xy_util.h>
