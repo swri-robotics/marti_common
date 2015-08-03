@@ -77,6 +77,7 @@ class Interpolation1D
   std::vector<double> y_;
 };
 
+inline
 double Interpolation1D::eval(double x) const
 {
   if (x_.size() == 0) {
