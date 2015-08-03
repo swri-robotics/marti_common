@@ -76,6 +76,7 @@ namespace transform_util
     rho_lon_(0),
     cos_heading_(0),
     sin_heading_(0),
+    frame_(""),
     initialized_(false)
   {
     Initialize();
@@ -126,7 +127,16 @@ namespace transform_util
       reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
       reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
       reference_altitude_ = origin->altitude;
+
       frame_ = origin->header.frame_id;
+      if (frame_.empty()) {
+        // If the origin has an empty frame id, look for a frame in
+        // the global parameter /local_xy_frame.  This provides
+        // compatibility with older bag files.
+        ros::NodeHandle node;
+        node.param("/local_xy_frame", frame_, std::string(""));
+      }
+
       Initialize();
     }
     origin_sub_.shutdown();
