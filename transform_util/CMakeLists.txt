@@ -6,6 +6,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   tf
   pluginlib
+  topic_tools
+  geographic_msgs
   gps_common
   diagnostic_msgs
   math_util
@@ -21,6 +23,8 @@ catkin_package(
     rospy
     tf
     pluginlib
+    topic_tools
+    geographic_msgs
     gps_common
     diagnostic_msgs
     math_util
