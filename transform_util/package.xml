@@ -24,6 +24,8 @@
   <depend>diagnostic_msgs</depend>
   <depend>math_util</depend>
   <depend>yaml_util</depend>
+  <depend>libgeos++-dev</depend>
+  <depend>proj</depend>
   
   <export>
     <transform_util plugin="${prefix}/transformer_plugins.xml" />
