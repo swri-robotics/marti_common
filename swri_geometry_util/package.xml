@@ -15,4 +15,6 @@
   <depend>eigen</depend>  
   <depend>roscpp</depend>
   <depend>cmake_modules</depend>
+  <depend>libgeos++-dev</depend>
+  <depend>libopencv-dev</depend>
 </package>

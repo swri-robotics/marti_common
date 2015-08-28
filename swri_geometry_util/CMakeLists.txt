@@ -6,10 +6,9 @@ find_package(catkin REQUIRED COMPONENTS roscpp cmake_modules)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(GEOS REQUIRED)
-find_package(OpenCV)
-
 find_package(Eigen REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
+find_package(OpenCV REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include

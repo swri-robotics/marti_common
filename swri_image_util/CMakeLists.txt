@@ -16,7 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   camera_calibration_parsers
   swri_math_util
   swri_opencv_util
-  image_transport)
+  image_transport
+)
 
 find_package(OpenCV)
 find_package(Qt4 REQUIRED)
@@ -114,3 +115,4 @@ install(DIRECTORY launch
 install(FILES nodelet_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+

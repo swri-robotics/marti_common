@@ -7,7 +7,7 @@ find_package(OpenCV REQUIRED)
 
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
-find_package(Boost COMPONENTS random) 
+find_package(Boost REQUIRED COMPONENTS serialization thread) 
 if(${Boost_LIB_VERSION} MATCHES "1_46*")
   add_definitions( -DBOOST_1_46 )
 endif(${Boost_LIB_VERSION} MATCHES "1_46*")

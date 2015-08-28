@@ -3,7 +3,7 @@ project(swri_system_util)
 
 find_package(catkin REQUIRED COMPONENTS roscpp)
 
-find_package(Boost REQUIRED COMPONENTS system filesystem regex)
+find_package(Boost REQUIRED COMPONENTS filesystem regex)
 
 if(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
   add_definitions( -DBOOST_FILESYSTEM_VERSION=2 )
