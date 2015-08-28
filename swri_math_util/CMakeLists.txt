@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(swri_math_util)
 
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+)
 
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
