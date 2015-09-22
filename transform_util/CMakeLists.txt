@@ -11,7 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   gps_common
   diagnostic_msgs
   math_util
-  yaml_util)
+  yaml_util
+) 
 
 find_package(OpenCV REQUIRED)
 
@@ -75,9 +76,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(TARGETS ${PROJECT_NAME} lat_lon_tf_echo
+install(TARGETS ${PROJECT_NAME} lat_lon_tf_echo transformer_plugins
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
+install(FILES transformer_plugins.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
