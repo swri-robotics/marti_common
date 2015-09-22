@@ -26,6 +26,7 @@
   <depend>yaml_util</depend>
   <depend>libgeos++-dev</depend>
   <depend>proj</depend>
+  <test_depend>rostest</test_depend>
   
   <export>
     <transform_util plugin="${prefix}/transformer_plugins.xml" />
