@@ -36,7 +36,7 @@
 
 // ROS libraries
 #include <ros/ros.h>
-#include <yaml_util/yaml_util.h>
+#include <swri_yaml_util/yaml_util.h>
 
 namespace swri_transform_util
 {
@@ -84,7 +84,7 @@ namespace swri_transform_util
   bool GeoReference::Load()
   {
     YAML::Node doc;
-    if (!yaml_util::LoadFile(path_, doc))
+    if (!swri_yaml_util::LoadFile(path_, doc))
     {
       ROS_ERROR("Failed to load file: %s", path_.c_str());
       return false;

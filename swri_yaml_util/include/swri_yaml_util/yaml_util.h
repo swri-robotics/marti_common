@@ -35,7 +35,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <yaml_util/version.h>
+#include <swri_yaml_util/version.h>
 
 #ifndef YAMLCPP_OLD_API
 namespace YAML
@@ -52,7 +52,7 @@ namespace YAML
 }
 #endif  // YAMLCPP_OLD_API
 
-namespace yaml_util
+namespace swri_yaml_util
 {
   bool LoadFile(const std::string& path, YAML::Node& yaml);
   bool FindValue(const YAML::Node& node, const std::string& name);
