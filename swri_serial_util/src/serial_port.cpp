@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <serial_util/serial_port.h>
+#include <swri_serial_util/serial_port.h>
 
 #include <errno.h> // NOLINT
 #include <sys/ioctl.h>
@@ -40,7 +40,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-namespace serial_util
+namespace swri_serial_util
 {
   SerialConfig::SerialConfig() :
       baud(B115200),
