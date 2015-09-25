@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b console_util 
+\b swri_console_util 
 
 <!-- 
 Provide an overview of your package.
