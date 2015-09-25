@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   geographic_msgs
   gps_common
   diagnostic_msgs
-  math_util
+  swri_math_util
   yaml_util
 ) 
 
@@ -28,7 +28,7 @@ catkin_package(
     geographic_msgs
     gps_common
     diagnostic_msgs
-    math_util
+    swri_math_util
     yaml_util
 )
 

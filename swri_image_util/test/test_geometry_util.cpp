@@ -37,7 +37,7 @@
 
 #include <tf/transform_datatypes.h>
 
-#include <math_util/constants.h>
+#include <swri_math_util/constants.h>
 #include <swri_image_util/geometry_util.h>
 
 TEST(GeometryUtilTests, Intersects)
@@ -152,11 +152,11 @@ TEST(GeometryUtilTests, GetOverlappingArea2)
   EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, rotate180));
 
   cv::Mat rotate45(2, 3, CV_32FC1);
-  rotate45.at<float>(0,0) = std::cos(math_util::_half_pi * 0.5);
-  rotate45.at<float>(0,1) = std::sin(math_util::_half_pi * 0.5);
+  rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0,1) = std::sin(swri_math_util::_half_pi * 0.5);
   rotate45.at<float>(0,2) = 0;
-  rotate45.at<float>(1,0) = -std::sin(math_util::_half_pi * 0.5);
-  rotate45.at<float>(1,1) = std::cos(math_util::_half_pi * 0.5);
+  rotate45.at<float>(1,0) = -std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1,1) = std::cos(swri_math_util::_half_pi * 0.5);
   rotate45.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(82.842712, swri_image_util::GetOverlappingArea(rect, rotate45));

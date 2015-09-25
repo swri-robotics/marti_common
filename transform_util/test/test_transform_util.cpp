@@ -35,8 +35,8 @@
 
 #include <ros/ros.h>
 
-#include <math_util/constants.h>
-#include <math_util/math_util.h>
+#include <swri_math_util/constants.h>
+#include <swri_math_util/math_util.h>
 #include <transform_util/transform_util.h>
 
 // TODO(malban): Add unit tests for GetRelativeTransform()
@@ -56,7 +56,7 @@ TEST(TransformUtilTests, SnapToRightAngle1)
   EXPECT_TRUE(identity == transform_util::SnapToRightAngle(identity));
 
   tf::Quaternion q1;
-  q1.setRPY(0.0, 0.0, math_util::_half_pi);
+  q1.setRPY(0.0, 0.0, swri_math_util::_half_pi);
   q1.normalize();
 
   tf::Quaternion q2;
@@ -74,21 +74,21 @@ TEST(TransformUtilTests, SnapToRightAngle1)
 TEST(TransformUtilTests, SnapToRightAngle2)
 {
   tf::Quaternion q1;
-  q1.setRPY(0.0, 0.0, math_util::_half_pi);
+  q1.setRPY(0.0, 0.0, swri_math_util::_half_pi);
 
   EXPECT_EQ(0, q1.angleShortestPath(transform_util::SnapToRightAngle(q1)));
 
   tf::Quaternion q2;
-  q2.setRPY(0.0, 0.0, math_util::_pi);
+  q2.setRPY(0.0, 0.0, swri_math_util::_pi);
 
   EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q2)));
 
   tf::Quaternion q3;
-  q3.setRPY(0.0, 0.0, math_util::_pi + .34);
+  q3.setRPY(0.0, 0.0, swri_math_util::_pi + .34);
   EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q3)));
 
   tf::Quaternion q4;
-  q4.setRPY(-0.4, 0.23, math_util::_pi + 0.34);
+  q4.setRPY(-0.4, 0.23, swri_math_util::_pi + 0.34);
   EXPECT_EQ(0, q2.angleShortestPath(transform_util::SnapToRightAngle(q4)));
 }
 
@@ -98,16 +98,16 @@ TEST(TransformUtilTests, SnapToRightAngleRandom)
 
   for (int32_t i = 0; i < 1000; i++)
   {
-    double y = math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
-    double p = math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * math_util::_half_pi;
-    double r = math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 2.0 - 1.0) * math_util::_half_pi;
+    double y = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * swri_math_util::_half_pi;
+    double p = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * swri_math_util::_half_pi;
+    double r = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 2.0 - 1.0) * swri_math_util::_half_pi;
 
     tf::Quaternion q1;
     q1.setRPY(r, p, y);
 
-    double dy = (static_cast<double>(std::rand()) / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
-    double dp = (static_cast<double>(std::rand()) / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
-    double dr = (static_cast<double>(std::rand()) / RAND_MAX) * math_util::_half_pi * .5 - math_util::_half_pi * .25;
+    double dy = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
+    double dp = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
+    double dr = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
 
     tf::Quaternion q2;
     q2.setRPY(r + dr, p + dp, y + dy);
@@ -120,8 +120,8 @@ TEST(TransformUtilTests, SnapToRightAngleRandom)
 
 TEST(TransformUtilTests, SnapToRightAngleDegenerate1)
 {
-  double y = math_util::_half_pi;
-  double p = math_util::_half_pi;
+  double y = swri_math_util::_half_pi;
+  double p = swri_math_util::_half_pi;
   double r = 0.0;
 
   double dy = -0.390704844938401241183356660258141346275806427001953125;
@@ -140,8 +140,8 @@ TEST(TransformUtilTests, SnapToRightAngleDegenerate1)
 
 TEST(TransformUtilTests, SnapToRightAngleDegenerate2)
 {
-  double y = -math_util::_pi;
-  double p = -math_util::_half_pi;
+  double y = -swri_math_util::_pi;
+  double p = -swri_math_util::_half_pi;
   double r = 0.0;
 
   double dy = -0.382504303669122636133437254102318547666072845458984375;

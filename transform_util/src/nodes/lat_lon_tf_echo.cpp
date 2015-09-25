@@ -33,7 +33,7 @@
 #include <tf/transform_listener.h>
 #include <gps_common/GPSFix.h>
 
-#include <math_util/constants.h>
+#include <swri_math_util/constants.h>
 #include <transform_util/local_xy_util.h>
 
 /**
@@ -132,7 +132,7 @@ class LatLonTFEchoNode
       q.setY(0);
       q.setX(0);
       q.normalize();
-      double heading = -q.getAngle() * math_util::_rad_2_deg + 90;
+      double heading = -q.getAngle() * swri_math_util::_rad_2_deg + 90;
       while (heading < 0)
         heading += 360;
       printf("Latitude: %f°, Longitude: %f°, Heading: %f°\n", lat, lon, heading);

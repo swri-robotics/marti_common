@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_geometry
   nav_msgs
   camera_calibration_parsers
-  math_util
+  swri_math_util
   opencv_util
   image_transport)
 
@@ -49,7 +49,7 @@ catkin_package(
     image_geometry
     nav_msgs
     camera_calibration_parsers
-    math_util
+    swri_math_util
     opencv_util
     image_transport
 )

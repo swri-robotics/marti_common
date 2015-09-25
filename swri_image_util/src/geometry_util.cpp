@@ -41,7 +41,7 @@
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 
-#include <math_util/constants.h>
+#include <swri_math_util/constants.h>
 
 namespace swri_image_util
 {
@@ -265,7 +265,7 @@ namespace swri_image_util
       {
         double phi =
             (static_cast<double>(i) / static_cast<double>(num_points))
-            * math_util::_2pi;
+            * swri_math_util::_2pi;
 
         Xp1(i, 0) = xprime_scale * std::cos(phi) * scale;
         Xp1(i, 1) = yprime_scale * std::sin(phi) * scale;

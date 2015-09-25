@@ -14,7 +14,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   
   <depend>libopencv-dev</depend>
-  <depend>math_util</depend>
+  <depend>swri_math_util</depend>
 
 </package>
 

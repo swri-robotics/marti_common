@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(math_util)
+project(swri_math_util)
 
 find_package(catkin REQUIRED COMPONENTS roscpp)
 

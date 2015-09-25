@@ -36,8 +36,8 @@
 #include <geographic_msgs/GeoPose.h>
 #include <gps_common/GPSFix.h>
 
-#include <math_util/constants.h>
-#include <math_util/trig_util.h>
+#include <swri_math_util/constants.h>
+#include <swri_math_util/trig_util.h>
 #include <transform_util/earth_constants.h>
 
 namespace transform_util
@@ -71,9 +71,9 @@ namespace transform_util
       double reference_longitude,
       double reference_heading,
       double reference_altitude) :
-    reference_latitude_(reference_latitude * math_util::_deg_2_rad),
-    reference_longitude_(reference_longitude * math_util::_deg_2_rad),
-    reference_heading_(reference_heading * math_util::_deg_2_rad),
+    reference_latitude_(reference_latitude * swri_math_util::_deg_2_rad),
+    reference_longitude_(reference_longitude * swri_math_util::_deg_2_rad),
+    reference_heading_(reference_heading * swri_math_util::_deg_2_rad),
     reference_altitude_(reference_altitude),
     rho_lat_(0),
     rho_lon_(0),
@@ -105,7 +105,7 @@ namespace transform_util
 
   void LocalXyWgs84Util::Initialize()
   {
-    reference_heading_ = math_util::WrapRadians(reference_heading_, 0);
+    reference_heading_ = swri_math_util::WrapRadians(reference_heading_, 0);
 
     cos_heading_ = std::cos(reference_heading_);
     sin_heading_ = std::sin(reference_heading_);
@@ -131,8 +131,8 @@ namespace transform_util
       try
       {
         const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
-        reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
-        reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
+        reference_latitude_ = origin->latitude * swri_math_util::_deg_2_rad;
+        reference_longitude_ = origin->longitude * swri_math_util::_deg_2_rad;
         reference_altitude_ = origin->altitude;
         std::string frame = origin->header.frame_id;
 
@@ -156,8 +156,8 @@ namespace transform_util
       try
       {
         const geographic_msgs::GeoPoseConstPtr origin = msg->instantiate<geographic_msgs::GeoPose>();
-        reference_latitude_ = origin->position.latitude * math_util::_deg_2_rad;
-        reference_longitude_ = origin->position.longitude * math_util::_deg_2_rad;
+        reference_latitude_ = origin->position.latitude * swri_math_util::_deg_2_rad;
+        reference_longitude_ = origin->position.longitude * swri_math_util::_deg_2_rad;
         reference_altitude_ = origin->position.altitude;
         
         ros::NodeHandle node;
@@ -176,17 +176,17 @@ namespace transform_util
 
   double LocalXyWgs84Util::ReferenceLongitude() const
   {
-    return reference_longitude_ * math_util::_rad_2_deg;
+    return reference_longitude_ * swri_math_util::_rad_2_deg;
   }
 
   double LocalXyWgs84Util::ReferenceLatitude() const
   {
-    return reference_latitude_ * math_util::_rad_2_deg;
+    return reference_latitude_ * swri_math_util::_rad_2_deg;
   }
 
   double LocalXyWgs84Util::ReferenceHeading() const
   {
-    return reference_heading_ * math_util::_rad_2_deg;
+    return reference_heading_ * swri_math_util::_rad_2_deg;
   }
 
   double LocalXyWgs84Util::ReferenceAltitude() const
@@ -212,8 +212,8 @@ namespace transform_util
         return false;
       }
 
-      double rlat = latitude * math_util::_deg_2_rad;
-      double rlon = longitude * math_util::_deg_2_rad;
+      double rlat = latitude * swri_math_util::_deg_2_rad;
+      double rlon = longitude * swri_math_util::_deg_2_rad;
       double dLat = (rlat - reference_latitude_) * rho_lat_;
       double dLon = (rlon - reference_longitude_) * rho_lon_;
 
@@ -239,8 +239,8 @@ namespace transform_util
       double rlat = (dLat / rho_lat_) + reference_latitude_;
       double rlon = (dLon / rho_lon_) + reference_longitude_;
 
-      latitude = rlat * math_util::_rad_2_deg;
-      longitude = rlon * math_util::_rad_2_deg;
+      latitude = rlat * swri_math_util::_rad_2_deg;
+      longitude = rlon * swri_math_util::_rad_2_deg;
     }
 
     return initialized_;

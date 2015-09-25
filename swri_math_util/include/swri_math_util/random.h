@@ -43,7 +43,7 @@
   #include <boost/random/random_device.hpp>
 #endif
 
-namespace math_util
+namespace swri_math_util
 {
   #ifdef BOOST_1_46
   namespace boost_random = boost;

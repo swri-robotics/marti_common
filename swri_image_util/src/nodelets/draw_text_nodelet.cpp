@@ -38,7 +38,7 @@
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
-#include <math_util/math_util.h>
+#include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {

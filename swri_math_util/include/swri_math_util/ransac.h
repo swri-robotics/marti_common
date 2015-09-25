@@ -36,9 +36,9 @@
 
 #include <boost/make_shared.hpp>
 
-#include <math_util/random.h>
+#include <swri_math_util/random.h>
 
-namespace math_util
+namespace swri_math_util
 {
   template <class Model>
   class Ransac

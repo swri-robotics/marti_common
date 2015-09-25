@@ -37,7 +37,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace math_util
+namespace swri_math_util
 {
   template <class T>
   class GenRingBuffer

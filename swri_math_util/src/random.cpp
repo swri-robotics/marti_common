@@ -27,34 +27,22 @@
 //
 // *****************************************************************************
 
-#include <gtest/gtest.h>
+#include <swri_math_util/random.h>
 
-#include <math_util/constants.h>
-#include <math_util/trig_util.h>
-
-TEST(TrigUtilTests, WrapRadians)
+namespace swri_math_util
 {
-  // Test values wrapped between [-pi, pi]
-  EXPECT_FLOAT_EQ(0, math_util::WrapRadians(0, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi * 3.0, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi * -0.5, math_util::WrapRadians(math_util::_pi * 1.5, 0));
-  EXPECT_FLOAT_EQ(math_util::_pi * 0.5, math_util::WrapRadians(math_util::_pi * -1.5, 0));
-
-  // Test values wrapped between [0, 2pi]
-  EXPECT_FLOAT_EQ(0, math_util::WrapRadians(0, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi * 3.0, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(-math_util::_pi, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi, math_util::WrapRadians(math_util::_pi * -3.0, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi * 0.5, math_util::WrapRadians(math_util::_pi * 2.5, math_util::_pi));
-  EXPECT_FLOAT_EQ(math_util::_pi * 1.5, math_util::WrapRadians(math_util::_pi * 3.5, math_util::_pi));
-}
-
-// Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-
-  return RUN_ALL_TESTS();
+  RandomGenerator::RandomGenerator(int32_t seed) :
+    rng_(seed == -1 ? seed_() : seed)
+  {
+  }
+  
+  void RandomGenerator::GetUniformRandomSample(
+    int32_t min, 
+    int32_t max, 
+    int32_t count,
+    std::vector<int32_t>& sample)
+  {
+    boost::unique_lock<boost::mutex> lock(mutex_);
+    swri_math_util::GetUniformRandomSample<boost_random::mt19937>(rng_, min, max, count, sample);
+  }
 }

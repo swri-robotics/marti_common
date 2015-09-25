@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="test_trig_util" pkg="swri_math_util" type="test_trig_util" />
+</launch>

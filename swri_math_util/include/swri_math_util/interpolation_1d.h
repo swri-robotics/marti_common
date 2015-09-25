@@ -34,7 +34,7 @@
 
 #include <ros/node_handle.h>
 
-namespace math_util
+namespace swri_math_util
 {
 class Interpolation1D
 {  
@@ -136,7 +136,7 @@ double Interpolation1D::eval(double x) const
    return y_[i_mid];
  }
 }
-}  // namespace math_util
+}  // namespace swri_math_util
 #endif  // MATH_UTIL_INTERPOLATION_1D_H_
 
 

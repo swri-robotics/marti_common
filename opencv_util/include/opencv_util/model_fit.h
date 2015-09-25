@@ -34,8 +34,8 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <math_util/random.h>
-#include <math_util/ransac.h>
+#include <swri_math_util/random.h>
+#include <swri_math_util/ransac.h>
 
 #include <opencv_util/models.h>
 
@@ -52,7 +52,7 @@ namespace opencv_util
     double max_error = 1.0,
     double confidence = 0.9,
     int32_t max_iterations = 1000,
-    math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr())
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr())
   {
     cv::Mat model;
     
@@ -65,7 +65,7 @@ namespace opencv_util
     
     // Run RANSAC to robustly fit a rigid transform model to the set of 
     // corresponding points.
-    math_util::Ransac<Model> ransac(rng);
+    swri_math_util::Ransac<Model> ransac(rng);
 
     model = ransac.FitModel(
       matched_points, max_error, confidence, max_iterations, good_points, iterations);
@@ -111,7 +111,7 @@ namespace opencv_util
     double max_error = 1.0,
     double confidence = 0.9,
     int32_t max_iterations = 1000,
-    math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr());
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
 
   cv::Mat FindRigidTransform2d(
     const cv::Mat& points1, 
@@ -123,7 +123,7 @@ namespace opencv_util
     double max_error = 1.0,
     double confidence = 0.9,
     int32_t max_iterations = 1000,
-    math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr());
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
     
   cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2);
   
@@ -137,7 +137,7 @@ namespace opencv_util
     double max_error = 1.0,
     double confidence = 0.9,
     int32_t max_iterations = 1000,
-    math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr());
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
     
   cv::Mat FitAffineTransform2d(const cv::Mat& points1, const cv::Mat& points2);
   
@@ -151,7 +151,7 @@ namespace opencv_util
     double max_error = 1.0,
     double confidence = 0.9,
     int32_t max_iterations = 1000,
-    math_util::RandomGeneratorPtr rng = math_util::RandomGeneratorPtr());
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
 }
 
 #endif  // OPENCV_UTIL_MODEL_FIT_H_

@@ -21,7 +21,7 @@
   <depend>image_geometry</depend>
   <depend>image_transport</depend>
   <depend>libqt4-dev</depend>
-  <depend>math_util</depend>
+  <depend>swri_math_util</depend>
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
   <depend>opencv_util</depend>

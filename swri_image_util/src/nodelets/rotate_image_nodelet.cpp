@@ -38,7 +38,7 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 
-#include <math_util/math_util.h>
+#include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {
@@ -63,7 +63,7 @@ namespace swri_image_util
 
       priv.param("angle", angle_, angle_);
 
-      int32_t angle_90 = static_cast<int32_t>(math_util::ToNearest(angle_, 90));
+      int32_t angle_90 = static_cast<int32_t>(swri_math_util::ToNearest(angle_, 90));
       flip_axis_ = angle_90 > 0 ? 1 : 0;
       operations_ = std::abs(angle_90 / 90);
 
