@@ -1,5 +1,0 @@
-<launch>
-  <param name="geo_file" value="$(find transform_util)/test/data/test.geo" />
-
-  <test test-name="test_georeference" pkg="transform_util" type="test_georeference" />
-</launch>
