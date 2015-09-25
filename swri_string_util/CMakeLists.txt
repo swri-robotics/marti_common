@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(string_util)
+project(swri_string_util)
 
 find_package(catkin REQUIRED)
 

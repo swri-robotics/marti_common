@@ -1,9 +1,9 @@
 <package format="2">
-  <name>string_util</name>
+  <name>swri_string_util</name>
   <version>0.0.1</version>
   <description>
 
-     string_util
+     swri_string_util
 
   </description>
   <author>Marc Alban</author>

@@ -33,7 +33,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace string_util
+namespace swri_string_util
 {
   bool ToDouble(const std::string& string, double& value);
 

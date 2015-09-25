@@ -27,13 +27,13 @@
 //
 // *****************************************************************************
 
-#include <string_util/string_util.h>
+#include <swri_string_util/string_util.h>
 
 #include <cerrno>
 #include <cstdlib>
 #include <limits>
 
-namespace string_util
+namespace swri_string_util
 {
   bool ToDouble(const std::string& string, double& value)
   {
