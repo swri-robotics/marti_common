@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2015, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,64 @@
 //
 // *****************************************************************************
 
-#include <vector>
-#include <opencv2/core/core.hpp>
+#ifndef POLYGON_H_
+#define POLYGON_H_
 
-namespace geometry_util
+#include <sstream>
+
+#ifndef DEG_TO_RAD
+#define DEG_TO_RAD 0.0174532925
+#endif
+
+namespace swri_geometry_util
 {
-  bool CubicSplineInterpolation(
-    const std::vector<cv::Vec2d>& points,
-    double delta,
-    std::vector<std::vector<cv::Vec2d> >& splines);
-}
+  //structure for defining the vertices of a polygon
+  typedef struct
+  {
+    //vertices
+    double *x;
+    double *y;
+  }PolygonD;
+
+  typedef struct
+  {
+    //vertex
+    double x;
+    double y;
+  }Vertex;
+
+  class Polygon{
+  public:
+
+    Polygon();
+    Polygon(const Polygon & other);
+    Polygon & operator= (const Polygon & other);
+
+    Polygon(double Xs[], double Ys[], int numVertx);
+
+    bool VertexInPolygon(Vertex vertex);
+
+    double* GetXVerticies();
+
+    double* GetYVerticies();
+
+    double GetXVerticie(int num);
+
+    double GetYVerticie(int num);
+
+    int GetNumVerticies();
+
+    bool LineOverlapsPolygon(Vertex start, Vertex end);
+
+    ~Polygon();
+
+  private:
+
+    Vertex FindLineIntersectLine(Vertex start1, Vertex end1, Vertex start2,
+        Vertex end2);
+
+    PolygonD _shape;  //list of polygon vertices
+    int _nvert;   //number of vertices in this polygon
+  };
+}  // end namespace swri_geometry_util
+#endif /* POLYGON_H_ */

@@ -27,11 +27,11 @@
 //
 // *****************************************************************************
 
-#include <geometry_util/cubic_spline.h>
+#include <swri_geometry_util/cubic_spline.h>
 
 #include <Eigen/Dense>
 
-namespace geometry_util
+namespace swri_geometry_util
 {
 
   bool CubicSplineInterpolation(

@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2015, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,13 @@
 //
 // *****************************************************************************
 
-#ifndef GEOMETRY_UTIL_GEOMETRY_UTIL_H_
-#define GEOMETRY_UTIL_GEOMETRY_UTIL_H_
+#include <vector>
+#include <opencv2/core/core.hpp>
 
-#include <tf/transform_datatypes.h>
-
-namespace geometry_util
+namespace swri_geometry_util
 {
-  /**
-   * Calculate the distance from a point to a plane.
-   *
-   * @param[in]  plane_normal  The normal vector of the plane.
-   * @param[in]  plane_point   A point on the plane.
-   * @param[in]  point         The point to measure the distance of.
-   *
-   * @returns The distance of the point from the plane.
-   */
-  double DistanceFromPlane(
-      const tf::Vector3& plane_normal,
-      const tf::Vector3& plane_point,
-      const tf::Vector3& point);
-      
-  double DistanceFromLineSegment(
-      const tf::Vector3& line_start,
-      const tf::Vector3& line_end,
-      const tf::Vector3& point);
-      
-  tf::Vector3 ProjectToLineSegment(
-      const tf::Vector3& line_start,
-      const tf::Vector3& line_end,
-      const tf::Vector3& point);
+  bool CubicSplineInterpolation(
+    const std::vector<cv::Vec2d>& points,
+    double delta,
+    std::vector<std::vector<cv::Vec2d> >& splines);
 }
-
-#endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_

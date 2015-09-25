@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <geometry_util/polygon.h>
+#include <swri_geometry_util/polygon.h>
 
-namespace geometry_util
+namespace swri_geometry_util
 {
   //Constructor - create and undefined polygon
   Polygon::Polygon(){
@@ -214,4 +214,4 @@ namespace geometry_util
       _shape.y = NULL;
     }
   }
-}  // end namespace geometry_util
+}  // end namespace swri_geometry_util

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(geometry_util)
+project(swri_geometry_util)
 
 find_package(catkin REQUIRED COMPONENTS roscpp cmake_modules)
 

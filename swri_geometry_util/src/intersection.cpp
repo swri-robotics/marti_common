@@ -29,13 +29,13 @@
 
 #include <stdint.h>
 
-#include <geometry_util/intersection.h>
+#include <swri_geometry_util/intersection.h>
 
 #include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/Polygon.h>
 
-namespace geometry_util
+namespace swri_geometry_util
 {
   bool PolygonsIntersect(
       const std::vector<cv::Vec2d>& a,
