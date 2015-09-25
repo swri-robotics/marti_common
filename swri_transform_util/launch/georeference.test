@@ -1,0 +1,5 @@
+<launch>
+  <param name="geo_file" value="$(find swri_transform_util)/test/data/test.geo" />
+
+  <test test-name="test_georeference" pkg="swri_transform_util" type="test_georeference" />
+</launch>
