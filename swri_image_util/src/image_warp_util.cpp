@@ -28,7 +28,7 @@
 // *****************************************************************************
 
 #include <swri_image_util/image_warp_util.h>
-#include <opencv_util/model_fit.h>
+#include <swri_opencv_util/model_fit.h>
 
 #include <algorithm>
 
@@ -342,7 +342,7 @@ namespace swri_image_util
     std::vector<uint32_t> good_points;
     
     int32_t iterations;
-    cv::Mat affine = opencv_util::FindAffineTransform2d(
+    cv::Mat affine = swri_opencv_util::FindAffineTransform2d(
       fund_inliers1, fund_inliers2, inliers1, inliers2, good_points, iterations, 30.0);
 
     if (affine.empty())
@@ -369,10 +369,10 @@ namespace swri_image_util
     std::vector<uint32_t> good_points;
     
     int32_t iterations;
-    T_affine = opencv_util::FindAffineTransform2d(
+    T_affine = swri_opencv_util::FindAffineTransform2d(
       pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
     
-    T_rigid = opencv_util::FindRigidTransform2d(
+    T_rigid = swri_opencv_util::FindRigidTransform2d(
       pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
     
     cv::Mat inliers1_t;

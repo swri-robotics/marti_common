@@ -40,7 +40,7 @@
 
 #include <ros/ros.h>
 
-#include <opencv_util/show.h>
+#include <swri_opencv_util/show.h>
 
 namespace swri_image_util
 {
@@ -123,7 +123,7 @@ namespace swri_image_util
 
       cv::Mat sub = image1 - image2_warped;
 
-      opencv_util::ShowScaled(title, sub);
+      swri_opencv_util::ShowScaled(title, sub);
     }
   }
 
@@ -213,7 +213,7 @@ namespace swri_image_util
                 color,
                 draw_image_borders);
 
-    opencv_util::ShowScaled(title, image_out);
+    swri_opencv_util::ShowScaled(title, image_out);
   }
 
   void DrawMatches(
@@ -247,6 +247,6 @@ namespace swri_image_util
       line(draw_image, center1, center2, color2, 1, CV_AA, 4);
     }
 
-    opencv_util::ShowScaled(title, draw_image);
+    swri_opencv_util::ShowScaled(title, draw_image);
   }
 }

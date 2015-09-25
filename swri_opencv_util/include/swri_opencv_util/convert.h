@@ -32,7 +32,7 @@
 
 #include <opencv2/core/core.hpp>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
   cv::Mat ToBgra8(
       const cv::Mat& mat,

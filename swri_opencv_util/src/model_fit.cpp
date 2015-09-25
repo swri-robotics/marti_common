@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <opencv_util/model_fit.h>
+#include <swri_opencv_util/model_fit.h>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
   cv::Mat FindTranslation2d(
     const cv::Mat& points1, 

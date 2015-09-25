@@ -27,11 +27,11 @@
 //
 // *****************************************************************************
 
-#include <opencv_util/models.h>
+#include <swri_opencv_util/models.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
   bool Homography::GetModel(const std::vector<T>& data, M& model)
   {

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(opencv_util)
+project(swri_opencv_util)
 
 find_package(catkin REQUIRED COMPONENTS swri_math_util)
 

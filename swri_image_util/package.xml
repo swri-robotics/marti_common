@@ -24,7 +24,7 @@
   <depend>swri_math_util</depend>
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
-  <depend>opencv_util</depend>
+  <depend>swri_opencv_util</depend>
   <depend>roscpp</depend>
   <depend>roslib</depend>
   <depend>rospy</depend>

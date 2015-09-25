@@ -27,68 +27,19 @@
 //
 // *****************************************************************************
 
-#ifndef OPENCV_UTIL_MODELS_H_
-#define OPENCV_UTIL_MODELS_H_
-
-#include <vector>
+#ifndef OPENCV_UTIL_SHOW_H_
+#define OPENCV_UTIL_SHOW_H_
 
 #include <opencv2/core/core.hpp>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
-
-  class Homography
-  {
-  public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
-    enum { MIN_SIZE = 4 };
-    
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
-  };
-
-  class AffineTransform2d
-  {
-  public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
-    enum { MIN_SIZE = 3 };
-    
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
-  };
-
-  class RigidTransform2d
-  {
-  public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
-    enum { MIN_SIZE = 2 };
-    
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
-  };
-  
-  class Translation2d
-  {
-  public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
-    enum { MIN_SIZE = 1 };
-    
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
-  };
-  
-  bool Valid2dPointCorrespondences(
-    const cv::Mat& points1, 
-    const cv::Mat& points2);
-  
-  bool ConvertToVec4f(
-    const cv::Mat& points1,
-    const cv::Mat& points2,
-    std::vector<cv::Vec4f>& matched_points);
+  void ShowScaled(
+      const std::string& name,
+      const cv::Mat& mat,
+      const cv::Mat& mask = cv::Mat(),
+      double a = -1.0, // assume auto-scaling
+      double b = 0.0);
 }
 
-#endif  // OPENCV_UTIL_MODELS_H_
+#endif  // OPENCV_UTIL_SHOW_H_

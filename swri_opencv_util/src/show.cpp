@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <opencv_util/show.h>
+#include <swri_opencv_util/show.h>
 
 #include <map>
 #include <string>
@@ -40,7 +40,7 @@
 
 #include <ros/ros.h>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
   class CvWindows
   {
