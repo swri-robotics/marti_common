@@ -30,7 +30,7 @@
 #include <vector>
 #include <opencv2/core/core.hpp>
 
-namespace geometry_util
+namespace swri_geometry_util
 {
   bool PolygonsIntersect(
       const std::vector<cv::Vec2d>& a,

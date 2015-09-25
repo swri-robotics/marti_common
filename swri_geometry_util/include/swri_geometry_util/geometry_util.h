@@ -27,64 +27,36 @@
 //
 // *****************************************************************************
 
-#ifndef POLYGON_H_
-#define POLYGON_H_
+#ifndef GEOMETRY_UTIL_GEOMETRY_UTIL_H_
+#define GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 
-#include <sstream>
+#include <tf/transform_datatypes.h>
 
-#ifndef DEG_TO_RAD
-#define DEG_TO_RAD 0.0174532925
-#endif
-
-namespace geometry_util
+namespace swri_geometry_util
 {
-  //structure for defining the vertices of a polygon
-  typedef struct
-  {
-    //vertices
-    double *x;
-    double *y;
-  }PolygonD;
+  /**
+   * Calculate the distance from a point to a plane.
+   *
+   * @param[in]  plane_normal  The normal vector of the plane.
+   * @param[in]  plane_point   A point on the plane.
+   * @param[in]  point         The point to measure the distance of.
+   *
+   * @returns The distance of the point from the plane.
+   */
+  double DistanceFromPlane(
+      const tf::Vector3& plane_normal,
+      const tf::Vector3& plane_point,
+      const tf::Vector3& point);
+      
+  double DistanceFromLineSegment(
+      const tf::Vector3& line_start,
+      const tf::Vector3& line_end,
+      const tf::Vector3& point);
+      
+  tf::Vector3 ProjectToLineSegment(
+      const tf::Vector3& line_start,
+      const tf::Vector3& line_end,
+      const tf::Vector3& point);
+}
 
-  typedef struct
-  {
-    //vertex
-    double x;
-    double y;
-  }Vertex;
-
-  class Polygon{
-  public:
-
-    Polygon();
-    Polygon(const Polygon & other);
-    Polygon & operator= (const Polygon & other);
-
-    Polygon(double Xs[], double Ys[], int numVertx);
-
-    bool VertexInPolygon(Vertex vertex);
-
-    double* GetXVerticies();
-
-    double* GetYVerticies();
-
-    double GetXVerticie(int num);
-
-    double GetYVerticie(int num);
-
-    int GetNumVerticies();
-
-    bool LineOverlapsPolygon(Vertex start, Vertex end);
-
-    ~Polygon();
-
-  private:
-
-    Vertex FindLineIntersectLine(Vertex start1, Vertex end1, Vertex start2,
-        Vertex end2);
-
-    PolygonD _shape;  //list of polygon vertices
-    int _nvert;   //number of vertices in this polygon
-  };
-}  // end namespace geometry_util
-#endif /* POLYGON_H_ */
+#endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_

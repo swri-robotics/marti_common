@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <geometry_util/geometry_util.h>
+#include <swri_geometry_util/geometry_util.h>
 
-namespace geometry_util
+namespace swri_geometry_util
 {
   double DistanceFromPlane(
       const tf::Vector3& plane_normal,
