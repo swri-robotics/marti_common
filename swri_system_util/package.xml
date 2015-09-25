@@ -1,9 +1,9 @@
 <package format="2">
-  <name>system_util</name>
+  <name>swri_system_util</name>
   <version>0.0.1</version>
   <description>
 
-     system_util
+     swri_system_util
 
   </description>
   <author>Marc Alban</author>

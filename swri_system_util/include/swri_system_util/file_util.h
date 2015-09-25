@@ -36,7 +36,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace system_util
+namespace swri_system_util
 {
 
   #if BOOST_FILESYSTEM_VERSION == 2

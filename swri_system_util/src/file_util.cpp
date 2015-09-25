@@ -27,13 +27,13 @@
 //
 // *****************************************************************************
 
-#include <system_util/file_util.h>
+#include <swri_system_util/file_util.h>
 
 #include <string>
 
 #include <boost/regex.hpp>
 
-namespace system_util
+namespace swri_system_util
 {
   boost::filesystem::path NaiveUncomplete(
     boost::filesystem::path const path,
