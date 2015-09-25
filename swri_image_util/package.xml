@@ -27,10 +27,15 @@
   <depend>libqt4-dev</depend>
   <depend>swri_math_util</depend>
   <depend>nav_msgs</depend>
-  <depend>camera_calibration_parsers</depend>
-  <depend>math_util</depend>
-  <depend>opencv_util</depend>
-  <depend>image_transport</depend>
+  <depend>nodelet</depend>
+  <depend>swri_opencv_util</depend>
+  <depend>roscpp</depend>
+  <depend>roslib</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>tf</depend>
+
+  <test_depend>rostest</test_depend>
 
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />

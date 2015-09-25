@@ -37,9 +37,9 @@
 #include <swri_math_util/random.h>
 #include <swri_math_util/ransac.h>
 
-#include <opencv_util/models.h>
+#include <swri_opencv_util/models.h>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
   template <class Model>
   cv::Mat FindModel2d(

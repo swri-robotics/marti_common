@@ -1,9 +1,9 @@
 <package format="2">
-  <name>opencv_util</name>
+  <name>swri_opencv_util</name>
   <version>0.0.1</version>
   <description>
 
-     opencv_util
+     swri_opencv_util
 
   </description>
   <author>Marc Alban</author>

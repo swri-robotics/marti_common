@@ -34,7 +34,7 @@
 
 #include <opencv2/core/core.hpp>
 
-namespace opencv_util
+namespace swri_opencv_util
 {
 
   class Correspondence2d
