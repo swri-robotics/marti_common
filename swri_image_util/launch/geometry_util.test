@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="test_geometry_util" pkg="swri_image_util" type="test_geometry_util" />
+</launch>
