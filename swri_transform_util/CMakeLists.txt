@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   gps_common
   diagnostic_msgs
   swri_math_util
-  yaml_util
+  swri_yaml_util
 ) 
 
 find_package(OpenCV REQUIRED)
@@ -29,7 +29,7 @@ catkin_package(
     gps_common
     diagnostic_msgs
     swri_math_util
-    yaml_util
+    swri_yaml_util
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})

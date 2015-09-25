@@ -23,7 +23,7 @@
   <depend>gps_common</depend>
   <depend>diagnostic_msgs</depend>
   <depend>swri_math_util</depend>
-  <depend>yaml_util</depend>
+  <depend>swri_yaml_util</depend>
   <depend>libgeos++-dev</depend>
   <depend>proj</depend>
   <test_depend>rostest</test_depend>

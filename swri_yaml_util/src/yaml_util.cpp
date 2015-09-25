@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <yaml_util/yaml_util.h>
+#include <swri_yaml_util/yaml_util.h>
 
 // C++ standard libraries
 #include <sstream>
@@ -86,7 +86,7 @@ namespace YAML
 }
 #endif  // YAMLCPP_OLD_API
 
-namespace yaml_util
+namespace swri_yaml_util
 {
   bool LoadFile(const std::string& path, YAML::Node& yaml)
   {
