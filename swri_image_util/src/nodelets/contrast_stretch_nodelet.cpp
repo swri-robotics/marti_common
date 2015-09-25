@@ -40,7 +40,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <swri_image_util/image_normalization.h>
 
-#include <math_util/math_util.h>
+#include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {

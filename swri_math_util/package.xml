@@ -1,9 +1,9 @@
 <package format="2">
-  <name>math_util</name>
+  <name>swri_math_util</name>
   <version>0.0.1</version>
   <description>
 
-     math_util
+     swri_math_util
 
   </description>
   <author>Marc Alban</author>

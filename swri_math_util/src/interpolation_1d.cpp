@@ -26,9 +26,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#include <math_util/interpolation_1d.h>
+#include <swri_math_util/interpolation_1d.h>
 
-namespace math_util
+namespace swri_math_util
 {
 Interpolation1D::Interpolation1D()
   :
@@ -247,4 +247,4 @@ double Interpolation1D::maxX() const
     return x_.back();
   }
 }
-}  // namespace math_util
+}  // namespace swri_math_util

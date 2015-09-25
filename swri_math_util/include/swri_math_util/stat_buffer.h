@@ -37,9 +37,9 @@
 #include <cmath>
 #include <algorithm>
 
-#include <math_util/generic_ring_buffer.h>
+#include <swri_math_util/generic_ring_buffer.h>
 
-namespace math_util
+namespace swri_math_util
 {
   template <class T>
   class StatBuffer: public GenRingBuffer<T>

@@ -27,9 +27,48 @@
 //
 // *****************************************************************************
 
-#include <math_util/ransac.h>
+#include <boost/random/mersenne_twister.hpp>
+#include <gtest/gtest.h>
+#include <swri_math_util/random.h>
 
-namespace math_util
+#include <ros/ros.h>
+
+#ifdef BOOST_1_46
+namespace boost_random = boost;
+#else
+namespace boost_random = boost::random;
+#endif
+
+TEST(RandomTests, GetUniformRandomSample)
 {
+  boost_random::mt19937 gen;
+
+  std::vector<int32_t> sample;
+  swri_math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 10, sample);
   
+  EXPECT_EQ(10, sample.size());
+  
+  swri_math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 90, sample);
+  EXPECT_EQ(90, sample.size());
+}
+
+TEST(RandomTests, RandomGenerator)
+{
+  swri_math_util::RandomGenerator gen;
+  
+  std::vector<int32_t> sample;
+  gen.GetUniformRandomSample(0, 100, 10, sample);
+  
+  EXPECT_EQ(10, sample.size());
+  
+  gen.GetUniformRandomSample(0, 100, 90, sample);
+  EXPECT_EQ(90, sample.size());
+}
+
+// Run all the tests that were declared with TEST()
+int main(int argc, char **argv)
+{
+  testing::InitGoogleTest(&argc, argv);
+
+  return RUN_ALL_TESTS();
 }

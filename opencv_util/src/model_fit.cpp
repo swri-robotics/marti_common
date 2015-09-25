@@ -41,7 +41,7 @@ namespace opencv_util
     double max_error,
     double confidence,
     int32_t max_iterations,
-    math_util::RandomGeneratorPtr rng)
+    swri_math_util::RandomGeneratorPtr rng)
   {
     return FindModel2d<Translation2d>(
       points1, points2, inliers1, inliers2, good_points, iterations, max_error,
@@ -58,7 +58,7 @@ namespace opencv_util
     double max_error,
     double confidence,
     int32_t max_iterations,
-    math_util::RandomGeneratorPtr rng)
+    swri_math_util::RandomGeneratorPtr rng)
   {
     return FindModel2d<RigidTransform2d>(
       points1, points2, inliers1, inliers2, good_points, iterations, max_error,
@@ -130,7 +130,7 @@ namespace opencv_util
     double max_error,
     double confidence,
     int32_t max_iterations,
-    math_util::RandomGeneratorPtr rng)
+    swri_math_util::RandomGeneratorPtr rng)
   {
     return FindModel2d<AffineTransform2d>(
       points1, points2, inliers1, inliers2, good_points, iterations, max_error,
@@ -147,7 +147,7 @@ namespace opencv_util
     double max_error,
     double confidence,
     int32_t max_iterations,
-    math_util::RandomGeneratorPtr rng)
+    swri_math_util::RandomGeneratorPtr rng)
   {
     return FindModel2d<Homography>(
       points1, points2, inliers1, inliers2, good_points, iterations, max_error,

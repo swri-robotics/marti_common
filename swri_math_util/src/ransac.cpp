@@ -27,39 +27,9 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_TRIG_UTIL_H_
-#define MATH_UTIL_TRIG_UTIL_H_
+#include <swri_math_util/ransac.h>
 
-namespace math_util
+namespace swri_math_util
 {
-  /**
-   * Normalize an angle to be within a 2pi range centered at a given value.
-   *
-   * @param[in]:  angle   The input angle in radians.
-   * @param[in]:  center  The center of the range in radians.
-   *
-   * @returns An equivalent angle in the desired range.
-   */
-  double WrapRadians(double angle, double center);
-
-  /**
-   * Convert radians to degrees.
-   *
-   * @param[in] degrees Input angle.
-
-   *
-   * @return The angle in radians.
-   */
-  double ToRadians(double degrees);
-
-  /**
-   * Convert degrees to radians.
-   *
-   * @param[in] radians Input angle.
-   *
-   * @return The angle in degrees.
-   */
-  double ToDegrees(double radians);
+  
 }
-
-#endif  // MATH_UTIL_TRIG_UTIL_H_

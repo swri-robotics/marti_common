@@ -27,57 +27,69 @@
 //
 // *****************************************************************************
 
-#include <math_util/math_util.h>
+#ifndef MATH_UTIL_MATH_UTIL_H_
+#define MATH_UTIL_MATH_UTIL_H_
 
-#include <cmath>
-
-namespace math_util
+#include <swri_math_util/constants.h>
+namespace swri_math_util
 {
-  double Round(double value)
-  {
-    return (value > 0.0) ? std::floor(value + 0.5) : std::ceil(value - 0.5);
-  }
+  /**
+   * Round the value to the nearest integer.
+   *
+   * @param[in]  value     The number to round.
+   * @param[in]  multiple  The multiple.
+   *
+   * @returns The rounded value.
+   */
+  double Round(double value);
 
-  double ToNearest(double value, double multiple)
-  {
-    if (multiple == 0)
-    {
-      return 0;
-    }
+  /**
+   * Round the value to the nearest provided multiple.
+   *
+   * @param[in]  value     The number to round.
+   * @param[in]  multiple  The multiple.
+   *
+   * @returns The rounded value.
+   */
+  double ToNearest(double value, double multiple);
 
-    return Round(value / multiple) * multiple;
-  }
+  /**
+   * Round up the value to the nearest provided multiple.
+   *
+   * @param[in]  value     The number to round.
+   * @param[in]  multiple  The multiple.
+   *
+   * @returns The rounded value.
+   */
+  double UpToNearest(double value, double multiple);
 
-  double UpToNearest(double value, double multiple)
-  {
-    if (multiple == 0)
-    {
-      return 0;
-    }
+  /**
+   * Check if v1 is within +/- epsilon of v2
+   *
+   * @param[in]  v1       The first value.
+   * @param[in]  v2       The second value.
+   * @param[in]  epsilon  The tolerance.
+   *
+   * @returns True if v1 is near v2.
+   */
+  bool IsNear(double v1, double v2, double epsilon);
 
-    return std::ceil(value / multiple) * multiple;
-  }
-
-  bool IsNear(double v1, double v2, double epsilon)
-  {
-    return std::fabs(v1 - v2) <= epsilon;
-  }
-
+  /**
+   * Unwraps the variable_angle across 0-2pi or +/-pi boundaries to avoid large
+   * differences between the static and variable angles (when the difference may
+   * be small.  For example a static angle of 2pi - epsilon and a variable angle
+   * of epsilon would result in the variable angle being unwrapped to 2pi +
+   * epsilon.
+   *
+   * @param[in]  static_angle     The reference angle
+   * @param[in]  variable_angle   The angle to unwrap
+   * @param[in]  threshold        A threshold on the angle (default is pi)
+   *
+   * @retval     Returns the resultant angle
+   */
   double unWrapAngle(double static_angle,
                      double variable_angle,
-                     double threshold)
-  {
-    if (std::abs(static_angle - variable_angle) > threshold)
-    {
-      if (variable_angle < static_angle)
-      {
-        variable_angle += math_util::_2pi;
-      }
-      else
-      {
-        variable_angle -= math_util::_2pi;
-      }
-    }
-    return variable_angle;
-  }
+                     double threshold = _pi);
 }
+
+#endif  // MATH_UTIL_MATH_UTIL_H_

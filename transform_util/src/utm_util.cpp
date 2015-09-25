@@ -33,7 +33,7 @@
 
 #include <ros/ros.h>
 
-#include <math_util/constants.h>
+#include <swri_math_util/constants.h>
 
 namespace transform_util
 {
@@ -123,8 +123,8 @@ namespace transform_util
     zone = GetZone(longitude);
     band = GetBand(latitude);
 
-    double x = longitude * math_util::_deg_2_rad;
-    double y = latitude * math_util::_deg_2_rad;
+    double x = longitude * swri_math_util::_deg_2_rad;
+    double y = latitude * swri_math_util::_deg_2_rad;
 
     // Get easting and northing values.
     if (band <= 'N')
@@ -174,8 +174,8 @@ namespace transform_util
       pj_transform(utm_north_[zone - 1], lat_lon_, 1, 0, &x, &y, NULL);
     }
 
-    longitude = x * math_util::_rad_2_deg;
-    latitude = y * math_util::_rad_2_deg;
+    longitude = x * swri_math_util::_rad_2_deg;
+    latitude = y * swri_math_util::_rad_2_deg;
   }
 
   UtmUtil::UtmUtil() :

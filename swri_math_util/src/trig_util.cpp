@@ -27,28 +27,35 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_CONSTANTS_H_
-#define MATH_UTIL_CONSTANTS_H_
+#include <swri_math_util/trig_util.h>
 
-namespace math_util
+#include <swri_math_util/constants.h>
+
+namespace swri_math_util
 {
-  static const long double _pi = 3.1415926535897932384626433832795029L;
+  double WrapRadians(double angle, double center)
+  {
+    double wrapped = angle;
+    while (wrapped < center && center - wrapped > _pi)
+    {
+      wrapped += _2pi;
+    }
 
-  static const long double _2pi = 6.28318530717958647692528676655900576L;
+    while (wrapped > center && wrapped - center > _pi)
+    {
+      wrapped -= _2pi;
+    }
 
-  static const long double _half_pi = 1.57079632679489661923132169163975144L;
+    return wrapped;
+  }
 
-  static const long double _deg_2_rad = 0.01745329251994329576923690768488612L;
+  double ToRadians(double degrees)
+  {
+    return degrees * _pi / 180.0;
+  }
 
-  static const long double _rad_2_deg = 57.2957795130823208767981548141051703L;
-
-  static const double _kph_to_mps = 0.2777777777777778;
-
-  static const double _mps_to_mph = 2.2369362920544025;
-
-  static const double _feet_to_meters = 0.3048;
-
-  static const double _yards_to_meters = 0.9144;
+  double ToDegrees(double radians)
+  {
+    return radians * 180.0 / _pi;
+  }
 }
-
-#endif  // MATH_UTIL_CONSTANTS_H_

@@ -38,9 +38,9 @@
 #include <boost/math/special_functions/sign.hpp>
 
 #include <transform_util/earth_constants.h>
-#include <math_util/constants.h>
-#include <math_util/math_util.h>
-#include <math_util/trig_util.h>
+#include <swri_math_util/constants.h>
+#include <swri_math_util/math_util.h>
+#include <swri_math_util/trig_util.h>
 
 namespace transform_util
 {
@@ -88,11 +88,11 @@ namespace transform_util
       double dst_latitude,
       double dst_longitude)
   {
-    double lat1 = src_latitude * math_util::_deg_2_rad;
-    double lon1 = src_longitude * math_util::_deg_2_rad;
+    double lat1 = src_latitude * swri_math_util::_deg_2_rad;
+    double lon1 = src_longitude * swri_math_util::_deg_2_rad;
 
-    double lat2 = dst_latitude * math_util::_deg_2_rad;
-    double lon2 = dst_longitude * math_util::_deg_2_rad;
+    double lat2 = dst_latitude * swri_math_util::_deg_2_rad;
+    double lon2 = dst_longitude * swri_math_util::_deg_2_rad;
 
     double distance = 2.0 * std::asin(std::sqrt(
       std::pow(std::sin((lat1 - lat2) / 2.0), 2.0) +
@@ -108,11 +108,11 @@ namespace transform_util
       double destination_latitude,
       double destination_longitude)
   {
-    double lat1 = source_latitude * math_util::_deg_2_rad;
-    double lon1 = source_longitude * math_util::_deg_2_rad;
+    double lat1 = source_latitude * swri_math_util::_deg_2_rad;
+    double lon1 = source_longitude * swri_math_util::_deg_2_rad;
 
-    double lat2 = destination_latitude * math_util::_deg_2_rad;
-    double lon2 = destination_longitude * math_util::_deg_2_rad;
+    double lat2 = destination_latitude * swri_math_util::_deg_2_rad;
+    double lon2 = destination_longitude * swri_math_util::_deg_2_rad;
 
     double d_lon = lon2 - lon1;
 
@@ -120,7 +120,7 @@ namespace transform_util
     double x = std::cos(lat1) * std::sin(lat2) -
         std::sin(lat1) * std::cos(lat2) * std::cos(d_lon);
 
-    return std::atan2(y, x) * math_util::_rad_2_deg;
+    return std::atan2(y, x) * swri_math_util::_rad_2_deg;
   }
 
   void GetMidpointLatLon(
@@ -131,11 +131,11 @@ namespace transform_util
       double& mid_latitude,
       double& mid_longitude)
   {
-    double d_lon = (longitude2 - longitude1) * math_util::_deg_2_rad;
+    double d_lon = (longitude2 - longitude1) * swri_math_util::_deg_2_rad;
 
-    double lat1 = latitude1 * math_util::_deg_2_rad;
-    double lat2 = latitude2 * math_util::_deg_2_rad;
-    double lon1 = longitude1 * math_util::_deg_2_rad;
+    double lat1 = latitude1 * swri_math_util::_deg_2_rad;
+    double lat2 = latitude2 * swri_math_util::_deg_2_rad;
+    double lon1 = longitude1 * swri_math_util::_deg_2_rad;
 
     double x = std::cos(lat2) * std::cos(d_lon);
     double y = std::cos(lat2) * std::sin(d_lon);
@@ -144,8 +144,8 @@ namespace transform_util
         std::sin(lat1) + std::sin(lat2), std::sqrt(tmp * tmp + y * y));
     double lon3 = lon1 + std::atan2(y, tmp);
 
-    mid_latitude = lat3 * math_util::_rad_2_deg;
-    mid_longitude = lon3 * math_util::_rad_2_deg;
+    mid_latitude = lat3 * swri_math_util::_rad_2_deg;
+    mid_longitude = lon3 * swri_math_util::_rad_2_deg;
   }
 
   double GetHeading(double src_x, double src_y, double dst_x, double dst_y)
@@ -155,12 +155,12 @@ namespace transform_util
 
   double ToHeading(double yaw)
   {
-    return math_util::ToDegrees(math_util::_half_pi - yaw);
+    return swri_math_util::ToDegrees(swri_math_util::_half_pi - yaw);
   }
 
   double ToYaw(double heading)
   {
-    return math_util::ToRadians(-(heading - 90.0));
+    return swri_math_util::ToRadians(-(heading - 90.0));
   }
 
   tf::Quaternion SnapToRightAngle(const tf::Quaternion& rotation)
@@ -259,7 +259,7 @@ namespace transform_util
   bool IsRotation(tf::Matrix3x3 matrix)
   {
     // Check that determinant is near 1.
-    if (!math_util::IsNear(matrix.determinant(), 1, 0.00001))
+    if (!swri_math_util::IsNear(matrix.determinant(), 1, 0.00001))
     {
       return false;
     }
@@ -267,7 +267,7 @@ namespace transform_util
     // Check that the each row is a unit vector.
     for (int32_t i = 0; i < 3; i++)
     {
-      if (!math_util::IsNear(matrix.getRow(i).length(), 1, 0.00001))
+      if (!swri_math_util::IsNear(matrix.getRow(i).length(), 1, 0.00001))
       {
         return false;
       }
@@ -276,7 +276,7 @@ namespace transform_util
     // Check that the each column is a unit vector.
     for (int32_t i = 0; i < 3; i++)
     {
-      if (!math_util::IsNear(matrix.getColumn(i).length(), 1, 0.00001))
+      if (!swri_math_util::IsNear(matrix.getColumn(i).length(), 1, 0.00001))
       {
         return false;
       }
@@ -387,13 +387,13 @@ namespace transform_util
     double arc_length)
   {
     return arc_length / ((altitude + _earth_equator_radius)
-                         * std::cos(latitude * math_util::_deg_2_rad)) * math_util::_rad_2_deg;
+                         * std::cos(latitude * swri_math_util::_deg_2_rad)) * swri_math_util::_rad_2_deg;
   }
 
   double LatitudeDegreesFromMeters(
     double altitude,
     double arc_length)
   {
-    return arc_length / (altitude + _earth_equator_radius) * math_util::_rad_2_deg;
+    return arc_length / (altitude + _earth_equator_radius) * swri_math_util::_rad_2_deg;
   }
 }

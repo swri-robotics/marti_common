@@ -27,42 +27,28 @@
 //
 // *****************************************************************************
 
-#include <boost/random/mersenne_twister.hpp>
 #include <gtest/gtest.h>
-#include <math_util/random.h>
 
-#include <ros/ros.h>
+#include <swri_math_util/constants.h>
+#include <swri_math_util/trig_util.h>
 
-#ifdef BOOST_1_46
-namespace boost_random = boost;
-#else
-namespace boost_random = boost::random;
-#endif
-
-TEST(RandomTests, GetUniformRandomSample)
+TEST(TrigUtilTests, WrapRadians)
 {
-  boost_random::mt19937 gen;
+  // Test values wrapped between [-pi, pi]
+  EXPECT_FLOAT_EQ(0, swri_math_util::WrapRadians(0, 0));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi, 0));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi * 3.0, 0));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi * -0.5, swri_math_util::WrapRadians(swri_math_util::_pi * 1.5, 0));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi * 0.5, swri_math_util::WrapRadians(swri_math_util::_pi * -1.5, 0));
 
-  std::vector<int32_t> sample;
-  math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 10, sample);
-  
-  EXPECT_EQ(10, sample.size());
-  
-  math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 90, sample);
-  EXPECT_EQ(90, sample.size());
-}
-
-TEST(RandomTests, RandomGenerator)
-{
-  math_util::RandomGenerator gen;
-  
-  std::vector<int32_t> sample;
-  gen.GetUniformRandomSample(0, 100, 10, sample);
-  
-  EXPECT_EQ(10, sample.size());
-  
-  gen.GetUniformRandomSample(0, 100, 90, sample);
-  EXPECT_EQ(90, sample.size());
+  // Test values wrapped between [0, 2pi]
+  EXPECT_FLOAT_EQ(0, swri_math_util::WrapRadians(0, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi * 3.0, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(-swri_math_util::_pi, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi * -3.0, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi * 0.5, swri_math_util::WrapRadians(swri_math_util::_pi * 2.5, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(swri_math_util::_pi * 1.5, swri_math_util::WrapRadians(swri_math_util::_pi * 3.5, swri_math_util::_pi));
 }
 
 // Run all the tests that were declared with TEST()

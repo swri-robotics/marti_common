@@ -27,35 +27,39 @@
 //
 // *****************************************************************************
 
-#include <math_util/trig_util.h>
+#ifndef MATH_UTIL_TRIG_UTIL_H_
+#define MATH_UTIL_TRIG_UTIL_H_
 
-#include <math_util/constants.h>
-
-namespace math_util
+namespace swri_math_util
 {
-  double WrapRadians(double angle, double center)
-  {
-    double wrapped = angle;
-    while (wrapped < center && center - wrapped > _pi)
-    {
-      wrapped += _2pi;
-    }
+  /**
+   * Normalize an angle to be within a 2pi range centered at a given value.
+   *
+   * @param[in]:  angle   The input angle in radians.
+   * @param[in]:  center  The center of the range in radians.
+   *
+   * @returns An equivalent angle in the desired range.
+   */
+  double WrapRadians(double angle, double center);
 
-    while (wrapped > center && wrapped - center > _pi)
-    {
-      wrapped -= _2pi;
-    }
+  /**
+   * Convert radians to degrees.
+   *
+   * @param[in] degrees Input angle.
 
-    return wrapped;
-  }
+   *
+   * @return The angle in radians.
+   */
+  double ToRadians(double degrees);
 
-  double ToRadians(double degrees)
-  {
-    return degrees * _pi / 180.0;
-  }
-
-  double ToDegrees(double radians)
-  {
-    return radians * 180.0 / _pi;
-  }
+  /**
+   * Convert degrees to radians.
+   *
+   * @param[in] radians Input angle.
+   *
+   * @return The angle in degrees.
+   */
+  double ToDegrees(double radians);
 }
+
+#endif  // MATH_UTIL_TRIG_UTIL_H_
