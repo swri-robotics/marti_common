@@ -16,9 +16,11 @@
   <depend>camera_calibration_parsers</depend>
   <depend>cmake_modules</depend>
   <depend>cv_bridge</depend>
+  <depend>eigen</depend>
   <depend>geometry_msgs</depend>
   <depend>image_geometry</depend>
   <depend>image_transport</depend>
+  <depend>libqt4-dev</depend>
   <depend>math_util</depend>
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
