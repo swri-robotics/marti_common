@@ -35,7 +35,7 @@
 
 #include <ros/ros.h>
 
-namespace console_util
+namespace swri_console_util
 {
   class ProgressBar
   {

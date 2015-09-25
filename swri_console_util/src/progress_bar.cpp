@@ -27,12 +27,12 @@
 //
 // *****************************************************************************
 
-#include <console_util/progress_bar.h>
+#include <swri_console_util/progress_bar.h>
 
 #include <ctime>
 #include <sstream>
 
-namespace console_util
+namespace swri_console_util
 {
   ProgressBar::ProgressBar() :
       paused_(false),
