@@ -33,7 +33,7 @@
 
 #include <ros/ros.h>
 
-#include <system_util/file_util.h>
+#include <swri_system_util/file_util.h>
 
 TEST(FileUtilTests, Uncomplete)
 {
@@ -46,13 +46,13 @@ TEST(FileUtilTests, Uncomplete)
   std::string path3;
   ASSERT_TRUE(ros::param::get("path3", path3));
 
-  EXPECT_EQ(boost::filesystem::path("./"), system_util::NaiveUncomplete(path1, path1));
-  EXPECT_EQ(boost::filesystem::path("src"), system_util::NaiveUncomplete(path2, path1));
-  EXPECT_EQ(boost::filesystem::path("include/system_util"), system_util::NaiveUncomplete(path3, path1));
-  EXPECT_EQ(boost::filesystem::path("../"), system_util::NaiveUncomplete(path1, path2));
-  EXPECT_EQ(boost::filesystem::path("../../"), system_util::NaiveUncomplete(path1, path3));
-  EXPECT_EQ(boost::filesystem::path(""), system_util::NaiveUncomplete(boost::filesystem::path(""), path1));
-  EXPECT_EQ(boost::filesystem::path(""), system_util::NaiveUncomplete(path1, boost::filesystem::path("")));
+  EXPECT_EQ(boost::filesystem::path("./"), swri_system_util::NaiveUncomplete(path1, path1));
+  EXPECT_EQ(boost::filesystem::path("src"), swri_system_util::NaiveUncomplete(path2, path1));
+  EXPECT_EQ(boost::filesystem::path("include/swri_system_util"), swri_system_util::NaiveUncomplete(path3, path1));
+  EXPECT_EQ(boost::filesystem::path("../"), swri_system_util::NaiveUncomplete(path1, path2));
+  EXPECT_EQ(boost::filesystem::path("../../"), swri_system_util::NaiveUncomplete(path1, path3));
+  EXPECT_EQ(boost::filesystem::path(""), swri_system_util::NaiveUncomplete(boost::filesystem::path(""), path1));
+  EXPECT_EQ(boost::filesystem::path(""), swri_system_util::NaiveUncomplete(path1, boost::filesystem::path("")));
 }
 
 // Run all the tests that were declared with TEST()
