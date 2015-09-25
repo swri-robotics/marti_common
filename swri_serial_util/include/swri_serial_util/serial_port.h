@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-namespace serial_util
+namespace swri_serial_util
 {
   /**
    * Structure defining serial port configuration parameters.

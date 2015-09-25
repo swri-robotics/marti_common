@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(serial_util)
+project(swri_serial_util)
 
 find_package(catkin REQUIRED)
 

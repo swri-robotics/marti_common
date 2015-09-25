@@ -1,9 +1,9 @@
 <package format="2">
-  <name>serial_util</name>
+  <name>swri_serial_util</name>
   <version>0.0.1</version>
   <description>
 
-     serial_util
+     swri_serial_util
 
   </description>
   <author>Marc Alban</author>
