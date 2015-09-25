@@ -1,0 +1,35 @@
+<package format="2">
+  <name>swri_transform_util</name>
+  <version>0.0.1</version>
+  <description>
+
+     The swri_transform_util package contains utility functions and classes for
+     transforming between coordinate frames.
+
+  </description>
+  <author>Marc Alban</author>
+  <maintainer email="malban@swri.org">Marc Alban</maintainer>
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>tf</depend>
+  <depend>pluginlib</depend>
+  <depend>topic_tools</depend>
+  <depend>geographic_msgs</depend>
+  <depend>gps_common</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>swri_math_util</depend>
+  <depend>yaml_util</depend>
+  <depend>libgeos++-dev</depend>
+  <depend>proj</depend>
+  <test_depend>rostest</test_depend>
+  
+  <export>
+    <swri_transform_util plugin="${prefix}/transformer_plugins.xml" />
+  </export>
+</package>
+

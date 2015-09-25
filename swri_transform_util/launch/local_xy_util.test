@@ -1,0 +1,20 @@
+<launch>
+
+  <param name="/local_xy_frame" value="/far_field"/>
+  <param name="/local_xy_origin" value="swri"/>
+  <rosparam param="/local_xy_origins">
+    [{ name: swri,
+       latitude: 29.45196669,
+       longitude: -98.61370577,
+       altitude: 233.719,
+       heading: 0.0},
+     
+     { name: back_40,
+       latitude: 29.447507,
+       longitude: -98.629367,
+       altitude: 200.0,
+       heading: 0.0}]
+  </rosparam>
+
+  <test test-name="test_local_xy_util" pkg="swri_transform_util" type="test_local_xy_util" />
+</launch>
