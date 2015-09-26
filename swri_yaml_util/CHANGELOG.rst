@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2015-09-26)
+------------------
 * Fixes missing yaml-cpp dependency in swri_yaml_util.
   Refs `#233 <https://github.com/swri-robotics/marti_common/issues/233>`_.
 * Contributors: Ed Venator

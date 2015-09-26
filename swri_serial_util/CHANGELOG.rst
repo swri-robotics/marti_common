@@ -2,8 +2,8 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2015-09-26)
+------------------
 * Fixes missing boost dependency in swri_serial_util.
   Refs `#234 <https://github.com/swri-robotics/marti_common/issues/234>`_.
 * Contributors: Ed Venator

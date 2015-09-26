@@ -2,8 +2,8 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2015-09-26)
+------------------
 * Format package files
 * Clean up dependencies
   Remove unneeded ones, add required ones not specified

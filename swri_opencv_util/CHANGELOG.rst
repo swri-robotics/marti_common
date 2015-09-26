@@ -2,8 +2,8 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2015-09-26)
+------------------
 * Clean up dependencies
   Remove unneeded ones, add required ones not specified
 * Contributors: Jerry Towler

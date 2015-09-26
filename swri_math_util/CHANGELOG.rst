@@ -2,8 +2,8 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2015-09-26)
+------------------
 * Format package files
 * Contributors: Jerry Towler
 
