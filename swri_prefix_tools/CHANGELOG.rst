@@ -2,6 +2,9 @@
 Changelog for package swri_prefix_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.2 (2015-09-25)
 ------------------
 * Renames prefix_tools to swri_prefix_tools. Refs `#231 <https://github.com/swri-robotics/marti_common/issues/231>`_.
