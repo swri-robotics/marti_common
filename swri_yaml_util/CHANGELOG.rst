@@ -2,6 +2,14 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adds missing package dependency and find_package() for boost in 
+  swri_yaml_util. See issue `#240 <https://github.com/evenator/marti_common/issues/240>`_
+* Cleans up all catkin_lint by adding a proper package description 
+  and fixing some formatting in CMakeLists.txt.
+* Contributors: Ed Venator
+
 0.0.4 (2015-09-27)
 ------------------
 * Adds boost include directories to yaml_util because yaml-cpp uses boost and doesn't export the include directory.
