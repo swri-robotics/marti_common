@@ -2,6 +2,9 @@
 Changelog for package swri_console_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.3 (2015-09-26)
 ------------------
 * Correct OpenCV rosdep key

@@ -2,6 +2,9 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.3 (2015-09-26)
 ------------------
 * Fixes missing boost dependency in swri_serial_util.
