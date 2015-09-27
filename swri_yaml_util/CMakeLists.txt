@@ -20,7 +20,7 @@ else( ${YamlCpp_VERSION} MATCHES "0.[23].*")
 endif( ${YamlCpp_VERSION} MATCHES "0.[23].*")
 configure_file(version.h.in ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/version.h)
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${YamlCpp_INCLUDE_DIR})
+include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${YamlCpp_INCLUDE_DIR})
 
 add_library(${PROJECT_NAME}
   src/yaml_util.cpp

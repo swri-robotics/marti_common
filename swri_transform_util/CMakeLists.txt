@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 ) 
 
 find_package(OpenCV REQUIRED)
+find_package(Boost REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -32,7 +33,7 @@ catkin_package(
     swri_yaml_util
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} 
   src/georeference.cpp
