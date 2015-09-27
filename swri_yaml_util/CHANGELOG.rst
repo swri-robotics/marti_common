@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.4 (2015-09-27)
+------------------
 * Adds boost include directories to yaml_util because yaml-cpp uses boost and doesn't export the include directory.
 * Contributors: Ed Venator
 
