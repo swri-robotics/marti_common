@@ -11,14 +11,18 @@ catkin_package(
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
 message(STATUS "YAML-CPP VERSION: " ${YamlCpp_VERSION})
+
 if( ${YamlCpp_VERSION} MATCHES "0.[23].*")
   set(YAMLCPP_OLD_API ON)
   message(STATUS "  Using old yaml-cpp API.")
-else( ${YamlCpp_VERSION} MATCHES "0.[23].*")
+else()
   set(YAMLCPP_OLD_API OFF)
   message(STATUS "  Using new yaml-cpp API.")
-endif( ${YamlCpp_VERSION} MATCHES "0.[23].*")
+endif()
+
 configure_file(version.h.in ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/version.h)
+
+find_package(Boost REQUIRED)
 
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${YamlCpp_INCLUDE_DIR})
 

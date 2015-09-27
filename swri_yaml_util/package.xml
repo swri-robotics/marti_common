@@ -2,9 +2,9 @@
   <name>swri_yaml_util</name>
   <version>0.0.4</version>
   <description>
-
-     swri_yaml_util
-
+    Provides wrappers around the yaml-cpp library for various utility functions
+    and to abstract out the API changes made to yaml-cpp between ubuntu:precise
+    and ubuntu:trusty.
   </description>
   <author>Marc Alban</author>
   <maintainer email="malban@swri.org">Marc Alban</maintainer>
@@ -12,6 +12,7 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
+  <depend>boost</depend>
   <depend>yaml-cpp</depend>
 </package>
 
