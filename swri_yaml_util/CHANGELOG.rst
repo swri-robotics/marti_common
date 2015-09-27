@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2015-09-27)
+------------------
 * Adds missing package dependency and find_package() for boost in 
   swri_yaml_util. See issue `#240 <https://github.com/evenator/marti_common/issues/240>`_
 * Cleans up all catkin_lint by adding a proper package description 
