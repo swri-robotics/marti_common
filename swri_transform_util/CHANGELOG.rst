@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2015-09-29)
+------------------
 * Updates lot_lon_tf_echo to use geometry_msgs/PoseStamped.
   See issue `#246 <https://github.com/evenator/marti_common/issues/246>`_
 * Removes dependency on gps_common
