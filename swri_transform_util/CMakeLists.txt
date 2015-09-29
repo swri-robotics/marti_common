@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   pluginlib
   topic_tools
   geographic_msgs
-  gps_common
+  geometry_msgs
   diagnostic_msgs
   swri_math_util
   swri_yaml_util
@@ -27,7 +27,7 @@ catkin_package(
     pluginlib
     topic_tools
     geographic_msgs
-    gps_common
+    geometry_msgs
     diagnostic_msgs
     swri_math_util
     swri_yaml_util

@@ -34,7 +34,7 @@
 #include <boost/make_shared.hpp>
 
 #include <geographic_msgs/GeoPose.h>
-#include <gps_common/GPSFix.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
@@ -130,10 +130,10 @@ namespace swri_transform_util
     {
       try
       {
-        const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
-        reference_latitude_ = origin->latitude * swri_math_util::_deg_2_rad;
-        reference_longitude_ = origin->longitude * swri_math_util::_deg_2_rad;
-        reference_altitude_ = origin->altitude;
+        const geometry_msgs::PoseStampedConstPtr origin = msg->instantiate<geometry_msgs::PoseStamped>();
+        reference_latitude_ = origin->pose.position.y * swri_math_util::_deg_2_rad;
+        reference_longitude_ = origin->pose.position.x * swri_math_util::_deg_2_rad;
+        reference_altitude_ = origin->pose.position.z;
         std::string frame = origin->header.frame_id;
 
         if (frame.empty()) 

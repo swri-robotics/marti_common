@@ -17,13 +17,14 @@
   <depend>boost</depend>
   <depend>diagnostic_msgs</depend>
   <depend>geographic_msgs</depend>
-  <depend>gps_common</depend>
+  <depend>geometry_msgs</depend>
   <depend>libgeos++-dev</depend>
   <depend>libopencv-dev</depend>
   <depend>pluginlib</depend>
   <depend>proj</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
+  <exec_depend>sensor_msgs</exec_depend>
   <depend>swri_math_util</depend>
   <depend>swri_yaml_util</depend>
   <depend>tf</depend>
