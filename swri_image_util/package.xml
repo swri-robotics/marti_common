@@ -14,7 +14,6 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>camera_calibration_parsers</depend>
-  <depend>cmake_modules</depend>
   <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>geometry_msgs</depend>
@@ -24,12 +23,11 @@
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
   <depend>roscpp</depend>
-  <depend>roslib</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
-  <depend>tf</depend>
   <depend>swri_math_util</depend>
   <depend>swri_opencv_util</depend>
+  <depend>tf</depend>
 
   <test_depend>rostest</test_depend>
 
