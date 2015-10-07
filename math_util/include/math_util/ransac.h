@@ -47,7 +47,7 @@ namespace math_util
     typedef typename Model::M ModelType;
     typedef typename Model::T DataType;
   
-    Ransac(RandomGeneratorPtr rng = RandomGeneratorPtr()) : rng_(rng) {}
+    explicit Ransac(RandomGeneratorPtr rng = RandomGeneratorPtr()) : rng_(rng) {}
 
     ModelType FitModel(
       const std::vector<DataType>& data,
