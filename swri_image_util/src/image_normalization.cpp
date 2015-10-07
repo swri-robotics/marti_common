@@ -112,7 +112,9 @@ namespace swri_image_util
     int32_t grid_size, 
     const cv::Mat& source_image,
     cv::Mat& dest_image,
-    const cv::Mat& mask)
+    const cv::Mat& mask,
+    double max_min,
+    double min_max)
   {   
     int x_bin_w = std::floor(static_cast<double>(source_image.cols) / grid_size);
     int y_bin_h = std::floor(static_cast<double>(source_image.rows) / grid_size);
@@ -164,7 +166,7 @@ namespace swri_image_util
         int jj = j / x_bin_w;
 
         // Stretch histogram
-        //double minVal = min_vals.at<double>(ii, jj);
+        double minVal = min_vals.at<double>(ii, jj);
         double maxVal = max_vals.at<double>(ii, jj);
 
         // interp x
@@ -175,22 +177,21 @@ namespace swri_image_util
         double xM2 = max_vals.at<double>(ii+1, jj) + px * (max_vals.at<double>(ii+1, jj+1) - max_vals.at<double>(ii+1, jj));
         double M = xM1 + py * (xM2 - xM1);
 
-        //double xm1 = minVal + px*(min_vals.at<double>(ii, jj+1) - minVal);
-        //double xm2 = min_vals.at<double>(ii+1, jj) + px*(min_vals.at<double>(ii+1, jj+1) - min_vals.at<double>(ii+1, jj));
-        //double m = xm1 + py*(xm2 - xm1);
-        //minVal = m;
+        double xm1 = minVal + px*(min_vals.at<double>(ii, jj+1) - minVal);
+        double xm2 = min_vals.at<double>(ii+1, jj) + px*(min_vals.at<double>(ii+1, jj+1) - min_vals.at<double>(ii+1, jj));
+        double m = xm1 + py*(xm2 - xm1);
+        minVal = m;
         maxVal = M;
 
         if(maxVal > 255) maxVal = 255;
-        //if(minVal < 0) minVal = 0;
+        if(minVal < 0) minVal = 0;
         
-        //minVal = 0; // Care about bringing up brightness rather than full contrast stretching?
-
-        // TODO: put a bound on maxVal (we don't want to stretch a value of 20 all the way to 255)
-        // (same applies to minVal if we aren't setting to 0 above
+        // Put a bound on maxVal and minVal
+        maxVal = std::max(maxVal, min_max);
+        minVal = std::min(minVal, max_min);
 
         double val = source_image.at<uint8_t>(i,j);
-        val = val * 255.0 / maxVal;
+        val = 255.0 * (val - minVal) / (maxVal - minVal);
         if(val > 255) val = 255;
         if(val < 0) val = 0;
         dest_image.at<uint8_t>(i,j) = val;

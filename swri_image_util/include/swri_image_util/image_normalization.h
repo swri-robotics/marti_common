@@ -65,7 +65,9 @@ namespace swri_image_util
       int32_t grid_size,
       const cv::Mat& source_image,
       cv::Mat& dest_image,
-      const cv::Mat& mask=cv::Mat());
+      const cv::Mat& mask=cv::Mat(),
+      double max_min = 0.0,
+      double min_max = 0.0);
 
 
   /**
