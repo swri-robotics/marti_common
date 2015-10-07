@@ -48,7 +48,9 @@ namespace swri_image_util
   {
   public:
     ContrastStretchNodelet() :
-      bins_(8)
+      bins_(8),
+      max_min_(0.0),
+      min_max_(0.0)
     {
     }
 
@@ -62,6 +64,8 @@ namespace swri_image_util
       ros::NodeHandle &priv = getPrivateNodeHandle();
 
       priv.param("bins", bins_, bins_);
+      priv.param("max_min", max_min_, max_min_);
+      priv.param("min_max", min_max_, min_max_);
       
       std::string mask;
       priv.param("mask", mask, std::string(""));
@@ -79,13 +83,15 @@ namespace swri_image_util
     {
       cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-      swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask_);
+      swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask_, max_min_, min_max_);
 
       image_pub_.publish(cv_image->toImageMsg());
     }
 
   private:
     int32_t bins_;
+    double max_min_;
+    double min_max_;
     
     cv::Mat mask_;
 
