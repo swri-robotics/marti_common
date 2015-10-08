@@ -83,3 +83,4 @@ install(TARGETS ${PROJECT_NAME} lat_lon_tf_echo
 
 install(FILES transformer_plugins.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
+catkin_install_python(PROGRAMS nodes/initialize_origin.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
