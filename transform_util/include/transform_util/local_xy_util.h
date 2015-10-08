@@ -91,13 +91,13 @@ namespace transform_util
      *
      * @param[in] reference_latitude  Reference latitude in degrees.
      * @param[in] reference_longitude  Reference longitude in degrees.
+     * @param[in] reference_angle  Reference angle in degrees ENU.
      * @param[in] reference_altitude  Reference altitude in meters.
-     * @param[in] reference_heading  Reference heading in degrees from North.
      */
     LocalXyWgs84Util(
         double reference_latitude,
         double reference_longitude,
-        double reference_heading = 0,
+        double reference_angle = 0,
         double reference_altitude = 0);
 
     LocalXyWgs84Util();
@@ -108,7 +108,7 @@ namespace transform_util
 
     double ReferenceLatitude() const;
 
-    double ReferenceHeading() const;
+    double ReferenceAngle() const;
 
     double ReferenceAltitude() const;
 
@@ -149,13 +149,13 @@ namespace transform_util
   protected:
     double reference_latitude_;   //< Reference latitude in radians.
     double reference_longitude_;  //< Reference longitude in radians.
-    double reference_heading_;    //< Reference heading in radians.
+    double reference_angle_;      //< Reference angle in radians ENU.
     double reference_altitude_;   //< Reference altitude in meters.
 
     double rho_lat_;
     double rho_lon_;
-    double cos_heading_;
-    double sin_heading_;
+    double cos_angle_;
+    double sin_angle_;
 
     std::string frame_;
 
