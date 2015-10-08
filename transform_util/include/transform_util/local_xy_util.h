@@ -92,14 +92,13 @@ namespace transform_util
      * @param[in] reference_latitude  Reference latitude in degrees.
      * @param[in] reference_longitude  Reference longitude in degrees.
      * @param[in] reference_altitude  Reference altitude in meters.
-     * @param[in] reference_heading  Reference heading in degrees.
+     * @param[in] reference_heading  Reference heading in degrees from North.
      */
     LocalXyWgs84Util(
         double reference_latitude,
         double reference_longitude,
         double reference_heading = 0,
         double reference_altitude = 0);
-    // TODO(malban): What is the heading referenced from?
 
     LocalXyWgs84Util();
 

@@ -33,6 +33,8 @@
 
 #include <boost/make_shared.hpp>
 
+#include <tf/transform_datatypes.h>
+
 #include <geographic_msgs/GeoPose.h>
 #include <gps_common/GPSFix.h>
 
@@ -128,20 +130,28 @@ namespace transform_util
   {
     if (!initialized_)
     {
+      ros::NodeHandle node;
+      bool ignore_reference_heading = false;
+      node.param("/local_xy_ignore_reference_heading", ignore_reference_heading, ignore_reference_heading);
+    
       try
       {
         const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
         reference_latitude_ = origin->latitude * math_util::_deg_2_rad;
         reference_longitude_ = origin->longitude * math_util::_deg_2_rad;
         reference_altitude_ = origin->altitude;
+        
+        if (!ignore_reference_heading)
+        {
+          reference_heading_ = origin->track * math_util::_deg_2_rad;
+        }
+        
         std::string frame = origin->header.frame_id;
-
-        if (frame.empty()) 
+        if (frame.empty())
         {
           // If the origin has an empty frame id, look for a frame in
           // the global parameter /local_xy_frame.  This provides
           // compatibility with older bag files.
-          ros::NodeHandle node;
           node.param("/local_xy_frame", frame, frame_);
         }
 
@@ -159,6 +169,11 @@ namespace transform_util
         reference_latitude_ = origin->position.latitude * math_util::_deg_2_rad;
         reference_longitude_ = origin->position.longitude * math_util::_deg_2_rad;
         reference_altitude_ = origin->position.altitude;
+        
+        if (!ignore_reference_heading)
+        {
+          reference_heading_ = math_util::_half_pi - tf::getYaw(origin->orientation);
+        }
         
         ros::NodeHandle node;
         node.param("/local_xy_frame", frame_, frame_);
@@ -217,8 +232,8 @@ namespace transform_util
       double dLat = (rlat - reference_latitude_) * rho_lat_;
       double dLon = (rlon - reference_longitude_) * rho_lon_;
 
+      x = dLon * cos_heading_ - dLat * sin_heading_;
       y = dLat * cos_heading_ + dLon * sin_heading_;
-      x = -1.0 * (dLat * sin_heading_ - dLon * cos_heading_);
 
       return true;
     }
@@ -235,7 +250,8 @@ namespace transform_util
     if (initialized_)
     {
       double dLon = cos_heading_ * x + sin_heading_ * y;
-      double dLat = (y - dLon * sin_heading_) / cos_heading_;
+      double dLat = cos_heading_ * y - sin_heading_ * x;
+      
       double rlat = (dLat / rho_lat_) + reference_latitude_;
       double rlon = (dLon / rho_lon_) + reference_longitude_;
 
