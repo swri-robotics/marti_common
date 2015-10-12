@@ -4,13 +4,19 @@ project(swri_roscpp)
 
 set(BUILD_DEPS
   diagnostic_updater 
-  nav_msgs 
-  roscpp)
+  nav_msgs
+  roscpp
+  std_msgs
+  std_srvs
+)
 
 set(RUNTIME_DEPS
   diagnostic_updater 
   nav_msgs 
-  roscpp)
+  roscpp
+  std_msgs
+  std_srvs
+)
 
 ### Catkin ###
 find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
