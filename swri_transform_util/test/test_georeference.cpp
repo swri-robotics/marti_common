@@ -46,6 +46,23 @@ TEST(GeoreferenceTests, Load)
   EXPECT_EQ(29184, georeference.Width());
   EXPECT_EQ(15872, georeference.Height());
   EXPECT_EQ(512, georeference.TileSize());
+  EXPECT_EQ("jpg", georeference.Extension());
+}
+
+TEST(GeoreferenceTests, LoadExtension)
+{
+  std::string filename;
+  ASSERT_TRUE(ros::param::get("geo_file_extension", filename));
+
+  swri_transform_util::GeoReference georeference(filename);
+  ASSERT_TRUE(georeference.Load());
+
+  EXPECT_EQ(std::string("wgs84"), georeference.Datum());
+  EXPECT_EQ(std::string("utm"), georeference.Projection());
+  EXPECT_EQ(29184, georeference.Width());
+  EXPECT_EQ(15872, georeference.Height());
+  EXPECT_EQ(512, georeference.TileSize());
+  EXPECT_EQ("png", georeference.Extension());
 }
 
 // TODO(malban): Test coordinate/pixel transforms.

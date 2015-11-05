@@ -54,6 +54,7 @@ namespace swri_transform_util
     unsigned int Width() const { return width_; }
     unsigned int Height() const { return height_; }
     unsigned int TileSize() const { return tile_size_; }
+    std::string Extension() const { return extension_; }
 
     std::string Datum() const { return datum_; }
     std::string Projection() const { return projection_; }
@@ -70,6 +71,7 @@ namespace swri_transform_util
     unsigned int width_;
     unsigned int height_;
     unsigned int tile_size_;
+    std::string extension_;
 
     // Coordinate system
     std::string datum_;

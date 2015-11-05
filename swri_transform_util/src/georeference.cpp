@@ -47,6 +47,7 @@ namespace swri_transform_util
     width_(0),
     height_(0),
     tile_size_(0),
+    extension_("jpg"),
     datum_(""),
     projection_(""),
     transform_(2, 3, CV_64F),
@@ -71,6 +72,7 @@ namespace swri_transform_util
     width_(geo.width_),
     height_(geo.height_),
     tile_size_(geo.tile_size_),
+    extension_(geo.extension_),
     datum_(geo.datum_),
     projection_(geo.projection_),
     transform_(geo.transform_)
@@ -110,6 +112,10 @@ namespace swri_transform_util
       doc["image_width"] >> width_;
       doc["image_height"] >> height_;
       doc["tile_size"] >> tile_size_;
+      if(doc["extension"])
+      {
+          doc["extension"] >> extension_;
+      }
 
       doc["datum"] >> datum_;
       doc["projection"] >> projection_;
@@ -239,6 +245,7 @@ namespace swri_transform_util
     ROS_INFO("georeference:  width = %d", width_);
     ROS_INFO("georeference:  height = %d", height_);
     ROS_INFO("georeference:  tile_size = %d", tile_size_);
+    ROS_INFO("georeference:  extension = %s", extension_.c_str());
     ROS_INFO("georeference:  datum = %s", datum_.c_str());
     ROS_INFO("georeference:  projection = %s", projection_.c_str());
 
