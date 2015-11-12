@@ -162,6 +162,12 @@ namespace swri_transform_util
     tf::Quaternion operator*(const tf::Quaternion& q) const;
 
     /**
+     * Return a TF transform equivalent to this transform
+     * @return The equivalent tf::Transform
+     */
+    tf::Transform GetTF() const;
+
+    /**
      * Return the inverse transform.
      *
      * @returns The inverse transform.
