@@ -106,6 +106,11 @@ namespace swri_transform_util
     return transform_->GetOrientation();
   }
 
+  tf::Transform Transform::GetTF() const
+  {
+    return tf::Transform(GetOrientation(),GetOrigin());
+  }
+
   void IdentityTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
   {
     v_out = v_in;
