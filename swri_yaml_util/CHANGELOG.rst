@@ -2,6 +2,9 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.5 (2015-09-27)
 ------------------
 * Adds missing package dependency and find_package() for boost in 
