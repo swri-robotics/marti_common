@@ -2,6 +2,11 @@
 Changelog for package swri_prefix_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Properly installs the prefix scripts to the package share destination.
+* Contributors: Edward Venator
+
 0.1.0 (2015-09-29)
 ------------------
 

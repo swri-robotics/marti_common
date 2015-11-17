@@ -2,6 +2,11 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Minor change: marks single-argument constructor for Ransac explicit.
+* Contributors: Marc Alban
+
 0.1.0 (2015-09-29)
 ------------------
 
