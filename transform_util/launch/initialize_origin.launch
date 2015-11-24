@@ -17,10 +17,4 @@
          heading: 0.0}]
     </rosparam>
   </node>
-  
-  <node pkg="tf" type="static_transform_publisher" name="tf1" args="500 500 0 0 0 0 /far_field /near_field 100" />
-  <node pkg="tf" type="static_transform_publisher" name="tf2" args="1000 0 0 0 0 0 /far_field /veh_far_field 100" />
-  <node pkg="tf" type="static_transform_publisher" name="tf3" args="0 0 0 0 0 0 /veh_far_field /veh_near_field 100" />
-  
-  <node pkg="mapviz" type="mapviz" name="mapviz"/>
 </launch>
