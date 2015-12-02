@@ -37,58 +37,101 @@
 namespace opencv_util
 {
 
-  class Homography
+  class Correspondence2d
   {
   public:
-    typedef cv::Vec4f T;
+    typedef cv::Mat T;         // An Nx4 float matrix
     typedef cv::Mat M;
+    
+    Correspondence2d(const T& data) : data_(data) {}
+    
+    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const = 0;
+    int32_t GetInlierCount(const M& model, double max_error);
+    void GetInliers(const M& model, double max_error, std::vector<uint32_t>& indices);
+    int32_t Size() const { return data_.rows; }
+    virtual std::string GetModelString(M& model) const { return ""; }
+    
+    static void CopyTo(const M& src, M& dst)
+    {
+      src.copyTo(dst);
+    }
+    
+  protected:
+    virtual void CalculateNorms(const M& model, cv::Mat& norms);
+    
+    const T& data_;
+    
+    // Buffer matrices to avoid repeated memory allocations.
+    cv::Mat norms__;
+    cv::Mat predicted__;
+    cv::Mat delta__;
+    cv::Mat delta_squared__;
+    cv::Mat thresholded__;
+  };
+
+  class Homography : public Correspondence2d
+  {
+  public:
     enum { MIN_SIZE = 4 };
     
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
+    Homography(const T& data) : Correspondence2d(data) {}
+    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+    bool ValidData() const 
+    { 
+      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F; 
+    }
+    
+  protected:
+    virtual void CalculateNorms(const M& model, cv::Mat& norms);
   };
 
-  class AffineTransform2d
+  class AffineTransform2d : public Correspondence2d
   {
   public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
     enum { MIN_SIZE = 3 };
     
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
+    AffineTransform2d(const T& data) : Correspondence2d(data) {}
+    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+    bool ValidData() const 
+    { 
+      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F; 
+    }
   };
 
-  class RigidTransform2d
+  class RigidTransform2d : public Correspondence2d
   {
   public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
     enum { MIN_SIZE = 2 };
     
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
+    RigidTransform2d(const T& data) : Correspondence2d(data) {}
+    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+    bool ValidData() const 
+    { 
+      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F; 
+    }
   };
   
-  class Translation2d
+  class Translation2d : public Correspondence2d
   {
   public:
-    typedef cv::Vec4f T;
-    typedef cv::Mat M;
     enum { MIN_SIZE = 1 };
     
-    static bool GetModel(const std::vector<T>& data, M& model);
-    static double GetError(const T& data, const M& model);
+    Translation2d(const T& data) : Correspondence2d(data) {}
+    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+    bool ValidData() const 
+    { 
+      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F; 
+    }
   };
   
   bool Valid2dPointCorrespondences(
     const cv::Mat& points1, 
     const cv::Mat& points2);
   
-  bool ConvertToVec4f(
+  bool ZipCorrespondences(
     const cv::Mat& points1,
     const cv::Mat& points2,
-    std::vector<cv::Vec4f>& matched_points);
+    cv::Mat& correspondences);
 }
 
 #endif  // OPENCV_UTIL_MODELS_H_

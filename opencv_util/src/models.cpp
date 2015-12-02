@@ -33,87 +33,133 @@
 
 namespace opencv_util
 {
-  bool Homography::GetModel(const std::vector<T>& data, M& model)
+
+  int32_t Correspondence2d::GetInlierCount(const M& model, double max_error)
   {
-    if (data.size() != MIN_SIZE)
+    CalculateNorms(model, norms__);
+
+    cv::compare(norms__, cv::Scalar(max_error * max_error), thresholded__, cv::CMP_LT);
+
+    return cv::countNonZero(thresholded__);
+  }
+  
+  void Correspondence2d::GetInliers(const M& model, double max_error, std::vector<uint32_t>& indices)
+  {
+    CalculateNorms(model, norms__);
+
+    indices.clear();
+    indices.reserve(norms__.rows);
+    double threshold = max_error * max_error;
+    for (int i = 0; i < norms__.rows; i++)
+    {
+      if (norms__.at<float>(i) < threshold)
+      {
+        indices.push_back(i);
+      }
+    }
+  }
+
+  void Correspondence2d::CalculateNorms(const M& model, cv::Mat& norms)
+  {
+    cv::Mat src = data_(cv::Rect(0, 0, 2, data_.rows)).reshape(2);
+    cv::transform(src, predicted__, model);
+    cv::Mat measured = data_(cv::Rect(2, 0, 2, data_.rows));
+    cv::subtract(predicted__.reshape(1), measured, delta__);
+    cv::multiply(delta__, delta__, delta_squared__);
+    cv::add(
+      delta_squared__(cv::Rect(0, 0, 1, delta__.rows)), 
+      delta_squared__(cv::Rect(1, 0, 1, delta__.rows)),
+      norms);
+  }
+
+  bool Homography::GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const
+  {
+    if (indices.size() != MIN_SIZE)
     {
       return false;
     }
     
-    // TODO(malban): Test to make sure points aren't degenerate?
-    
-    cv::Point2f src[MIN_SIZE];
-    cv::Point2f dst[MIN_SIZE];
+    cv::Mat src(MIN_SIZE, 1, CV_32FC2);
+    cv::Mat dst(MIN_SIZE, 1, CV_32FC2);
     
     for (int32_t i = 0; i < MIN_SIZE; i++)
     {
-      src[i].x = data[i][0];
-      src[i].y = data[i][1];
-      dst[i].x = data[i][2];
-      dst[i].y = data[i][3];
+      const float* sample = data_.ptr<float>(indices[i]);
+      src.at<cv::Vec2f>(i, 0) = cv::Vec2f(sample[0], sample[1]);
+      dst.at<cv::Vec2f>(i, 0) = cv::Vec2f(sample[2], sample[3]);
     }
     
     model = cv::getPerspectiveTransform(src, dst);
     
-    return true;
+    // Test input points for if they all match the generated model.
+    cv::Mat predicted;
+    cv::perspectiveTransform(src, predicted, model);
+    cv::Mat delta, delta_squared, norms;
+    cv::subtract(predicted.reshape(1), dst.reshape(1), delta);
+    cv::multiply(delta, delta, delta_squared);
+    cv::add(
+      delta_squared(cv::Rect(0, 0, 1, delta.rows)), 
+      delta_squared(cv::Rect(1, 0, 1, delta.rows)),
+      norms);
+      
+    double min, max;
+    cv::minMaxLoc(norms, &min, &max);
+    
+    return max < max_error * max_error;
   }
   
-  double Homography::GetError(const T& data, const M& model)
+  void Homography::CalculateNorms(const M& model, cv::Mat& norms)
   {
-    cv::Mat src(1, 1, CV_32FC2);
-    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
-    
-    cv::Mat dst;
-    cv::perspectiveTransform(src, dst, model);
-    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
-    
-    return std::sqrt(
-      std::pow(data[2] - estimated[0], 2) + 
-      std::pow(data[3] - estimated[1], 2));
+    cv::Mat src = data_(cv::Rect(0, 0, 2, data_.rows)).reshape(2);
+    cv::perspectiveTransform(src, predicted__, model);
+    cv::Mat measured = data_(cv::Rect(2, 0, 2, data_.rows));
+    cv::subtract(predicted__.reshape(1), measured, delta__);
+    cv::multiply(delta__, delta__, delta_squared__);
+    cv::add(
+      delta_squared__(cv::Rect(0, 0, 1, delta__.rows)), 
+      delta_squared__(cv::Rect(1, 0, 1, delta__.rows)),
+      norms);
   }
-
-  bool AffineTransform2d::GetModel(const std::vector<T>& data, M& model)
+  
+  bool AffineTransform2d::GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const
   {
-    if (data.size() != MIN_SIZE)
+    if (indices.size() != MIN_SIZE)
     {
       return false;
     }
     
-    // TODO(malban): Test to make sure points aren't co-linear?
-    
-    cv::Point2f src[MIN_SIZE];
-    cv::Point2f dst[MIN_SIZE];
+    cv::Mat src(MIN_SIZE, 1, CV_32FC2);
+    cv::Mat dst(MIN_SIZE, 1, CV_32FC2);
     
     for (int32_t i = 0; i < MIN_SIZE; i++)
     {
-      src[i].x = data[i][0];
-      src[i].y = data[i][1];
-      dst[i].x = data[i][2];
-      dst[i].y = data[i][3];
+      const float* sample = data_.ptr<float>(indices[i]);
+      src.at<cv::Vec2f>(i, 0) = cv::Vec2f(sample[0], sample[1]);
+      dst.at<cv::Vec2f>(i, 0) = cv::Vec2f(sample[2], sample[3]);
     }
     
     model = cv::getAffineTransform(src, dst);
     
-    return true;
-  }
-  
-  double AffineTransform2d::GetError(const T& data, const M& model)
-  {
-    cv::Mat src(1, 1, CV_32FC2);
-    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
+    // Test input points for if they all match the generated model.
+    cv::Mat predicted;
+    cv::transform(src, predicted, model);
+    cv::Mat delta, delta_squared, norms;
+    cv::subtract(predicted.reshape(1), dst.reshape(1), delta);
+    cv::multiply(delta, delta, delta_squared);
+    cv::add(
+      delta_squared(cv::Rect(0, 0, 1, delta.rows)), 
+      delta_squared(cv::Rect(1, 0, 1, delta.rows)),
+      norms);
+      
+    double min, max;
+    cv::minMaxLoc(norms, &min, &max);
     
-    cv::Mat dst;
-    cv::transform(src, dst, model);
-    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
-    
-    return std::sqrt(
-      std::pow(data[2] - estimated[0], 2) + 
-      std::pow(data[3] - estimated[1], 2));
+    return max < max_error * max_error;
   }
 
-  bool RigidTransform2d::GetModel(const std::vector<T>& data, M& model)
+  bool RigidTransform2d::GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const
   {
-    if (data.size() != MIN_SIZE)
+    if (indices.size() != MIN_SIZE)
     {
       return false;
     }
@@ -123,15 +169,23 @@ namespace opencv_util
     
     for (int32_t i = 0; i < MIN_SIZE; i++)
     {
-      src[i].x = data[i][0];
-      src[i].y = data[i][1];
-      dst[i].x = data[i][2];
-      dst[i].y = data[i][3];
+      const float* sample = data_.ptr<float>(indices[i]);
+      src[i].x = sample[0];
+      src[i].y = sample[1];
+      dst[i].x = sample[2];
+      dst[i].y = sample[3];
+    }
+    
+    double len_src = cv::norm(src[1] - src[0]);
+    double len_dst = cv::norm(dst[1] - dst[0]);
+    if (std::fabs(len_src - len_dst) >= max_error)
+    {
+      return false;
     }
     
     // Construct a x-axis for both sets.
-    cv::Point2f src_x = (src[1] - src[0]) * (1.0 / cv::norm(src[1] - src[0]));
-    cv::Point2f dst_x = (dst[1] - dst[0]) * (1.0 / cv::norm(dst[1] - dst[0]));
+    cv::Point2f src_x = (src[1] - src[0]) * (1.0 / len_src);
+    cv::Point2f dst_x = (dst[1] - dst[0]) * (1.0 / len_dst);
     
     // Construct a y-axis for both sets.
     cv::Point2f src_y(src_x.y, -src_x.x);
@@ -177,23 +231,9 @@ namespace opencv_util
     return true;
   }
   
-  double RigidTransform2d::GetError(const T& data, const M& model)
+  bool Translation2d::GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const
   {
-    cv::Mat src(1, 1, CV_32FC2);
-    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
-    
-    cv::Mat dst;
-    cv::transform(src, dst, model);
-    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
-    
-    return std::sqrt(
-      std::pow(data[2] - estimated[0], 2) + 
-      std::pow(data[3] - estimated[1], 2));
-  }
-  
-  bool Translation2d::GetModel(const std::vector<T>& data, M& model)
-  {
-    if (data.size() != MIN_SIZE)
+    if (indices.size() != MIN_SIZE)
     {
       return false;
     }
@@ -201,10 +241,11 @@ namespace opencv_util
     cv::Point2f src;
     cv::Point2f dst;
     
-    src.x = data[0][0];
-    src.y = data[0][1];
-    dst.x = data[0][2];
-    dst.y = data[0][3];
+    const float* sample = data_.ptr<float>(indices[0]);
+    src.x = sample[0];
+    src.y = sample[1];
+    dst.x = sample[2];
+    dst.y = sample[3];
     
     // Calculate the translation between src (rotated) and dst.
     float t_x = dst.x - src.x;
@@ -219,20 +260,6 @@ namespace opencv_util
     model.at<float>(1, 2) = t_y;
     
     return true;
-  }
-  
-  double Translation2d::GetError(const T& data, const M& model)
-  {
-    cv::Mat src(1, 1, CV_32FC2);
-    src.at<cv::Vec2f>(0, 0) = cv::Vec2f(data[0], data[1]);
-    
-    cv::Mat dst;
-    cv::transform(src, dst, model);
-    cv::Vec3f& estimated = dst.at<cv::Vec3f>(0, 0);
-    
-    return std::sqrt(
-      std::pow(data[2] - estimated[0], 2) + 
-      std::pow(data[3] - estimated[1], 2));
   }
 
   bool Valid2dPointCorrespondences(
@@ -262,13 +289,11 @@ namespace opencv_util
     return true;
   }
   
-  bool ConvertToVec4f(
+  bool ZipCorrespondences(
     const cv::Mat& points1,
     const cv::Mat& points2,
-    std::vector<cv::Vec4f>& matched_points)
-  {
-    matched_points.clear();
-    
+    cv::Mat& correspondeces)
+  {    
     if (!Valid2dPointCorrespondences(points1, points2))
     {
       return false;
@@ -283,26 +308,16 @@ namespace opencv_util
     }
     
     // Put data into the correct format.
-    matched_points.resize(num_points);
     if (row_order)
     {
-      for (size_t i = 0; i < num_points; i++)
-      {
-        matched_points[i][0] = points1.at<cv::Vec2f>(i, 0)[0];
-        matched_points[i][1] = points1.at<cv::Vec2f>(i, 0)[1];
-        matched_points[i][2] = points2.at<cv::Vec2f>(i, 0)[0];
-        matched_points[i][3] = points2.at<cv::Vec2f>(i, 0)[1];
-      }
+      cv::hconcat(points1.reshape(1), points2.reshape(1), correspondeces);
     }
     else
     {
-      for (size_t i = 0; i < num_points; i++)
-      {
-        matched_points[i][0] = points1.at<cv::Vec2f>(0, i)[0];
-        matched_points[i][1] = points1.at<cv::Vec2f>(0, i)[1];
-        matched_points[i][2] = points2.at<cv::Vec2f>(0, i)[0];
-        matched_points[i][3] = points2.at<cv::Vec2f>(0, i)[1];
-      }
+      cv::hconcat(
+        points1.reshape(0, num_points).reshape(1), 
+        points2.reshape(0, num_points).reshape(1),
+        correspondeces);
     }
     
     return true;
