@@ -87,11 +87,11 @@ namespace swri_opencv_util
     cv::Mat points2_centered = (points2 - centroid2);
     
     // Reshape the points into 2xN matrices.
-    points1_centered = points1_centered.reshape(1, 2);
-    points2_centered = points2_centered.reshape(1, 2);
+    points1_centered = points1_centered.reshape(1, points1.rows);
+    points2_centered = points2_centered.reshape(1, points1.rows);
     
     // Compute the covariance matrix.
-    cv::Mat cov = points1_centered * points2_centered.t();
+    cv::Mat cov = points1_centered.t() * points2_centered;
     
     // Compute the optimal rotation matrix.
     cv::Mat W, U, Vt;
@@ -100,7 +100,6 @@ namespace swri_opencv_util
     cv::Mat I = cv::Mat::eye(2, 2, CV_32F);
     I.at<float>(1, 1) = d;
     cv::Mat rotation = Vt.t() * I * U.t();
-    rotation = rotation.inv();
     
     // Compute the optimal translation.
     cv::Mat c1_r(2, 1, CV_32F);
