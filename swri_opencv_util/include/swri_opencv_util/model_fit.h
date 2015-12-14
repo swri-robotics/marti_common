@@ -57,8 +57,8 @@ namespace swri_opencv_util
     cv::Mat model;
     
     // Put data into the expected format.
-    std::vector<cv::Vec4f> matched_points;
-    if (!ConvertToVec4f(points1, points2, matched_points))
+    cv::Mat correspondences;
+    if (!ZipCorrespondences(points1, points2, correspondences))
     {
       return model;
     }
@@ -68,7 +68,7 @@ namespace swri_opencv_util
     swri_math_util::Ransac<Model> ransac(rng);
 
     model = ransac.FitModel(
-      matched_points, max_error, confidence, max_iterations, good_points, iterations);
+      correspondences, max_error, confidence, max_iterations, good_points, iterations);
     
     if (good_points.empty())
     {
