@@ -112,7 +112,7 @@ namespace swri_transform_util
       doc["image_width"] >> width_;
       doc["image_height"] >> height_;
       doc["tile_size"] >> tile_size_;
-      if(doc["extension"])
+      if(swri_yaml_util::FindValue(doc, "extension"))
       {
           doc["extension"] >> extension_;
       }
