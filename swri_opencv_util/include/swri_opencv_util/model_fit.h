@@ -125,6 +125,7 @@ namespace swri_opencv_util
     int32_t max_iterations = 1000,
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
     
+  // Returns a 2x3 transform that can be applied to points1 to align them to points2.
   cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2);
   
   cv::Mat FindAffineTransform2d(
