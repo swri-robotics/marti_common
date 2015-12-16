@@ -65,6 +65,7 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${Open
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/rotate_image_nodelet.cpp
   src/nodelets/contrast_stretch_nodelet.cpp
+  src/nodelets/normalize_response_nodelet.cpp
   src/nodelets/scale_image_nodelet.cpp
   src/nodelets/draw_text_nodelet.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
@@ -86,6 +87,9 @@ target_link_libraries(draw_text ${catkin_LIBRARIES})
 
 add_executable(contrast_stretch src/nodes/contrast_stretch.cpp)
 target_link_libraries(contrast_stretch ${catkin_LIBRARIES})
+
+add_executable(normalize_response src/nodes/normalize_response.cpp)
+target_link_libraries(normalize_response ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)

@@ -17,7 +17,13 @@
       Nodelet to contrast stretch an image.
     </description>
   </class>
-  
+
+  <class name="swri_image_util/normalize_response" type="swri_image_util::NormalizeResponseNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to contrast stretch an image.
+    </description>
+  </class>
+
   <class name="swri_image_util/draw_text" type="swri_image_util::DrawTextNodelet" base_class_type="nodelet::Nodelet">
     <description>
       Nodelet to draw text on an image.

@@ -199,6 +199,90 @@ namespace swri_image_util
     }
   }
 
+  void NormalizeResponse(
+      const cv::Mat& src, 
+      cv::Mat& dst, 
+      int winsize, 
+      int ftzero, 
+      uchar* buf)
+  {
+    if (dst.empty())
+    {
+      dst.create(src.size(), CV_8U);
+    }
+  
+    // Source code from OpenCV: modules/calib3d/src/stereobm.cpp
+    int x, y, wsz2 = winsize / 2;
+    int* vsum = (int*)cv::alignPtr(buf + (wsz2 + 1) * sizeof(vsum[0]), 32);
+    int scale_g = winsize * winsize / 8, scale_s = (1024 + scale_g) / (scale_g * 2);
+    const int OFS = 256 * 5, TABSZ = OFS * 2 + 256;
+    uchar tab[TABSZ];
+    const uchar* sptr = src.ptr();
+    int srcstep = (int)src.step;
+    cv::Size size = src.size();
+
+    scale_g *= scale_s;
+
+    for (x = 0; x < TABSZ; x++)
+    {
+      tab[x] = (uchar)(x - OFS < -ftzero ? 0 : x - OFS > ftzero ? ftzero * 2 : x - OFS + ftzero);
+    }
+
+    for (x = 0; x < size.width; x++)
+    {
+      vsum[x] = (ushort)(sptr[x] * (wsz2 + 2));
+    }
+
+    for (y = 1; y < wsz2; y++)
+    {
+      for (x = 0; x < size.width; x++)
+      {
+        vsum[x] = (ushort)(vsum[x] + sptr[srcstep*y + x]);
+      }
+    }
+
+    for (y = 0; y < size.height; y++)
+    {
+      const uchar* top = sptr + srcstep * MAX(y - wsz2 - 1, 0);
+      const uchar* bottom = sptr + srcstep * MIN(y + wsz2, size.height - 1);
+      const uchar* prev = sptr + srcstep * MAX(y - 1, 0);
+      const uchar* curr = sptr + srcstep * y;
+      const uchar* next = sptr + srcstep * MIN(y + 1, size.height - 1);
+      uchar* dptr = dst.ptr<uchar>(y);
+
+      for (x = 0; x < size.width; x++)
+      {
+        vsum[x] = (ushort)(vsum[x] + bottom[x] - top[x]);
+      }
+
+      for (x = 0; x <= wsz2; x++)
+      {
+        vsum[-x-1] = vsum[0];
+        vsum[size.width + x] = vsum[size.width - 1];
+      }
+
+      int sum = vsum[0] * (wsz2 + 1);
+      for( x = 1; x <= wsz2; x++ )
+      {
+        sum += vsum[x];
+      }
+
+      int val = ((curr[0] * 5 + curr[1] + prev[0] + next[0]) * scale_g - sum * scale_s) >> 10;
+      dptr[0] = tab[val + OFS];
+
+      for( x = 1; x < size.width-1; x++ )
+      {
+        sum += vsum[x + wsz2] - vsum[x - wsz2 - 1];
+        val = ((curr[x] * 4 + curr[x - 1] + curr[x + 1] + prev[x] + next[x]) * scale_g - sum * scale_s) >> 10;
+        dptr[x] = tab[val + OFS];
+      }
+
+      sum += vsum[x+wsz2] - vsum[x - wsz2 - 1];
+      val = ((curr[x] * 5 + curr[x - 1] + prev[x] + next[x]) * scale_g - sum * scale_s) >> 10;
+      dptr[x] = tab[val + OFS];
+    }
+  }
+
   cv::Mat scale_2_8bit(const cv::Mat& image)
 	{
 		if (image.type() == CV_8UC1)
