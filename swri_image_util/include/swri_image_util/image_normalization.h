@@ -69,6 +69,16 @@ namespace swri_image_util
       double max_min = 0.0,
       double min_max = 0.0);
 
+  /** 
+   * Normalizes the illumination in an image using approach from OpenCV's
+   * stereo block matching.
+   */
+  void NormalizeResponse(
+      const cv::Mat& src, 
+      cv::Mat& dst, 
+      int winsize, 
+      int ftzero, 
+      uchar* buf);
 
   /**
    * @brief      Computes a best estimate of a normalization image from a vector
