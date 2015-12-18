@@ -31,6 +31,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
@@ -50,7 +51,9 @@ namespace swri_image_util
     ContrastStretchNodelet() :
       bins_(8),
       max_min_(0.0),
-      min_max_(0.0)
+      min_max_(0.0),
+      over_exposure_threshold_(255.0),
+      over_exposure_dilation_(3)
     {
     }
 
@@ -66,6 +69,8 @@ namespace swri_image_util
       priv.param("bins", bins_, bins_);
       priv.param("max_min", max_min_, max_min_);
       priv.param("min_max", min_max_, min_max_);
+      priv.param("over_exposure_threshold", over_exposure_threshold_, over_exposure_threshold_);
+      priv.param("over_exposure_dilation", over_exposure_dilation_, over_exposure_dilation_);
       
       std::string mask;
       priv.param("mask", mask, std::string(""));
@@ -83,7 +88,26 @@ namespace swri_image_util
     {
       cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-      swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask_, max_min_, min_max_);
+      cv::Mat mask;
+
+      if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
+      {
+        cv::Mat over_exposed = cv_image->image > over_exposure_threshold_;
+        cv::Mat element = cv::getStructuringElement(
+          cv::MORPH_ELLIPSE,
+          cv::Size(2 * over_exposure_dilation_ + 1, 2 * over_exposure_dilation_ + 1 ),
+          cv::Point(over_exposure_dilation_, over_exposure_dilation_ ));
+        cv::dilate(over_exposed, over_exposed, element);
+        
+        mask = mask_.clone();
+        mask.setTo(0, over_exposed);
+      }
+      else
+      {
+        mask = mask_;
+      }
+
+      swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask, max_min_, min_max_);
 
       image_pub_.publish(cv_image->toImageMsg());
     }
@@ -92,6 +116,8 @@ namespace swri_image_util
     int32_t bins_;
     double max_min_;
     double min_max_;
+    double over_exposure_threshold_;
+    int32_t over_exposure_dilation_;
     
     cv::Mat mask_;
 
