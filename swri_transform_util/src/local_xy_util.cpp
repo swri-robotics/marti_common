@@ -33,12 +33,15 @@
 
 #include <boost/make_shared.hpp>
 
+#include <tf/transform_datatypes.h>
+
 #include <geographic_msgs/GeoPose.h>
 #include <gps_common/GPSFix.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/earth_constants.h>
+#include <swri_transform_util/transform_util.h>
 
 namespace swri_transform_util
 {
@@ -69,16 +72,16 @@ namespace swri_transform_util
   LocalXyWgs84Util::LocalXyWgs84Util(
       double reference_latitude,
       double reference_longitude,
-      double reference_heading,
+      double reference_angle,
       double reference_altitude) :
     reference_latitude_(reference_latitude * swri_math_util::_deg_2_rad),
     reference_longitude_(reference_longitude * swri_math_util::_deg_2_rad),
-    reference_heading_(reference_heading * swri_math_util::_deg_2_rad),
+    reference_angle_(reference_angle * swri_math_util::_deg_2_rad),
     reference_altitude_(reference_altitude),
     rho_lat_(0),
     rho_lon_(0),
-    cos_heading_(0),
-    sin_heading_(0),
+    cos_angle_(0),
+    sin_angle_(0),
     frame_("map"),
     initialized_(false)
   {
@@ -88,12 +91,12 @@ namespace swri_transform_util
   LocalXyWgs84Util::LocalXyWgs84Util() :
     reference_latitude_(0),
     reference_longitude_(0),
-    reference_heading_(0),
+    reference_angle_(0),
     reference_altitude_(0),
     rho_lat_(0),
     rho_lon_(0),
-    cos_heading_(0),
-    sin_heading_(0),
+    cos_angle_(0),
+    sin_angle_(0),
     frame_("map"),
     initialized_(false)
   {
@@ -105,10 +108,10 @@ namespace swri_transform_util
 
   void LocalXyWgs84Util::Initialize()
   {
-    reference_heading_ = swri_math_util::WrapRadians(reference_heading_, 0);
+    reference_angle_ = swri_math_util::WrapRadians(reference_angle_, 0);
 
-    cos_heading_ = std::cos(reference_heading_);
-    sin_heading_ = std::sin(reference_heading_);
+    cos_angle_ = std::cos(reference_angle_);
+    sin_angle_ = std::sin(reference_angle_);
 
     double depth = -reference_altitude_;
 
@@ -128,12 +131,22 @@ namespace swri_transform_util
   {
     if (!initialized_)
     {
+      ros::NodeHandle node;
+      bool ignore_reference_angle = false;
+      node.param("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
+    
       try
       {
         const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
         reference_latitude_ = origin->latitude * swri_math_util::_deg_2_rad;
         reference_longitude_ = origin->longitude * swri_math_util::_deg_2_rad;
         reference_altitude_ = origin->altitude;
+        
+        if (!ignore_reference_angle)
+        {
+          reference_angle_ = ToYaw(origin->track);
+        }
+        
         std::string frame = origin->header.frame_id;
 
         if (frame.empty()) 
@@ -141,7 +154,6 @@ namespace swri_transform_util
           // If the origin has an empty frame id, look for a frame in
           // the global parameter /local_xy_frame.  This provides
           // compatibility with older bag files.
-          ros::NodeHandle node;
           node.param("/local_xy_frame", frame, frame_);
         }
 
@@ -160,7 +172,11 @@ namespace swri_transform_util
         reference_longitude_ = origin->position.longitude * swri_math_util::_deg_2_rad;
         reference_altitude_ = origin->position.altitude;
         
-        ros::NodeHandle node;
+        if (!ignore_reference_angle)
+        {
+          reference_angle_ = tf::getYaw(origin->orientation);
+        }
+        
         node.param("/local_xy_frame", frame_, frame_);
 
         Initialize();
@@ -184,9 +200,9 @@ namespace swri_transform_util
     return reference_latitude_ * swri_math_util::_rad_2_deg;
   }
 
-  double LocalXyWgs84Util::ReferenceHeading() const
+  double LocalXyWgs84Util::ReferenceAngle() const
   {
-    return reference_heading_ * swri_math_util::_rad_2_deg;
+    return reference_angle_ * swri_math_util::_rad_2_deg;
   }
 
   double LocalXyWgs84Util::ReferenceAltitude() const
@@ -217,8 +233,8 @@ namespace swri_transform_util
       double dLat = (rlat - reference_latitude_) * rho_lat_;
       double dLon = (rlon - reference_longitude_) * rho_lon_;
 
-      y = dLat * cos_heading_ + dLon * sin_heading_;
-      x = -1.0 * (dLat * sin_heading_ - dLon * cos_heading_);
+      x =  cos_angle_ * dLon + sin_angle_ * dLat;
+      y = -sin_angle_ * dLon + cos_angle_ * dLat;
 
       return true;
     }
@@ -234,8 +250,8 @@ namespace swri_transform_util
   {
     if (initialized_)
     {
-      double dLon = cos_heading_ * x + sin_heading_ * y;
-      double dLat = (y - dLon * sin_heading_) / cos_heading_;
+      double dLon = cos_angle_ * x - sin_angle_ * y;
+      double dLat = sin_angle_ * x + cos_angle_ * y;
       double rlat = (dLat / rho_lat_) + reference_latitude_;
       double rlon = (dLon / rho_lon_) + reference_longitude_;
 
