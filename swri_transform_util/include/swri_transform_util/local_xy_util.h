@@ -97,7 +97,7 @@ namespace swri_transform_util
     LocalXyWgs84Util(
         double reference_latitude,
         double reference_longitude,
-        double reference_heading = 0,
+        double reference_angle = 0,
         double reference_altitude = 0);
     // TODO(malban): What is the heading referenced from?
 
@@ -109,7 +109,7 @@ namespace swri_transform_util
 
     double ReferenceLatitude() const;
 
-    double ReferenceHeading() const;
+    double ReferenceAngle() const;
 
     double ReferenceAltitude() const;
 
@@ -150,13 +150,13 @@ namespace swri_transform_util
   protected:
     double reference_latitude_;   //< Reference latitude in radians.
     double reference_longitude_;  //< Reference longitude in radians.
-    double reference_heading_;    //< Reference heading in radians.
+    double reference_angle_;      //< Reference angle in radians ENU.
     double reference_altitude_;   //< Reference altitude in meters.
 
     double rho_lat_;
     double rho_lon_;
-    double cos_heading_;
-    double sin_heading_;
+    double cos_angle_;
+    double sin_angle_;
 
     std::string frame_;
 
