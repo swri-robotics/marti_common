@@ -213,12 +213,12 @@ namespace swri_image_util
   
     // Source code from OpenCV: modules/calib3d/src/stereobm.cpp
     int x, y, wsz2 = winsize / 2;
-    int* vsum = (int*)cv::alignPtr(buf + (wsz2 + 1) * sizeof(vsum[0]), 32);
+    int* vsum = reinterpret_cast<int*>(cv::alignPtr(buf + (wsz2 + 1) * sizeof(vsum[0]), 32));
     int scale_g = winsize * winsize / 8, scale_s = (1024 + scale_g) / (scale_g * 2);
     const int OFS = 256 * 5, TABSZ = OFS * 2 + 256;
     uchar tab[TABSZ];
     const uchar* sptr = src.ptr();
-    int srcstep = (int)src.step;
+    int srcstep = src.step;
     cv::Size size = src.size();
 
     scale_g *= scale_s;
