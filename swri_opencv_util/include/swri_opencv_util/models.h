@@ -43,7 +43,7 @@ namespace swri_opencv_util
     typedef cv::Mat T;         // An Nx4 float matrix
     typedef cv::Mat M;
     
-    Correspondence2d(const T& data) : data_(data) {}
+    explicit Correspondence2d(const T& data) : data_(data) {}
     
     virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const = 0;
     int32_t GetInlierCount(const M& model, double max_error);
@@ -74,7 +74,7 @@ namespace swri_opencv_util
   public:
     enum { MIN_SIZE = 4 };
     
-    Homography(const T& data) : Correspondence2d(data) {}
+    explicit Homography(const T& data) : Correspondence2d(data) {}
     virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
     bool ValidData() const 
     { 
@@ -90,7 +90,7 @@ namespace swri_opencv_util
   public:
     enum { MIN_SIZE = 3 };
     
-    AffineTransform2d(const T& data) : Correspondence2d(data) {}
+    explicit AffineTransform2d(const T& data) : Correspondence2d(data) {}
     virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
     bool ValidData() const 
     { 
@@ -103,7 +103,7 @@ namespace swri_opencv_util
   public:
     enum { MIN_SIZE = 2 };
     
-    RigidTransform2d(const T& data) : Correspondence2d(data) {}
+    explicit RigidTransform2d(const T& data) : Correspondence2d(data) {}
     virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
     bool ValidData() const 
     { 
@@ -116,7 +116,7 @@ namespace swri_opencv_util
   public:
     enum { MIN_SIZE = 1 };
     
-    Translation2d(const T& data) : Correspondence2d(data) {}
+    explicit Translation2d(const T& data) : Correspondence2d(data) {}
     virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
     bool ValidData() const 
     { 
