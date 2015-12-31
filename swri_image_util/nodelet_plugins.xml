@@ -20,7 +20,7 @@
 
   <class name="swri_image_util/normalize_response" type="swri_image_util::NormalizeResponseNodelet" base_class_type="nodelet::Nodelet">
     <description>
-      Nodelet to contrast stretch an image.
+      Nodelet to normalize the response of an image.
     </description>
   </class>
 
