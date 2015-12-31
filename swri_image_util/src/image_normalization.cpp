@@ -153,6 +153,9 @@ namespace swri_image_util
         min_vals.at<double>(i, j) = minVal;
       }
     }
+    
+    cv::blur(max_vals, max_vals, cv::Size(3, 3));
+    cv::blur(min_vals, min_vals, cv::Size(3, 3));
 
     // Stretch contrast accordingly
     for(int i = 0; i < source_image.rows; i++)
