@@ -34,6 +34,7 @@ def parse_origin(local_xy_origin):
             _gps_fix.latitude = origin["latitude"]
             _gps_fix.longitude = origin["longitude"]
             _gps_fix.altitude = origin["altitude"]
+            _gps_fix.track = 90
             
             _origin_pub.publish(_gps_fix)
 
@@ -48,7 +49,8 @@ def gps_callback(data):
         _sub = None
        
         _gps_fix = data
-        _gps_fix.status.header.frame_id = "auto"
+        _gps_fix.header.frame_id = _local_xy_frame
+        _gps_fix.track = 90
         
         _origin_pub.publish(_gps_fix)
 
