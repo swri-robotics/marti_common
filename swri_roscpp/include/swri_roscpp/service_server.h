@@ -170,6 +170,7 @@ ServiceServer& ServiceServer::operator=(const ServiceServer &other)
   impl_ = other.impl_;
   impl_->setInstrumentPerClient(instrument_per_client);
   impl_->setLogCalls(log_calls);
+  return *this;
 }
 
 inline
