@@ -2,6 +2,15 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixes nodelet description for normalize_response.
+* Tweaks contrast stretching to increase blending of min/max bounds across grid.
+* Removes some C-style casts.
+* Adds parameters for masking out over exposed areas out of the contrast stretch processing.
+* Adds normalize response image normalization method.
+* Contributors: Marc Alban
+
 0.0.7 (2015-11-18)
 ------------------
 

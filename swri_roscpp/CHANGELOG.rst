@@ -2,9 +2,19 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Makes swri::Subscriber's assignment operator return a value.
+  According to the C++ spec, assignment operators must return a reference to the
+  current object (\*this). swri::Subscriber's assignment operator was not
+  returning a value, which works in GCC, but not Clang. GCC would do the right
+  thing for you, but Clang will compile the code but generate a SIGILL 
+  exception at runtime. This is easily fixed by manually returning \*this.
+* Contributors: P. J. Reed
+
 0.0.7 (2015-11-18)
 ------------------
-* Fixes broken changelog `#279<https://github.com/swri-robotics/marti_common/issues/279>`_.
+* Fixes broken changelog `#279 <https://github.com/swri-robotics/marti_common/issues/279>`_.
 
 0.0.6 (2015-11-17)
 ------------------

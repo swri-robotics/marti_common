@@ -2,6 +2,17 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Accounts for non-zero reference angles when calculating orientations to and from WGS84.
+* Publishes origin with east orientation (0 yaw) by default.
+* Supports arbitrary local_xy reference angles.
+  * The reference heading is renamed to reference angle.
+  * It's not recommended to set a non-zero reference angle.
+  * Adds a parameter to ignore the reference heading for backwards compatibility.
+* Fixes backwards compatibility issue with swri_yaml_cpp call.
+* Contributors: Kris Kozak, Marc Alban
+
 0.0.7 (2015-11-18)
 ------------------
 
@@ -17,7 +28,7 @@ Changelog for package swri_transform_util
 
 0.0.4 (2015-09-27)
 ------------------
-* Fixes missing dependencies. `#239<https://github.com/swri-robotics/marti_common/issues/239>`_.
+* Fixes missing dependencies. `#239 <https://github.com/swri-robotics/marti_common/issues/239>`_.
 * Contributors: Ed Venator
 
 0.0.3 (2015-09-26)
