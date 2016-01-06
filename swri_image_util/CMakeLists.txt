@@ -97,7 +97,7 @@ target_link_libraries(normalize_response ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_rostest_gtest(test_geometry_util launch/geometry_util.test test/test_geometry_util.cpp)
+  add_rostest_gtest(test_geometry_util test/geometry_util.test test/test_geometry_util.cpp)
   target_link_libraries(test_geometry_util ${PROJECT_NAME})
 endif()
 
@@ -106,14 +106,18 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets normalization_image_generator_node dummy_image_publisher rotate_image scale_image draw_text contrast_stretch
+install(TARGETS ${PROJECT_NAME} 
+    ${PROJECT_NAME}_nodelets
+    normalization_image_generator_node 
+    dummy_image_publisher
+    rotate_image
+    scale_image
+    draw_text
+    contrast_stretch
+    normalize_response
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-)
-
-install(DIRECTORY launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 install(FILES nodelet_plugins.xml
