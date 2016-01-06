@@ -31,6 +31,7 @@
 
 #include <boost/make_shared.hpp>
 
+#include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 
 #include <pluginlib/class_list_macros.h>
@@ -158,7 +159,10 @@ namespace swri_transform_util
   
   tf::Quaternion TfToWgs84Transform::GetOrientation() const
   {
-    return transform_.getRotation();
+    tf::Quaternion reference_angle = tf::createQuaternionFromYaw(
+      swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+ 
+    return transform_.getRotation() * reference_angle;
   }
   
   Wgs84ToTfTransform::Wgs84ToTfTransform(
@@ -183,7 +187,10 @@ namespace swri_transform_util
   
   tf::Quaternion Wgs84ToTfTransform::GetOrientation() const
   {
-    return transform_.getRotation();
+    tf::Quaternion reference_angle = tf::createQuaternionFromYaw(
+      swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+      
+    return transform_.getRotation() * reference_angle.inverse();
   }
 }
 
