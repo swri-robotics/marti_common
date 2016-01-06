@@ -89,17 +89,16 @@ namespace swri_transform_util
     /**
      * Constructor.
      *
-     * @param[in] reference_latitude  Reference latitude in degrees.
+     * @param[in] reference_latitude   Reference latitude in degrees.
      * @param[in] reference_longitude  Reference longitude in degrees.
-     * @param[in] reference_altitude  Reference altitude in meters.
-     * @param[in] reference_heading  Reference heading in degrees.
+     * @param[in] reference_angle      Reference angle in degrees ENU.
+     * @param[in] reference_altitude   Reference altitude in meters.
      */
     LocalXyWgs84Util(
         double reference_latitude,
         double reference_longitude,
         double reference_angle = 0,
         double reference_altitude = 0);
-    // TODO(malban): What is the heading referenced from?
 
     LocalXyWgs84Util();
 
@@ -109,6 +108,9 @@ namespace swri_transform_util
 
     double ReferenceLatitude() const;
 
+    /**
+     * Returns the reference angle in degrees ENU.
+     */
     double ReferenceAngle() const;
 
     double ReferenceAltitude() const;
