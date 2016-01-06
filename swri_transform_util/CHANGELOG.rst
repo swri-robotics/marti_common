@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.2 (2016-01-06)
+------------------
 * Account for non-zero reference angles when calculating orientations to and from WGS84.
 * Support arbitrary local_xy reference angles.
   * The reference heading has been renamed to reference angle.

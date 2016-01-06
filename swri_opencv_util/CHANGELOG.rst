@@ -2,8 +2,8 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.2 (2016-01-06)
+------------------
 * Mark some constructors explicit.
 * Refactor RANSAC matching code to use more matrix operations.
 * Fix bugs in FitRigidTransform2d.
