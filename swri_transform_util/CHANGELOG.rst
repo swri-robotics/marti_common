@@ -2,6 +2,16 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Account for non-zero reference angles when calculating orientations to and from WGS84.
+* Support arbitrary local_xy reference angles.
+  * The reference heading has been renamed to reference angle.
+  * It's not recommended to set a non-zero reference angle.
+  * A parameter is provided to ignore the reference heading for backwards compatibility.
+* Fix backwards compatibility issue with swri_yaml_cpp call.
+* Contributors: Kris Kozak, Marc Alban
+
 0.1.1 (2015-11-17)
 ------------------
 * Adds a GetTF method to transform_util::Transform.
@@ -12,10 +22,10 @@ Changelog for package swri_transform_util
 0.1.0 (2015-09-29)
 ------------------
 * Updates lot_lon_tf_echo to use geometry_msgs/PoseStamped.
-  See issue `#246 <https://github.com/evenator/marti_common/issues/246>`_
+  See issue `#246 <https://github.com/evenator/marti_common/issues/246>`__
 * Removes dependency on gps_common
   The gps_common package was removed in ROS Jade, so a different message
-  type is needed for the local XY origin message. (Issue `#246 <https://github.com/swri-robotics/marti_common/issues/246>`_).
+  type is needed for the local XY origin message. (Issue `#246 <https://github.com/swri-robotics/marti_common/issues/246>`__).
   This replaces the gps_common/GPSFix message with a
   geometry_msgs/PoseStamped message. The latitude is stored in
   pose.position.y, the longitude is stored in pose.position.x, and the
@@ -31,7 +41,7 @@ Changelog for package swri_transform_util
 
 0.0.4 (2015-09-27)
 ------------------
-* Fixes missing dependencies. `#239<https://github.com/swri-robotics/marti_common/issues/239>`_.
+* Fixes missing dependencies. `#239 <https://github.com/swri-robotics/marti_common/issues/239>`_.
 * Contributors: Ed Venator
 
 0.0.3 (2015-09-26)

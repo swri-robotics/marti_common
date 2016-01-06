@@ -2,6 +2,17 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Mark some constructors explicit.
+* Refactor RANSAC matching code to use more matrix operations.
+* Fix bugs in FitRigidTransform2d.
+  The main problem was that reshape was being incorrectly, causing the
+  points to get shuffled around.  Once that was fixed, it was clear that
+  the rotation should not be inverted.  Also added a comment to clarify
+  the significance of the returned transform.
+* Contributors: Elliot Johnson, Marc Alban
+
 0.1.1 (2015-11-17)
 ------------------
 

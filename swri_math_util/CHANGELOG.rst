@@ -2,6 +2,11 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Refactors RANSAC matching code to use more matrix operations.
+* Contributors: Marc Alban
+
 0.1.1 (2015-11-17)
 ------------------
 * Minor change: marks single-argument constructor for Ransac explicit.
