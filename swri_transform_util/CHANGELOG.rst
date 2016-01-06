@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.8 (2016-01-06)
+------------------
 * Accounts for non-zero reference angles when calculating orientations to and from WGS84.
 * Publishes origin with east orientation (0 yaw) by default.
 * Supports arbitrary local_xy reference angles.

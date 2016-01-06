@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.8 (2016-01-06)
+------------------
 * Makes swri::Subscriber's assignment operator return a value.
   According to the C++ spec, assignment operators must return a reference to the
   current object (\*this). swri::Subscriber's assignment operator was not
