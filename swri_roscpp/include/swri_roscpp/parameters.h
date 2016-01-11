@@ -5,7 +5,7 @@
 
 namespace swri
 {
-static
+static inline
 void param(const ros::NodeHandle &nh,
            const std::string &name,
            int &variable,
@@ -15,7 +15,7 @@ void param(const ros::NodeHandle &nh,
   ROS_INFO("Read parameter %s = %d", name.c_str(), variable);
 }
 
-static
+static inline
 void param(const ros::NodeHandle &nh,
            const std::string &name,
            double &variable,
@@ -25,7 +25,7 @@ void param(const ros::NodeHandle &nh,
   ROS_INFO("Read parameter %s = %f", name.c_str(), variable);
 }
 
-static
+static inline
 void param(const ros::NodeHandle &nh,
            const std::string &name,
            std::string &variable,
@@ -35,7 +35,7 @@ void param(const ros::NodeHandle &nh,
   ROS_INFO("Read parameter %s = \"%s\"", name.c_str(), variable.c_str());
 }
 
-static
+static inline
 void param(const ros::NodeHandle &nh,
            const std::string &name,
            bool &variable,
