@@ -6,6 +6,7 @@
 #
 
 import rospy
+import tf
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import NavSatFix
 from diagnostic_msgs.msg import DiagnosticArray
@@ -94,13 +95,19 @@ def make_diagnostic(origin, static_origin):
 def initialize_origin():
     global _origin
     rospy.init_node('initialize_origin', anonymous=True)
-    origin_pub = rospy.Publisher('/local_xy_origin', PoseStamped, latch=True)
-    diagnostic_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+    origin_pub = rospy.Publisher('/local_xy_origin', PoseStamped, latch=True, queue_size=2)
+    diagnostic_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=2)
     origin_name = rospy.get_param('~local_xy_origin', 'auto')
     rospy.loginfo('Local XY origin is "' + origin_name + '"')
     origin_frame_id = rospy.get_param(rospy.search_param('local_xy_frame'), 'map')
+    origin_frame_identity = rospy.get_param('~local_xy_frame_identity', origin_frame_id + "__identity")
     rospy.loginfo('Local XY frame ID is "' + origin_frame_id + '"')
     
+    if len(origin_frame_id):
+        tf_broadcaster = tf.TransformBroadcaster()
+    else:
+        tf_broadcaster = None
+
     if origin_name != "auto":
         origin_list = rospy.get_param('~local_xy_origins', [])
         _origin = make_origin_from_list(origin_frame_id, origin_name, origin_list)
@@ -113,6 +120,16 @@ def initialize_origin():
         sub.impl.add_callback(gps_callback, (origin_frame_id, origin_pub, sub))
         rospy.loginfo('Subscribed to NavSat on ' + sub.resolved_name)
     while not rospy.is_shutdown():
+        if tf_broadcaster:
+            # Publish transform involving map (to an anonymous unused
+            # frame) so that TransformManager can support /tf<->/wgs84
+            # conversions without requiring additional nodes.
+            tf_broadcaster.sendTransform(
+                (0, 0, 0),
+                (0, 0, 0, 1),
+                rospy.Time.now(),
+                origin_frame_identity, origin_frame_id)
+
         diagnostic_pub.publish(make_diagnostic(_origin, (origin_name != "auto")))
         rospy.sleep(1.0)
 
