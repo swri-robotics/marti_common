@@ -8,6 +8,7 @@
 import subprocess
 import roslib; roslib.load_manifest('swri_transform_util')
 import rospy
+import tf
 from gps_common.msg import GPSFix
 from diagnostic_msgs.msg import DiagnosticArray
 from diagnostic_msgs.msg import DiagnosticStatus
@@ -59,22 +60,38 @@ def initialize_origin():
    
     global _origin_pub
     global _local_xy_frame
-    _origin_pub = rospy.Publisher('/local_xy_origin', GPSFix, latch=True)
+    _origin_pub = rospy.Publisher('/local_xy_origin', GPSFix, latch=True, queue_size=2)
     
-    diagnostic_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+    diagnostic_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=2)
    
     local_xy_origin = rospy.get_param('~local_xy_origin', 'auto')
     _local_xy_frame = rospy.get_param('~local_xy_frame', 'map')
+    _local_xy_frame_identity = rospy.get_param('~local_xy_frame_identity', _local_xy_frame + "__identity")
    
     if local_xy_origin == "auto":
         global _sub
         _sub = rospy.Subscriber("gps", GPSFix, gps_callback)
     else:
         parse_origin(local_xy_origin)
+
+    if len(_local_xy_frame):
+        tf_broadcaster = tf.TransformBroadcaster()
+    else:
+        tf_broadcaster = None
    
     hw_id = rospy.get_param('~hw_id', 'none') 
-    
+
     while not rospy.is_shutdown():
+        if tf_broadcaster:
+            # Publish transform involving map (to an anonymous unused
+            # frame) so that TransformManager can support /tf<->/wgs84
+            # conversions without requiring additional nodes.
+            tf_broadcaster.sendTransform(
+                (0, 0, 0),
+                (0, 0, 0, 1),
+                rospy.Time.now(),
+                _local_xy_frame_identity, _local_xy_frame)
+
         if _gps_fix == None:
             diagnostic = DiagnosticArray()
             diagnostic.header.stamp = rospy.Time.now()
