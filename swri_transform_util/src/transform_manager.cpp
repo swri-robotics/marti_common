@@ -191,15 +191,22 @@ namespace swri_transform_util
         return true;
       }
 
-      ROS_WARN_THROTTLE(2.0, "[transform_manager]: Failed to get tf transform.");
+      ROS_WARN_THROTTLE(
+        2.0,
+        "[transform_manager]: Failed to get tf transform ('%s' to '%s').  Both "
+        "frames exist in tf.",
+        source_frame.c_str(), target_frame.c_str());
       return false;
     }
 
     SourceTargetMap::const_iterator source_iter = transformers_.find(source);
     if (source_iter == transformers_.end())
     {
-      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
-          source.c_str(), target.c_str());
+      ROS_WARN_THROTTLE(
+        2.0,
+        "[transform_manager]: No transformer from '%s' to '%s'."
+        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        source.c_str(), target.c_str(), source.c_str());
 
       return false;
     }
@@ -207,8 +214,11 @@ namespace swri_transform_util
     TransformerMap::const_iterator target_iter = source_iter->second.find(target);
     if (target_iter == source_iter->second.end())
     {
-      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
-          source.c_str(), target.c_str());
+      ROS_WARN_THROTTLE(
+        2.0,
+        "[transform_manager]: No transformer from '%s' to '%s'."
+        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        source.c_str(), target.c_str(), target.c_str());
 
       return false;
     }
@@ -217,7 +227,7 @@ namespace swri_transform_util
 
     if (!transformer)
     {
-      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
+      ROS_ERROR_THROTTLE(2.0, "[transform_manager]: Encountered null transformer for '%s' to '%s'.",
           source.c_str(), target.c_str());
 
       return false;
@@ -315,8 +325,11 @@ namespace swri_transform_util
     SourceTargetMap::const_iterator source_iter = transformers_.find(source);
     if (source_iter == transformers_.end())
     {
-      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
-          source.c_str(), target.c_str());
+      ROS_WARN_THROTTLE(
+        2.0,
+        "[transform_manager]: No transformer for transforming '%s' to '%s'."
+        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        source.c_str(), target.c_str(), source.c_str());
 
       return false;
     }
@@ -324,8 +337,11 @@ namespace swri_transform_util
     TransformerMap::const_iterator target_iter = source_iter->second.find(target);
     if (target_iter == source_iter->second.end())
     {
-      ROS_WARN_THROTTLE(2.0, "[transform_manager]: No transformer for transforming %s to %s",
-          source.c_str(), target.c_str());
+      ROS_WARN_THROTTLE(
+        2.0,
+        "[transform_manager]: No transformer for transforming '%s' to '%s'."
+        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        source.c_str(), target.c_str(), target.c_str());
 
       return false;
     }
