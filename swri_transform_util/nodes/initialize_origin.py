@@ -117,7 +117,7 @@ def initialize_origin():
             status.name = "LocalXY Origin"
             status.hardware_id = hw_id
 
-            if _gps_fix.status.header.frame_id == 'auto':
+            if local_xy_origin == 'auto':
                 status.level = DiagnosticStatus.OK
                 status.message = "Has Origin (auto)"
             else:
