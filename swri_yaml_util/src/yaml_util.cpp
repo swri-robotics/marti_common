@@ -59,6 +59,11 @@ namespace YAML
     value = node.as<int16_t>();
   }
 
+  void operator >> (const YAML::Node& node, uint16_t& value)
+  {
+    value = node.as<uint16_t>();
+  }
+
   void operator >> (const YAML::Node& node, int32_t& value)
   {
     value = node.as<int32_t>();
