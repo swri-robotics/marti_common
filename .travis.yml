@@ -10,14 +10,6 @@ notifications:
 env:
   matrix:
     - USE_DEB=true
-      ROS_DISTRO="indigo" 
-      ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
-      ADDITIONAL_DEBS="ros-indigo-marti-can-msgs ros-indigo-marti-common-msgs ros-indigo-marti-data-structures ros-indigo-marti-nav-msgs ros-indigo-marti-perception-msgs ros-indigo-marti-sensor-msgs ros-indigo-marti-visualization-msgs"
-    - USE_DEB=true
-      ROS_DISTRO="indigo"
-      ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu
-      ADDITIONAL_DEBS="ros-indigo-marti-can-msgs ros-indigo-marti-common-msgs ros-indigo-marti-data-structures ros-indigo-marti-nav-msgs ros-indigo-marti-perception-msgs ros-indigo-marti-sensor-msgs ros-indigo-marti-visualization-msgs"
-    - USE_DEB=true
       ROS_DISTRO="jade" 
       ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
       ADDITIONAL_DEBS="ros-jade-marti-can-msgs ros-jade-marti-common-msgs ros-jade-marti-data-structures ros-jade-marti-nav-msgs ros-jade-marti-perception-msgs ros-jade-marti-sensor-msgs ros-jade-marti-visualization-msgs"
