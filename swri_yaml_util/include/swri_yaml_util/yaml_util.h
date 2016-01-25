@@ -44,6 +44,7 @@ namespace YAML
   void operator >> (const YAML::Node& node, double& value);
   void operator >> (const YAML::Node& node, bool& value);
   void operator >> (const YAML::Node& node, int16_t& value);
+  void operator >> (const YAML::Node& node, uint16_t& value);
   void operator >> (const YAML::Node& node, int32_t& value);
   void operator >> (const YAML::Node& node, uint32_t& value);
   void operator >> (const YAML::Node& node, int64_t& value);
