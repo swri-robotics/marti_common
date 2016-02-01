@@ -36,6 +36,13 @@ swri_transform_util (64-bit) | [![Build Status](http://build.ros.org/buildStatus
 mapviz (32-bit) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ibin_uS32__mapviz__ubuntu_saucy_i386__binary)](http://build.ros.org/job/Ibin_uS32__mapviz__ubuntu_saucy_i386__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ibin_uT32__mapviz__ubuntu_trusty_i386__binary)](http://build.ros.org/job/Ibin_uT32__mapviz__ubuntu_trusty_i386__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Jbin_uT32__mapviz__ubuntu_trusty_i386__binary)](http://build.ros.org/job/Jbin_uT32__mapviz__ubuntu_trusty_i386__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Jbin_uU32__mapviz__ubuntu_utopic_i386__binary)](http://build.ros.org/job/Jbin_uU32__mapviz__ubuntu_utopic_i386__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Jbin_uV32__mapviz__ubuntu_vivid_i386__binary)](http://build.ros.org/job/Jbin_uV32__mapviz__ubuntu_vivid_i386__binary/)
 mapviz (64-bit) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ibin_uS64__mapviz__ubuntu_saucy_amd64__binary)](http://build.ros.org/job/Ibin_uS64__mapviz__ubuntu_saucy_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Ibin_uT64__mapviz__ubuntu_trusty_amd64__binary)](http://build.ros.org/job/Ibin_uT64__mapviz__ubuntu_trusty_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Jbin_uT64__mapviz__ubuntu_trusty_amd64__binary)](http://build.ros.org/job/Jbin_uT64__mapviz__ubuntu_trusty_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Jbin_uU64__mapviz__ubuntu_utopic_amd64__binary)](http://build.ros.org/job/Jbin_uU64__mapviz__ubuntu_utopic_amd64__binary/) | [![Build Status](http://build.ros.org/buildStatus/icon?job=Jbin_uV64__mapviz__ubuntu_vivid_amd64__binary)](http://build.ros.org/job/Jbin_uV64__mapviz__ubuntu_vivid_amd64__binary/)
 
+Travis CI Build Status
+----------------------
+
+Indigo | Jade
+------ | ----
+[![Build Status](https://travis-ci.org/swri-robotics/marti_common.svg?branch=indigo-devel)](https://travis-ci.org/swri-robotics/marti_common) | [![Build Status](https://travis-ci.org/swri-robotics/marti_common.svg?branch=jade-devel)](https://travis-ci.org/swri-robotics/marti_common)
+
 Building From Source (ROS Indigo, Jade)
 ------------
 
