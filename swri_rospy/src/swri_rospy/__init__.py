@@ -37,8 +37,10 @@ def single_threaded(callback):
             # Wait for condition
             condition.wait()
             # Do the callback
-            ret = callback(*args, **kwds)
-            condition.notify()
+            try:
+                ret = callback(*args, **kwds)
+            finally:
+                condition.notify()
             return ret
     return wrapped_callback
 
