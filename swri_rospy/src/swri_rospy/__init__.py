@@ -29,6 +29,10 @@ def single_threaded(callback):
     wrapped with this decorator will put a condition on the callback_queue and
     then wait its turn before executing the decorated callback.
     '''
+    # Prevent recursive decoration, which would deadlock
+    if hasattr(callback, 'single_threaded') and callback.single_threaded:
+        return callback
+
     def wrapped_callback(*args, **kwds):
         # Put condition on queue
         condition = Condition()
@@ -42,6 +46,7 @@ def single_threaded(callback):
             finally:
                 condition.notify()
             return ret
+    wrapped_callback.single_threaded = True
     return wrapped_callback
 
 def service_wrapper(func):
