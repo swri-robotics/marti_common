@@ -8,6 +8,6 @@ catkin_package()
 
 catkin_python_setup()
 
-catkin_install_python(PROGRAMS nodes/single_threaded_listener
+catkin_install_python(PROGRAMS nodes/single_threaded_example
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -7,7 +7,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 setup_args = generate_distutils_setup(
     packages=['swri_rospy'],
     package_dir={'': 'src'},
-    requires=['rospy', 'std_msgs']
+    requires=['rospy', 'std_msgs', 'std_srvs']
 )
 
 setup(**setup_args)
