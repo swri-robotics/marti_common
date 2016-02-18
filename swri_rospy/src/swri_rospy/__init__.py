@@ -29,7 +29,7 @@ def single_threaded(callback):
     wrapped with this decorator will put a condition on the callback_queue and
     then wait its turn before executing the decorated callback.
     '''
-    def wrapped_callback(arg):
+    def wrapped_callback(*args, **kwds):
         # Put condition on queue
         condition = Condition()
         with condition:
@@ -37,7 +37,7 @@ def single_threaded(callback):
             # Wait for condition
             condition.wait()
             # Do the callback
-            ret = callback(arg)
+            ret = callback(*args, **kwds)
             condition.notify()
             return ret
     return wrapped_callback
