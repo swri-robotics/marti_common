@@ -41,3 +41,17 @@ def single_threaded(callback):
             condition.notify()
             return ret
     return wrapped_callback
+
+def service_wrapper(func):
+    '''
+    This is a decorator for functions that handle ROS service calls.
+    It catches unhandled exceptions and reports them cleanly as errors
+    on the ROS console.
+    '''
+    def wrapper(*args, **kwds):
+        try:
+            return func(*args, **kwds)
+        except:
+            rospy.logerr(traceback.format_exc())
+            return None
+    return wrapper
