@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.9 (2016-03-04)
+------------------
 * Fixes initialize_origin.py diagnostic reporting a warning that the
   origin is not automatic when it is.
 * Adds transform publisher to initialize_origin.py that publishes an

@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.9 (2016-03-04)
+------------------
 * Properly installs the normalize_response node.
 * No longer installs the geometry_util.test file.
 * Contributors: P. J. Reed

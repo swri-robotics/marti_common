@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.9 (2016-03-04)
+------------------
 * Adds getParam() functions to swri_roscpp.
   These functions wrap NodeHandle::getParam(). If the parameter does
   not exist, they emit an error message and return false.
