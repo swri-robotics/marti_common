@@ -2,6 +2,18 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adds getParam() functions to swri_roscpp.
+  These functions wrap NodeHandle::getParam(). If the parameter does
+  not exist, they emit an error message and return false.
+* Fixes some compiler warnings.
+* The swri::Subscriber::blockTimeouts function now returns a value.
+  Previously, it did not explicitly returning a value, which has
+  undefined behavior. It now returns the result of the blockTimeouts
+  function that it wraps.
+* Contributors: Edward Venator, Elliot Johnson, P. J. Reed
+
 0.0.8 (2016-01-06)
 ------------------
 * Makes swri::Subscriber's assignment operator return a value.
