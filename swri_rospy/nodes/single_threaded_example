@@ -1,35 +1,26 @@
 #!/usr/bin/env python
-import rospy
 import swri_rospy
+import rospy
 from std_msgs.msg import String
 from std_srvs.srv import Trigger, TriggerResponse
 
-# Decorating subscriber callbacks with single_threaded will make it wait for
-# their turn in the callback queue before executing
-@swri_rospy.single_threaded
 def sub_callback(data):
     rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
 
-# Decorating subscriber callbacks with single_threaded will make it wait for
-# their turn in the callback queue before executing
-@swri_rospy.single_threaded
 def timer_callback(event):
     rospy.loginfo(rospy.get_caller_id() + " Timer fired!")
 
-# Decorating service callbacks with single_threaded will make it wait for
-# their turn in the callback queue before executing
-@swri_rospy.single_threaded
 def service_callback(request):
     rospy.loginfo(rospy.get_caller_id() + " Got a trigger!")
     return TriggerResponse(success=True, message="Got a trigger!")
 
 def listener():
     rospy.init_node('listener', anonymous=True)
-    rospy.Subscriber('chatter', String, sub_callback)
-    rospy.Timer(rospy.Duration(1.0), timer_callback)
-    rospy.Service('trigger', Trigger, service_callback)
+    swri_rospy.Subscriber('chatter', String, sub_callback)
+    swri_rospy.Timer(rospy.Duration(1.0), timer_callback)
+    swri_rospy.Service('trigger', Trigger, service_callback)
     # spin() processes the callback queue until the node is stopped
-    swri_rospy.spin()
+    rospy.spin()
 
 if __name__ == '__main__':
     listener()

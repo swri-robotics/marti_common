@@ -1,4 +1,5 @@
 import rospy
+from rospy.impl.tcpros_base import DEFAULT_BUFF_SIZE
 from Queue import Queue, Empty as EmptyQueueException
 from threading import Condition
 
@@ -22,6 +23,9 @@ def spin():
             with condition:
                 condition.notify()
                 condition.wait()
+
+# Override the default rospy spin() with swri_rospy.spin()
+rospy.spin = spin
 
 def single_threaded(callback):
     '''
@@ -62,3 +66,27 @@ def service_wrapper(func):
             rospy.logerr(traceback.format_exc())
             return None
     return wrapper
+
+class Service(rospy.Service):
+    def __init__(self, name, service_class, handler,
+                 buff_size=DEFAULT_BUFF_SIZE, error_handler=None,
+                 asynchronous=False):
+        if not asynchronous:
+            handler = single_threaded(handler)
+        super(Service, self).__init__(name, service_class, handler, buff_size,
+                                      error_handler)
+
+class Subscriber(rospy.Subscriber):
+    def __init__(self, name, data_class, callback=None, callback_args=None, 
+                 queue_size=None, buff_size=DEFAULT_BUFF_SIZE,
+                 tcp_nodelay=False, asynchronous=False):
+        if not asynchronous:
+            callback = single_threaded(callback)
+        super(Subscriber, self).__init__(name, data_class, callback,
+              callback_args, queue_size, buff_size, tcp_nodelay)
+
+class Timer(rospy.Timer):
+    def __init__(self, period, callback, oneshot=False, asynchronous=False):
+        if not asynchronous:
+            callback = single_threaded(callback)
+        super(Timer, self).__init__(period, callback, oneshot)
