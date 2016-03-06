@@ -13,6 +13,7 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>python-psutil</exec_depend>
   
 </package>
 
