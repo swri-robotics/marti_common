@@ -41,6 +41,9 @@ target_link_libraries(service_server_test ${catkin_LIBRARIES})
 add_executable(timer_test src/nodes/timer_test.cpp)
 target_link_libraries(timer_test ${catkin_LIBRARIES})
 
+add_executable(param_test src/nodes/param_test.cpp)
+target_link_libraries(param_test ${catkin_LIBRARIES})
+
 ### Install Test Node and Headers ###
 install(TARGETS subscriber_test latched_subscriber_test
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
