@@ -43,7 +43,7 @@ namespace swri_system_util
     //   https://svn.boost.org/trac/boost/ticket/1976#comment:2
 
     // Cache system-dependent dot, double-dot and slash strings
-    
+
     #if BOOST_FILESYSTEM_VERSION == 3
     const boost::filesystem::path _dot = boost::filesystem::path(".").native();
     const boost::filesystem::path _dot_sep = boost::filesystem::path("./").native();
@@ -149,7 +149,7 @@ namespace swri_system_util
         #else
         if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
         #endif  // BOOST_FILESYSTE_VERSION == 3
-        
+
         // File matches, store it
         all_matching_files.push_back( i->path().string() );
       }
@@ -157,5 +157,41 @@ namespace swri_system_util
     }
     directory = direct;
     return all_matching_files;
+  }
+
+  std::vector<std::string> Find(
+      const std::string& path,
+      const std::string& expression,
+      int max_depth)
+  {
+    std::vector<std::string> files;
+
+    boost::filesystem::path root(path);
+    if(!boost::filesystem::exists(root) || !boost::filesystem::is_directory(root))
+    {
+      return files;
+    }
+
+    boost::regex filter(expression);
+    boost::filesystem::recursive_directory_iterator it(root);
+    boost::filesystem::recursive_directory_iterator end_it;
+    while (it != end_it)
+    {
+      if (max_depth >= 0 && it.level() >= max_depth)
+      {
+        it.no_push();
+      }
+
+      boost::smatch what;
+      std::string filename = it->path().filename().string();
+      if (boost::regex_match(filename, what, filter))
+      {
+        files.push_back(it->path().string());
+      }
+
+      ++it;
+    }
+
+    return files;
   }
 }
