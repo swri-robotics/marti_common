@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
 )
 
-find_package(OpenCV)
+find_package(OpenCV 2)
 find_package(Qt4 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
 

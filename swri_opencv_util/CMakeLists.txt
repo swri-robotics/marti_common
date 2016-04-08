@@ -3,7 +3,7 @@ project(swri_opencv_util)
 
 find_package(catkin REQUIRED COMPONENTS swri_math_util)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 2 REQUIRED)
 
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
