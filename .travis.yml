@@ -9,8 +9,17 @@ notifications:
     on_failure: always
 env:
   matrix:
-    - USE_DEB=true ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu ADDITIONAL_DEBS="ros-indigo-marti-can-msgs ros-indigo-marti-common-msgs ros-indigo-marti-data-structures ros-indigo-marti-nav-msgs ros-indigo-marti-perception-msgs ros-indigo-marti-sensor-msgs ros-indigo-marti-visualization-msgs"
-    - USE_DEB=true ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu ADDITIONAL_DEBS="ros-indigo-marti-can-msgs ros-indigo-marti-common-msgs ros-indigo-marti-data-structures ros-indigo-marti-nav-msgs ros-indigo-marti-perception-msgs ros-indigo-marti-sensor-msgs ros-indigo-marti-visualization-msgs"
+    - USE_DEB=true
+      ROS_DISTRO="indigo"
+      ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
+      # marti_common does not use opencv3, but having it installed will cause
+      # packages that depend on opencv2 to fail if they aren't explicit about
+      # which version they depend on.
+      ADDITIONAL_DEBS="ros-indigo-opencv3"
+    - USE_DEB=true
+      ROS_DISTRO="indigo"
+      ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu
+      ADDITIONAL_DEBS="ros-indigo-opencv3"
 install:
   - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
 script: 
