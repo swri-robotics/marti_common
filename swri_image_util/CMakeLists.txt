@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-find_package(OpenCV)
+find_package(OpenCV 2)
 find_package(Qt4 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
 
@@ -27,7 +27,14 @@ if(${Boost_LIB_VERSION} MATCHES "1_46*")
   add_definitions( -DBOOST_1_46 )
 endif(${Boost_LIB_VERSION} MATCHES "1_46*")
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3)
+if(NOT EIGEN3_FOUND)
+  # Fallback to pkg-config
+  find_package(PkgConfig)
+  pkg_check_modules(EIGEN3 REQUIRED eigen3)
+else()
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+endif()
 add_definitions(${EIGEN3_DEFINITIONS})
 
 include(${QT_USE_FILE})
@@ -51,7 +58,7 @@ catkin_package(
     tf
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} 
   src/image_normalization.cpp 
@@ -102,14 +109,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets normalization_image_generator_node dummy_image_publisher rotate_image scale_image draw_text contrast_stretch
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets normalization_image_generator_node dummy_image_publisher rotate_image scale_image draw_text contrast_stretch normalize_response
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-)
-
-install(DIRECTORY launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 install(FILES nodelet_plugins.xml
