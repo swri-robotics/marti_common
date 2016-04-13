@@ -102,6 +102,11 @@ namespace swri_transform_util
     return _earth_mean_radius * distance;
   }
 
+  double GreatCircleDistance(const tf::Vector3& src, const tf::Vector3& dst)
+  {
+    return GreatCircleDistance(src.y(), src.x(), dst.y(), dst.x());
+  }
+
   double GetBearing(
       double source_latitude,
       double source_longitude,
@@ -380,7 +385,7 @@ namespace swri_transform_util
     matrix[34] = sub_matrix[2][1];
     matrix[35] = sub_matrix[2][2];
   }
-  
+
   double LongitudeDegreesFromMeters(
     double latitude,
     double altitude,

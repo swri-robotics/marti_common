@@ -46,11 +46,31 @@ namespace swri_transform_util
       double reference_longitude,
       double reference_yaw);
 
+  /**
+   * Calculates the great circle distance between two points.
+   *
+   * @param[in] src_latitude   Source latitude
+   * @param[in] src_longitude  Source longitude
+   * @param[in] dst_latitude   Destination latitude
+   * @param[in] dst_longitude  Destination longitude
+   *
+   * @returns Distance in meters.
+   */
   double GreatCircleDistance(
       double src_latitude,
       double src_longitude,
       double dst_latitude,
       double dst_longitude);
+
+  /**
+   * Calculates the great circle distance between two points.
+   *
+   * @param[in] src  Source(x = longitude, y = latitude, z ignored)
+   * @param[in] dst  Destination(x = longitude, y = latitude, z ignored)
+   *
+   * @returns Distance in meters.
+   */
+  double GreatCircleDistance(const tf::Vector3& src, const tf::Vector3& dst);
 
   double GetBearing(
       double source_latitude,
