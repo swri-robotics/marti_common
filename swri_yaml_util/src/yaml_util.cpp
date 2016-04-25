@@ -29,6 +29,7 @@
 
 #include <swri_yaml_util/yaml_util.h>
 
+#include <stdio.h>
 // C++ standard libraries
 #include <sstream>
 #include <iomanip>
@@ -116,6 +117,53 @@ namespace swri_yaml_util
     }
     
     return true;
+  }
+
+  bool LoadString(const std::string& input, YAML::Node& yaml)
+  {
+    try
+    {
+#ifndef YAMLCPP_OLD_API
+      yaml = YAML::Load(input);
+#else
+      std::stringstream stream(input);
+      YAML::Parser parser(stream);
+      parser.GetNextDocument(yaml);
+#endif  // YAMLCPP_OLD_API
+    }
+    catch (...)
+    {
+      return false;
+    }
+    
+    return true;
+  }
+
+  bool LoadMap(const std::map<std::string,std::string>& dict, YAML::Node& yaml)
+  {
+    std::vector<std::string> items;
+    
+    for (std::map<std::string,std::string>::const_iterator iter = dict.begin();
+         iter != dict.end();
+         ++iter)
+    {
+      if (!iter->first.empty()) {
+        items.push_back("\"" + iter->first + "\": \"" + iter->second + "\"");
+      }
+    }
+
+    std::string input = "{ ";
+    for (size_t i = 0; i < items.size(); ++i) {
+      input += items[i];
+      if (i+1 < items.size()) {
+        input += ", ";
+      }
+    }
+    input += "}";
+
+    printf("stringified: %s", input.c_str());
+    
+    return LoadString(input, yaml);
   }
   
   bool FindValue(const YAML::Node& node, const std::string& name)
