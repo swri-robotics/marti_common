@@ -15,7 +15,7 @@ env:
     # marti_common does not use opencv3, but having it installed will cause
     # packages that depend on opencv2 to fail if they aren't explicit about
     # which version they depend on.
-    - ADDITIONAL_DEBS="ros-indigo-opencv3"
+    - ADDITIONAL_DEBS="ros-indigo-opencv3 python-catkin-pkg"
   matrix:
     - ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
     - ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu
