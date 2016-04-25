@@ -1,25 +1,24 @@
 sudo: required 
 dist: trusty 
-language: generic 
+language: generic
 compiler:
+  - clang
   - gcc
 notifications:
   email:
     on_success: always
     on_failure: always
 env:
-  matrix:
+  global:
     - USE_DEB=true
-      ROS_DISTRO="jade" 
-      ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
-      # marti_common does not use opencv3, but having it installed will cause
-      # packages that depend on opencv2 to fail if they aren't explicit about
-      # which version they depend on.
-      ADDITIONAL_DEBS="ros-jade-opencv3"
-    - USE_DEB=true 
-      ROS_DISTRO="jade"   
-      ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu
-      ADDITIONAL_DEBS="ros-jade-opencv3"
+    - ROS_DISTRO="jade"
+    # marti_common does not use opencv3, but having it installed will cause
+    # packages that depend on opencv2 to fail if they aren't explicit about
+    # which version they depend on.
+    - ADDITIONAL_DEBS="ros-jade-opencv3"
+  matrix:
+    - ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
+    - ROS_REPOSITORY_PATH=http://packages.ros.org/ros-shadow-fixed/ubuntu
 install:
   - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
 script: 
