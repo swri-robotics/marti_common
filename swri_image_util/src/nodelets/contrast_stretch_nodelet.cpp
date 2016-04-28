@@ -88,6 +88,15 @@ namespace swri_image_util
     {
       cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
+      if (mask_.empty())
+      {
+        mask_ = cv::Mat::ones(cv_image->image.size(), CV_8U);
+      }
+      else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols)
+      {
+        cv::resize(mask_, mask_, cv_image->image.size(), 1.0, 1.0, cv::INTER_NEAREST);
+      }
+
       cv::Mat mask;
 
       if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
