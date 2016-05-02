@@ -32,6 +32,8 @@
 
 #include <ros/node_handle.h>
 #include <diagnostic_updater/DiagnosticStatusWrapper.h>
+
+#include <swri_roscpp/parameters.h>
 #include <swri_roscpp/subscriber_impl.h>
 
 namespace swri
@@ -124,7 +126,11 @@ class Subscriber
   // Provide a negative value to disable the timeout (default is -1).
   void setTimeout(const ros::Duration &time_out);
   void setTimeout(const double time_out);
-
+  // Read the timeout directly from the parameter server.
+  void timeoutParam(const ros::NodeHandle &nh,
+                    const std::string &parameter_name,
+                    const double default_value);
+  
   // Block/unblock timeouts from occuring.  This allows you to
   // temporarily block timeouts (for example, if a message is not
   // expected in a particular mode).  Returns the current state
@@ -362,6 +368,17 @@ inline
 void Subscriber::setTimeout(const double time_out)
 {
   setTimeout(ros::Duration(time_out));
+}
+
+inline
+void Subscriber::timeoutParam(
+  const ros::NodeHandle &nh,
+  const std::string &parameter_name,
+  const double default_value)
+{
+  double timeout;
+  swri::param(nh, parameter_name, timeout, default_value);
+  setTimeout(timeout);
 }
 
 inline
