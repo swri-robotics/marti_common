@@ -248,17 +248,21 @@ void interpolateRouteSegment(
   double s;
   if (len > 1e-6) {
     s = distance / len;
-  } else if (distance < 0) {
-    // This is a degenerate case: If the points are too close together
-    // to define a numerically stable route point and the distance is
-    // negative, the interpolated value will be the first route point.
-    s = 0.0;
-  } else if (distance > 1) {
-    // This is a degenerate case: If the points are too close together
-    // to define a numerically stable route point and the distance is
-    // positive, the interpolated value will be the second route
-    // point.
-    s = 1.0;
+  } else {
+    // This is a degenerate case where the points are too close
+    // together to define a numerically stable route point.
+    if (distance < 0) {
+      // If the distance is negative, the interpolated value will be
+      // the first route point.
+      s = 0.0;
+    } else if (distance > 1) {
+      // If the distance is positive, the interpolated value will be
+      // the second route point.
+      s = 1.0;
+    } else {
+      // Otherwise just take the center of the two points.
+      s = 0.5;
+    }
   }
 
   dst.setPosition((1.0-s)*p0.position() + s*p1.position());
