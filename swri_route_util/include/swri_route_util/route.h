@@ -177,4 +177,7 @@ T Route::getTypedProperty(const std::string &name) const
   return boost::lexical_cast<T>(getProperty(name));
 }
 } // namespace swri_route_util
+
+#include "route_serializer.h"
+
 #endif  // SWRI_ROUTE_UTIL_ROUTE_H_
