@@ -101,5 +101,26 @@ bool interpolateRoutePosition(RoutePoint &point,
                               const Route &route,
                               const marti_nav_msgs::RoutePosition &position,
                               bool allow_extrapolation);
+
+// Return the distance between two route positions.  This function
+// works for routes defined in WGS84 or Euclidean spaces.
+bool routeDistance(
+  double &distance,
+  const marti_nav_msgs::RoutePosition &start,
+  const marti_nav_msgs::RoutePosition &end,
+  const Route &route);
+
+// Return the distances between a start route position and multiple
+// end route positions.  This function works for routes defined in
+// WGS84 or Euclidean spaces.  This function returns false if the
+// start point wasn't found in the route, in which case distances is
+// not modified.  If the function is true, the start point was found
+// and distances is guaranteed to be the same size as ends.  If an end
+// point is not found in the route, its distance is set to NaN.
+bool routeDistances(
+  std::vector<double> &distances,
+  const marti_nav_msgs::RoutePosition &start,
+  const std::vector<marti_nav_msgs::RoutePosition> &ends,
+  const Route &route);
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_UTIL_H_
