@@ -30,12 +30,16 @@
 #include <swri_route_util/route.h>
 #include <swri_route_util/route_point.h>
 
+#include <swri_transform_util/frames.h>
+#include <swri_transform_util/transform_util.h>
+
 namespace mnm = marti_nav_msgs;
+namespace stu = swri_transform_util;
 
 namespace swri_route_util
 {
 void transform(Route &route,
-               const swri_transform_util::Transform &transform,
+               const stu::Transform &transform,
                const std::string &target_frame)
 {
   for (auto &point : route.points) {
@@ -371,6 +375,142 @@ bool interpolateRoutePosition(RoutePoint &dst,
                           route.points[index+0],
                           route.points[index+1],
                           norm_position.distance);
+  return true;
+}
+
+bool routeDistance(
+  double &distance,
+  const mnm::RoutePosition &start,
+  const mnm::RoutePosition &end,
+  const Route &route)
+{
+  size_t start_index;
+  if (!route.findPointId(start_index, start.id)) {
+    return false;
+  }
+
+  size_t end_index;
+  if (!route.findPointId(end_index, end.id)) {
+    return false;
+  }
+
+  size_t min_index = std::min(start_index, end_index);
+  size_t max_index = std::max(start_index, end_index);
+
+  double d = 0.0;
+  if (route.header.frame_id == stu::_wgs84_frame) {
+    for (size_t i = min_index; i < max_index; i++) {
+      d += stu::GreatCircleDistance(route.points[i+1].position(), route.points[i].position());
+    }
+  } else {
+    for (size_t i = min_index; i < max_index; i++) {
+      d += (route.points[i+1].position() - route.points[i].position()).length();
+    }
+  }
+
+  if (end_index < start_index) {
+    d = -d;
+  }
+
+  distance = d + end.distance - start.distance;
+  return true;
+}
+
+bool routeDistances(
+  std::vector<double> &distances,
+  const mnm::RoutePosition &start,
+  const std::vector<mnm::RoutePosition> &ends,
+  const Route &route)
+{
+  size_t start_index;
+  if (!route.findPointId(start_index, start.id)) {
+    // Without a start index, we can't calculate anything.
+    return false;
+  }
+
+  // Find the indices for every point in the route, and the minimum
+  // and maximum indices that we need to work over (the ROI).
+  size_t min_index = start_index;
+  size_t max_index = start_index;
+  std::vector<int> indices;
+  indices.resize(ends.size());
+  for (size_t i = 0; i < ends.size(); ++i) {
+    size_t pt_index;
+    if (route.findPointId(pt_index, ends[i].id)) {
+      indices[i] = pt_index;
+      min_index = std::min(min_index, pt_index);
+      max_index = std::max(max_index, pt_index);
+    } else {
+      indices[i] = -1;
+    }
+  }
+
+  // This is the index of the start point in the ROI.
+  const size_t roi_start_index = start_index - min_index;
+
+  // We calculate the arc length of each point in the ROI relative to
+  // the start point.  This vector covers the ROI (so it corresponds
+  // from min_index to max_index)
+  std::vector<double> arc_lengths;
+  arc_lengths.resize(max_index-min_index+1);
+
+  // arc_lengths[0] = 0.0;
+  // for (size_t i = 1; i < arc_lengths.size(); i++) {
+  //   const tf::Vector3 pt1 = route.points[min_index+i].position();
+  //   const tf::Vector3 pt2 = route.points[min_index+i-1].position();
+  //   arc_lengths[i] = arc_lengths[i-1] + (pt2-pt1).length();
+  // }
+
+  // size_t roi_start_index = start_index - min_index;
+  // const double start_length = arc_lengths[roi_start_index];
+  // for (size_t i = 1; i < arc_lengths.size(); i++) {
+  //   arc_lengths[i] -= start_length;
+  // }
+
+  arc_lengths[roi_start_index] = 0.0;
+  if (route.header.frame_id == stu::_wgs84_frame) {
+    // Calculate the lengths before the start point.
+    for (size_t rev_i = 1; rev_i < roi_start_index; ++rev_i) {
+      const size_t i = roi_start_index - rev_i;
+      const tf::Vector3 pt1 = route.points[min_index+i].position();
+      const tf::Vector3 pt2 = route.points[min_index+i+1].position();
+      arc_lengths[i] = arc_lengths[i-1] - stu::GreatCircleDistance(pt1, pt2);
+    }
+    // Calculate the lengths after the start point.
+    for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
+      const tf::Vector3 pt1 = route.points[min_index+i].position();
+      const tf::Vector3 pt2 = route.points[min_index+i-1].position();
+      arc_lengths[i] = arc_lengths[i-1] + stu::GreatCircleDistance(pt1, pt2);
+    }
+  } else {
+    // Assume Euclidean coordinates.
+    // Calculate the lengths before the start point.
+    for (size_t rev_i = 1; rev_i < roi_start_index; ++rev_i) {
+      const size_t i = roi_start_index - rev_i;
+      const tf::Vector3 pt1 = route.points[min_index+i].position();
+      const tf::Vector3 pt2 = route.points[min_index+i+1].position();
+      arc_lengths[i] = arc_lengths[i-1] - (pt2-pt1).length();
+    }
+    // Calculate the lengths after the start point.
+    for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
+      const tf::Vector3 pt1 = route.points[min_index+i].position();
+      const tf::Vector3 pt2 = route.points[min_index+i-1].position();
+      arc_lengths[i] = arc_lengths[i-1] + (pt2-pt1).length();
+    }
+  }
+
+  // Now we can calculate the distances.
+  distances.resize(ends.size());
+  for (size_t i = 0; i < distances.size(); ++i) {
+    if (indices[i] < 0) {
+      distances[i] = std::numeric_limits<double>::quiet_NaN();
+      continue;
+    }
+
+    const size_t cache_index = indices[i]-min_index;
+    distances[i] = arc_lengths[cache_index] + ends[i].distance - start.distance;
+  }
+
   return true;
 }
 }  // namespace swri_route_util
