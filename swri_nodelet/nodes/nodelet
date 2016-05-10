@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# This script loads a nodelet using the standard nodelet manager. It
+# uses an alternative syntax to the nodelet command that makes writing
+# programmable launch files simpler.  The command syntax is:
+#
+# nodelet_launcher [nodelet_type] [target] [ROS arguments...]
+# 
+# where target is either the name of a nodelet manager or one of the
+# special keywords:
+# 
+# standalone - Run as a standalone nodelet
+
+# Pop the nodelet type and manager off the argument list.
+NODELET_TYPE=$1
+NODELET_MANAGER=$2
+shift
+shift
+
+if [ $NODELET_MANAGER = "standalone" ]
+then
+    echo Launching nodelet of type $NODELET_TYPE in standalone configuration.
+    rosrun nodelet nodelet standalone $NODELET_TYPE $@
+else
+    echo Launching nodelet of type $NODELET_TYPE on nodelet manager $NODELET_MANAGER
+    rosrun nodelet nodelet load $NODELET_TYPE $NODELET_MANAGER $@
+fi

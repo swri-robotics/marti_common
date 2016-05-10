@@ -1,0 +1,17 @@
+<launch>
+  <!-- This approach is easy to extend to included launch files.  The
+       included launch files are given an argument for
+       "nodelet_manager".  Setting the default value to "standalone"
+       makes it possible to run the included launch file directly for
+       testing.  After that, nodelets are launched exactly as in the
+       root launch file. -->
+
+  <arg name="nodelet_manager" default="standalone"/>
+
+  <node name="my_included_node"
+        pkg="swri_nodelet" type="nodelet"
+        args="my_pacakge/my_nodelet $(arg nodelet_manager">
+    <!-- ... -->
+  </node>
+
+</launch>
