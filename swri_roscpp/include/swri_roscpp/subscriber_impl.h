@@ -315,6 +315,7 @@ class TypedSubscriberImpl : public SubscriberImpl
                         transport_hints);
   }
 
+  // Handler for messages with headers
   template <class M2>
   typename boost::enable_if< ros::message_traits::HasHeader<M2>, void>::type
   handleMessage(const boost::shared_ptr< M const> &msg)
@@ -323,6 +324,7 @@ class TypedSubscriberImpl : public SubscriberImpl
     (obj_->*callback_)(msg);
   }
 
+  // Handler for messages without headers
   template <class M2>
   typename boost::disable_if< ros::message_traits::HasHeader<M2>, void>::type
   handleMessage(const boost::shared_ptr< M const> &msg)
@@ -331,5 +333,56 @@ class TypedSubscriberImpl : public SubscriberImpl
     (obj_->*callback_)(msg);
   }
 };  // class TypedSubscriberImpl
+
+
+template<class M>
+class StorageSubscriberImpl : public SubscriberImpl
+{
+  boost::shared_ptr< M const > *dest_;
+
+ public:
+  StorageSubscriberImpl(
+    ros::NodeHandle &nh,
+    const std::string &topic,
+    boost::shared_ptr< M const > *dest,
+    const ros::TransportHints &transport_hints)
+  {
+    unmapped_topic_ = topic;
+    mapped_topic_ = nh.resolveName(topic);
+
+    if (unmapped_topic_ == mapped_topic_) {
+      ROS_INFO("Subscribing to '%s'.", mapped_topic_.c_str());
+    } else {
+      ROS_INFO("Subscribing to '%s' at '%s'.",
+               unmapped_topic_.c_str(),
+               mapped_topic_.c_str());
+    }
+
+    dest_ = dest;
+
+    sub_ = nh.subscribe(mapped_topic_, 1,
+                        &StorageSubscriberImpl::handleMessage<M>,
+                        this,
+                        transport_hints);
+  }
+
+  // Handler for messages with headers
+  template <class M2>
+  typename boost::enable_if< ros::message_traits::HasHeader<M2>, void>::type
+  handleMessage(const boost::shared_ptr< M const> &msg)
+  {
+    processHeader(msg->header.stamp);
+    *dest_ = msg;
+  }
+
+  // Handler for messages without headers
+  template <class M2>
+  typename boost::disable_if< ros::message_traits::HasHeader<M2>, void>::type
+  handleMessage(const boost::shared_ptr< M const> &msg)
+  {
+    processHeader(ros::Time::now());
+    *dest_ = msg;
+  }
+};  // class StorageSubscriberImpl
 }  // namespace swri
 #endif  // SWRI_ROSCPP_SUBSCRIBER_IMPL_H_
