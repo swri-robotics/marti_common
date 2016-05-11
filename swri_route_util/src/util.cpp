@@ -454,19 +454,6 @@ bool routeDistances(
   std::vector<double> arc_lengths;
   arc_lengths.resize(max_index-min_index+1);
 
-  // arc_lengths[0] = 0.0;
-  // for (size_t i = 1; i < arc_lengths.size(); i++) {
-  //   const tf::Vector3 pt1 = route.points[min_index+i].position();
-  //   const tf::Vector3 pt2 = route.points[min_index+i-1].position();
-  //   arc_lengths[i] = arc_lengths[i-1] + (pt2-pt1).length();
-  // }
-
-  // size_t roi_start_index = start_index - min_index;
-  // const double start_length = arc_lengths[roi_start_index];
-  // for (size_t i = 1; i < arc_lengths.size(); i++) {
-  //   arc_lengths[i] -= start_length;
-  // }
-
   arc_lengths[roi_start_index] = 0.0;
   if (route.header.frame_id == stu::_wgs84_frame) {
     // Calculate the lengths before the start point.
