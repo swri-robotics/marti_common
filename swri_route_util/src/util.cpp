@@ -461,11 +461,11 @@ bool routeDistances(
   arc_lengths[roi_start_index] = 0.0;
   if (route.header.frame_id == stu::_wgs84_frame) {
     // Calculate the lengths before the start point.
-    for (size_t rev_i = 1; rev_i < roi_start_index; ++rev_i) {
+    for (size_t rev_i = 1; rev_i <= roi_start_index; ++rev_i) {
       const size_t i = roi_start_index - rev_i;
       const tf::Vector3 pt1 = route.points[min_index+i].position();
       const tf::Vector3 pt2 = route.points[min_index+i+1].position();
-      arc_lengths[i] = arc_lengths[i-1] - stu::GreatCircleDistance(pt1, pt2);
+      arc_lengths[i] = arc_lengths[i+1] - stu::GreatCircleDistance(pt1, pt2);
     }
     // Calculate the lengths after the start point.
     for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
@@ -476,11 +476,11 @@ bool routeDistances(
   } else {
     // Assume Euclidean coordinates.
     // Calculate the lengths before the start point.
-    for (size_t rev_i = 1; rev_i < roi_start_index; ++rev_i) {
+    for (size_t rev_i = 1; rev_i <= roi_start_index; ++rev_i) {
       const size_t i = roi_start_index - rev_i;
       const tf::Vector3 pt1 = route.points[min_index+i].position();
       const tf::Vector3 pt2 = route.points[min_index+i+1].position();
-      arc_lengths[i] = arc_lengths[i-1] - (pt2-pt1).length();
+      arc_lengths[i] = arc_lengths[i+1] - (pt2-pt1).length();
     }
     // Calculate the lengths after the start point.
     for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
