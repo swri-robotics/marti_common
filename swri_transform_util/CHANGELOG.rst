@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.10 (2016-05-12)
+-------------------
 * Add great circle distance method for tf::Vector3 type.
 * Fixed compile error when ros-indigo-opencv3 is installed (`#307 <https://github.com/evenator/marti_common/issues/307>`_)
   * Fixed compile error when package ros-indigo-opencv3 is installed.

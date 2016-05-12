@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.10 (2016-05-12)
+-------------------
 * Deprecate LatchedSubscriber.
   This commit adds an alternative to LatchedSubscriber and deprecates
   the LatchedSubscriber interface.  LatchedSubscriber should be replaced

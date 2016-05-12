@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.10 (2016-05-12)
+-------------------
 * Update contrast stretch nodelet to automatically scale image mask to correct size.
 * Fixed compile error when ros-indigo-opencv3 is installed (`#307 <https://github.com/evenator/marti_common/issues/307>`_)
   * Fixed compile error when package ros-indigo-opencv3 is installed.
