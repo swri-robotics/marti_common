@@ -26,6 +26,30 @@ Forthcoming
 * Creates a new package swri_rospy.
   swri_rospy adds a new callback-based subscription, timer, and service
   capability to rospy.
+* Contributors: Ed Venator, Edward Venator
+
+* Adds swri_rospy subclasses for Subscriber, Service, and Timer
+  These classes are drop-in replacements for their rospy counterparts,
+  except that their constructor has an additional parameter
+  asynchronous, which defaults to False. If asynchronous is false, the
+  callback is wrapped with the single_threaded decorator. (This means
+  that all of these classes use the single-thread callback queue by
+  default.)
+  Also, swri_rospy.spin is now injected into the rospy namespace to
+  override rospy.spin. This is done to prevent users from accidentally
+  using rospy.spin, which does not process the callback queue.
+* Adds deadlock protection to single_threaded decorator.
+  Decorating a function with single_threaded more than once would cause the
+  callback queue to deadlock. This prevents recursive decoration.
+* Adds exception handling to single_threaded decorator.
+* Makes single_threaded decorator work for arbitrary ags
+* Adds service_wrapper decorator.
+  Also fixes line endings.
+* Updates swri_rospy single_threaded example.
+  Also fixes line-endings.
+* Creates a new package swri_rospy.
+  swri_rospy adds a new callback-based subscription, timer, and service
+  capability to rospy.
 * Contributors: Ed Venator
 
 0.0.9 (2016-03-04)

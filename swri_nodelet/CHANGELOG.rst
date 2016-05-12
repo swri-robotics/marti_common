@@ -4,6 +4,13 @@ Changelog for package swri_nodelet
 
 Forthcoming
 -----------
+* Update version numbers for new packages.
+* Version 0.0.10 changelogs.
+* Add swri_nodelet package.
+  This package simplifies launch files that can easily change between
+  running nodelets in a shared manager or as standalone processes.
+* Contributors: Edward Venator, Elliot Johnson
+
 * Add swri_nodelet package.
   This package simplifies launch files that can easily change between
   running nodelets in a shared manager or as standalone processes.

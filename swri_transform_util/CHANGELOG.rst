@@ -2,6 +2,21 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add great circle distance method for tf::Vector3 type.
+* Fixed compile error when ros-indigo-opencv3 is installed (`#307 <https://github.com/evenator/marti_common/issues/307>`_)
+  * Fixed compile error when package ros-indigo-opencv3 is installed.
+  swri_geometry_util uses wrong version of OpenCV when the package
+  ros-indigo-opencv3 is installed. This patch fixes the issue.
+  * Updated all CMakeFiles.txt to specify OpenCV version 2
+  The find_package for OpenCV is now:
+  ./swri_opencv_util/CMakeLists.txt:find_package(OpenCV 2 REQUIRED)
+  ./swri_geometry_util/CMakeLists.txt:find_package(OpenCV 2 REQUIRED)
+  ./swri_image_util/CMakeLists.txt:find_package(OpenCV 2)
+  ./swri_transform_util/CMakeLists.txt:find_package(OpenCV 2 REQUIRED)
+* Contributors: Kim Mathiassen, Marc Alban
+
 0.0.9 (2016-03-04)
 ------------------
 * Fixes initialize_origin.py diagnostic reporting a warning that the

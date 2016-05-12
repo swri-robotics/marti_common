@@ -2,6 +2,12 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add support to load YAML from string and dictionary.
+* Fix linking with yaml-cpp.
+* Contributors: Elliot Johnson, Marc Alban
+
 0.0.9 (2016-03-04)
 ------------------
 * Adds uint16 support to swri_yaml_util
