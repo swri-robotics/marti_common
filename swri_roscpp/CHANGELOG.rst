@@ -2,6 +2,16 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add timeoutParam() method to swri::Subscriber.
+  This commit adds a new convenience method, timeoutParam, to
+  swri::Subscriber that reads a specified parameter directly from the
+  parameter server and sets it as the subscriber's timeout value.  This
+  is to simplify setup code that currently has to define a temporary
+  variable, read the parameter in the temp, and then set the timeout.
+* Contributors: Elliot Johnson
+
 0.1.3 (2016-03-04)
 ------------------
 * Adds getParam() functions to swri_roscpp.
