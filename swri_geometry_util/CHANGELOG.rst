@@ -2,8 +2,8 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.4 (2016-05-12)
+------------------
 * Fixing Jade compilation issues
   1. For some reason, Eigen3 wasn't being properly detected by CMake.  I
   added a few lines that will make it try using PkgConfig if CMake

@@ -2,8 +2,8 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.4 (2016-05-12)
+------------------
 * Fixed compile error when ros-indigo-opencv3 is installed (`#307 <https://github.com/evenator/marti_common/issues/307>`_)
   * Fixed compile error when package ros-indigo-opencv3 is installed.
   swri_geometry_util uses wrong version of OpenCV when the package

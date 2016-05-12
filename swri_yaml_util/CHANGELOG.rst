@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.4 (2016-05-12)
+------------------
 * Add support to load YAML from string and dictionary.
 * Fix linking with yaml-cpp.
 * Contributors: Elliot Johnson, Marc Alban

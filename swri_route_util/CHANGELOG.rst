@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.4 (2016-05-12)
+------------------
 * Fix distances in routeDistances for points before start point.
   There were two bugs in routeDistances that were causing the incorrect
   distance to be calculated for points before the start point.  An error

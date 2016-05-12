@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.4 (2016-05-12)
+------------------
 * Update contrast stretch nodelet to automatically scale image mask to correct size.
 * Fixing Jade compilation issues
   1. For some reason, Eigen3 wasn't being properly detected by CMake.  I

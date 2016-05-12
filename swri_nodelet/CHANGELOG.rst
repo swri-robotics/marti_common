@@ -2,8 +2,8 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.4 (2016-05-12)
+------------------
 * Add swri_nodelet package.
   This package simplifies launch files that can easily change between
   running nodelets in a shared manager or as standalone processes.
