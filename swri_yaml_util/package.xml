@@ -12,6 +12,7 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>pkg-config</buildtool_depend>
   <depend>boost</depend>
   <depend>yaml-cpp</depend>
 </package>
