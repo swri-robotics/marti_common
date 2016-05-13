@@ -2,8 +2,8 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.11 (2016-05-13)
+-------------------
 * Adds explicit dependency on pkg-config
 * Contributors: P. J. Reed
 
