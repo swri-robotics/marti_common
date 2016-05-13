@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.5 (2016-05-13)
+------------------
 * Add an explicit dependency on pkg-config
 * Contributors: P. J. Reed
 
