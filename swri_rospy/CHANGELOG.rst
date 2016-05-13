@@ -2,6 +2,9 @@
 Changelog for package swri_rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.10 (2016-05-12)
 -------------------
 * Adds swri_rospy subclasses for Subscriber, Service, and Timer
