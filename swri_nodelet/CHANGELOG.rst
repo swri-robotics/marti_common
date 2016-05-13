@@ -2,6 +2,9 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.4 (2016-05-12)
 ------------------
 * Add swri_nodelet package.

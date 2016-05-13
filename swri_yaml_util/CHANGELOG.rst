@@ -2,6 +2,11 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add an explicit dependency on pkg-config
+* Contributors: P. J. Reed
+
 0.1.4 (2016-05-12)
 ------------------
 * Add support to load YAML from string and dictionary.

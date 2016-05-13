@@ -2,6 +2,11 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add an explicit dependency on pkg-config
+* Contributors: P. J. Reed
+
 0.1.4 (2016-05-12)
 ------------------
 * Fixing Jade compilation issues
