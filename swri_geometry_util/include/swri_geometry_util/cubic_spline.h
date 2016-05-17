@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <opencv2/core/core.hpp>
+#include <tf/transform_datatypes.h>
 
 namespace swri_geometry_util
 {
@@ -36,4 +37,9 @@ namespace swri_geometry_util
     const std::vector<cv::Vec2d>& points,
     double delta,
     std::vector<std::vector<cv::Vec2d> >& splines);
+
+  bool CubicSplineInterpolation(
+    const std::vector<tf::Vector3>& points,
+    double delta,
+    std::vector<std::vector<tf::Vector3> >& splines);
 }
