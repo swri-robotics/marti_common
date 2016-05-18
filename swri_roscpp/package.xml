@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <package format="2">
   <name>swri_roscpp</name>
-  <version>1.0.0</version>
+  <version>0.0.10</version>
   <description>
 
      swri_roscpp
@@ -13,6 +13,8 @@
   <depend>diagnostic_updater</depend>
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
   <export/>
 </package>
 

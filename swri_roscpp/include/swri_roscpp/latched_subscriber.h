@@ -8,15 +8,19 @@
 
 namespace swri
 {
+// THIS CLASS IS DEPRECATED.  This class has been replaced with a
+// secondary interface to Subscriber that is initialized with the
+// address of a boost::shared_ptr<M const> variable.  When a message
+// is received, it's value is assigned to this pointer.  This approach
+// provides the same simplicity as LatchedSubscriber without confusing
+// semantics of faking a pointer type.
+// 
 // This is an extension of the swri::Subscriber class to simplify the
 // common case where you only care about the most recent value of a
 // message rather than trying to queue up messages or responding to
 // events.  It has its own callback that is provided to
 // swri::Subscriber and simply stores the message for the user to
 // access whenever necessary.
-
-
-
 template <class M>
 class LatchedSubscriber : public Subscriber
 {
@@ -77,6 +81,7 @@ LatchedSubscriber<M>::LatchedSubscriber(
   const std::string &topic,
   const ros::TransportHints &transport_hints)
 {
+  ROS_WARN("swri_roscpp::LatchedSubscriber has been deprecated.  See header for information.");
   receiver_ = boost::shared_ptr<LatchedReceiver<M> >(new LatchedReceiver<M>());
   // It seems like there should be a better way to do this?
   Subscriber::operator=(

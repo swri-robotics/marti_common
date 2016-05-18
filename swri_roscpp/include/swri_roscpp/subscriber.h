@@ -32,6 +32,8 @@
 
 #include <ros/node_handle.h>
 #include <diagnostic_updater/DiagnosticStatusWrapper.h>
+
+#include <swri_roscpp/parameters.h>
 #include <swri_roscpp/subscriber_impl.h>
 
 namespace swri
@@ -48,8 +50,13 @@ namespace swri
 //
 // - Implements timeout logic and timeout counting.
 //
-// This implementation is deliberately limited to a single callback
-// signature.
+// This implementation provides two interfaces.  It supports the
+// traditional ROS callback interface (though it is deliberately
+// limited to callbacks that take a *ConstPtr& type), and an interface
+// where the message is simply assigned to *ConstPtr variable that is
+// specified at creation.  The second interface replaces the previous
+// swri_roscpp::LatchedSubscriber and allows you to avoid writing
+// trivial callback functions.
 
 class Subscriber
 {
@@ -76,6 +83,17 @@ class Subscriber
              T *obj,
              const ros::TransportHints &transport_hints=ros::TransportHints());
 
+  // This is an alternate interface that stores a received message in
+  // a variable without calling a user-defined callback function.
+  // This is useful for cases where you just want to store a message
+  // for usage later and avoids having to write a trivial callback
+  // function.
+  template<class M>
+  Subscriber(ros::NodeHandle &nh,
+             const std::string &topic,
+             boost::shared_ptr< M const > *dest,
+             const ros::TransportHints &transport_hints=ros::TransportHints());
+  
   Subscriber& operator=(const Subscriber &other);
 
   // Reset all statistics, including message and timeout counts.
@@ -124,7 +142,11 @@ class Subscriber
   // Provide a negative value to disable the timeout (default is -1).
   void setTimeout(const ros::Duration &time_out);
   void setTimeout(const double time_out);
-
+  // Read the timeout directly from the parameter server.
+  void timeoutParam(const ros::NodeHandle &nh,
+                    const std::string &parameter_name,
+                    const double default_value);
+  
   // Block/unblock timeouts from occuring.  This allows you to
   // temporarily block timeouts (for example, if a message is not
   // expected in a particular mode).  Returns the current state
@@ -194,6 +216,18 @@ Subscriber::Subscriber(ros::NodeHandle &nh,
   impl_ = boost::shared_ptr<SubscriberImpl>(
     new TypedSubscriberImpl<M,T>(
       nh, topic, queue_size, fp, obj, transport_hints));
+}
+
+template<class M>
+inline
+Subscriber::Subscriber(ros::NodeHandle &nh,
+                       const std::string &topic,
+                       boost::shared_ptr< M const > *dest,
+                       const ros::TransportHints &transport_hints)
+{
+  impl_ = boost::shared_ptr<SubscriberImpl>(
+    new StorageSubscriberImpl<M>(
+      nh, topic, dest, transport_hints));
 }
 
 inline
@@ -365,9 +399,20 @@ void Subscriber::setTimeout(const double time_out)
 }
 
 inline
+void Subscriber::timeoutParam(
+  const ros::NodeHandle &nh,
+  const std::string &parameter_name,
+  const double default_value)
+{
+  double timeout;
+  swri::param(nh, parameter_name, timeout, default_value);
+  setTimeout(timeout);
+}
+
+inline
 bool Subscriber::blockTimeouts(bool block)
 {
-  impl_->blockTimeouts(block);
+  return impl_->blockTimeouts(block);
 }
 
 inline

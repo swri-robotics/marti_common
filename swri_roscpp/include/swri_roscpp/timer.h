@@ -230,7 +230,7 @@ void Timer::appendDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &statu
                               int flags)
 {
   // Alias a type for easier access to DiagnosticStatus enumerations.
-  typedef diagnostic_msgs::DiagnosticStatus DS;
+  // typedef diagnostic_msgs::DiagnosticStatus DS;
 
   // todo(anyone): Add an optional limit to set a warning or error
   // some critical measurement crosses as threshold.  Big ones are
