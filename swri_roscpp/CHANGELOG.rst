@@ -2,6 +2,10 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.7 (2015-11-18)
+------------------
+* Fixes broken changelog `#279<https://github.com/swri-robotics/marti_common/issues/279>`_.
+
 0.0.6 (2015-11-17)
 ------------------
 * First release of swri_roscpp
