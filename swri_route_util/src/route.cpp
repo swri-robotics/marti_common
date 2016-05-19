@@ -240,5 +240,9 @@ void Route::rebuildPointIndex() const
   for (size_t i = 0; i < points.size(); ++i) {
     point_index_[points[i].id()] = i;
   }
+
+  if (point_index_.size() != points.size()) {
+    ROS_ERROR("Route points do not have unique IDs.  This will likely cause problems.");
+  }
 }
 }  // namespace swri_route_util
