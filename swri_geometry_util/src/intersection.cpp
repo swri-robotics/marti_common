@@ -31,9 +31,11 @@
 
 #include <swri_geometry_util/intersection.h>
 
+#define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
 #include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/Polygon.h>
+#undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
 {
