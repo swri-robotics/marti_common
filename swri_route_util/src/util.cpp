@@ -143,13 +143,13 @@ void nearestDistanceToLineSegment(
   bool extrapolate_end)
 {
   tf::Vector3 v = p1 - p0;
-  double v_len = v.dot(v);
+  const double v_len_sq = v.dot(v);
 
   // s will be the normalized distance along v that is closest to the
   // desired point.
   double s = 0.0;
-  if (v_len > 1e-6) {
-    s = v.dot(p - p0) / v_len;
+  if (v_len_sq > 1e-6) {
+    s = v.dot(p - p0) / v_len_sq;
   } else {
     // The two points are too close to define a reasonable line
     // segment, so just pick p1 as the closest point.
@@ -167,7 +167,7 @@ void nearestDistanceToLineSegment(
   tf::Vector3 x_nearest = p0 + s*v;
 
   min_distance_from_line = x_nearest.distance(p);
-  min_distance_on_line = s*v_len;
+  min_distance_on_line = s*std::sqrt(v_len_sq);
 }
 
 bool projectOntoRoute(mnm::RoutePosition &position,
