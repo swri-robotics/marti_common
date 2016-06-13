@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-find_package(OpenCV 2)
+find_package(OpenCV 2 REQUIRED)
 find_package(Qt4 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
 
@@ -40,6 +40,7 @@ add_definitions(${EIGEN3_DEFINITIONS})
 include(${QT_USE_FILE})
 
 catkin_package(
+  DEPENDS OpenCV Qt4
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS 
