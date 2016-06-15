@@ -54,5 +54,5 @@ namespace swri_nodelet
   };
 }
 
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(swri_nodelet::TestNodelet, nodelet::Nodelet);
+#include <swri_nodelet/class_list_macros.h>
+SWRI_NODELET_EXPORT_CLASS(swri_nodelet, TestNodelet);
