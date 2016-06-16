@@ -6,7 +6,6 @@
 #
 
 import subprocess
-import roslib; roslib.load_manifest('transform_util')
 import rospy
 from gps_common.msg import GPSFix
 from diagnostic_msgs.msg import DiagnosticArray
