@@ -2,6 +2,12 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Replace legacy OpenCV BruteForceMatcher with new cv::BFMatcher.
+* Upgrade Qt to version 5.
+* Contributors: Ed Venator
+
 0.1.5 (2016-05-13)
 ------------------
 * Add an explicit dependency on pkg-config
