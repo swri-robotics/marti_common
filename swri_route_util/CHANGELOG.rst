@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.0 (2016-06-21)
+------------------
 * Add error message for non-unique route point IDs.
   This release adds an error check when a sru::Route rebuilds its point
   index.  If the point IDs are not unique, the route will output an
