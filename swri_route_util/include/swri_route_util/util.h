@@ -86,7 +86,7 @@ bool projectOntoRoute(marti_nav_msgs::RoutePosition &position,
 //     the segment containing the position, and the distance will be
 //     less than that length of that segment.
 //
-//  This function fails the original position's id is not found in the
+//  This function fails if the original position's id is not found in the
 // route.  This function assumes the route is in a cartesian (e.g. not
 // WGS84) frame.
 bool normalizeRoutePosition(marti_nav_msgs::RoutePosition &normalized_position,
