@@ -72,6 +72,17 @@ bool projectOntoRoute(marti_nav_msgs::RoutePosition &position,
                       bool extrapolate_past_end);
 
 
+// Find the closest position on a route for a given point, restricted
+// to a subset of the route.  The subset is defined by a start and end
+// position on the route.  This function assumes the route is in a
+// cartesian (e.g. not WGS84) frame.
+bool projectOntoRouteWindow(marti_nav_msgs::RoutePosition &position,
+                            const Route &route,
+                            const tf::Vector3 &point,
+                            const marti_nav_msgs::RoutePosition &window_start,
+                            const marti_nav_msgs::RoutePosition &window_end);
+
+
 // Normalize a route position.  A normalize route position is guaranteed to
 // have:
 //   - A valid id for a point in the route.
