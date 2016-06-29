@@ -240,6 +240,152 @@ bool projectOntoRoute(mnm::RoutePosition &position,
   return true;
 }
 
+bool projectOntoRouteWindow(
+  mnm::RoutePosition &position,
+  const Route &route,
+  const tf::Vector3 &point,
+  const mnm::RoutePosition &window_start,
+  const mnm::RoutePosition &window_end)
+{
+  if (route.points.size() < 2) {
+    // We can't do anything with this.
+    return false;
+  }
+
+  // First we normalize the window boundaries.
+  mnm::RoutePosition start;
+  if (!normalizeRoutePosition(start, route, window_start)) {
+    return false;
+  }
+  mnm::RoutePosition end;
+  if (!normalizeRoutePosition(end, route, window_end)) {
+    return false;
+  }
+
+  // Handle the special case where the start and end points are
+  // identical.
+  if (start.id == end.id && start.distance == end.distance) {
+    position = start;
+    return true;
+  }
+
+  // Find the indices of the start and end points.  Since we have
+  // normalized positions, we know they exist in the route.
+  size_t start_index;
+  route.findPointId(start_index, start.id);
+  size_t end_index;
+  route.findPointId(end_index, end.id);
+
+  // Fix the ordering so that start comes before end.
+  if ((end_index < start_index) ||
+      (start_index == end_index && end.distance < start.distance)) {
+    std::swap(end, start);
+    std::swap(start_index, end_index);
+  }
+
+  // If either of the points are past the end of the route, we want to
+  // back them up to the previous segment to reduce the number of
+  // special cases we have to handle.
+  if (start_index+1 == route.points.size()) {
+    start_index -= 1;
+    start.id = route.points[start_index].id();
+    start.distance += (route.points[start_index+1].position() -
+                       route.points[start_index+0].position()).length();
+  }
+  if (end_index+1 == route.points.size()) {
+    end_index -= 1;
+    end.id = route.points[end_index].id();
+    end.distance += (route.points[end_index+1].position() -
+                     route.points[end_index+0].position()).length();
+  }
+
+  // Although it causes a little duplication, it's easier over all to
+  // explicitly handle the special case where the window is over a
+  // single segment.
+  if (start_index == end_index) {
+    double distance_from_line;
+    double distance_on_line;
+
+    nearestDistanceToLineSegment(distance_from_line,
+                                 distance_on_line,
+                                 route.points[start_index+0].position(),
+                                 route.points[start_index+1].position(),
+                                 point,
+                                 true, true);
+
+    if (distance_on_line < start.distance) {
+      distance_on_line = start.distance;
+    } else if (distance_on_line > end.distance) {
+      distance_on_line = end.distance;
+    }
+
+    mnm::RoutePosition denormal_position;
+    denormal_position.id = start.id;
+    denormal_position.distance = distance_on_line;
+    if (!normalizeRoutePosition(position, route, denormal_position)) {    
+      return false;
+    }
+    return true;
+  }
+
+  // Find the nearest point on the route, without allowing
+  // extrapolation.
+  double min_distance_from_line = std::numeric_limits<double>::infinity();
+  double min_distance_on_line = std::numeric_limits<double>::infinity();
+  size_t min_segment_index = 0;
+
+  for (size_t i = start_index; i <= end_index; ++i) {
+    double distance_from_line;
+    double distance_on_line;
+
+    nearestDistanceToLineSegment(distance_from_line,
+                                 distance_on_line,
+                                 route.points[i+0].position(),
+                                 route.points[i+1].position(),
+                                 point,
+                                 false, false);
+
+    if (distance_from_line <= min_distance_from_line) {
+      min_segment_index = i;
+      min_distance_on_line = distance_on_line;
+      min_distance_from_line = distance_from_line;
+    }
+  }
+
+  // We have identified the closest segment.  We need to clamp it
+  // to the window boundaries.
+  if (min_segment_index == start_index) {
+    nearestDistanceToLineSegment(min_distance_from_line,
+                                 min_distance_on_line,
+                                 route.points[min_segment_index+0].position(),
+                                 route.points[min_segment_index+1].position(),
+                                 point,
+                                 true, false);
+    if (min_distance_on_line < start.distance) {
+      min_distance_on_line = start.distance;
+    }
+  } else if (min_segment_index == end_index) {
+    nearestDistanceToLineSegment(min_distance_from_line,
+                                 min_distance_on_line,
+                                 route.points[min_segment_index+0].position(),
+                                 route.points[min_segment_index+1].position(),
+                                 point,
+                                 false, true);
+    if (min_distance_on_line > end.distance) {
+      min_distance_on_line = end.distance;
+    }
+  }
+
+  mnm::RoutePosition denormal_position;
+  denormal_position.id = route.points[min_segment_index].id();
+  denormal_position.distance = min_distance_on_line;
+  if (!normalizeRoutePosition(position, route, denormal_position)) {    
+    return false;
+  }
+
+  return true;
+}
+
 static
 void interpolateRouteSegment(
   RoutePoint &dst,
@@ -368,10 +514,14 @@ bool interpolateRoutePosition(RoutePoint &dst,
       return false;
     }
 
+    const RoutePoint &p0 = route.points[index-1];
+    const RoutePoint &p1 = route.points[index-0];
+    double extra_dist = (p1.position() - p0.position()).length();
+
     interpolateRouteSegment(dst,
-                            route.points[index-1],
-                            route.points[index-0],
-                            norm_position.distance);
+                            p0,
+                            p1,
+                            norm_position.distance + extra_dist);
     return true;      
   }
 
