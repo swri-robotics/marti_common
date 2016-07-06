@@ -34,6 +34,8 @@
 
 #include <tf/tf.h>
 
+#include <marti_nav_msgs/RoutePosition.h>
+
 namespace swri_route_util
 {
 // The RoutePoint class provides a more friendly interface for working
@@ -45,6 +47,8 @@ namespace swri_route_util
 class RoutePoint
 {
  public:
+  RoutePoint();
+
   // Access to the route point's position as tf datatypes.
   void setPosition(const tf::Vector3 &position);
   const tf::Vector3& position() const;
@@ -77,6 +81,22 @@ class RoutePoint
   // but are typically not set for interpolated points.
   const std::string& id() const;
   void setId(const std::string &id);
+
+  // Native access to the route point "stop_point" property.  This is
+  // a boolean property that defaults to false if it is not explicitly
+  // defined in the route.
+  bool stopPoint() const;
+  void setStopPoint(bool value);
+
+  // Native access to the route point "stop_point_delay" property.
+  // This is a floating point value that specifies how long the
+  // vehicle should be paused at the specific point, in seconds.  The
+  // delay defaults to 0.0 if it not defined in the route.
+  double stopPointDelay() const;
+  void setStopPointDelay(double delay);
+
+  // Return a marti_nav_msgs::RoutePosition message that corresponds to this point.
+  marti_nav_msgs::RoutePosition routePosition() const;
 
   // The following methods provide general purpose access to route
   // point properties.  They will also correctly map to properties
@@ -115,6 +135,9 @@ class RoutePoint
   tf::Quaternion orientation_;
 
   std::string id_;
+
+  bool stop_point_;
+  double stop_point_delay_;
 
   std::map<std::string, std::string> properties_;
 };  // class RoutePoint
