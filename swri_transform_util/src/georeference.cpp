@@ -94,6 +94,11 @@ namespace swri_transform_util
 
     try
     {
+      if (!swri_yaml_util::FindValue(doc, "image_path"))
+      {
+        ROS_ERROR("Georeference missing image_path.");
+        return false;
+      }
       doc["image_path"] >> image_path_;
 
       boost::filesystem::path imagePath(image_path_);
@@ -109,23 +114,69 @@ namespace swri_transform_util
         ROS_INFO("georeference: Image path is %s", image_path_.c_str());
       }
 
+      if (!swri_yaml_util::FindValue(doc, "image_width"))
+      {
+        ROS_ERROR("Georeference missing image_width.");
+        return false;
+      }
       doc["image_width"] >> width_;
+
+      if (!swri_yaml_util::FindValue(doc, "image_height"))
+      {
+        ROS_ERROR("Georeference missing image_height.");
+        return false;
+      }
       doc["image_height"] >> height_;
+      
+      if (!swri_yaml_util::FindValue(doc, "tile_size"))
+      {
+        ROS_ERROR("Georeference missing tile_size.");
+        return false;
+      }
       doc["tile_size"] >> tile_size_;
-      if(swri_yaml_util::FindValue(doc, "extension"))
+
+      if (swri_yaml_util::FindValue(doc, "extension"))
       {
           doc["extension"] >> extension_;
       }
 
+      if (!swri_yaml_util::FindValue(doc, "datum"))
+      {
+        ROS_ERROR("Georeference missing datum.");
+        return false;
+      }
       doc["datum"] >> datum_;
+
+      if (!swri_yaml_util::FindValue(doc, "projection"))
+      {
+        ROS_ERROR("Georeference missing projection.");
+        return false;
+      }
       doc["projection"] >> projection_;
 
       // Parse in the tiepoints
+      if (!swri_yaml_util::FindValue(doc, "tiepoints"))
+      {
+        ROS_ERROR("Georeference missing tiepoints.");
+        return false;
+      }
       pixels_ = cv::Mat(1, doc["tiepoints"].size(), CV_32SC2);
       coordinates_ = cv::Mat(1, doc["tiepoints"].size(), CV_64FC2);
       ROS_INFO("georeference: Found %d tiepoints", (int32_t)(doc["tiepoints"].size()));
-      for (unsigned int i = 0; i < doc["tiepoints"].size(); i++)
+      for (size_t i = 0; i < doc["tiepoints"].size(); i++)
       {
+		if (!swri_yaml_util::FindValue(doc["tiepoints"][i], "point"))
+		{
+		  ROS_ERROR("Georeference tiepoint %zu missing point.", i);
+		  return false;
+        }
+
+        if (doc["tiepoints"][i]["point"].size() != 4)
+        {
+		  ROS_ERROR("Georeference tiepoint %zu size != 4.", i);
+		  return false;
+        }
+
         // Parse pixel column value into the pixel list
         doc["tiepoints"][i]["point"][0] >> pixels_.at<cv::Vec2i>(0, i)[0];
 
@@ -139,9 +190,14 @@ namespace swri_transform_util
         doc["tiepoints"][i]["point"][3] >> coordinates_.at<cv::Vec2d>(0, i)[1];
       }
 
-      if (doc["tiepoints"].size() > 1)
+      if (doc["tiepoints"].size() > 2)
       {
         GetTransform();
+        if (transform_.empty())
+        {
+          ROS_ERROR("Failed to calculate georeference transform.");
+          return false;
+        }
       }
       else if (doc["tiepoints"].size() == 1)
       {
@@ -159,7 +215,7 @@ namespace swri_transform_util
       }
       else
       {
-        ROS_ERROR("georeference: No tiepoints.");
+        ROS_ERROR("georeference: At least 3 tiepoints required.");
         return false;
       }
 
