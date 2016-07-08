@@ -141,6 +141,39 @@ void RoutePoint::setId(const std::string &id)
   id_ = id;
 }
 
+inline
+marti_nav_msgs::RoutePosition RoutePoint::routePosition() const
+{
+  marti_nav_msgs::RoutePosition position;
+  position.id = id();
+  position.distance = 0.0;
+  return position;
+}
+
+inline
+bool RoutePoint::stopPoint() const
+{
+  return stop_point_;
+}
+
+inline
+void RoutePoint::setStopPoint(bool value)
+{
+  stop_point_ = value;
+}
+
+inline
+double RoutePoint::stopPointDelay() const
+{
+  return stop_point_delay_;
+}
+
+inline
+void RoutePoint::setStopPointDelay(double delay)
+{
+  stop_point_delay_ = delay;
+}
+
 template <typename T>
 inline
 T RoutePoint::getTypedProperty(const std::string &name) const
