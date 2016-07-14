@@ -31,6 +31,7 @@
 
 #include <boost/make_shared.hpp>
 
+#include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 
 #include <pluginlib/class_list_macros.h>
@@ -220,6 +221,14 @@ namespace swri_transform_util
     v_out = transform_ * v_out;
   }
 
+  tf::Quaternion UtmToTfTransform::GetOrientation() const
+  {
+    tf::Quaternion reference_angle = tf::createQuaternionFromYaw(
+      swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+
+    return transform_.getRotation() * reference_angle.inverse();
+  }
+
   TfToUtmTransform::TfToUtmTransform(
       const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
@@ -244,6 +253,14 @@ namespace swri_transform_util
     double easting, northing;
     utm_util_->ToUtm(latitude, longitude, easting, northing);
     v_out.setValue(easting, northing, local_xy.z());
+  }
+
+  tf::Quaternion TfToUtmTransform::GetOrientation() const
+  {
+    tf::Quaternion reference_angle = tf::createQuaternionFromYaw(
+      swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+
+    return transform_.getRotation() * reference_angle;
   }
 
   UtmToWgs84Transform::UtmToWgs84Transform(
