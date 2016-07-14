@@ -81,6 +81,8 @@ namespace swri_transform_util
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
+    virtual tf::Quaternion GetOrientation() const;
+
   protected:
     tf::StampedTransform transform_;
     boost::shared_ptr<UtmUtil> utm_util_;
@@ -98,6 +100,8 @@ namespace swri_transform_util
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+
+    virtual tf::Quaternion GetOrientation() const;
 
   protected:
     tf::StampedTransform transform_;
