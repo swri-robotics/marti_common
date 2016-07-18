@@ -12,12 +12,11 @@ set(RUNTIME_DEPS ${BUILD_DEPS})
 
 ### Catkin ###
 find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
-include_directories(${catkin_INCLUDE_DIRS})
 catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME})
 
-include_directories(include)
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 ### Build Library ###
 add_library(${PROJECT_NAME} 
