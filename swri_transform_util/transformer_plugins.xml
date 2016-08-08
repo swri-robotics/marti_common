@@ -1,0 +1,8 @@
+<library path="lib/libtransformer_plugins">
+  <class name="transformers/utm" type="swri_transform_util::UtmTransformer" base_class_type="swri_transform_util::Transformer">
+    <description>Support for transforming to and from UTM</description>
+  </class>
+  <class name="transformers/wgs84" type="swri_transform_util::Wgs84Transformer" base_class_type="swri_transform_util::Transformer">
+    <description>Support for transforming to and from WGS84 Lat/Lon</description>
+  </class>
+</library>
