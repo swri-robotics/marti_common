@@ -27,23 +27,6 @@ add_library(${PROJECT_NAME}
   src/convert.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 
-#Python setup
-catkin_python_setup()
-set(Python_ADDITIONAL_VERSIONS 2.7)
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_PATH})
-
-# Build the _opencv_util python extension
-link_libraries(${PYTHON_LIBRARIES})
-add_library(py_opencv_util
-  src/python_modules/py_opencv_util.cpp
-  )
-add_dependencies(py_opencv_util ${PROJECT_NAME}_gencpp)
-set_target_properties(py_opencv_util PROPERTIES OUTPUT_NAME opencv_util PREFIX "_" SUFFIX ".so"
-  LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${PYTHON_INSTALL_DIR}/opencv_util)
-set_target_properties(py_opencv_util PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing")
-target_link_libraries(py_opencv_util ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${PROJECT_NAME})
-
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"

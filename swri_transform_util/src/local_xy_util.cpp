@@ -41,6 +41,7 @@
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/earth_constants.h>
+#include <swri_transform_util/transform_util.h>
 
 namespace swri_transform_util
 {
@@ -75,7 +76,6 @@ namespace swri_transform_util
       double reference_altitude) :
     reference_latitude_(reference_latitude * swri_math_util::_deg_2_rad),
     reference_longitude_(reference_longitude * swri_math_util::_deg_2_rad),
-    reference_heading_(reference_heading * swri_math_util::_deg_2_rad),
     reference_altitude_(reference_altitude),
     rho_lat_(0),
     rho_lon_(0),
@@ -107,12 +107,6 @@ namespace swri_transform_util
 
   void LocalXyWgs84Util::Initialize()
   {
-<<<<<<< HEAD
-    reference_angle_ = math_util::WrapRadians(reference_angle_, 0);
-=======
-    reference_heading_ = swri_math_util::WrapRadians(reference_heading_, 0);
->>>>>>> 903989d... Renames math_util to swri_math_util. Refs #231.
-
     cos_angle_ = std::cos(reference_angle_);
     sin_angle_ = std::sin(reference_angle_);
 
@@ -205,11 +199,7 @@ namespace swri_transform_util
 
   double LocalXyWgs84Util::ReferenceAngle() const
   {
-<<<<<<< HEAD
-    return reference_angle_ * math_util::_rad_2_deg;
-=======
-    return reference_heading_ * swri_math_util::_rad_2_deg;
->>>>>>> 903989d... Renames math_util to swri_math_util. Refs #231.
+    return reference_angle_ * swri_math_util::_rad_2_deg;
   }
 
   double LocalXyWgs84Util::ReferenceAltitude() const

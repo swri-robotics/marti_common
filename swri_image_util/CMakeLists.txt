@@ -4,7 +4,6 @@ project(swri_image_util)
 find_package(catkin REQUIRED COMPONENTS 
   roscpp
   rospy
-  roslib
   std_msgs
   nodelet
   cv_bridge
@@ -13,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   image_geometry
   nav_msgs
-  camera_calibration_parsers
   swri_math_util
   swri_opencv_util
   image_transport)
@@ -41,7 +39,6 @@ catkin_package(
     roscpp
     roscpp
     rospy
-    roslib
     std_msgs
     nodelet
     cv_bridge
@@ -49,7 +46,6 @@ catkin_package(
     geometry_msgs
     image_geometry
     nav_msgs
-    camera_calibration_parsers
     swri_math_util
     swri_opencv_util
     image_transport
