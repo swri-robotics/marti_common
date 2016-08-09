@@ -14,5 +14,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   
   <depend>roscpp</depend>
+  <depend>libboost-random-dev</depend>
 
 </package>
