@@ -5,7 +5,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp)
 
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
-find_package(Boost COMPONENTS random) 
+find_package(Boost REQUIRED COMPONENTS random) 
 if(${Boost_LIB_VERSION} MATCHES "1_46*")
   add_definitions( -DBOOST_1_46 )
 endif(${Boost_LIB_VERSION} MATCHES "1_46*")
@@ -14,6 +14,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp
+  DEPENDS Boost
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
