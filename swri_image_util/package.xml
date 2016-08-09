@@ -13,6 +13,7 @@
   
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>boost</depend>
   <depend>cmake_modules</depend>
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>
