@@ -89,7 +89,7 @@ target_link_libraries(contrast_stretch ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_rostest_gtest(test_geometry_util launch/geometry_util.test test/test_geometry_util.cpp)
+  add_rostest_gtest(test_geometry_util test/geometry_util.test test/test_geometry_util.cpp)
   target_link_libraries(test_geometry_util ${PROJECT_NAME})
 endif()
 
