@@ -17,6 +17,12 @@ catkin_package(
 add_library(swri_nodelet_test src/test_nodelet.cpp)
 target_link_libraries(swri_nodelet_test ${catkin_LIBRARIES})
 
+if(CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    add_rostest(test/test_manager.test DEPENDENCIES swri_nodelet_test)
+    add_rostest(test/test_standalone.test DEPENDENCIES swri_nodelet_test)
+endif()
+
 install(PROGRAMS 
   nodes/nodelet
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
