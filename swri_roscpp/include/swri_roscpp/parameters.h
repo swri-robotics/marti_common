@@ -29,6 +29,22 @@ namespace swri
       ROS_ERROR("Required double parameter %s does not exist", name.c_str());
       return false;
     }
+    ROS_INFO("Read parameter %s = %lf", name.c_str(), variable);
+    return true;
+  }
+
+  static inline
+  bool getParam(const ros::NodeHandle &nh,
+      const std::string &name,
+      float &variable)
+  {
+    double dbl_value;
+    if (!nh.getParam(name, dbl_value))
+    {
+      ROS_ERROR("Required double parameter %s does not exist", name.c_str());
+      return false;
+    }
+    variable = dbl_value;
     ROS_INFO("Read parameter %s = %f", name.c_str(), variable);
     return true;
   }
@@ -78,6 +94,19 @@ namespace swri
       const double default_value)
   {
     nh.param(name, variable, default_value);
+    ROS_INFO("Read parameter %s = %lf", name.c_str(), variable);
+  }
+
+  static inline
+  void param(const ros::NodeHandle &nh,
+      const std::string &name,
+      float &variable,
+      const float default_value)
+  {
+    double dbl_value;
+    double dbl_default = default_value;
+    nh.param(name, dbl_value, dbl_default);
+    variable = dbl_value;
     ROS_INFO("Read parameter %s = %f", name.c_str(), variable);
   }
 
