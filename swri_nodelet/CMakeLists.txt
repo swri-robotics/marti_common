@@ -14,6 +14,8 @@ catkin_package(
   CATKIN_DEPENDS ${RUNTIME_DEPS}
 )
 
+include_directories(${catkin_INCLUDE_DIRS})
+
 add_library(swri_nodelet_test src/test_nodelet.cpp)
 target_link_libraries(swri_nodelet_test ${catkin_LIBRARIES})
 
