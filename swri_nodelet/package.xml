@@ -14,4 +14,9 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>nodelet</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <export>
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+  </export>
 </package>
