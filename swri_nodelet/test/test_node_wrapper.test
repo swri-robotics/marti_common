@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="nodelet" pkg="swri_nodelet" type="test_node"/>
+  <test test-name="standalone_test" pkg="swri_nodelet" type="test_nodelet_exists.py" />
+</launch>
