@@ -16,7 +16,7 @@ namespace swri
 
   /// This set stores all of the parameters that have been got with this library
   /// It is used for the getUnusedParamKeys and WarnUnusedParams functions
-  std::set<std::string> _used_params;
+  static std::set<std::string> _used_params;
 
   static inline
   bool getParam(const ros::NodeHandle &nh,
