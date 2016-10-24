@@ -2,6 +2,34 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change the order of include dirs
+  "${catkin_INCLUDE_DIRS}" needs to be listed after "include", otherwise gcc may
+  try to compile this component's cpp files using headers from a system-installed
+  version of swri_route_util.
+* Add support for stop point metadata.
+* Add sru::projectOntoRouteWindow
+  This is a utility function to project a point onto a window of the
+  route.
+* Fix projectOntoRoute for points past the end of the route.
+  This fixes projectOntoRoute to return a normalized route coordinate
+  when the point is past the end of the route.
+* Fix distance bug affecting projectOntoRoute.
+  This commit fixes a major bug in nearestDistanceToLineSegment that was
+  affecting projectOntoRoute.  A mis-named variable v_len was actually
+  the square of v_len and caused the reported distance along the route
+  segment to be the square of the desired answer.  This commit takes the
+  appropriate square root and changes the variable name to avoid
+  confusion in the future.
+* Add error message for non-unique route point IDs.
+  This commit adds an error check when a sru::Route rebuilds it's point
+  index.  If the point IDs are not unique, the route will output an
+  error message that should make tracking down problems easier.  This
+  check is extremely lightweight and should not have a performance
+  impact.
+* Contributors: Elliot Johnson, P. J. Reed
+
 0.1.5 (2016-05-13)
 ------------------
 
