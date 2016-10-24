@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.6 (2016-10-23)
+------------------
 * Change the order of include dirs
   "${catkin_INCLUDE_DIRS}" needs to be listed after "include", otherwise gcc may
   try to compile this component's cpp files using headers from a system-installed

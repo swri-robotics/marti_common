@@ -2,8 +2,8 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.6 (2016-10-23)
+------------------
 * Add missing dependencies to swri_console
 * Add C++ and CMake macros for wrapper nodes
   Defines a C++ macro to replace the normal nodelet export wrapper that
