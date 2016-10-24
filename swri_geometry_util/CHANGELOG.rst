@@ -2,6 +2,9 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.2.0 (2016-06-21)
 ------------------
 * Update FindGEOS to generate linker flags correctly in Ubuntu 16.04 (`#348 <https://github.com/swri-robotics/marti_common/issues/348>`_).

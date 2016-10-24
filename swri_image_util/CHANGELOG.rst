@@ -2,6 +2,9 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.2.0 (2016-06-21)
 ------------------
 * Replace legacy OpenCV BruteForceMatcher with new cv::BFMatcher.

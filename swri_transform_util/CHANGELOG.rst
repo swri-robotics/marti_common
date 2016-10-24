@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Improve georeferencing warnings.
+* Contributors: Marc Alban
+
 0.2.0 (2016-06-21)
 ------------------
 

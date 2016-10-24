@@ -2,6 +2,14 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Changing the order of include dirs
+  "${catkin_INCLUDE_DIRS}" needs to be listed after "include", otherwise gcc may
+  try to compile this component's cpp files using headers from a system-installed
+  version of swri_route_util.
+* Contributors: P. J. Reed
+
 0.2.0 (2016-06-21)
 ------------------
 * Add error message for non-unique route point IDs.
