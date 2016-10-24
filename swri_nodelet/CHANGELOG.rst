@@ -2,8 +2,8 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.13 (2016-10-23)
+-------------------
 * Add C++ and CMake macros for wrapper nodes
   Defines a C++ macro to replace the normal nodelet export wrapper that
   also creates a factory function returning a pointer to that nodelet.
