@@ -65,6 +65,22 @@ namespace swri_system_util
    * @returns The list of filenames of all found files
    */
   std::vector<std::string> load_all_files(const std::string& path, std::string& directory);
+
+  /**
+   * Return the list of files within a directory that match a regular
+   * expression.
+   *
+   * @param[in]  path        Path to search from
+   * @param[in]  expression  Regular expression for the filename.
+   * @param[in]  max_depth   Max depth to search for files.  Use -1 for
+   *                         unlimited depth.
+   *
+   * @return The list of files.
+   */
+  std::vector<std::string> Find(
+      const std::string& path,
+      const std::string& expression,
+      int max_depth = -1);
 }
 
 #endif  // SYSTEM_UTIL_FILE_UTIL_H_

@@ -30,12 +30,17 @@
 
 namespace swri_route_util
 {
+RoutePoint::RoutePoint()
+{
+  id_ = "<not-initialized>";
+  stop_point_ = false;
+}
+
 std::vector<std::string> RoutePoint::getPropertyNames() const
 {
   std::vector<std::string> names;
-  // Add native properties first.
-  // But we don't have any yet.
-  // names.push_back("name");
+  names.push_back("stop_point");
+  names.push_back("stop_point_delay");
 
   for (auto const &it : properties_) {
     names.push_back(it.first);
@@ -46,11 +51,14 @@ std::vector<std::string> RoutePoint::getPropertyNames() const
 
 std::string RoutePoint::getProperty(const std::string &name) const
 {
-  // Check for native properties first.
-  // But we don't have any yet.
-  // if (name == "name") {
-  //   return name_;
-  // } else
+  if (name == "stop_point") {
+    return stop_point_ ? "true" : "false";
+  }
+
+  if (name == "stop_point_delay") {
+    return boost::lexical_cast<std::string>(stop_point_delay_);
+  }
+
   if (properties_.count(name)) {
     return properties_.at(name);
   } else {
@@ -60,23 +68,20 @@ std::string RoutePoint::getProperty(const std::string &name) const
 
 bool RoutePoint::hasProperty(const std::string &name) const
 {
-  // Check for native properties first.
-  // But we don't have any yet.
-  // if (name == "name") {
-  //   return true;
-  // } else
+  if (name == "stop_point") { return true; }
+  if (name == "stop_point_delay") { return true; }
   return properties_.count(name);
 }
 
 void RoutePoint::setProperty(const std::string &name, const std::string &value)
 {
-  // Check for native properties first.
-  // But we don't have any yet.
-  // if (name == "name") {
-  //   name_ = value;
-  // } else {
+  if (name == "stop_point") {
+    stop_point_ = (value == "1");
+  } else if (name == "stop_point_delay") {
+    stop_point_delay_ = boost::lexical_cast<double>(value);
+  } else {
     properties_[name] = value;
-  // }   
+  }
 }
 
 void RoutePoint::deleteProperty(const std::string &name)
