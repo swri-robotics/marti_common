@@ -32,6 +32,9 @@ target_link_libraries(subscriber_test ${catkin_LIBRARIES})
 add_executable(latched_subscriber_test src/nodes/latched_subscriber_test.cpp)
 target_link_libraries(latched_subscriber_test ${catkin_LIBRARIES})
 
+add_executable(storing_subscriber_test src/nodes/storing_subscriber_test.cpp)
+target_link_libraries(storing_subscriber_test ${catkin_LIBRARIES})
+
 add_executable(service_server_test src/nodes/service_server_test.cpp)
 target_link_libraries(service_server_test ${catkin_LIBRARIES})
 
