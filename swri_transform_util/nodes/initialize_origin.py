@@ -57,12 +57,13 @@ def gps_callback(data):
 
 def gps_diagnostic_callback(data):
     global _gps_fix
+    global _too_far_from_origin
     
     if _gps_fix != None:
         # Compare the local_xy_origin gps fix to most recent gps value
         # If difference is greater than 1 deg in lat/lon, we have traveled more than 10Km
         # which will be reported as a warning since our near_field assumptions will fail.
-        if abs(data.latitute - _gps_fix.latitude) > 1.0 or abs(data.longitude - _gps_fix.longitude) > 1.0:
+        if abs(data.latitude - _gps_fix.latitude) > 1.0 or abs(data.longitude - _gps_fix.longitude) > 1.0:
           _too_far_from_origin = True
         else:
           _too_far_from_origin = False
@@ -139,7 +140,7 @@ def initialize_origin():
                 status.message = "Origin is static (non-auto)"
             if _too_far_from_origin:
                 status.level = DiagnosticStatus.WARN
-                status.message += ", but current gps position is 10Km+ away"
+                status.message += ", but is more than 1deg (~10km) away from current gps fix"
             else:
                 status.level = DiagnosticStatus.OK
                     
