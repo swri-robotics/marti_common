@@ -55,11 +55,24 @@ def gps_callback(data):
         
         _origin_pub.publish(_gps_fix)
 
+def gps_diagnostic_callback(data):
+    global _gps_fix
+    
+    if _gps_fix != None:
+        # Compare the local_xy_origin gps fix to most recent gps value
+        # If difference is greater than 1 deg in lat/lon, we have traveled more than 10Km
+        # which will be reported as a warning since our near_field assumptions will fail.
+        if abs(data.latitute - _gps_fix.latitude) > 1.0 or abs(data.longitude - _gps_fix.longitude) > 1.0:
+          _too_far_from_origin = True
+        else:
+          _too_far_from_origin = False
+
 def initialize_origin():
     rospy.init_node('initialize_origin', anonymous=True)
    
     global _origin_pub
     global _local_xy_frame
+    global _too_far_from_origin
     _origin_pub = rospy.Publisher('/local_xy_origin', GPSFix, latch=True, queue_size=2)
     
     diagnostic_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=2)
@@ -67,12 +80,14 @@ def initialize_origin():
     local_xy_origin = rospy.get_param('~local_xy_origin', 'auto')
     _local_xy_frame = rospy.get_param('~local_xy_frame', 'map')
     _local_xy_frame_identity = rospy.get_param('~local_xy_frame_identity', _local_xy_frame + "__identity")
+    _too_far_from_origin = False
    
     if local_xy_origin == "auto":
         global _sub
         _sub = rospy.Subscriber("gps", GPSFix, gps_callback)
     else:
         parse_origin(local_xy_origin)
+    _gps_diag_sub = rospy.Subscriber("gps", GPSFix, gps_diagnostic_callback)
 
     if len(_local_xy_frame):
         tf_broadcaster = tf.TransformBroadcaster()
@@ -117,12 +132,16 @@ def initialize_origin():
             status.name = "LocalXY Origin"
             status.hardware_id = hw_id
 
+
             if local_xy_origin == 'auto':
-                status.level = DiagnosticStatus.OK
                 status.message = "Has Origin (auto)"
             else:
-                status.level = DiagnosticStatus.WARN
                 status.message = "Origin is static (non-auto)"
+            if _too_far_from_origin:
+                status.level = DiagnosticStatus.WARN
+                status.message += ", but current gps position is 10Km+ away"
+            else:
+                status.level = DiagnosticStatus.OK
                     
             value0 = KeyValue()
             value0.key = "Origin"
