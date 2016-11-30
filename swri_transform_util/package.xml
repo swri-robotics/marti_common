@@ -15,11 +15,11 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>boost</depend>
+  <depend>cv_bridge</depend>
   <depend>diagnostic_msgs</depend>
   <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>libgeos++-dev</depend>
-  <depend>opencv3</depend>
   <depend>pluginlib</depend>
   <depend>proj</depend>
   <depend>roscpp</depend>
