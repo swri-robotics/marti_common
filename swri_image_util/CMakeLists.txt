@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-find_package(OpenCV 2 )
+find_package(OpenCV 3.1 )
 
 find_package(Qt5Gui REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

@@ -13,13 +13,12 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
-  
+
   <depend>boost</depend>
   <depend>diagnostic_msgs</depend>
   <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>libgeos++-dev</depend>
-  <depend>libopencv-dev</depend>
   <depend>pluginlib</depend>
   <depend>proj</depend>
   <depend>roscpp</depend>

@@ -3,7 +3,7 @@ project(swri_opencv_util)
 
 find_package(catkin REQUIRED COMPONENTS swri_math_util)
 
-find_package(OpenCV 2 REQUIRED)
+find_package(OpenCV 3.1 COMPONENTS core imgproc REQUIRED)
 
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
@@ -25,7 +25,7 @@ add_library(${PROJECT_NAME}
   src/model_fit.cpp
   src/show.cpp
   src/convert.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
