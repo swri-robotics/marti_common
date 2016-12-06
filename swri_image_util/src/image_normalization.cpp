@@ -108,6 +108,30 @@ namespace swri_image_util
     return norm_image;
   }
   
+  void MaskedBoxFilter(cv::Mat& mat, cv::Mat& mask, int32_t kernel_size)
+  {
+    mask.setTo(1, mask);
+    cv::Mat local_sums;
+    cv::boxFilter(
+      mat,
+      local_sums,
+      mat.depth(),
+      cv::Size(kernel_size, kernel_size),
+      cv::Point(-1, -1),
+      false);
+    cv::Mat local_mask_sums;
+    cv::boxFilter(
+      mask,
+      local_mask_sums,
+      mat.depth(),
+      cv::Size(kernel_size, kernel_size),
+      cv::Point(-1, -1),
+      false);
+    cv::Mat blurred;
+    cv::divide(local_sums, local_mask_sums, blurred, 1, mat.type());
+    blurred.copyTo(mat, local_mask_sums != 0);
+  }
+
   void ContrastStretch(
     int32_t grid_size, 
     const cv::Mat& source_image,
@@ -123,9 +147,9 @@ namespace swri_image_util
     
     cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_64F);
     cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_64F);
-    
+    cv::Mat grid_mask = cv::Mat::ones(grid_size + 1, grid_size + 1, CV_8U) * 255;
+
     bool has_mask = !mask.empty();
-    
     for(int i = 0; i < grid_size + 1; i++)
     {
       for(int j = 0; j < grid_size + 1; j++)
@@ -142,8 +166,15 @@ namespace swri_image_util
                        
         if (has_mask)
         {
-          //ROS_ERROR("x:%d  y:%d  w:%d  h:%d", roi.x, roi.y, roi.width, roi.height);
-          cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0, mask(roi));
+          if (cv::countNonZero(mask(roi)) > 0)
+          {
+            //ROS_ERROR("x:%d  y:%d  w:%d  h:%d", roi.x, roi.y, roi.width, roi.height);
+            cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0, mask(roi));
+          }
+          else
+          {
+            grid_mask.at<uint8_t>(i, j) = 0;
+          }
         }
         else
         {
@@ -154,8 +185,8 @@ namespace swri_image_util
       }
     }
     
-    cv::blur(max_vals, max_vals, cv::Size(3, 3));
-    cv::blur(min_vals, min_vals, cv::Size(3, 3));
+    MaskedBoxFilter(max_vals, grid_mask, 3);
+    MaskedBoxFilter(min_vals, grid_mask, 3);
 
     // Stretch contrast accordingly
     for(int i = 0; i < source_image.rows; i++)
