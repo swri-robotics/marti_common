@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2016-12-07)
+------------------
 * Add support for stop point metadata.
 * Add helper method to find files within a directory and subdirectories based on regular expression matching for the filename.
 * Add sru::projectOntoRouteWindow (`#393 <https://github.com/swri-robotics/marti_common/issues/393>`_)
