@@ -2,6 +2,15 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Deprecate LatchedSubscriber. (`#391 <https://github.com/swri-robotics/marti_common/issues/391>`_)
+  LatchedSubscriber should be replaced with a swri::Subscriber that is
+  initialized with the address of a location to store messages. This change
+  makes for a simpler and more consistent interface, and avoids the confusion
+  that comes from overloading the -> operator.
+* Contributors: P. J. Reed
+
 0.2.1 (2016-10-23)
 ------------------
 

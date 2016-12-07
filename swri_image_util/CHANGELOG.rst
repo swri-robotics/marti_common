@@ -2,6 +2,12 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix issue with contrast stretching when a grid cell is completely masked out.
+* Migrated OpenCV to 3.1 (default in Kinetic)
+* Contributors: Brian Holt, Marc Alban
+
 0.2.1 (2016-10-23)
 ------------------
 

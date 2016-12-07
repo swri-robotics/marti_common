@@ -2,6 +2,9 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.2.1 (2016-10-23)
 ------------------
 * Add C++ and CMake macros for wrapper nodes

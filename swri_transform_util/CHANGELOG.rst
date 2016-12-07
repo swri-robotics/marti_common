@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Migrated OpenCV to 3.1 (default in Kinetic)
+* Contributors: Brian Holt
+
 0.2.1 (2016-10-23)
 ------------------
 * Improve georeferencing warnings.

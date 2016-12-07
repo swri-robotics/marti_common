@@ -2,6 +2,11 @@
 Changelog for package swri_system_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add helper method to find files within a directory and subdirectories based on regular expression matching for the filename.
+* Contributors: P. J. Reed
+
 0.2.1 (2016-10-23)
 ------------------
 
