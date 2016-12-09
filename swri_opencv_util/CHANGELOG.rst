@@ -2,6 +2,11 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix OpenCV dependencies for Kinetic build (`#400 <https://github.com/swri-robotics/marti_common/issues/400>`_)
+* Contributors: P. J. Reed
+
 0.2.2 (2016-12-07)
 ------------------
 * Migrated OpenCV to 3.1 (default in Kinetic)

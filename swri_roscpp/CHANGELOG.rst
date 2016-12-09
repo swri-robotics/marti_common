@@ -2,6 +2,9 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.2.2 (2016-12-07)
 ------------------
 * Deprecate LatchedSubscriber. (`#391 <https://github.com/swri-robotics/marti_common/issues/391>`_)
