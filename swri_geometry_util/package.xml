@@ -13,9 +13,9 @@
   
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
+  <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>libgeos++-dev</depend>
-  <depend>libopencv-dev</depend>
   <depend>roscpp</depend>
   <depend>tf</depend>
 </package>
