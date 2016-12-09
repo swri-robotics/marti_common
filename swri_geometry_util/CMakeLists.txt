@@ -21,7 +21,7 @@ else()
 endif()
 add_definitions(${EIGEN3_DEFINITIONS})
 
-find_package(OpenCV 2 REQUIRED)
+find_package(OpenCV 3.1 COMPONENTS core REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
