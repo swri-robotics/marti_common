@@ -1,5 +1,6 @@
+<?xml version="1.0"?>
 <launch>
-  <node pkg="swri_roscpp" type="param_test" name="param_test" output="screen">
+  <node pkg="swri_roscpp" type="param_example" name="param_example" output="screen">
     <rosparam>
     used_int_var_1: 1
     used_int_var_2: 1
