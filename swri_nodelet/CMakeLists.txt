@@ -23,7 +23,7 @@ file(COPY nodelet.cpp.in
 set(swri_nodelet_PREFIX ${CATKIN_DEVEL_PREFIX})  # Allows use of nodelet.cpp.in in swri_nodelet_add_node macro for this build
 include(${CATKIN_DEVEL_PREFIX}/share/${PROJECT_NAME}/cmake/swri_nodelet-extras.cmake)  # Allows use of swri_nodelet_add_node macro for this build
 
-include_directories(${catkin_INCLUDE_DIRS} include)
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_library(swri_nodelet_test src/test_nodelet.cpp)
 target_link_libraries(swri_nodelet_test ${catkin_LIBRARIES})
