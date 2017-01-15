@@ -262,7 +262,7 @@ namespace swri
    * parameter
    * @param n  Nodehandle defining the namespace to restrict the list
    */
-  void warnUnusedParams(ros::NodeHandle const& n = ros::NodeHandle("~"))
+  void warnUnusedParams(ros::NodeHandle const& n)
   {
     std::vector<std::string> unused_params = getUnusedParamKeys(n);
     for (std::vector<std::string>::const_iterator itr = unused_params.begin(); itr != unused_params.end(); ++itr)

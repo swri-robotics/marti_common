@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   swri::param(pnh, "used_bool_var_2", bool_var, true);
   swri::param(pnh, "unset_bool_var", bool_var, true);
   
-  swri::warnUnusedParams();
+  swri::warnUnusedParams(pnh);
 
   return 0;
 }
