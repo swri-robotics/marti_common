@@ -44,6 +44,14 @@ target_link_libraries(timer_test ${catkin_LIBRARIES})
 add_executable(param_example src/nodes/param_example.cpp)
 target_link_libraries(param_example ${catkin_LIBRARIES})
 
+if (CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(test_params
+                    test/params.test
+                    test/params.cpp)
+  target_link_libraries(test_params ${catkin_LIBRARIES})
+endif()
+
 ### Install Test Node and Headers ###
 install(TARGETS subscriber_test latched_subscriber_test param_example
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
