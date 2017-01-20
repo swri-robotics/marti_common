@@ -305,6 +305,11 @@ namespace swri_serial_util
     {
       int bytes;
       ioctl(fd_, FIONREAD, &bytes);
+      if (bytes < 0)
+      {
+        error_msg_ = "Error getting number of available bytes from serial port: " + std::string(strerror(errno));
+        return ERROR;
+      }
       to_read = static_cast<size_t>(bytes);
     }
 
