@@ -30,6 +30,7 @@
 #ifndef SWRI_NODELET_CLASS_LIST_MACROS_H_
 #define SWRI_NODELET_CLASS_LIST_MACROS_H_
 
+#include <boost/make_shared.hpp>
 #include <pluginlib/class_list_macros.h>
 
 /*
