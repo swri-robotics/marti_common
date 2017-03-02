@@ -11,28 +11,32 @@
   <maintainer email="malban@swri.org">Marc Alban</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
-  
+
   <depend>boost</depend>
   <depend>diagnostic_msgs</depend>
+  <depend>dynamic_reconfigure</depend>
   <depend>geographic_msgs</depend>
   <depend>gps_common</depend>
   <depend>libgeos++-dev</depend>
+  <depend>nodelet</depend>
   <depend>libopencv-dev</depend>
   <depend>pluginlib</depend>
   <depend>proj</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>swri_math_util</depend>
+  <depend>swri_roscpp</depend>
   <depend>swri_yaml_util</depend>
   <depend>tf</depend>
   <depend>topic_tools</depend>
   <depend>yaml-cpp</depend>
 
   <test_depend>rostest</test_depend>
-  
+
   <export>
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
     <swri_transform_util plugin="${prefix}/transformer_plugins.xml" />
   </export>
 </package>

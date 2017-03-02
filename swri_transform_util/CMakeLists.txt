@@ -1,41 +1,51 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(swri_transform_util)
 
-find_package(catkin REQUIRED COMPONENTS 
-  roscpp 
-  rospy
-  tf
-  pluginlib
-  topic_tools
+find_package(catkin REQUIRED COMPONENTS
+  diagnostic_msgs
+  dynamic_reconfigure
   geographic_msgs
   gps_common
-  diagnostic_msgs
+  nodelet
+  pluginlib
+  roscpp
+  rospy
   swri_math_util
+  swri_roscpp
   swri_yaml_util
-) 
+  tf
+  topic_tools
+)
 
 find_package(OpenCV 2 REQUIRED)
 find_package(Boost REQUIRED)
 
+generate_dynamic_reconfigure_options(
+  cfg/DynamicPublisher.cfg
+)
+
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS 
-    roscpp 
-    rospy
-    tf
-    pluginlib
-    topic_tools
+  CATKIN_DEPENDS
+    diagnostic_msgs
+    dynamic_reconfigure
     geographic_msgs
     gps_common
-    diagnostic_msgs
+    nodelet
+    pluginlib
+    roscpp
+    rospy
     swri_math_util
+    swri_roscpp
     swri_yaml_util
+    tf
+    topic_tools
 )
 
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME}
   src/georeference.cpp
   src/local_xy_util.cpp
   src/utm_util.cpp
@@ -44,6 +54,11 @@ add_library(${PROJECT_NAME}
   src/transform_manager.cpp
   src/transform_util.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} proj)
+
+add_library(${PROJECT_NAME}_nodelets
+  src/nodelets/dynamic_publisher.cpp)
+target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES})
+add_dependencies(${PROJECT_NAME}_nodelets ${PROJECT_NAME}_gencfg)
 
 add_library(transformer_plugins
   src/utm_transformer.cpp
@@ -77,7 +92,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(TARGETS ${PROJECT_NAME} lat_lon_tf_echo transformer_plugins
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets lat_lon_tf_echo transformer_plugins
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -87,6 +102,6 @@ install(TARGETS ${PROJECT_NAME} lat_lon_tf_echo transformer_plugins
 catkin_install_python(PROGRAMS nodes/initialize_origin.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-install(FILES transformer_plugins.xml
+install(FILES transformer_plugins.xml nodelet_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
