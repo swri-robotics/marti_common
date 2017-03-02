@@ -30,9 +30,6 @@
 #include <algorithm>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-
 #include <dynamic_reconfigure/server.h>
 #include <nodelet/nodelet.h>
 #include <ros/ros.h>
@@ -78,9 +75,7 @@ class DynamicPublisher : public nodelet::Nodelet
     swri::param(priv, "pitch", config_.pitch, config_.pitch);
     swri::param(priv, "roll", config_.roll, config_.roll);
 
-    server_.reset(new ReconfigureServer(config_mutex_, priv));
-    server_->updateConfig(config_);
-    server_->setCallback(
+    server_.setCallback(
         boost::bind(&DynamicPublisher::ConfigCallback, this, _1, _2));
 
     rate_ = std::max(1.0, rate_);
@@ -90,21 +85,23 @@ class DynamicPublisher : public nodelet::Nodelet
 
   void ConfigCallback(DynamicPublisherConfig &config, uint32_t level)
   {
-    boost::recursive_mutex::scoped_lock lock(config_mutex_);
-    config_ = config;
+    if (~level)
+    {
+      config = config_;
+    }
+    else
+    {
+      config_ = config;
+    }
   }
 
   void Publish(const ros::TimerEvent& unused)
   {
     tf::Transform transform;
-    {
-      boost::recursive_mutex::scoped_lock lock(config_mutex_);
-
-      tf::Vector3 origin(config_.x, config_.y, config_.z);
-      tf::Quaternion rotation;
-      rotation.setRPY(config_.roll, config_.pitch, config_.yaw);
-      transform = tf::Transform(rotation, origin);
-    }
+    tf::Vector3 origin(config_.x, config_.y, config_.z);
+    tf::Quaternion rotation;
+    rotation.setRPY(config_.roll, config_.pitch, config_.yaw);
+    transform = tf::Transform(rotation, origin);
 
     tf::StampedTransform stamped_transform(
         transform,
@@ -127,8 +124,7 @@ class DynamicPublisher : public nodelet::Nodelet
   DynamicPublisherConfig config_;
 
   typedef dynamic_reconfigure::Server<DynamicPublisherConfig> ReconfigureServer;
-  boost::shared_ptr<ReconfigureServer> server_;
-  boost::recursive_mutex config_mutex_;
+  ReconfigureServer server_;
 };
 
 }  // namespace swri_transform_util
