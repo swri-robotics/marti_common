@@ -220,6 +220,7 @@ namespace swri
    * @return   A vector of fully-qualified parameter names in n's
    *           namespace that haven't been got.
    */
+  static inline
   std::vector<std::string> getUnusedParamKeys(ros::NodeHandle const& n)
   {
     // Get a list of every parameter on the parameter server
@@ -262,6 +263,7 @@ namespace swri
    * parameter
    * @param n  Nodehandle defining the namespace to restrict the list
    */
+  static inline
   void warnUnusedParams(ros::NodeHandle const& n)
   {
     std::vector<std::string> unused_params = getUnusedParamKeys(n);
