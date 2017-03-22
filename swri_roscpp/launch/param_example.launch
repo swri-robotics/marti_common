@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="swri_roscpp" type="param_example" name="param_example" output="screen">
+    <rosparam>
+    used_int_var_1: 1
+    used_int_var_2: 1
+    unused_int_var: 0
+
+    used_dbl_var_1: 1.0
+    used_dbl_var_2: 2.0
+    unused_dbl_var: 0.0
+
+    used_str_var_1: "foo"
+    used_str_var_2: "bar"
+    unused_str_var: "baz"
+    
+    used_bool_var_1: true
+    used_bool_var_2: true
+    unused_bool_var: false
+    </rosparam>
+  </node>
+  <rosparam>
+  unused_global: "fizz"
+  </rosparam>
+</launch>
