@@ -20,24 +20,23 @@ These directions assume you have already set up a catkin workspace and rosdep. S
 1. Check out the source code
 
     a. If you use wstool:
-  
     ```
-# Replace $ROS_DISTRO with indigo, jade, or kinetic as appropriate
-wstool set marti_common --git https://github.com/swri-robotics/marti_common.git -v $ROS_DISTRO-devel
-wstool update marti_common
+    # Replace $ROS_DISTRO with indigo, jade, or kinetic as appropriate
+    wstool set marti_common --git https://github.com/swri-robotics/marti_common.git -v $ROS_DISTRO-devel
+    wstool update marti_common
     ```
-    b. Using plain git:
-  
+
+	b. Using plain git:
     ```
-# Replace $ROS_DISTRO with indigo, jade, or kinetic as appropriate
-git clone https://github.com/swri-robotics/marti_common.git --branch $ROS_DISTRO-devel
+    # Replace $ROS_DISTRO with indigo, jade, or kinetic as appropriate
+    git clone https://github.com/swri-robotics/marti_common.git --branch $ROS_DISTRO-devel
     ```
 2. Install dependencies:
+    ```
+    # (In the root of this repository)
+    rosdep install --from-paths . --ignore-src
+    ```
 
-    ```
-# (In the root of this repository)
-rosdep install --from-paths . --ignore-src
-    ```
 3. Build
 
     a. If you use catkin tools:
