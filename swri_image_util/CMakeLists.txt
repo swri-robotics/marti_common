@@ -60,8 +60,6 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
-file (GLOB HEADER_FILES include/swri_image_util/*.h)
-
 add_library(${PROJECT_NAME} 
   src/image_normalization.cpp 
   src/rolling_normalization.cpp 
