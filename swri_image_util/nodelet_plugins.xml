@@ -29,5 +29,11 @@
       Nodelet to draw text on an image.
     </description>
   </class>
+
+  <class name="swri_image_util/blend_images" type="swri_image_util::BlendImagesNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet that blends one image onto the top of another.
+    </description>
+  </class>
   
 </library>
