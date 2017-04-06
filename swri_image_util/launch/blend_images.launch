@@ -1,0 +1,13 @@
+<launch>
+  <!-- Image blending options -->
+  <arg name="base_image" default="/base_image" />
+  <arg name="top_image" default="/top_image" />
+  <arg name="alpha" default="0.5" />
+
+  <node pkg="nodelet" type="nodelet" name="standalone_nodelet" args="manager" />
+  <node pkg="nodelet" type="nodelet" name="image_blender" args="load swri_image_util/blend_images standalone_nodelet">
+    <remap from="base_image" to="$(arg base_image)" />
+    <remap from="top_image" to="$(arg top_image)" />
+    <param name="alpha" value="$(arg alpha)" />
+  </node>
+</launch>
