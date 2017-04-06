@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   image_geometry
   image_transport
+  message_filters
   nav_msgs
   nodelet
   roscpp
@@ -48,6 +49,7 @@ catkin_package(
     geometry_msgs
     image_geometry
     image_transport
+    message_filters
     nav_msgs
     nodelet
     roscpp
