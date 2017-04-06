@@ -42,5 +42,6 @@ int main(int argc, char **argv)
         "swri_image_util/blend_images",
         remappings,
         my_argv);
+  ros::spin();
   return 0;
 }
