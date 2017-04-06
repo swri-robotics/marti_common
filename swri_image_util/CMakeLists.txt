@@ -12,11 +12,12 @@ find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   geometry_msgs
   image_geometry
+  image_transport
+  message_filters
   nav_msgs
   camera_calibration_parsers
   swri_math_util
   swri_opencv_util
-  image_transport
 )
 
 find_package(OpenCV 2)
@@ -48,11 +49,12 @@ catkin_package(
     tf
     geometry_msgs
     image_geometry
+    image_transport
+    message_filters
     nav_msgs
     camera_calibration_parsers
     swri_math_util
     swri_opencv_util
-    image_transport
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
