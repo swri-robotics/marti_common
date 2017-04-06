@@ -12,11 +12,12 @@ find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   geometry_msgs
   image_geometry
+  image_transport
+  message_filters
   nav_msgs
   camera_calibration_parsers
   swri_math_util
   swri_opencv_util
-  image_transport
 )
 
 find_package(OpenCV 2)
@@ -48,11 +49,12 @@ catkin_package(
     tf
     geometry_msgs
     image_geometry
+    image_transport
+    message_filters
     nav_msgs
     camera_calibration_parsers
     swri_math_util
     swri_opencv_util
-    image_transport
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
@@ -63,7 +65,8 @@ add_library(${PROJECT_NAME}
   src/image_matching.cpp
   src/draw_util.cpp
   src/geometry_util.cpp
-  src/image_warp_util.cpp)
+  src/image_warp_util.cpp
+  src/blend_images_util.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES})
 
 add_library(${PROJECT_NAME}_nodelets
@@ -71,7 +74,8 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/contrast_stretch_nodelet.cpp
   src/nodelets/normalize_response_nodelet.cpp
   src/nodelets/scale_image_nodelet.cpp
-  src/nodelets/draw_text_nodelet.cpp)
+  src/nodelets/draw_text_nodelet.cpp
+  src/nodelets/blend_images_nodelet.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
 
 add_executable(normalization_image_generator_node src/nodes/normalization_image_generator_node.cpp)
@@ -95,6 +99,9 @@ target_link_libraries(contrast_stretch ${catkin_LIBRARIES})
 add_executable(normalize_response src/nodes/normalize_response.cpp)
 target_link_libraries(normalize_response ${catkin_LIBRARIES})
 
+add_executable(blend_images src/nodes/blend_images_node.cpp)
+target_link_libraries(blend_images ${catkin_LIBRARIES})
+
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest_gtest(test_geometry_util test/geometry_util.test test/test_geometry_util.cpp)
@@ -115,6 +122,7 @@ install(TARGETS ${PROJECT_NAME}
     draw_text
     contrast_stretch
     normalize_response
+    blend_images
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
