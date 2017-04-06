@@ -22,6 +22,7 @@
   <depend>image_transport</depend>
   <depend>libqt5-opengl-dev</depend>
   <depend>libqt5-gui</depend>
+  <depend>message_filters</depend>
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
   <depend>roscpp</depend>
