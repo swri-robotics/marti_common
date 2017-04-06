@@ -120,7 +120,9 @@ namespace swri_image_util
     // the base and top image will not be modified, and so we do not need our
     // own copy of the image
     cv_bridge::CvImageConstPtr cv_base_image = cv_bridge::toCvShare(base_image);
-    cv_bridge::CvImageConstPtr cv_top_image = cv_bridge::toCvShare(top_image);
+    cv_bridge::CvImageConstPtr cv_top_image = cv_bridge::toCvShare(
+          top_image,
+          base_image->encoding);
 
     // Initialize the output to the same size and type as the base image
     cv::Mat blended = cv::Mat::zeros(
