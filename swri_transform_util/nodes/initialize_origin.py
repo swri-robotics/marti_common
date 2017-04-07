@@ -50,6 +50,10 @@ def make_origin_from_list(frame_id, origin_name, origin_list):
     return None
 
 def gps_callback(data, (frame_id, pub, sub)):
+    if data.status.status == -1:
+        # This fix is invalid, ignore it and wait until we get a valid one
+        rospy.logwarn("Got invalid fix.  Waiting for a valid one...")
+        return
     global _origin
     rospy.loginfo("Got NavSat message. Setting origin and unsubscribing from NavSat.")
     sub.unregister()
