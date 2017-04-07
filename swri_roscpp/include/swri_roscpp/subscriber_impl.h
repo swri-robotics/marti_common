@@ -360,7 +360,7 @@ class StorageSubscriberImpl : public SubscriberImpl
 
     dest_ = dest;
 
-    sub_ = nh.subscribe(mapped_topic_, 1,
+    sub_ = nh.subscribe(mapped_topic_, 2,
                         &StorageSubscriberImpl::handleMessage<M>,
                         this,
                         transport_hints);
