@@ -42,6 +42,10 @@ def parse_origin(local_xy_origin):
     return
 
 def gps_callback(data):
+    if data.status.status == -1:
+        # This fix is invalid, ignore it and wait until we get a valid one
+        rospy.logwarn("Got invalid fix.  Waiting for a valid one...")
+        return
     global _gps_fix
     
     if _gps_fix == None:
