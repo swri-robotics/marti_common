@@ -2,6 +2,17 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#435 <https://github.com/swri-robotics/marti_common/issues/435>`_ from swri-robotics/initialize-origin-license
+  Fix whitespace and license in initialize_origin.py
+* Fix whitespace and license in initialize_origin.py
+  Replace "all rights reserved" with standard BSD 3-clause text and remove trailing whitespace in initialize_origin.py
+* Fixes `#431 <https://github.com/swri-robotics/marti_common/issues/431>`_
+* Simplify dynamic reconfigure usage.
+* Add nodelet for publishing a dynamically reconfigurable TF transform.
+* Contributors: Edward Venator, Marc Alban, P. J. Reed
+
 0.0.13 (2016-10-23)
 -------------------
 
