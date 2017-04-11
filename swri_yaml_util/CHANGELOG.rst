@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.4 (2017-04-11)
+------------------
 * Make swri_yaml_util build out-of-source.
 * Contributors: Marc Alban
 

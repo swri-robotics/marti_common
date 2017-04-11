@@ -2,8 +2,8 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.4 (2017-04-11)
+------------------
 * Support higher serial baud rates
   The system header `/usr/include/asm-generic/termbits.h` has constants for
   supporting baud rates up to 4000000, but swri_serial_util only allows up

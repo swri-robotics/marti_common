@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.4 (2017-04-11)
+------------------
 * Port `#385 <https://github.com/swri-robotics/marti_common/issues/385>`_ and `#419 <https://github.com/swri-robotics/marti_common/issues/419>`_ to kinetic. (`#420 <https://github.com/swri-robotics/marti_common/issues/420>`_)
   A common error when using unfamiliar ROS nodes is to accidentally set parameters
   by the wrong name. This feature allows the node author to output a WARNING

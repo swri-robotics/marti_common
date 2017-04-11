@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.4 (2017-04-11)
+------------------
 * Ignore invalid fixes
   Fixes `#431 <https://github.com/swri-robotics/marti_common/issues/431>`_.
 * Remove unused gps_common dependency (`#422 <https://github.com/swri-robotics/marti_common/issues/422>`_)
