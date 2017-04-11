@@ -2,6 +2,33 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Increase queue_size in swri_roscpp/Subscriber.
+  This commit increases the queue size for subscribers that use the
+  store mechanism instead of a callback.  The queue size was set to 1,
+  which we have seen problems with, so this will increase it to 2.
+* Deprecate LatchedSubscriber. (`#392 <https://github.com/swri-robotics/marti_common/issues/392>`_)
+  This commit adds an alternative to LatchedSubscriber and deprecates
+  the LatchedSubscriber interface.  LatchedSubscriber should be replaced
+  with a swri::Subscriber that is initialized with the address of a
+  location to store messages.  For example, instead of:
+  swri::LatchedSubscriber<my_package::MyMessage> msg\_;
+  ...
+  msg\_.initialize(nh\_, "topic_name");
+  ...
+  ROS_INFO("msg->field = %f", msg->field);
+  this becomes:
+  swri::Subscriber sub\_;
+  my_package::MyMessageConstPtr msg\_;
+  ...
+  sub\_ = swri::SubscribeR(nh\_, "topic_name", &msg\_);
+  ...
+  ROS_INFO("msg->field = %f", msg->field).
+  This change makes for a simpler and more consistent interface, and
+  avoids the confusion that comes from overloading the -> operator.
+* Contributors: Elliot Johnson, P. J. Reed
+
 0.1.6 (2016-10-23)
 ------------------
 * Add swri_roscpp functions for reading float values.

@@ -2,6 +2,17 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Image blending jade (`#430 <https://github.com/swri-robotics/marti_common/issues/430>`_)
+  * Initial commit of image blending
+  * Adding launch file and various bug fixes
+  * Making the base and top image encoding match. Lets us do things like blend a grayscale image onto a color image
+  * Removing file globbing from CMakeLists that made QtCreator happy
+  * Adding message_filters as a ROS package dependency
+* Fix issue with contrast stretching when a grid cell is completely masked out.
+* Contributors: Marc Alban, danthony06
+
 0.1.6 (2016-10-23)
 ------------------
 

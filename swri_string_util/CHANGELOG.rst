@@ -2,6 +2,9 @@
 Changelog for package swri_string_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.6 (2016-10-23)
 ------------------
 

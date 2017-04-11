@@ -2,6 +2,14 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Ignore invalid fixes
+  Fixes `#431 <https://github.com/swri-robotics/marti_common/issues/431>`_.
+* Simplify dynamic reconfigure usage.
+* Add nodelet for publishing a dynamically reconfigurable TF transform.
+* Contributors: Marc Alban, P. J. Reed
+
 0.1.6 (2016-10-23)
 ------------------
 * Improve georeferencing warnings.
