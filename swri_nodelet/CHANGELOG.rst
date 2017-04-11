@@ -2,8 +2,8 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.14 (2017-04-11)
+-------------------
 * Include boost/make_shared.hpp
   This header is necessary in the unlikely event that the using cpp file hasn't included boost/make_shared.hpp anywhere else. Also, it's good practice to include what you use.
 * Fix include_directories order in swri_roscpp

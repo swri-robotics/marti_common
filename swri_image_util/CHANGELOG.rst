@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.14 (2017-04-11)
+-------------------
 * Image blending (`#426 <https://github.com/swri-robotics/marti_common/issues/426>`_)
   * Initial commit of image blending
   * Adding launch file and various bug fixes

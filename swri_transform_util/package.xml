@@ -1,6 +1,6 @@
 <package format="2">
   <name>swri_transform_util</name>
-  <version>0.0.13</version>
+  <version>0.0.14</version>
   <description>
 
      The swri_transform_util package contains utility functions and classes for

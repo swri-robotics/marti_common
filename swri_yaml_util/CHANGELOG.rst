@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.14 (2017-04-11)
+-------------------
 * Add develspace include directory to swri_yaml_util
   Otherwise, version.h is missing and the package fails to build
 * Make swri_yaml_util build out-of-source
