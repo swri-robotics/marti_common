@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.7 (2017-04-11)
+------------------
 * Ignore invalid fixes
   Fixes `#431 <https://github.com/swri-robotics/marti_common/issues/431>`_.
 * Simplify dynamic reconfigure usage.

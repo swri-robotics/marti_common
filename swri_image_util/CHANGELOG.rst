@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.7 (2017-04-11)
+------------------
 * Image blending jade (`#430 <https://github.com/swri-robotics/marti_common/issues/430>`_)
   * Initial commit of image blending
   * Adding launch file and various bug fixes

@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.7 (2017-04-11)
+------------------
 * Increase queue_size in swri_roscpp/Subscriber.
   This commit increases the queue size for subscribers that use the
   store mechanism instead of a callback.  The queue size was set to 1,
