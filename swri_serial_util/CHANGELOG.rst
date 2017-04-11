@@ -2,6 +2,17 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Support higher serial baud rates
+  The system header `/usr/include/asm-generic/termbits.h` has constants for
+  supporting baud rates up to 4000000, but swri_serial_util only allows up
+  to 230400.  Some devices support these higher rates and there's no reason
+  to not support them, so this adds support for them.
+* Check for error from ioctl in serial_port
+  Fixes `#406 <https://github.com/swri-robotics/marti_common/issues/406>`_
+* Contributors: Edward Venator, P. J. Reed
+
 0.2.3 (2016-12-09)
 ------------------
 

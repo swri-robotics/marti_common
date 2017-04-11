@@ -2,6 +2,16 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Image blending kinetic (`#429 <https://github.com/swri-robotics/marti_common/issues/429>`_)
+  * Initial commit of image blending
+  * Adding launch file and various bug fixes
+  * Making the base and top image encoding match. Lets us do things like blend a grayscale image onto a color image
+  * Removing file globbing from CMakeLists that made QtCreator happy
+  * Adding message_filters as a ROS package dependency
+* Contributors: danthony06
+
 0.2.3 (2016-12-09)
 ------------------
 * Fix OpenCV dependencies for Kinetic build (`#400 <https://github.com/swri-robotics/marti_common/issues/400>`_)

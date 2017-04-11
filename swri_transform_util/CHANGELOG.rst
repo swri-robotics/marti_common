@@ -2,6 +2,16 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Ignore invalid fixes
+  Fixes `#431 <https://github.com/swri-robotics/marti_common/issues/431>`_.
+* Remove unused gps_common dependency (`#422 <https://github.com/swri-robotics/marti_common/issues/422>`_)
+  Fix `#421 <https://github.com/swri-robotics/marti_common/issues/421>`_ by removing gps_common from the swri_transform_util CMakeLists.txt in kinetic.
+* Simplify dynamic reconfigure usage.
+* Add nodelet for publishing a dynamically reconfigurable TF transform.
+* Contributors: Edward Venator, Marc Alban, P. J. Reed
+
 0.2.3 (2016-12-09)
 ------------------
 
