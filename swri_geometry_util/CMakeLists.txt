@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(swri_geometry_util)
 
 find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
+  cv_bridge
   roscpp
   tf
 )
@@ -29,15 +31,18 @@ catkin_package(
   CATKIN_DEPENDS
     roscpp
     tf
+  DEPENDS
+    OpenCV
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
+  src/cubic_spline.cpp
+  src/geometry_util.cpp
   src/intersection.cpp
   src/polygon.cpp
-  src/geometry_util.cpp
-  src/cubic_spline.cpp)
+)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${GEOS_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
