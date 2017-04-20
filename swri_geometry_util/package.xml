@@ -15,6 +15,7 @@
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <depend>cmake_modules</depend>
+  <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>libgeos++-dev</depend>
   <depend>libopencv-dev</depend>
