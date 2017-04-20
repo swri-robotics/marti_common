@@ -2,6 +2,35 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.14 (2017-04-11)
+-------------------
+* Increase queue_size in swri_roscpp/Subscriber.
+  This commit increases the queue size for subscribers that use the
+  store mechanism instead of a callback.  The queue size was set to 1,
+  which we have seen problems with, so this will increase it to 2.
+* Add missing qualifiers for swri_roscpp unused parameter functions.
+* Merge pull request `#385 <https://github.com/swri-robotics/marti_common/issues/385>`_ from evenator/unused-parameter-warnings
+  Adds the ability to warn when unused parameters are set in a namespace.
+* Add test for getUnusedParamKeys
+  Adds an automated test for getUnusedParamKeys based on the example
+  code.
+* Remove default value of node handle for warnUnusedParams
+  This default value may cause unexpected behvavior, especially
+  with nodelets.
+* Rename param_test to param_example.
+  param_test isn't an automated test, just an example of how to use the
+  param utilities.
+* Document unused parameter functions.
+  The set difference algorithms used to determine which parameters
+  are used are non-obvious. This adds documentation.
+* Mark _used_params static.
+* Adds the ability to warn when unused parameters are set in a namespace.
+  A common error when using unfamiliar ROS nodes is to accidentally set
+  parameters by the wrong name. This features allows the node author
+  to output a WARNING for any unused parameters.
+  See the param_test node for an example.
+* Contributors: Ed Venator, Edward Venator, Elliot Johnson, elliotjo
+
 0.0.13 (2016-10-23)
 -------------------
 * Add swri_roscpp functions for reading float values.

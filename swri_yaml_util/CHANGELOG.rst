@@ -2,6 +2,15 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.14 (2017-04-11)
+-------------------
+* Add develspace include directory to swri_yaml_util
+  Otherwise, version.h is missing and the package fails to build
+* Make swri_yaml_util build out-of-source
+  Fixes `#411 <https://github.com/swri-robotics/marti_common/issues/411>`_ by generating version.h in the devel space include folder instead of the source space.
+  Based heavily on http://answers.ros.org/question/123221/
+* Contributors: Edward Venator
+
 0.0.13 (2016-10-23)
 -------------------
 

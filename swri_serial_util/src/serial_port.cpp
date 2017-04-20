@@ -230,41 +230,121 @@ namespace swri_serial_util
     int32_t value = -1;
 
     if (baud == B50 || baud == 50)
+    {
       value = B50;
+    }
     else if (baud == B75 || baud == 75)
+    {
       value = B75;
+    }
     else if (baud == B110 || baud == 110)
+    {
       value = B110;
+    }
     else if (baud == B134 || baud == 134)
+    {
       value = B134;
+    }
     else if (baud == B150 || baud == 150)
+    {
       value = B150;
+    }
     else if (baud == B200 || baud == 200)
+    {
       value = B200;
+    }
     else if (baud == B300 || baud == 300)
+    {
       value = B300;
+    }
     else if (baud == B600 || baud == 600)
+    {
       value = B600;
+    }
     else if (baud == B1200 || baud == 1200)
+    {
       value = B1200;
+    }
     else if (baud == B1800 || baud == 1800)
+    {
       value = B1800;
+    }
     else if (baud == B2400 || baud == 2400)
+    {
       value = B2400;
+    }
     else if (baud == B4800 || baud == 4800)
+    {
       value = B4800;
+    }
     else if (baud == B9600 || baud == 9600)
+    {
       value = B9600;
+    }
     else if (baud == B19200 || baud == 19200)
+    {
       value = B19200;
+    }
     else if (baud == B38400 || baud == 38400)
+    {
       value = B38400;
+    }
     else if (baud == B57600 || baud == 57600)
+    {
       value = B57600;
+    }
     else if (baud == B115200 || baud == 115200)
+    {
       value = B115200;
+    }
     else if (baud == B230400 || baud == 230400)
+    {
       value = B230400;
+    }
+    else if (baud == B460800 || baud == 460800)
+    {
+      value = B460800;
+    }
+    else if (baud == B576000 || baud == 576000)
+    {
+      value = B576000;
+    }
+    else if (baud == B921600 || baud == 921600)
+    {
+      value = B921600;
+    }
+    else if (baud == B1000000 || baud == 1000000)
+    {
+      value = B1000000;
+    }
+    else if (baud == B1152000 || baud == 1152000)
+    {
+      value = B1152000;
+    }
+    else if (baud == B1500000 || baud == 1500000)
+    {
+      value = B1500000;
+    }
+    else if (baud == B2000000 || baud == 2000000)
+    {
+      value = B2000000;
+    }
+    else if (baud == B2500000 || baud == 2500000)
+    {
+      value = B2500000;
+    }
+    else if (baud == B3000000 || baud == 3000000)
+    {
+      value = B3000000;
+    }
+    else if (baud == B3500000 || baud == 3500000)
+    {
+      value = B3500000;
+    }
+    else if (baud == B4000000 || baud == 4000000)
+    {
+      value = B4000000;
+    }
 
     return value;
   }
@@ -305,6 +385,11 @@ namespace swri_serial_util
     {
       int bytes;
       ioctl(fd_, FIONREAD, &bytes);
+      if (bytes < 0)
+      {
+        error_msg_ = "Error getting number of available bytes from serial port: " + std::string(strerror(errno));
+        return ERROR;
+      }
       to_read = static_cast<size_t>(bytes);
     }
 

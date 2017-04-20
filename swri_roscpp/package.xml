@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <package format="2">
   <name>swri_roscpp</name>
-  <version>0.0.13</version>
+  <version>0.0.14</version>
   <description>
 
      swri_roscpp
@@ -11,8 +11,10 @@
   <license>BSD</license>
   <buildtool_depend>catkin</buildtool_depend>
   <depend>diagnostic_updater</depend>
+  <test_depend>gtest</test_depend>
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
+  <test_depend>rostest</test_depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
   <export/>

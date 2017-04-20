@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2016, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,44 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_NODELET_CLASS_LIST_MACROS_H_
-#define SWRI_NODELET_CLASS_LIST_MACROS_H_
+#include <ros/ros.h>
+#include <swri_image_util/blend_images_util.h>
 
-#include <boost/make_shared.hpp>
-#include <pluginlib/class_list_macros.h>
+namespace swri_image_util
+{
+  void blendImages(
+      const cv::Mat& base_image,
+      const cv::Mat& top_image,
+      const double alpha,
+      cv::Mat& dest_image)
+  {
+    // All images must have the same shape. Return without modifying anything
+    // if this is not the case
+    if ((base_image.rows != top_image.rows)
+        || (base_image.cols != top_image.cols)
+        || (base_image.rows != dest_image.rows)
+        || (base_image.cols != dest_image.cols))
+    {
+      ROS_ERROR("Images to blend had incorrect shapes");
+      return;
+    }
 
-/*
- Macro to define a nodelet with a factory function, so that it can be used in
- boilerplate wrapper nodes that do not rely on dynamic class loading.
- 
- The macro calls PLUGINLIB_EXPORT_CLASS with plugin type nodelet::Nodelet and
- creates a factory function NS::createCLASS() that returns a 
- boost::shared_ptr<nodelet::Nodelet> to NS::CLASS
- 
- @param NS The namespace of the class to be used for the nodelet
- @param CLASS The classname of the class to be used for the nodelet
-*/
-#define SWRI_NODELET_EXPORT_CLASS(NS, CLASS) PLUGINLIB_EXPORT_CLASS(NS::CLASS, nodelet::Nodelet);\
-namespace NS\
-{\
-  boost::shared_ptr<nodelet::Nodelet> create ## CLASS()\
-  {\
-    return boost::make_shared<CLASS>();\
-  }\
+    // Make sure all the image have the same type before modifying anything
+    if ((base_image.type() != top_image.type())
+        || (base_image.type() != dest_image.type()))
+    {
+      ROS_ERROR("Images to blend must have the same type");
+      return;
+    }
+
+    // Sanity check the alpha value to make sure it is reasonable. Do not
+    // modify anything if it is outside the expected range
+    if ((alpha < 0.0) || (alpha > 1.0))
+    {
+      ROS_ERROR("Alpha value must be in the range [0, 1]");
+      return;
+    }
+
+    cv::addWeighted(base_image, 1.0 - alpha, top_image, alpha, 0, dest_image);
+  }
 }
-
-#endif  // SWRI_NODELET_CLASS_LIST_MACROS_H_
-

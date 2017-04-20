@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2016, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,21 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_NODELET_CLASS_LIST_MACROS_H_
-#define SWRI_NODELET_CLASS_LIST_MACROS_H_
+#include <ros/ros.h>
+#include <nodelet/loader.h>
 
-#include <boost/make_shared.hpp>
-#include <pluginlib/class_list_macros.h>
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "blend_images", ros::init_options::AnonymousName);
+  nodelet::Loader manager(false);
 
-/*
- Macro to define a nodelet with a factory function, so that it can be used in
- boilerplate wrapper nodes that do not rely on dynamic class loading.
- 
- The macro calls PLUGINLIB_EXPORT_CLASS with plugin type nodelet::Nodelet and
- creates a factory function NS::createCLASS() that returns a 
- boost::shared_ptr<nodelet::Nodelet> to NS::CLASS
- 
- @param NS The namespace of the class to be used for the nodelet
- @param CLASS The classname of the class to be used for the nodelet
-*/
-#define SWRI_NODELET_EXPORT_CLASS(NS, CLASS) PLUGINLIB_EXPORT_CLASS(NS::CLASS, nodelet::Nodelet);\
-namespace NS\
-{\
-  boost::shared_ptr<nodelet::Nodelet> create ## CLASS()\
-  {\
-    return boost::make_shared<CLASS>();\
-  }\
+  nodelet::M_string remappings;
+  nodelet::V_string my_argv;
+  manager.load(
+        ros::this_node::getName(),
+        "swri_image_util/blend_images",
+        remappings,
+        my_argv);
+  ros::spin();
+  return 0;
 }
-
-#endif  // SWRI_NODELET_CLASS_LIST_MACROS_H_
-

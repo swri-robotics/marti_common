@@ -1,6 +1,6 @@
 <package format="2">
   <name>swri_image_util</name>
-  <version>0.0.13</version>
+  <version>0.0.14</version>
   <description>
 
      swri_image_util
@@ -22,6 +22,7 @@
   <depend>image_geometry</depend>
   <depend>image_transport</depend>
   <depend>libqt4-dev</depend>
+  <depend>message_filters</depend>
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
   <depend>roscpp</depend>

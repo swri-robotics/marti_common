@@ -2,6 +2,16 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.14 (2017-04-11)
+-------------------
+* Include boost/make_shared.hpp
+  This header is necessary in the unlikely event that the using cpp file hasn't included boost/make_shared.hpp anywhere else. Also, it's good practice to include what you use.
+* Fix include_directories order in swri_roscpp
+  Include package-local header files before catkin header files
+  so that source is always built against source header files, even
+  if the same package exists elsewhere in the catkin tree.
+* Contributors: Edward Venator
+
 0.0.13 (2016-10-23)
 -------------------
 * Add C++ and CMake macros for wrapper nodes
