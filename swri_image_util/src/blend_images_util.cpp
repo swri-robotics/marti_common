@@ -30,6 +30,8 @@
 #include <ros/ros.h>
 #include <swri_image_util/blend_images_util.h>
 
+#include <opencv2/highgui/highgui.hpp>
+
 namespace swri_image_util
 {
   void blendImages(
@@ -66,5 +68,92 @@ namespace swri_image_util
     }
 
     cv::addWeighted(base_image, 1.0 - alpha, top_image, alpha, 0, dest_image);
+  }
+
+  void blendImages(
+      const cv::Mat& base_image,
+      const cv::Mat& top_image,
+      const double alpha,
+      const cv::Scalar mask_color,
+      cv::Mat& dest_image)
+  {
+    const bool debug = false;
+
+    // All images must have the same shape. Return without modifying anything
+    // if this is not the case
+    if ((base_image.rows != top_image.rows)
+        || (base_image.cols != top_image.cols)
+        || (base_image.rows != dest_image.rows)
+        || (base_image.cols != dest_image.cols))
+    {
+      ROS_ERROR("Images to blend had incorrect shapes");
+      return;
+    }
+
+    // Make sure all the image have the same type before modifying anything
+    if ((base_image.type() != top_image.type())
+        || (base_image.type() != dest_image.type()))
+    {
+      ROS_ERROR("Images to blend must have the same type");
+      return;
+    }
+
+    // Sanity check the alpha value to make sure it is reasonable. Do not
+    // modify anything if it is outside the expected range
+    if ((alpha < 0.0) || (alpha > 1.0))
+    {
+      ROS_ERROR("Alpha value must be in the range [0, 1]");
+      return;
+    }
+
+    // We want to blend only the masked portion of the image. There is no
+    // built-in function to do this, so we take many steps:
+    cv::Size size = top_image.size();
+    int type = top_image.type();
+
+    // 1a. Create the mask (1 where color is mask_color)
+    cv::Mat mask = cv::Mat::zeros(size, type);
+    cv::inRange(top_image, mask_color, mask_color, mask);
+
+    // 1b. And its inverse (0 where color is mask color)
+    cv::Mat mask_inverse = cv::Mat::zeros(size, type);
+    cv::bitwise_not(mask, mask_inverse);
+
+    // 2. Blend the top image with the bottom image to get a full blended image
+    cv::Mat blended_top = cv::Mat::zeros(size, type);
+    cv::addWeighted(base_image, 1.0 - alpha, top_image, alpha, 0, blended_top);
+
+    // 3. Mask the blended image so we only get the blend where the top is NOT
+    //    mask_color
+    cv::Mat masked_top = cv::Mat::zeros(size, type);
+    cv::bitwise_and(blended_top, blended_top, masked_top, mask_inverse);
+
+    // 4. Mask the base so we only get the base where the top IS mask_color
+    cv::Mat masked_base = cv::Mat::zeros(size, type);
+    cv::bitwise_and(base_image, base_image, masked_base, mask);
+
+    // 5. Add the masked blend and the masked base together
+    cv::add(masked_base, masked_top, dest_image);
+
+    if (debug == true)
+    {
+      cv::namedWindow("Mask", cv::WINDOW_AUTOSIZE);
+      cv::imshow("Mask", mask);
+      cv::waitKey(0);
+
+      cv::namedWindow("Masked Image", cv::WINDOW_AUTOSIZE);
+      cv::imshow("Masked Image", masked_top);
+      cv::waitKey(0);
+
+      cv::namedWindow("Masked Base", cv::WINDOW_AUTOSIZE);
+      cv::imshow("Masked Base", masked_base);
+      cv::waitKey(0);
+
+      cv::namedWindow("Final", cv::WINDOW_AUTOSIZE);
+      cv::imshow("Final", dest_image);
+      cv::waitKey(0);
+
+      cv::destroyAllWindows();
+    }
   }
 }

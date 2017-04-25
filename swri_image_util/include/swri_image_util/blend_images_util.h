@@ -44,6 +44,19 @@ namespace swri_image_util
       const cv::Mat& top_image,
       const double alpha,
       cv::Mat& dest_image);
+
+  /**
+   * Blends two images together. top_image will be drawn on top of base_image
+   * with a blending level of alpha. The color mask_color will be made
+   * transparent in the top_image. The blended image will be placed in
+   * dest_image
+   */
+  void blendImages(
+      const cv::Mat& base_image,
+      const cv::Mat& top_image,
+      const double alpha,
+      const cv::Scalar mask_color,
+      cv::Mat& dest_image);
 }
 
 #endif // IMAGE_UTIL_BLEND_IMAGES_H_

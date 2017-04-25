@@ -42,6 +42,7 @@
 namespace swri_image_util
 {
   const double DEFAULT_ALPHA_LEVEL = 0.5;
+  const cv::Scalar NO_MASK = cv::Scalar(-1, -1, -1);
 
   // ROS nodelet for blending the images together
   class BlendImagesNodelet : public nodelet::Nodelet
@@ -65,6 +66,8 @@ namespace swri_image_util
           const sensor_msgs::ImageConstPtr &top_image);
       // Alpha blending level of the two images
       double alpha_;
+      // Color to mask, if necessary
+      cv::Scalar mask_color_;
       // Publishes the blended image
       image_transport::Publisher image_pub_;
       // The subscribers for the base and top image
@@ -76,7 +79,8 @@ namespace swri_image_util
   };
 
   BlendImagesNodelet::BlendImagesNodelet() :
-    alpha_(DEFAULT_ALPHA_LEVEL)
+    alpha_(DEFAULT_ALPHA_LEVEL),
+    mask_color_(NO_MASK)
   {
   }
 
@@ -93,6 +97,26 @@ namespace swri_image_util
     // User setting for the alpha value. The constructor should have
     // already set this to the default value
     priv.param("alpha", alpha_, alpha_);
+
+    // Values should be in the range [0,255]
+    double mask_r;
+    double mask_g;
+    double mask_b;
+    priv.param("mask_r", mask_r, -1.0);
+    priv.param("mask_g", mask_g, -1.0);
+    priv.param("mask_b", mask_b, -1.0);
+
+    // Only create the mask if all components are valid
+    if ((mask_r >= 0) && (mask_g >= 0) && (mask_b >= 0) &&
+        (mask_r <= 255) && (mask_g <= 255) && (mask_b <= 255))
+    {
+      mask_color_ = cv::Scalar(mask_r, mask_g, mask_b);
+    }
+    else
+    {
+      ROS_ERROR("Mask color components must be in range [0,255]");
+      ROS_ERROR("  Components were (%f, %f, %f)", mask_r, mask_g, mask_b);
+    }
 
     // Set up our publisher of the blended data and listen to the two input
     // images
@@ -131,12 +155,26 @@ namespace swri_image_util
           cv_base_image->image.rows,
           cv_base_image->image.cols,
           cv_base_image->image.type());
+
     // Blend the images together
-    swri_image_util::blendImages(
-          cv_base_image->image,
-          cv_top_image->image,
-          alpha_,
-          blended);
+    if (mask_color_ != NO_MASK)
+    {
+      swri_image_util::blendImages(
+            cv_base_image->image,
+            cv_top_image->image,
+            alpha_,
+            mask_color_,
+            blended);
+    }
+    else
+    {
+      swri_image_util::blendImages(
+            cv_base_image->image,
+            cv_top_image->image,
+            alpha_,
+            blended);
+    }
+
     // Convert the blended image to a ROS type and publish the result
     cv_bridge::CvImagePtr cv_blended = boost::make_shared<cv_bridge::CvImage>();
     cv_blended->image = blended;
