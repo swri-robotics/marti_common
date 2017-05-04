@@ -77,8 +77,6 @@ namespace swri_image_util
       const cv::Scalar mask_color,
       cv::Mat& dest_image)
   {
-    const bool debug = false;
-
     // All images must have the same shape. Return without modifying anything
     // if this is not the case
     if ((base_image.rows != top_image.rows)
@@ -134,26 +132,5 @@ namespace swri_image_util
 
     // 5. Add the masked blend and the masked base together
     cv::add(masked_base, masked_top, dest_image);
-
-    if (debug == true)
-    {
-      cv::namedWindow("Mask", cv::WINDOW_AUTOSIZE);
-      cv::imshow("Mask", mask);
-      cv::waitKey(0);
-
-      cv::namedWindow("Masked Image", cv::WINDOW_AUTOSIZE);
-      cv::imshow("Masked Image", masked_top);
-      cv::waitKey(0);
-
-      cv::namedWindow("Masked Base", cv::WINDOW_AUTOSIZE);
-      cv::imshow("Masked Base", masked_base);
-      cv::waitKey(0);
-
-      cv::namedWindow("Final", cv::WINDOW_AUTOSIZE);
-      cv::imshow("Final", dest_image);
-      cv::waitKey(0);
-
-      cv::destroyAllWindows();
-    }
   }
 }
