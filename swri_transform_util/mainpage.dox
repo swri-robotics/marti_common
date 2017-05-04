@@ -11,7 +11,7 @@ such as accurate UTM calculations and transformation from local rectalinear
 frames to WGS84 lattitude/longitude and back.
 
 In addition to swri_transform_util::Transform, swri_transform_util provides
-swri_transform_util::Transformer, which wraps a tf::TransformListener and
+swri_transform_util::TransformManager, which wraps a tf::TransformListener and
 provides an interface to look up swri_transform_util::Transforms between TF
 frames and special frames, such as /wgs84 and /utm.
 
