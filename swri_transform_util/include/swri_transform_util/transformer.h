@@ -44,7 +44,7 @@
 namespace swri_transform_util
 {
   /**
-   * A base class for transformers.
+   * @brief A base class for transformers.
    *
    * Instantiations of this class implement an interface to get transforms from
    * certain types of frames (e.g. TF, WGS84) to other types of frames.
@@ -55,16 +55,26 @@ namespace swri_transform_util
       Transformer();
       virtual ~Transformer();
 
+      /**
+       * @brief Initialize the Transformer from a tf::TransformListener.
+       *
+       * @param tf A shared pointer to a tf::TransformListener that the
+       *    Transformer wraps. It is recommended that every Transformer in a
+       *    node use the same tf::TransformListener to reduce redundant
+       *    computation.
+       */
       void Initialize(const boost::shared_ptr<tf::TransformListener> tf);
 
       /**
-       * (pure virtual) Get a map of the transforms supported by this Transformer
-       * @return
+       * @brief Get a map of the transforms supported by this Transformer
+       * @return A map from source frame IDs to list of destination frame IDs.
+       *   A source->destination entry does not imply that the inverse
+       *   transform is supported as well.
        */
       virtual std::map<std::string, std::vector<std::string> > Supports() const = 0;
 
       /**
-       * (pure virtual) Get a swri_transform_util::Transform
+       * @brief Get a swri_transform_util::Transform
        *
        * Gets the swri_transform_util::Transform that transforms coordinates
        * from the source_frame into the target_frame. If the transform is not
