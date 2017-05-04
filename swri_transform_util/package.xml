@@ -41,6 +41,7 @@
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />
     <swri_transform_util plugin="${prefix}/transformer_plugins.xml" />
+    <rosdoc config="rosdoc.yaml" />
   </export>
 </package>
 
