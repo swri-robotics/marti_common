@@ -30,8 +30,6 @@
 #include <ros/ros.h>
 #include <swri_image_util/blend_images_util.h>
 
-#include <opencv2/highgui/highgui.hpp>
-
 namespace swri_image_util
 {
   void blendImages(
