@@ -39,10 +39,26 @@
 
 namespace swri_transform_util
 {
+  /**
+   * @brief Given a longitude angle, get the UTM zone
+   * @param longitude Longitude angle in degrees
+   * @return UTM zone number
+   */
   uint32_t GetZone(double longitude);
 
+  /**
+   * @brief Given a latitude angle, get the UTM band letter
+   * @param latitude Latitude angle in degrees
+   * @return UTM band letter
+   */
   char GetBand(double latitude);
 
+  /**
+   * @brief Utility class for converting between latitude/longitude and UTM
+   *
+   * Initialization of this class is costly, so it should be created on startup
+   * and reused.
+   */
   class UtmUtil
   {
   public:
@@ -90,8 +106,8 @@ namespace swri_transform_util
 
   private:
     /**
-     * The actual UTM conversion processing takes place in this helper class
-     * which is a singlton due to the large memory footprint of the underlying
+     * The actual UTM conversion processing takes place in this helper class,
+     * which is a singleton due to the large memory footprint of the underlying
      * PROJ.4 projections library structures.  Thread safety is enforced with
      * mutexes around the PROJ.4 functions, but could be achieved in the future
      * with a thread-safe version of PROJ.4 or ignored all together if the calls
