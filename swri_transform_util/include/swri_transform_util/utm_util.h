@@ -65,7 +65,7 @@ namespace swri_transform_util
     UtmUtil();
 
     /**
-     * Convert WGS84 latitude and longitude to UTM.
+     * @brief Convert WGS84 latitude and longitude to UTM.
      * 
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
@@ -79,7 +79,7 @@ namespace swri_transform_util
       int& zone, char& band, double& easting, double& northing) const;
 
     /**
-     * Convert WGS84 latitude and longitude to UTM.
+     * @brief Convert WGS84 latitude and longitude to UTM.
      * 
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
@@ -91,7 +91,7 @@ namespace swri_transform_util
       double& easting, double& northing) const;
 
     /**
-     * Convert UTM easting and northing to WGS84 latitude and longitude.
+     * @brief Convert UTM easting and northing to WGS84 latitude and longitude.
      *
      * @param[in]  zone       UTM zone.
      * @param[in]  band       UTM band.
@@ -118,14 +118,42 @@ namespace swri_transform_util
       public:
         ~UtmData();
 
+        /**
+         * @brief Convert WGS84 latitude and longitude to UTM.
+         *
+         * @param[in]  latitude   Latitude value in degrees.
+         * @param[in]  longitude  Longitude value in degrees.
+         * @param[out] zone       UTM zone number
+         * @param[out] band       UTM band letter
+         * @param[out] easting    UTM easting in meters.
+         * @param[out] northing   UTM northing in meters.
+         */
         void ToUtm(
           double latitude, double longitude,
           int& zone, char& band, double& easting, double& northing) const;
 
+        /**
+         * @brief Convert WGS84 latitude and longitude to UTM.
+         *
+         * @param[in]  latitude   Latitude value in degrees.
+         * @param[in]  longitude  Longitude value in degrees.
+         * @param[out] easting    UTM easting in meters.
+         * @param[out] northing   UTM northing in meters.
+         */
         void ToUtm(
           double latitude, double longitude,
           double& easting, double& northing) const;
 
+        /**
+         * @brief Convert UTM easting and northing to WGS84 latitude and longitude.
+         *
+         * @param[in]  zone       UTM zone.
+         * @param[in]  band       UTM band.
+         * @param[in]  easting    UTM easting in meters.
+         * @param[in]  northing   UTM northing in meters.
+         * @param[out] latitude   WGS84 latitude in degrees.
+         * @param[out] longitude  WGS84 longitude in degrees.
+         */
         void ToLatLon(
           int zone, char band, double easting, double northing,
           double& latitude, double& longitude) const;
