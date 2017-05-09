@@ -13,10 +13,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(GEOS REQUIRED)
 
-
 find_package(OpenCV REQUIRED core)
 
-# TODO Eigen on indigo?
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
   # Fallback to pkg-config
