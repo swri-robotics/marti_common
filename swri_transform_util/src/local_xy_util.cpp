@@ -36,6 +36,7 @@
 #include <tf/transform_datatypes.h>
 
 #include <geographic_msgs/GeoPose.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <gps_common/GPSFix.h>
 
 #include <swri_math_util/constants.h>
@@ -147,6 +148,19 @@ namespace swri_transform_util
           reference_angle_ = ToYaw(origin->track);
         }
         
+        /*
+         * Used in kinetic before GPSFix messages were released
+        const geometry_msgs::PoseStampedConstPtr origin = msg->instantiate<geometry_msgs::PoseStamped>();
+        reference_latitude_ = origin->pose.position.y * swri_math_util::_deg_2_rad;
+        reference_longitude_ = origin->pose.position.x * swri_math_util::_deg_2_rad;
+        reference_altitude_ = origin->pose.position.z;
+
+        if (!ignore_reference_angle)
+        {
+          reference_angle_ = tf::getYaw(origin->pose.orientation);
+        }
+        */
+
         std::string frame = origin->header.frame_id;
 
         if (frame.empty()) 

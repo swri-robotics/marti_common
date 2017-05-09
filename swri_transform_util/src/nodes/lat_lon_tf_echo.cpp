@@ -31,7 +31,7 @@
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
-#include <gps_common/GPSFix.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_transform_util/local_xy_util.h>
@@ -56,9 +56,14 @@
  * <b>Subscribed Topics</b>
  * - \e /tf [geometry_msgs::Transform] - The transform from fixed_frame_id to
  *        target_frame_id must be published
- * - \e /local_xy_origin [gsp_common::GPSFix] - This topic is used to initialize
- *        the WGS84 transformer. Once it is initialized, the subscriber
+ * - \e /local_xy_origin [geometry_msgs::PoseStamped] - This topic is used to 
+ *        initialize the WGS84 transformer. Once it is initialized, the subscriber
  *        disconnects.
+ *        The fields of this message should be filled as follows:
+ *        - pose.position.y - longitude in degrees east of the prime meridian
+ *        - pose.position.y - lattitude in degrees north of the equator.
+ *        - pose.position.z - altitude in meters above the WGS84 ellipsoid
+ *        All other fields in the message are ignored.
  */
 
 class LatLonTFEchoNode
@@ -89,14 +94,14 @@ class LatLonTFEchoNode
     std::string frame_id_;
     std::string fixed_frame_;
 
-    void XYOriginCallback(const gps_common::GPSFixConstPtr origin)
+    void XYOriginCallback(const geometry_msgs::PoseStampedConstPtr origin)
     {
       xy_wgs84_util_.reset(
           new swri_transform_util::LocalXyWgs84Util(
-              origin->latitude,
-              origin->longitude,
-              origin->track,
-              origin->altitude));
+              origin->pose.position.y,    // Latitude
+              origin->pose.position.x,    // Longitude
+              0.0,                        // Heading
+              origin->pose.position.z));  // Altitude
       origin_sub_.shutdown();
     }
 
