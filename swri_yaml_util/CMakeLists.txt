@@ -28,10 +28,10 @@ configure_file(version.h.in ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DEST
 find_package(Boost REQUIRED)
 
 include_directories(include
+  ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   ${YamlCpp_INCLUDE_DIR}
-  ${catkin_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}

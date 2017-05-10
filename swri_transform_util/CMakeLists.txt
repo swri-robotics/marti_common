@@ -45,7 +45,11 @@ catkin_package(
     topic_tools
 )
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(include 
+  ${catkin_INCLUDE_DIRS} 
+  ${Boost_INCLUDE_DIRS} 
+  ${OpenCV_INCLUDE_DIRS}
+)
 
 add_library(${PROJECT_NAME}
   src/georeference.cpp
