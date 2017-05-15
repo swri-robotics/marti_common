@@ -136,7 +136,7 @@ def make_diagnostic(origin, static_origin):
         status.level = DiagnosticStatus.ERROR
         status.message = "No Origin"
     else:
-        if static_origin:
+        if not static_origin:
             status.level = DiagnosticStatus.OK
             status.message = "Has Origin (auto)"
         else:
@@ -297,7 +297,7 @@ def initialize_origin():
                     rospy.Time.now(),
                     origin_frame_identity, origin_frame_id)
     
-            diagnostic_pub.publish(make_diagnostic(_origin, (origin_name != "auto")))
+            diagnostic_pub.publish(make_diagnostic(_origin, origin_name != "auto"))
             rospy.sleep(1.0)
 
 if __name__ == '__main__':
