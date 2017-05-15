@@ -35,6 +35,7 @@
 #include <nodelet/nodelet.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <swri_roscpp/parameters.h>
 
 namespace swri_image_util
 {
@@ -57,16 +58,28 @@ namespace swri_image_util
         ros::NodeHandle &priv = getPrivateNodeHandle();
 
         std::vector<double> transform;
+        if (priv.hasParam("width") && priv.hasParam("height"))
+        {
+          use_input_size_ = false;
+          swri::getParam(priv, "width", output_size_.width);
+          swri::getParam(priv, "height", output_size_.height);
+        }
+        else
+        {
+          use_input_size_ = true;
+          NODELET_INFO("No ~width and ~height parameters given. Output images will be same size as input.");
+        }
         priv.param("transform", transform, transform);
         if (transform.size() != 9)
         {
-          ROS_FATAL("~transform must be a 9-element list of doubles (3x3 matrix, row major)");
+          NODELET_FATAL("~transform must be a 9-element list of doubles (3x3 matrix, row major)");
           // Return without setting up callbacks
           // Don't shut down, because that would bring down all other nodelets as well
           return;
         }
         m_ = cv::Mat(transform, true);
         m_ = m_.reshape(3, 3);
+        NODELET_INFO_STREAM("Transformation matrix:" << std::endl << m_);
 
         image_transport::ImageTransport it(node);
         image_pub_ = it.advertise("warped_image", 1);
@@ -78,7 +91,11 @@ namespace swri_image_util
         cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
         cv_bridge::CvImagePtr cv_warped = boost::make_shared<cv_bridge::CvImage>();
-        cv::warpPerspective(cv_image->image, cv_warped->image, m_, cv_image->image.size(), CV_INTER_LANCZOS4);
+        if (use_input_size_)
+        {
+          output_size_ = cv_image->image.size();
+        }
+        cv::warpPerspective(cv_image->image, cv_warped->image, m_, output_size_, CV_INTER_LANCZOS4);
 
         cv_warped->encoding = cv_image->encoding;
         cv_warped->header = cv_image->header;
@@ -90,6 +107,8 @@ namespace swri_image_util
       image_transport::Subscriber image_sub_;
       image_transport::Publisher image_pub_;
       cv::Mat m_;
+      bool use_input_size_;
+      cv::Size output_size_;
   };
 }
 
