@@ -42,14 +42,12 @@ namespace swri_image_util
   class WarpImageNodelet : public nodelet::Nodelet
   {
     public:
-      WarpImageNodelet()
+      WarpImageNodelet(): use_input_size_(false)
       {
-
       }
 
       ~WarpImageNodelet()
       {
-
       }
 
       void onInit()
@@ -77,8 +75,7 @@ namespace swri_image_util
           // Don't shut down, because that would bring down all other nodelets as well
           return;
         }
-        m_ = cv::Mat(transform, true);
-        m_ = m_.reshape(3, 3);
+        m_ = cv::Mat(transform, true).reshape(0, 3);
         NODELET_INFO_STREAM("Transformation matrix:" << std::endl << m_);
 
         image_transport::ImageTransport it(node);
