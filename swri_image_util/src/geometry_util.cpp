@@ -33,14 +33,12 @@
 #include <limits>
 #include <vector>
 
-#include <QPolygonF>
-#include <QPointF>
-
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 
+#include <swri_geometry_util/intersection.h>
 #include <swri_math_util/constants.h>
 
 namespace swri_image_util
@@ -53,59 +51,23 @@ namespace swri_image_util
   double GetOverlappingArea(const cv::Rect& rect, const cv::Mat& rigid_transform)
   {
     // List of points corresponding to the input rectangle.
-    std::vector<cv::Vec2f> points;
+    std::vector<cv::Vec2d> points;
 
     // List of points correspondng to the transformed rectangle.
-    std::vector<cv::Vec2f> points_t;
+    std::vector<cv::Vec2d> points_t;
 
     // Create a point for each corner of the input rectangle.
-    points.push_back(cv::Vec2f(rect.x, rect.y));
-    points.push_back(cv::Vec2f(rect.x + rect.width, rect.y));
-    points.push_back(cv::Vec2f(rect.x + rect.width, rect.y + rect.height));
-    points.push_back(cv::Vec2f(rect.x, rect.y + rect.height));
+    points.push_back(cv::Vec2d(rect.x, rect.y));
+    points.push_back(cv::Vec2d(rect.x + rect.width, rect.y));
+    points.push_back(cv::Vec2d(rect.x + rect.width, rect.y + rect.height));
+    points.push_back(cv::Vec2d(rect.x, rect.y + rect.height));
 
     // Transform the input points to the transformed points using the rigid
     // transform.
     cv::transform(cv::InputArray(points), cv::OutputArray(points_t), rigid_transform);
 
-    // Use the QPolygon object to get the intersecting area of the input
-    // rectangle and the transformed rectangle.
-
-    // Build the polygon corresponding to the input rectangle.
-    QPolygonF polygon;
-    polygon << QPointF(points[0][0], points[0][1]);
-    polygon << QPointF(points[1][0], points[1][1]);
-    polygon << QPointF(points[2][0], points[2][1]);
-    polygon << QPointF(points[3][0], points[3][1]);
-    polygon << QPointF(points[0][0], points[0][1]);
-
-    // Build the polygon corresponding to the transformed rectangle.
-    QPolygonF transformed_polygon;
-    transformed_polygon << QPointF(points_t[0][0], points_t[0][1]);
-    transformed_polygon << QPointF(points_t[1][0], points_t[1][1]);
-    transformed_polygon << QPointF(points_t[2][0], points_t[2][1]);
-    transformed_polygon << QPointF(points_t[3][0], points_t[3][1]);
-    transformed_polygon << QPointF(points_t[0][0], points_t[0][1]);
-
-    // Get the polygon representing the intersection of the input rectangle and
-    // the transformed rectangle.
-    QPolygonF intersection = polygon.intersected(transformed_polygon);
-
-    // If the intersection is empty, then just return 0 area.
-    if (intersection.size() == 0)
-    {
-      return 0;
-    }
-
-    // Build an OpenCV contour to measure the area of the intersection.
-    std::vector<cv::Point2f> contour;
-    for (int i = 0; i < intersection.size(); i++)
-    {
-      contour.push_back(cv::Point2f(intersection[i].x(), intersection[i].y()));
-    }
-
-    // Scale the area based on the scale factor to get the correct value.
-    return cv::contourArea(contour);
+    // Use swri_geometry_util to get the overlapping area
+    return swri_geometry_util::PolygonIntersectionArea(points, points_t);
   }
 
   cv::Mat ProjectEllipsoid(const cv::Mat& ellipsoid)

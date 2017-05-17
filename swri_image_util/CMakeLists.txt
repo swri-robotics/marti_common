@@ -13,25 +13,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  swri_geometry_util
   swri_math_util
   swri_opencv_util
   tf
 )
 
 find_package(OpenCV REQUIRED)
-
-# ROS Indigo / Ubuntu 14.04 use OpenCV 2, which should link against Qt 4;
-# ROS Kinetic / Ubuntu 16.04 and higher use OpenCV 3, which should link against Qt 5.
-if (OpenCV_VERSION VERSION_LESS "3.0")
-  find_package(Qt4 REQUIRED QtCore QtGui)
-  set(QT_DEPS QtCore QtGui)
-  set(QT_LIBS Qt4::QtCore Qt4::QtGui)
-else()
-  find_package(Qt5Core REQUIRED)
-  find_package(Qt5Gui REQUIRED)
-  set(QT_DEPS Qt5Core Qt5Gui)
-  set(QT_LIBS Qt5::Core Qt5::Gui)
-endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -54,7 +42,7 @@ endif()
 add_definitions(${EIGEN3_DEFINITIONS})
 
 catkin_package(
-  DEPENDS OpenCV EIGEN3 ${QT_DEPS}
+  DEPENDS OpenCV EIGEN3
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS 
@@ -94,7 +82,6 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES} 
   ${OpenCV_LIBRARIES} 
   ${Boost_LIBRARIES}
-  ${QT_LIBS}
 )
 
 add_library(${PROJECT_NAME}_nodelets
