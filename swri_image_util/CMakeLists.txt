@@ -18,10 +18,21 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-find_package(OpenCV)
+find_package(OpenCV REQUIRED)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
+# ROS Indigo / Ubuntu 14.04 use OpenCV 2, which should link against Qt 4;
+# ROS Kinetic / Ubuntu 16.04 and higher use OpenCV 3, which should link against Qt 5.
+if (OpenCV_VERSION VERSION_LESS "3.0")
+  find_package(Qt4 REQUIRED QtCore QtGui)
+  set(QT_DEPS QtCore QtGui)
+  set(QT_LIBS Qt4::QtCore Qt4::QtGui)
+else()
+  find_package(Qt5Core REQUIRED)
+  find_package(Qt5Gui REQUIRED)
+  set(QT_DEPS Qt5Core Qt5Gui)
+  set(QT_LIBS Qt5::Core Qt5::Gui)
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
@@ -43,7 +54,7 @@ endif()
 add_definitions(${EIGEN3_DEFINITIONS})
 
 catkin_package(
-  DEPENDS OpenCV Qt5Core Qt5Gui EIGEN3
+  DEPENDS OpenCV EIGEN3 ${QT_DEPS}
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS 
@@ -63,8 +74,12 @@ catkin_package(
     tf
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-
+include_directories(include
+  ${catkin_INCLUDE_DIRS} 
+  ${OpenCV_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
 
 add_library(${PROJECT_NAME} 
   src/blend_images_util.cpp
@@ -79,8 +94,7 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES} 
   ${OpenCV_LIBRARIES} 
   ${Boost_LIBRARIES}
-  Qt5::Core
-  Qt5::Gui
+  ${QT_LIBS}
 )
 
 add_library(${PROJECT_NAME}_nodelets
