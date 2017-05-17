@@ -13,6 +13,11 @@
  
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
+  <buildtool_depend>qt4-qmake</buildtool_depend>
+  <buildtool_depend>qt5-qmake</buildtool_depend>
+
+  <build_depend>libqt4-opengl-dev</build_depend>
+  <build_depend>libqt5-opengl-dev</build_depend>
 
   <depend>camera_calibration_parsers</depend>
   <depend>cv_bridge</depend>
@@ -20,9 +25,8 @@
   <depend>geometry_msgs</depend>
   <depend>image_geometry</depend>
   <depend>image_transport</depend>
-  <depend>libqt4-opengl-dev</depend>
-  <depend>libqt4-gui</depend>
-  <depend>libqt5-opengl-dev</depend>
+  <depend>libqt4</depend>
+  <depend>libqt5-core</depend>
   <depend>libqt5-gui</depend>
   <depend>message_filters</depend>
   <depend>nav_msgs</depend>
@@ -33,6 +37,9 @@
   <depend>swri_math_util</depend>
   <depend>swri_opencv_util</depend>
   <depend>tf</depend>
+
+  <exec_depend>libqt4-opengl</exec_depend>
+  <exec_depend>libqt5-opengl</exec_depend>
 
   <test_depend>rostest</test_depend>
 
