@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package format="2">
+  <name>swri_gpu_monitor</name>
+  <version>0.0.0</version>
+  <description>
+    This package provides a GPU monitoring diagnostic.
+  </description>
+  <author email="jtowler@swri.org">Jerry Towler</author>
+  <maintainer email="jtowler@swri.org">Jerry Towler</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
+</package>

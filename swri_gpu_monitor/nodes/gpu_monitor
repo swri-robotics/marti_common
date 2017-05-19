@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+
+import rospy
+
+import re
+import subprocess
+import sys
+
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+
+GPU_ATTRIBS = [('Performance State', 'pstate'),
+               ('Memory Used', 'memory.used'),
+               ('Total Memory', 'memory.total'),
+               ('GPU Temp', 'temperature.gpu'),
+               ('Power Usage', 'power.draw')]
+
+class GPUMonitor(object):
+    def __init__(self):
+        self._diagnostics_pub = rospy.Publisher('/diagnostics',
+                                                DiagnosticArray,
+                                                queue_size=100)
+        self._gpu_status = DiagnosticStatus()
+        self._gpu_status.name = 'GPU Status'
+        self._gpu_status.level = 1
+        self._gpu_status.hardware_id = 'GPU'
+        self._gpu_status.message = 'No Data'
+        self._gpu_status.values = [KeyValue(key='Update Status',
+                                            value='No Data'),
+                                   KeyValue(key='Time Since Last Update',
+                                            value='N/A')
+                                  ]
+
+        self._last_status_time = 0
+
+        while not rospy.is_shutdown():
+            self.check_gpus()
+            rospy.sleep(1.0)
+
+    def check_gpus(self):
+        diag_vals = [KeyValue(key='Update Status',
+                              value='OK'),
+                     KeyValue(key='Time Since Last Update',
+                              value=str(0))
+                    ]
+        diag_msgs = []
+        diag_level = 0
+
+        gpu_attrib_list = ','.join([a[1] for a in GPU_ATTRIBS])
+        gpus = get_gpu_list()
+        for gpu in gpus:
+            print 'Getting status for {}'.format(gpu)
+            cmd = ['nvidia-smi',
+                   '--query-gpu={}'.format(gpu_attrib_list),
+                   '--format=csv,noheader',
+                   '--id={}'.format(gpu['id'])]
+            try:
+                # Strip trailing newline and split on commas
+                status = subprocess.check_output(cmd)[:-1].split(', ')
+                print status
+            except Exception, e:
+                rospy.logerr(e)
+
+            for idx, s in enumerate(status):
+                key = GPU_ATTRIBS[idx][0]
+                print 'Adding key {} value {}'.format(key, s)
+                diag_vals.append(KeyValue(key=GPU_ATTRIBS[idx][0],
+                                          value=s))
+
+        self._gpu_status.level = diag_level
+        self._gpu_status.message = ','.join(diag_msgs)
+        self._gpu_status.values = diag_vals
+
+        msg = DiagnosticArray()
+        msg.header.stamp = rospy.Time.now()
+        msg.status.append(self._gpu_status)
+        self._diagnostics_pub.publish(msg)
+
+def get_gpu_list():
+    try:
+        cmd = ['nvidia-smi', '-L']
+        gpu_lines = subprocess.check_output(cmd).split('\n')[:-1]
+    except Exception, e:
+        rospy.logerr(e)
+        return []
+
+    gpu_regex = re.compile(r'GPU (\d+): (.*) \(UUID: (.*)\)')
+    gpus = []
+
+    for line in gpu_lines:
+        m = re.match(gpu_regex, line)
+        if m:
+            gpus.append({'id': m.group(1),
+                         'name': m.group(2),
+                         'uuid': m.group(3)
+                        })
+
+    return gpus
+
+
+if __name__ == "__main__":
+    try:
+        rospy.init_node('gpu_monitor')
+    except rospy.exceptions.ROSInterruptException:
+        pass
+
+    gpu_node = GPUMonitor()
+
+    sys.exit(0)
