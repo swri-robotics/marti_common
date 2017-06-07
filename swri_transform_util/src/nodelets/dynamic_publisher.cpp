@@ -85,8 +85,12 @@ class DynamicPublisher : public nodelet::Nodelet
 
   void ConfigCallback(DynamicPublisherConfig &config, uint32_t level)
   {
-    if (~level)
+    if (~level == 0)
     {
+      // When the dynamic reconfigure server is started, it tries to
+      // set default values by calling this function with all bits of
+      // level set.  We reject these defaults in favor of our
+      // currently stored values.
       config = config_;
     }
     else
