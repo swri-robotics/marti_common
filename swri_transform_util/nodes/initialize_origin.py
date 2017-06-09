@@ -41,6 +41,7 @@ from sensor_msgs.msg import NavSatFix
 
 # Global variables
 _origin = None
+_gps_fix = None
 
 def make_origin_msg(frame_id, latitude, longitude, altitude):
     origin = PoseStamped()
