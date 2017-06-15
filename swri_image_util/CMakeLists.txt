@@ -2,26 +2,27 @@ cmake_minimum_required(VERSION 2.8.3)
 project(swri_image_util)
 
 find_package(catkin REQUIRED COMPONENTS 
-  roscpp
-  rospy
-  roslib
-  std_msgs
-  nodelet
+  camera_calibration_parsers
   cv_bridge
-  tf
-  cmake_modules
   geometry_msgs
   image_geometry
   image_transport
   message_filters
   nav_msgs
-  camera_calibration_parsers
+  nodelet
+  roscpp
+  rospy
+  std_msgs
+  swri_geometry_util
   swri_math_util
   swri_opencv_util
+  tf
 )
 
-find_package(OpenCV 2)
-find_package(Qt4 REQUIRED)
+find_package(OpenCV REQUIRED)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
 
 # The Boost Random library headers and namespaces changed between version
@@ -30,52 +31,67 @@ if(${Boost_LIB_VERSION} MATCHES "1_46*")
   add_definitions( -DBOOST_1_46 )
 endif(${Boost_LIB_VERSION} MATCHES "1_46*")
 
-find_package(Eigen REQUIRED)
-add_definitions(${EIGEN_DEFINITIONS})
-
-include(${QT_USE_FILE})
+find_package(Eigen3)
+if(NOT EIGEN3_FOUND)
+  # Fallback to pkg-config
+  find_package(PkgConfig)
+  pkg_check_modules(EIGEN3 REQUIRED eigen3)
+else()
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+endif()
+add_definitions(${EIGEN3_DEFINITIONS})
 
 catkin_package(
+  DEPENDS OpenCV EIGEN3
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS 
-    roscpp
-    roscpp
-    rospy
-    roslib
-    std_msgs
-    nodelet
+    camera_calibration_parsers
     cv_bridge
-    tf
     geometry_msgs
     image_geometry
     image_transport
     message_filters
     nav_msgs
-    camera_calibration_parsers
+    nodelet
+    roscpp
+    rospy
+    std_msgs
     swri_math_util
     swri_opencv_util
+    tf
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+include_directories(include
+  ${catkin_INCLUDE_DIRS} 
+  ${OpenCV_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
 
 add_library(${PROJECT_NAME} 
-  src/image_normalization.cpp 
-  src/rolling_normalization.cpp 
-  src/image_matching.cpp
+  src/blend_images_util.cpp
   src/draw_util.cpp
   src/geometry_util.cpp
+  src/image_matching.cpp
+  src/image_normalization.cpp 
   src/image_warp_util.cpp
-  src/blend_images_util.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES})
+  src/rolling_normalization.cpp 
+)
+target_link_libraries(${PROJECT_NAME} 
+  ${catkin_LIBRARIES} 
+  ${OpenCV_LIBRARIES} 
+  ${Boost_LIBRARIES}
+)
 
 add_library(${PROJECT_NAME}_nodelets
-  src/nodelets/rotate_image_nodelet.cpp
+  src/nodelets/blend_images_nodelet.cpp
   src/nodelets/contrast_stretch_nodelet.cpp
-  src/nodelets/normalize_response_nodelet.cpp
-  src/nodelets/scale_image_nodelet.cpp
   src/nodelets/draw_text_nodelet.cpp
-  src/nodelets/blend_images_nodelet.cpp)
+  src/nodelets/normalize_response_nodelet.cpp
+  src/nodelets/rotate_image_nodelet.cpp
+  src/nodelets/scale_image_nodelet.cpp
+)
 target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
 
 add_executable(normalization_image_generator_node src/nodes/normalization_image_generator_node.cpp)

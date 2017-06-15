@@ -307,7 +307,7 @@ namespace swri_image_util
     // perform the matching first:
     // Compute the matching features between this frame and the previous one.
     std::vector<cv::DMatch> matches;
-    cv::BruteForceMatcher<cv::L2<float> > matcher;
+    cv::BFMatcher matcher;
     matcher.match(descriptors1_, descriptors2_, matches);
 
     cv::Mat points1;

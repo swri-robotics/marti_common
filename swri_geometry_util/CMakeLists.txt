@@ -10,10 +10,21 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
 find_package(GEOS REQUIRED)
-find_package(Eigen REQUIRED)
-add_definitions(${EIGEN_DEFINITIONS})
-find_package(OpenCV 2 REQUIRED)
+
+find_package(OpenCV REQUIRED core)
+
+find_package(Eigen3)
+if(NOT EIGEN3_FOUND)
+  # Fallback to pkg-config
+  find_package(PkgConfig)
+  pkg_check_modules(EIGEN3 REQUIRED eigen3)
+else()
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+endif()
+add_definitions(${EIGEN3_DEFINITIONS})
+
 
 catkin_package(
   INCLUDE_DIRS include
@@ -25,7 +36,7 @@ catkin_package(
     OpenCV
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   src/cubic_spline.cpp

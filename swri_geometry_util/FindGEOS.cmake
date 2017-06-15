@@ -69,19 +69,19 @@ IF (NOT DEFINED GEOS_INCLUDE_DIR OR NOT DEFINED GEOS_LIBRARY OR NOT DEFINED GEOS
         ## remove prefix -L because we need the pure directory for LINK_DIRECTORIES
 
         IF (GEOS_LINK_DIRECTORIES_WITH_PREFIX)
-          STRING(REGEX REPLACE "[-][L]" "" GEOS_LINK_DIRECTORIES ${GEOS_LINK_DIRECTORIES_WITH_PREFIX} )
+          STRING(REGEX REPLACE "^-L(.*)" "\\1" GEOS_LINK_DIRECTORIES ${GEOS_LINK_DIRECTORIES_WITH_PREFIX} )
         ENDIF (GEOS_LINK_DIRECTORIES_WITH_PREFIX)
 
 
         ## use regular expression to match wildcard equivalent "-l*<endchar>"
         ## with <endchar> is a space or a semicolon
-        STRING(REGEX MATCHALL "[-][l]([^ ;])+"
+        STRING(REGEX MATCHALL "(^| )-l([^ ;])+"
           GEOS_LIB_NAME_WITH_PREFIX
           "${GEOS_CONFIG_LIBS}" )
 
         ## remove prefix -l because we need the pure name
         IF (GEOS_LIB_NAME_WITH_PREFIX)
-          STRING(REGEX REPLACE "[-][l]" "" GEOS_LIBRARY ${GEOS_LIB_NAME_WITH_PREFIX} )
+          STRING(REGEX REPLACE "(^ )-l(.*)" "\\2" GEOS_LIBRARY ${GEOS_LIB_NAME_WITH_PREFIX} )
         ENDIF (GEOS_LIB_NAME_WITH_PREFIX)
         
       ELSE(DEFINED GEOS_CONFIG)

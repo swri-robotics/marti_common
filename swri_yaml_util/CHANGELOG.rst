@@ -2,6 +2,48 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.4 (2017-04-11)
+------------------
+* Make swri_yaml_util build out-of-source.
+* Contributors: Marc Alban
+
+0.2.3 (2016-12-09)
+------------------
+
+0.2.2 (2016-12-07)
+------------------
+
+0.2.1 (2016-10-23)
+------------------
+
+0.2.0 (2016-06-21)
+------------------
+
+0.1.5 (2016-05-13)
+------------------
+* Add an explicit dependency on pkg-config
+* Contributors: P. J. Reed
+
+0.1.4 (2016-05-12)
+------------------
+* Add support to load YAML from string and dictionary.
+* Fix linking with yaml-cpp.
+* Contributors: Elliot Johnson, Marc Alban
+
+0.1.3 (2016-03-04)
+------------------
+* Adds uint16 support to swri_yaml_util
+* Contributors: P. J. Reed
+
+0.1.2 (2016-01-06)
+------------------
+
+0.1.1 (2015-11-17)
+------------------
+
+0.1.0 (2015-09-29)
+------------------
+
 0.0.14 (2017-04-11)
 -------------------
 * Add develspace include directory to swri_yaml_util
@@ -24,14 +66,9 @@ Changelog for package swri_yaml_util
 
 0.0.10 (2016-05-12)
 -------------------
-* Add support to load YAML from string and dictionary.
-* Fix linking with yaml-cpp.
-* Contributors: Elliot Johnson, Marc Alban
 
 0.0.9 (2016-03-04)
 ------------------
-* Adds uint16 support to swri_yaml_util
-* Contributors: P. J. Reed
 
 0.0.8 (2016-01-06)
 ------------------
