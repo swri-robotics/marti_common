@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2017-06-20)
+------------------
 * Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
 * Fix dynamic reconfigure in dynamic_publisher (closes issue `#448 <https://github.com/pjreed/marti_common/issues/448>`_).
 * Contributors: Elliot Johnson, P. J. Reed
