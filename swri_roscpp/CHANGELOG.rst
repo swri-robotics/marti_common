@@ -3,6 +3,11 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
+* Contributors: P. J. Reed
+
 0.2.4 (2017-04-11)
 ------------------
 * Port `#385 <https://github.com/swri-robotics/marti_common/issues/385>`_ and `#419 <https://github.com/swri-robotics/marti_common/issues/419>`_ to kinetic. (`#420 <https://github.com/swri-robotics/marti_common/issues/420>`_)
