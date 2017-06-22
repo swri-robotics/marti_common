@@ -38,7 +38,7 @@ namespace swri_transform_util
   static const double _earth_equator_radius = 6378137.0;
 
   /**
-   * Earth mean radius
+   * Earth mean radius in meters
    */
   static const double _earth_mean_radius = 6371009.0;
 
