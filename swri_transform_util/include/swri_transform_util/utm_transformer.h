@@ -46,7 +46,7 @@
 namespace swri_transform_util
 {
   /**
-   * @brief Instantiation of Transformer to handle transforms to/from UTM
+   * Instantiation of Transformer to handle transforms to/from UTM
    */
   class UtmTransformer : public Transformer
   {
@@ -54,7 +54,7 @@ namespace swri_transform_util
       UtmTransformer();
 
       /**
-       * @brief Get a map of the transforms supported by this Transformer
+       * Get a map of the transforms supported by this Transformer
        * @return A map from source frame IDs to list of destination frame IDs.
        *   A source->destination entry does not imply that the inverse
        *   transform is supported as well.
@@ -63,7 +63,7 @@ namespace swri_transform_util
 
 
       /**
-       * @brief Get a Transform from a non-UTM frame to UTM or vice-versa
+       * Get a Transform from a non-UTM frame to UTM or vice-versa
        *
        * Gets the swri_transform_util::Transform that transforms coordinates
        * from the source_frame into the target_frame. If the transform is not
@@ -96,7 +96,7 @@ namespace swri_transform_util
 
 
   /**
-   * @brief Class to implement transformation from UTM to TF
+   * Class to implement transformation from UTM to TF
    *
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
@@ -125,7 +125,7 @@ namespace swri_transform_util
 
 
   /**
-   * @brief Class to implement transformation from TF to UTM
+   * Class to implement transformation from TF to UTM
    *
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
@@ -150,7 +150,7 @@ namespace swri_transform_util
 
 
   /**
-   * @brief Class to implement transformation from UTM to WGS84
+   * Class to implement transformation from UTM to WGS84
    *
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
@@ -172,7 +172,7 @@ namespace swri_transform_util
   };
 
   /**
-   * @brief Class to implement transformation from WGS84 to UTM
+   * Class to implement transformation from WGS84 to UTM
    *
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform

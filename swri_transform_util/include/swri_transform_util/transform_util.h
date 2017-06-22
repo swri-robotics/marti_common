@@ -47,7 +47,7 @@ namespace swri_transform_util
       double reference_yaw);
 
   /**
-   * @brief Calculates the great circle distance between two points.
+   * Calculates the great circle distance between two points.
    *
    * @param[in] src_latitude   Source latitude
    * @param[in] src_longitude  Source longitude
@@ -63,7 +63,7 @@ namespace swri_transform_util
       double dst_longitude);
 
   /**
-   * @brief Calculates the great circle distance between two points.
+   * Calculates the great circle distance between two points.
    *
    * @param[in] src  Source(x = longitude, y = latitude, z ignored)
    * @param[in] dst  Destination(x = longitude, y = latitude, z ignored)
@@ -73,7 +73,7 @@ namespace swri_transform_util
   double GreatCircleDistance(const tf::Vector3& src, const tf::Vector3& dst);
 
   /**
-   * @brief Calculates the bearing between two points.
+   * Calculates the bearing between two points.
    *
    * @param[in] source_latitude       The latitude of the origin point in degrees
    * @param[in] source_longitude      The longitude of the origin point in degrees
@@ -88,7 +88,7 @@ namespace swri_transform_util
       double destination_longitude);
 
   /**
-   * @brief Find the midpoint on the arc between two lat/lon points
+   * Find the midpoint on the arc between two lat/lon points
    *
    * @param[in] latitude1      Endpoint 1 latitude in degrees
    * @param[in] longitude1     Endpoint 1 longitude in degrees

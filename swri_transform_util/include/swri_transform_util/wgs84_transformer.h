@@ -45,7 +45,7 @@
 namespace swri_transform_util
 {
   /***
-   * @brief Specialization of Transformer to perform transforms to/from WGS84
+   * Specialization of Transformer to perform transforms to/from WGS84
    */
   class Wgs84Transformer : public Transformer
   {
@@ -53,7 +53,7 @@ namespace swri_transform_util
       Wgs84Transformer();
 
       /**
-       * @brief Get a map of the transforms supported by this Transformer
+       * Get a map of the transforms supported by this Transformer
        * @return A map from source frame IDs to list of destination frame IDs.
        *   A source->destination entry does not imply that the inverse
        *   transform is supported as well.
@@ -61,7 +61,7 @@ namespace swri_transform_util
       virtual std::map<std::string, std::vector<std::string> > Supports() const;
 
       /**
-       * @brief Get a Transform from a non-UTM frame to UTM or vice-versa
+       * Get a Transform from a non-UTM frame to UTM or vice-versa
        *
        * Gets the swri_transform_util::Transform that transforms coordinates
        * from the source_frame into the target_frame. If the transform is not
@@ -89,7 +89,7 @@ namespace swri_transform_util
   };
 
   /**
-   * @brief Specialization of TransformImpl for transforming from TF to WGS84
+   * Specialization of TransformImpl for transforming from TF to WGS84
    *
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
@@ -98,7 +98,7 @@ namespace swri_transform_util
   {
   public:
     /**
-     * @brief Create a TfToWgs84Transform from a TF transform and local_xy_util
+     * Create a TfToWgs84Transform from a TF transform and local_xy_util
      *
      * @param[in] transform The TF transform to use as the source frame. This
      *    transform should be the transform from the source frame to the local
@@ -111,7 +111,7 @@ namespace swri_transform_util
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     /**
-     * @brief Transform a 3D vector to latitude/longitude
+     * Transform a 3D vector to latitude/longitude
      *
      * The vector is first transformed with the `transform` into the local
      * XY ortho-rectified frame. Then, the `local_xy_util` is used to convert
@@ -124,7 +124,7 @@ namespace swri_transform_util
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
     /**
-     * @brief Get the orientation of the transform.
+     * Get the orientation of the transform.
      *
      * This is calculated by transforming the reference angle of the
      * `local_xy_util` using the `transform`. The result is the composition
@@ -141,7 +141,7 @@ namespace swri_transform_util
   };
 
   /**
-   * @brief Specialization of TransformImpl for transforming from WGS84 to TF
+   * Specialization of TransformImpl for transforming from WGS84 to TF
    *
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
@@ -150,7 +150,7 @@ namespace swri_transform_util
   {
   public:
       /**
-       * @brief Create a Wgs84ToTfTransform from a TF transform and local_xy_util
+       * Create a Wgs84ToTfTransform from a TF transform and local_xy_util
        *
        * @param[in] transform The TF transform to use as the destination frame.
        *    This transform should be the transform from the local XY origin
@@ -163,7 +163,7 @@ namespace swri_transform_util
       boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     /**
-     * @brief Transform a WGS84 triple to a 3D vector
+     * Transform a WGS84 triple to a 3D vector
      *
      * The vector is first converted from latitude/longitude/altitude to the
      * local XY ortho-rectified frame using the `local_xy_util`. Then, the
@@ -176,7 +176,7 @@ namespace swri_transform_util
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
     /**
-     * @brief Get the orientation of the transform.
+     * Get the orientation of the transform.
      *
      * This is calculated by transforming the inverse of the reference angle of
      * the `local_xy_util` using the `transform`. The result is the composition

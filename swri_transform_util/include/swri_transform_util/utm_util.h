@@ -40,21 +40,21 @@
 namespace swri_transform_util
 {
   /**
-   * @brief Given a longitude angle, get the UTM zone
+   * Given a longitude angle, get the UTM zone
    * @param longitude Longitude angle in degrees
    * @return UTM zone number
    */
   uint32_t GetZone(double longitude);
 
   /**
-   * @brief Given a latitude angle, get the UTM band letter
+   * Given a latitude angle, get the UTM band letter
    * @param latitude Latitude angle in degrees
    * @return UTM band letter
    */
   char GetBand(double latitude);
 
   /**
-   * @brief Utility class for converting between latitude/longitude and UTM
+   * Utility class for converting between latitude/longitude and UTM
    *
    * Initialization of this class is costly, so it should be created on startup
    * and reused.
@@ -65,7 +65,7 @@ namespace swri_transform_util
     UtmUtil();
 
     /**
-     * @brief Convert WGS84 latitude and longitude to UTM.
+     * Convert WGS84 latitude and longitude to UTM.
      * 
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
@@ -79,7 +79,7 @@ namespace swri_transform_util
       int& zone, char& band, double& easting, double& northing) const;
 
     /**
-     * @brief Convert WGS84 latitude and longitude to UTM.
+     * Convert WGS84 latitude and longitude to UTM.
      * 
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
@@ -91,7 +91,7 @@ namespace swri_transform_util
       double& easting, double& northing) const;
 
     /**
-     * @brief Convert UTM easting and northing to WGS84 latitude and longitude.
+     * Convert UTM easting and northing to WGS84 latitude and longitude.
      *
      * @param[in]  zone       UTM zone.
      * @param[in]  band       UTM band.
@@ -119,7 +119,7 @@ namespace swri_transform_util
         ~UtmData();
 
         /**
-         * @brief Convert WGS84 latitude and longitude to UTM.
+         * Convert WGS84 latitude and longitude to UTM.
          *
          * @param[in]  latitude   Latitude value in degrees.
          * @param[in]  longitude  Longitude value in degrees.
@@ -133,7 +133,7 @@ namespace swri_transform_util
           int& zone, char& band, double& easting, double& northing) const;
 
         /**
-         * @brief Convert WGS84 latitude and longitude to UTM.
+         * Convert WGS84 latitude and longitude to UTM.
          *
          * @param[in]  latitude   Latitude value in degrees.
          * @param[in]  longitude  Longitude value in degrees.
@@ -145,7 +145,7 @@ namespace swri_transform_util
           double& easting, double& northing) const;
 
         /**
-         * @brief Convert UTM easting and northing to WGS84 latitude and longitude.
+         * Convert UTM easting and northing to WGS84 latitude and longitude.
          *
          * @param[in]  zone       UTM zone.
          * @param[in]  band       UTM band.

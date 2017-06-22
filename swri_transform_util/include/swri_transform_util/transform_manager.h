@@ -50,7 +50,7 @@ namespace swri_transform_util
   typedef std::map<std::string, TransformerMap> SourceTargetMap;
 
   /**
-   * @brief Wrapper around tf::TransformListener to support non-TF transforms
+   * Wrapper around tf::TransformListener to support non-TF transforms
    *
    * TransformManager is wraps tf::TransformListener and provides a similar
    * interface to get Transforms between TF frames, UTM, and WGS84.
@@ -67,7 +67,7 @@ namespace swri_transform_util
     ~TransformManager();
 
     /**
-     * @brief Initialize the TransformManager with a tf::TransformListener
+     * Initialize the TransformManager with a tf::TransformListener
      *
      * The TransformManager must be initialized before it can be used.
      *
@@ -78,7 +78,7 @@ namespace swri_transform_util
         = boost::make_shared<tf::TransformListener>());
 
     /**
-     * @brief Get the Transform between two frames at a specified time
+     * Get the Transform between two frames at a specified time
      *
      * This function gets the transform from source_frame to target_frame at
      * the specified time and returns it as a swri_transform_util::Transform.
@@ -103,7 +103,7 @@ namespace swri_transform_util
         Transform& transform) const;
 
     /**
-     * @brief Get the most recent Transform between two frames
+     * Get the most recent Transform between two frames
      *
      * This function gets the most recent transform from source_frame to
      * target_frame and returns it as a swri_transform_util::Transform.
@@ -123,7 +123,7 @@ namespace swri_transform_util
         Transform& transform) const;
 
     /**
-     * @brief Check whether the TransformManager supports transforms from
+     * Check whether the TransformManager supports transforms from
      *    source_frame to target_frame
      *
      * Supporting a transform does not imply that the TransformManager supports
@@ -139,7 +139,7 @@ namespace swri_transform_util
         const std::string& source_frame) const;
 
     /**
-     * @brief Get the tf::Transform between two frames at a specified time
+     * Get the tf::Transform between two frames at a specified time
      *
      * This function is a thin wrapper around the tf::TransformListener. Only
      * TF frames are supported.
@@ -161,7 +161,7 @@ namespace swri_transform_util
         tf::StampedTransform& transform) const;
 
     /**
-     * @brief Get the most recent tf::Transform between two frames
+     * Get the most recent tf::Transform between two frames
      *
      * This function is a thin wrapper around the tf::TransformListener. Only
      * TF frames are supported.

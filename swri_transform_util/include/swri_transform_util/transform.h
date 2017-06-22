@@ -39,7 +39,7 @@
 namespace swri_transform_util
 {
   /**
-   * @brief Base class for Transform implementations.
+   * Base class for Transform implementations.
    *
    * swri_transform_util::Transform uses a "pointer to implementation" design
    * pattern. Extend this class to create new implementations of Transform.
@@ -53,7 +53,7 @@ namespace swri_transform_util
     virtual ~TransformImpl() {}
 
     /**
-     * @brief Apply this transform to a 3D vector
+     * Apply this transform to a 3D vector
      *
      * @param[in]  v_in  Input vector
      * @param[out] v_out Transformed vector
@@ -62,7 +62,7 @@ namespace swri_transform_util
       const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
     
     /**
-     * @brief Get the orientation of this transform
+     * Get the orientation of this transform
      *
      * Get the orientation of this transform by getting the vector between
      * the origin point and a point offset 1 on the x axis.
@@ -92,7 +92,7 @@ namespace swri_transform_util
   };
 
   /**
-   * @brief An abstraction of the tf::Transform class to support transforms in
+   * An abstraction of the tf::Transform class to support transforms in
    * addition to the rigid transforms supported by tf.
    *
    * Additional transforms are implemented through transformer plug-ins.
@@ -103,33 +103,33 @@ namespace swri_transform_util
   {
   public:
     /**
-     * @brief Generates an identity transform.
+     * Generates an identity transform.
      */
     Transform();
 
     /**
-     * @brief Generates a standard rigid transform from a tf::Transform.
+     * Generates a standard rigid transform from a tf::Transform.
      *
      * @param[in]  transform  The input transform.
      */
     explicit Transform(const tf::Transform& transform);
     
     /**
-     * @brief Generates a standard rigid transform from a tf::Transform.
+     * Generates a standard rigid transform from a tf::Transform.
      *
      * @param[in]  transform  The input transform.
      */
     explicit Transform(const tf::StampedTransform& transform);
 
     /**
-     * @brief Defines the transform using an arbitrary transform implementation.
+     * Defines the transform using an arbitrary transform implementation.
      *
      * @param[in]  transform  The input transform implementation.
      */
     explicit Transform(boost::shared_ptr<TransformImpl> transform);
 
     /**
-     * @brief Assignment operator for tf::Transform.
+     * Assignment operator for tf::Transform.
      *
      * Generates a standard rigid transform from a tf::Transform.
      *
@@ -138,7 +138,7 @@ namespace swri_transform_util
     Transform& operator=(const tf::Transform transform);
 
     /**
-     * @brief Assignment operator for TransformImpl.
+     * Assignment operator for TransformImpl.
      *
      * Note: The transform implementation is only a shallow copy.
      *
@@ -147,7 +147,7 @@ namespace swri_transform_util
     Transform& operator=(boost::shared_ptr<TransformImpl> transform);
 
     /**
-     * @brief Apply the transform to a vector and return the result.
+     * Apply the transform to a vector and return the result.
      *
      * @param[in]  v  The vector.
      *
@@ -156,7 +156,7 @@ namespace swri_transform_util
     tf::Vector3 operator()(const tf::Vector3& v) const;
 
     /**
-     * @brief Apply the transform to a vector and return the result.
+     * Apply the transform to a vector and return the result.
      *
      * @param[in]  v  The vector.
      *
@@ -165,7 +165,7 @@ namespace swri_transform_util
     tf::Vector3 operator*(const tf::Vector3& v) const;
 
     /**
-     * @brief Apply the transform to a quaternion and return the result.
+     * Apply the transform to a quaternion and return the result.
      *
      * @param[in]  q  The quaternion.
      *
@@ -174,7 +174,7 @@ namespace swri_transform_util
     tf::Quaternion operator*(const tf::Quaternion& q) const;
 
     /**
-     * @brief Return a TF transform equivalent to this transform
+     * Return a TF transform equivalent to this transform
      *
      * @return The equivalent tf::Transform
      */
@@ -188,7 +188,7 @@ namespace swri_transform_util
     Transform Inverse() const;
 
     /**
-     * @brief Get the origin (translation component) of the transform
+     * Get the origin (translation component) of the transform
      *
      * The result of this should always be equal to applying the transform to
      * the vector (0, 0, 0).
@@ -198,14 +198,14 @@ namespace swri_transform_util
     tf::Vector3 GetOrigin() const;
 
     /**
-     * @brief Get the orientation (rotation component) of the transform
+     * Get the orientation (rotation component) of the transform
      *
      * @return The orientation (translation component) of the transform
      */
     tf::Quaternion GetOrientation() const;
     
     /**
-     * @brief Get the time stamp of the transform
+     * Get the time stamp of the transform
      * @return The time stamp of the transform
      */
     ros::Time GetStamp() { return transform_->stamp_; }
@@ -216,19 +216,19 @@ namespace swri_transform_util
   };
 
   /**
-   * @brief Specialization of swri_transform_util::TransformImpl that represents
+   * Specialization of swri_transform_util::TransformImpl that represents
    * the identity transform
    */
   class IdentityTransform : public TransformImpl
   {
   public:
     /**
-     * @brief Construct an identity transform with stamp_=ros::Time::now()
+     * Construct an identity transform with stamp_=ros::Time::now()
      */
     IdentityTransform() { stamp_ = ros::Time::now(); }
 
     /**
-     * @brief Apply the identity tranform to a 3D vector(sets v_out=v_in)
+     * Apply the identity tranform to a 3D vector(sets v_out=v_in)
      *
      * @param[in] v_in  Input vector
      * @param[out] v_out Ouput vector
@@ -237,26 +237,26 @@ namespace swri_transform_util
   };
 
   /**
-   * @brief Specialization of swri_transform_util::TransformImpl that performs
+   * Specialization of swri_transform_util::TransformImpl that performs
    * TF transformation
    */
   class TfTransform : public TransformImpl
   {
   public:
     /**
-     * @brief Construct a TfTransform from a tf::Transform
+     * Construct a TfTransform from a tf::Transform
      * @param transform The TF Transform that this TfTransform performs
      */
     explicit TfTransform(const tf::Transform& transform);
 
     /**
-     * @brief Construct a TfTransform from a tf::StampedTransform
+     * Construct a TfTransform from a tf::StampedTransform
      * @param transform The TF StampedTransform that this TfTransform performs
      */
     explicit TfTransform(const tf::StampedTransform& transform);
 
     /**
-     * @brief Apply this transform to a 3D vector using TF
+     * Apply this transform to a 3D vector using TF
      *
      * @param[in]  v_in  Input vector
      * @param[out] v_out Transformed vector
@@ -264,7 +264,7 @@ namespace swri_transform_util
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
     /**
-     * @brief Get the orientation component of this transform using TF
+     * Get the orientation component of this transform using TF
      * @return The orientation component of the transform
      */
     virtual tf::Quaternion GetOrientation() const;

@@ -80,7 +80,7 @@ namespace swri_transform_util
       double& longitude);
 
   /**
-   * @brief Utility class for converting between WGS84 lat/lon and an ortho-rectified
+   * Utility class for converting between WGS84 lat/lon and an ortho-rectified
    * LocalXY coordinate system.
    *
    * To use this class, first construct it with a reference origin. The
@@ -100,7 +100,7 @@ namespace swri_transform_util
   {
   public:
     /**
-     * @brief Initializing constructor
+     * Initializing constructor
      *
      * This constructor creates and initializes a LocalXyWgs84Util.
      *
@@ -116,7 +116,7 @@ namespace swri_transform_util
         double reference_altitude = 0);
 
     /**
-     * @brief Zero-argument constructor.
+     * Zero-argument constructor.
      *
      * This constructor creates an uninitialized LocalXyWgs84Util. This
      * constructor is only used to create placeholder objects in containers
@@ -125,7 +125,7 @@ namespace swri_transform_util
     LocalXyWgs84Util();
 
     /**
-     * @brief Return whether the object has been initialized
+     * Return whether the object has been initialized
      *
      * The object is not usable unless it has been initialized (see the two
      * constructors).
@@ -135,40 +135,40 @@ namespace swri_transform_util
     bool Initialized() const { return initialized_; }
 
     /**
-     * @brief Return the longitude coordinate of the local origin
+     * Return the longitude coordinate of the local origin
      *
      * @return The WGS84 longitude coordinate of the local origin in degrees
      */
     double ReferenceLongitude() const;
 
     /**
-     * @brief Return the latitude coordinate of the local origin
+     * Return the latitude coordinate of the local origin
      *
      * @return The WGS84 latitude coordinate of the local origin in degrees
      */
     double ReferenceLatitude() const;
 
     /**
-     * @brief Return the reference angle in degrees ENU.
+     * Return the reference angle in degrees ENU.
      */
     double ReferenceAngle() const;
 
     /**
-     * @brief Return the altitude coordinate of the local origin
+     * Return the altitude coordinate of the local origin
      *
      * @return The WGS84 altitude coordinate of the local origin in meters
      */
     double ReferenceAltitude() const;
 
     /**
-     * @brief Return the TF frame ID corresponding to the local origin
+     * Return the TF frame ID corresponding to the local origin
      *
      * @return The TF frame ID corresponding to the local origin
      */
     std::string Frame() const { return frame_; }
 
     /**
-     * @brief Convert WGS84 latitude and longitude to LocalXY.
+     * Convert WGS84 latitude and longitude to LocalXY.
      *
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
@@ -184,7 +184,7 @@ namespace swri_transform_util
         double& y) const;
 
     /**
-     * @brief Convert LocalXY to WGS84 latitude and longitude.
+     * Convert LocalXY to WGS84 latitude and longitude.
      *
      * @param[in]  x          X coordinate in meters from origin.
      * @param[in]  y          Y coordinate in meters from origin.
