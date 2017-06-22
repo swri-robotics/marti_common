@@ -91,6 +91,10 @@ namespace swri_transform_util
    * in the ortho-rectified frame will accumulate as the distance from the
    * reference origin increases. For this reason, the reference origin should
    * be chosen to be close to the region of interest (<10 km).
+   *
+   * It is strongly recommended to use 0 degrees for the angle. This
+   * corresponds to the X-axis of the ortho-rectified frame pointing east.
+   *
    */
   class LocalXyWgs84Util
   {
