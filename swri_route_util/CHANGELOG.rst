@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2017-06-20)
+------------------
+* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
+* Contributors: P. J. Reed
+
 0.2.4 (2017-04-11)
 ------------------
 

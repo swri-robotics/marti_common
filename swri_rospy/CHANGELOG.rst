@@ -2,6 +2,11 @@
 Changelog for package swri_rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2017-06-20)
+------------------
+* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
+* Contributors: P. J. Reed
+
 0.0.14 (2017-04-11)
 -------------------
 
