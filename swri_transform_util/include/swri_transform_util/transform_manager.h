@@ -52,7 +52,7 @@ namespace swri_transform_util
   /**
    * Wrapper around tf::TransformListener to support non-TF transforms
    *
-   * TransformManager is wraps tf::TransformListener and provides a similar
+   * TransformManager wraps tf::TransformListener and provides a similar
    * interface to get Transforms between TF frames, UTM, and WGS84.
    *
    * TransformManager uses PluginLib to load all of the
