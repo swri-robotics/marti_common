@@ -77,7 +77,7 @@ class TestInitializeOrigin(unittest.TestCase):
             latitude = msg.latitude
             longitude = msg.longitude
             altitude = msg.altitude
-            self.assertEqual(heading, swri['heading'])
+            self.assertEqual(msg.track, swri['heading'])
         else:  # msg._type == GeoPose._type:
             latitude = msg.position.latitude
             longitude = msg.position.longitude
