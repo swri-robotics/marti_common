@@ -35,6 +35,7 @@ import rostest
 import rostopic
 from sensor_msgs.msg import NavSatFix
 import sys
+import tf.transformations
 import unittest
 
 PKG = 'swri_transform_util'
@@ -65,22 +66,33 @@ class TestInitializeOrigin(unittest.TestCase):
             latitude = msg.pose.position.y
             longitude = msg.pose.position.x
             altitude = msg.pose.position.z
-            # TODO: Extract heading
+            quaternion = (msg.pose.orientation.x,
+                           msg.pose.orientation.x,
+                           msg.pose.orientation.x,
+                           msg.pose.orientation.x)
+            euler = tf.transformations.euler_from_quaternion(quaternion)
+            yaw = euler[2]
+            self.assertEqual(yaw, 0)
         elif msg._type == GPSFix._type:
             latitude = msg.latitude
             longitude = msg.longitude
             altitude = msg.altitude
-            heading = msg.track
+            self.assertEqual(heading, swri['heading'])
         else:  # msg._type == GeoPose._type:
             latitude = msg.position.latitude
             longitude = msg.position.longitude
             altitude = msg.position.altitude
-            # TODO: Extract heading
+            quaternion = (msg.pose.orientation.x,
+                           msg.pose.orientation.x,
+                           msg.pose.orientation.x,
+                           msg.pose.orientation.x)
+            euler = tf.transformations.euler_from_quaternion(quaternion)
+            yaw = euler[2]
+            self.assertEqual(yaw, 0)
         self.assertEqual(msg.header.frame_id, '/far_field')
         self.assertEqual(longitude, swri['longitude'])
         self.assertEqual(latitude, swri['latitude'])
         self.assertEqual(altitude, swri['altitude'])
-        self.assertEqual(heading, swri['heading'])
         rospy.signal_shutdown("Test complete")
 
 
