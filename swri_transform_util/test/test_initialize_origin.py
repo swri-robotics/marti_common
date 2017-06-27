@@ -67,32 +67,32 @@ class TestInitializeOrigin(unittest.TestCase):
             longitude = msg.pose.position.x
             altitude = msg.pose.position.z
             quaternion = (msg.pose.orientation.x,
-                           msg.pose.orientation.x,
-                           msg.pose.orientation.x,
-                           msg.pose.orientation.x)
+                          msg.pose.orientation.y,
+                          msg.pose.orientation.z,
+                          msg.pose.orientation.w)
             euler = tf.transformations.euler_from_quaternion(quaternion)
             yaw = euler[2]
-            self.assertEqual(yaw, 0)
+            self.assertAlmostEqual(yaw, 0)
         elif msg._type == GPSFix._type:
             latitude = msg.latitude
             longitude = msg.longitude
             altitude = msg.altitude
-            self.assertEqual(msg.track, swri['heading'])
+            self.assertAlmostEqual(msg.track, swri['heading'])
         else:  # msg._type == GeoPose._type:
             latitude = msg.position.latitude
             longitude = msg.position.longitude
             altitude = msg.position.altitude
             quaternion = (msg.pose.orientation.x,
-                           msg.pose.orientation.x,
-                           msg.pose.orientation.x,
-                           msg.pose.orientation.x)
+                          msg.pose.orientation.y,
+                          msg.pose.orientation.z,
+                          msg.pose.orientation.w)
             euler = tf.transformations.euler_from_quaternion(quaternion)
             yaw = euler[2]
-            self.assertEqual(yaw, 0)
+            self.assertAlmostEqual(yaw, 0)
         self.assertEqual(msg.header.frame_id, '/far_field')
-        self.assertEqual(longitude, swri['longitude'])
-        self.assertEqual(latitude, swri['latitude'])
-        self.assertEqual(altitude, swri['altitude'])
+        self.assertAlmostEqual(longitude, swri['longitude'])
+        self.assertAlmostEqual(latitude, swri['latitude'])
+        self.assertAlmostEqual(altitude, swri['altitude'])
         rospy.signal_shutdown("Test complete")
 
 
