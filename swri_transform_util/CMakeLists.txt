@@ -92,6 +92,13 @@ if(CATKIN_ENABLE_TESTING)
 
   add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
   target_link_libraries(test_transform_util ${PROJECT_NAME})
+
+  if($ENV{ROS_DISTRO} STREQUAL "indigo")
+    add_rostest(test/initialize_origin_auto_gps.test)
+  else()  # Jade, Kinetic, Lunar, etc
+    add_rostest(test/initialize_origin_auto_navsat.test)
+  endif()
+  add_rostest(test/initialize_origin_manual.test)
 endif()
 
 install(DIRECTORY include/${PROJECT_NAME}/
