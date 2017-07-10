@@ -334,6 +334,57 @@ class TypedSubscriberImpl : public SubscriberImpl
   }
 };  // class TypedSubscriberImpl
 
+template<class M>
+class BindSubscriberImpl : public SubscriberImpl
+{
+  boost::function<void(const boost::shared_ptr< M const> &)> callback_;
+  
+
+ public:
+  BindSubscriberImpl(
+    ros::NodeHandle &nh,
+    const std::string &topic,
+    uint32_t queue_size,
+    const boost::function<void(const boost::shared_ptr< M const> &)> &callback,
+    const ros::TransportHints &transport_hints)
+  {
+    unmapped_topic_ = topic;
+    mapped_topic_ = nh.resolveName(topic);
+
+    if (unmapped_topic_ == mapped_topic_) {
+      ROS_INFO("Subscribing to '%s'.", mapped_topic_.c_str());
+    } else {
+      ROS_INFO("Subscribing to '%s' at '%s'.",
+               unmapped_topic_.c_str(),
+               mapped_topic_.c_str());
+    }
+
+    callback_ = callback;
+
+    sub_ = nh.subscribe(mapped_topic_, queue_size,
+                        &BindSubscriberImpl::handleMessage<M>,
+                        this,
+                        transport_hints);
+  }
+
+  // Handler for messages with headers
+  template <class M2>
+  typename boost::enable_if< ros::message_traits::HasHeader<M2>, void>::type
+  handleMessage(const boost::shared_ptr< M const> &msg)
+  {
+    processHeader(msg->header.stamp);
+    callback_(msg);
+  }
+
+  // Handler for messages without headers
+  template <class M2>
+  typename boost::disable_if< ros::message_traits::HasHeader<M2>, void>::type
+  handleMessage(const boost::shared_ptr< M const> &msg)
+  {
+    processHeader(ros::Time::now());
+    callback_(msg);
+  }
+};  // class BindSubscriberImpl
 
 template<class M>
 class StorageSubscriberImpl : public SubscriberImpl

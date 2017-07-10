@@ -71,16 +71,21 @@ class Subscriber
  public:
   Subscriber();
 
-  // Currently only supporting one of the many ways that ROS allows
-  // the callback to be specified.  This is mainly to encourage users
-  // to habitually use shared const pointers so that we get the best
-  // performance when using nodelets.
+  // Using class method callback.
   template<class M , class T >
   Subscriber(ros::NodeHandle &nh,
              const std::string &topic,
              uint32_t queue_size,
              void(T::*fp)(const boost::shared_ptr< M const > &),
              T *obj,
+             const ros::TransportHints &transport_hints=ros::TransportHints());
+
+  // Using a boost function callback.
+  template<class M>
+  Subscriber(ros::NodeHandle &nh,
+             const std::string &topic,
+             uint32_t queue_size,
+             const boost::function<void(const boost::shared_ptr<M const> &)> &callback,
              const ros::TransportHints &transport_hints=ros::TransportHints());
 
   // This is an alternate interface that stores a received message in
@@ -216,6 +221,19 @@ Subscriber::Subscriber(ros::NodeHandle &nh,
   impl_ = boost::shared_ptr<SubscriberImpl>(
     new TypedSubscriberImpl<M,T>(
       nh, topic, queue_size, fp, obj, transport_hints));
+}
+
+template<class M>
+inline
+Subscriber::Subscriber(ros::NodeHandle &nh,
+                       const std::string &topic,
+                       uint32_t queue_size,
+                       const boost::function<void(const boost::shared_ptr<M const> &)> &callback,
+                       const ros::TransportHints &transport_hints)
+{
+  impl_ = boost::shared_ptr<SubscriberImpl>(
+    new BindSubscriberImpl<M>(
+      nh, topic, queue_size, callback, transport_hints));
 }
 
 template<class M>
