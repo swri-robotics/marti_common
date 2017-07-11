@@ -1,5 +1,7 @@
+#include <boost/bind.hpp>
 #include <ros/ros.h>
 #include <swri_roscpp/subscriber.h>
+#include <boost/bind.hpp>
 
 #include <diagnostic_updater/diagnostic_updater.h>
 
@@ -35,10 +37,16 @@ class SubscriberTest
 
   void initialize(const ros::WallTimerEvent &ignored)
   {
+    // Example to subscribe to a class method.
+    sub_ = swri::Subscriber(nh_, "odom", 100, &SubscriberTest::handleMessage, this);
+
+    // Example to subscribe using a boost function.  I am unable to
+    // figure out how to get the compiler to infer the type, so I have
+    // to declare the function first and then pass that.
+    boost::function<void(const boost::shared_ptr< nav_msgs::Odometry const> &)> callback = boost::bind(&SubscriberTest::handleMessage, this, _1);
+    sub_ = swri::Subscriber(nh_, "odom", 100, callback);
+
     sub_.setTimeout(ros::Duration(1.0));
-    sub_ = swri::Subscriber(nh_, "odom", 100,
-                            &SubscriberTest::handleMessage,
-                            this);
 
     diagnostic_updater_.setHardwareID("none");
     diagnostic_updater_.add(
