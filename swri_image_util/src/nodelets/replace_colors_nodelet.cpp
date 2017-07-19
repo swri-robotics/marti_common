@@ -32,6 +32,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <nodelet/nodelet.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/image_encodings.h>
 #include <swri_image_util/replace_colors.h>
 
 namespace swri_image_util
@@ -45,9 +46,11 @@ namespace swri_image_util
   private:
     virtual void onInit();
     void imageCallback(const sensor_msgs::ImageConstPtr& image_msg);
+    bool readLut(const XmlRpc::XmlRpcValue &param);
 
     cv::Mat color_lut_;
     image_transport::Publisher image_pub_;
+    image_transport::Subscriber image_sub_;
   };
 
   ReplaceColorsNodelet::ReplaceColorsNodelet()
@@ -60,13 +63,99 @@ namespace swri_image_util
 
   void ReplaceColorsNodelet::onInit()
   {
+    // Node handles for interacting with ROS
+    ros::NodeHandle& nh = getNodeHandle();
+    ros::NodeHandle& priv_nh  = getPrivateNodeHandle();
 
+    color_lut_ = cv::Mat::zeros(1, 256, CV_8UC3);
+
+    XmlRpc::XmlRpcValue color_param;
+    if (priv_nh.getParam("colors", color_param))
+    {
+      readLut(color_param);
+    }
+    else
+    {
+      ROS_ERROR("LUT for color transformation must be specified");
+      ROS_BREAK();
+    }
+
+    image_transport::ImageTransport it(nh);
+    image_pub_ = it.advertise("modified_image", 1);
+    image_sub_ = it.subscribe(
+      "image",
+      1,
+      &ReplaceColorsNodelet::imageCallback,
+      this);
   }
 
   void ReplaceColorsNodelet::imageCallback(
     const sensor_msgs::ImageConstPtr& image_msg)
   {
+    if (image_msg->encoding != sensor_msgs::image_encodings::MONO8)
+    {
+      ROS_ERROR("Changing image colors is only supported for MONO8 images");
+      return;
+    }
 
+    // Convert image data from ROS to OpenCV type
+    cv_bridge::CvImageConstPtr original_image = cv_bridge::toCvShare(image_msg);
+
+    // Allocate space for the new image
+    cv::Mat modified_image = cv::Mat::zeros(
+      original_image->image.rows,
+      original_image->image.cols,
+      CV_8UC3);
+
+    swri_image_util::replaceColors(
+      original_image->image,
+      color_lut_,
+      modified_image);
+
+    cv_bridge::CvImagePtr output = boost::make_shared<cv_bridge::CvImage>();
+    output->image = modified_image;
+    output->encoding = sensor_msgs::image_encodings::RGB8;
+    output->header = image_msg->header;
+
+    image_pub_.publish(output->toImageMsg());
+  }
+
+  bool ReplaceColorsNodelet::readLut(const XmlRpc::XmlRpcValue& param)
+  {
+    if (param.getType() != XmlRpc::XmlRpcValue::TypeArray)
+    {
+      ROS_ERROR("LUT must be an array");
+      return false;
+    }
+
+    for (uint32_t lut_idx = 0; lut_idx < param.size(); lut_idx++)
+    {
+      XmlRpc::XmlRpcValue lut_row = param[lut_idx];
+      if ((lut_row.getType() != XmlRpc::XmlRpcValue::TypeArray) ||
+        (lut_row.size() != 2))
+      {
+        ROS_ERROR("LUT entries must be two entry arrays");
+        return false;
+      }
+      XmlRpc::XmlRpcValue map_key = lut_row[0];
+      XmlRpc::XmlRpcValue rgb_values = lut_row[1];
+      if ((rgb_values.getType() != XmlRpc::XmlRpcValue::TypeArray) || 
+        (rgb_values.size() != 3) ||
+        (rgb_values[0].getType() != XmlRpc::XmlRpcValue::TypeInt) ||
+        (rgb_values[1].getType() != XmlRpc::XmlRpcValue::TypeInt) ||
+        (rgb_values[2].getType() != XmlRpc::XmlRpcValue::TypeInt))
+      {
+        ROS_ERROR("RGB entries must be three entry arrays of integers");
+        return false;
+      }
+
+      cv::Vec3b rgb_entry(
+        static_cast<uint8_t>(static_cast<int32_t>(rgb_values[0])),
+        static_cast<uint8_t>(static_cast<int32_t>(rgb_values[1])),
+        static_cast<uint8_t>(static_cast<int32_t>(rgb_values[2])));
+      color_lut_.at<cv::Vec3b>(0, static_cast<uint8_t>(
+        static_cast<int32_t>(map_key))) = rgb_entry;
+    }
   }
 }
 
