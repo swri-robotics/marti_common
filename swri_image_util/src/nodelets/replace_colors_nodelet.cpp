@@ -137,7 +137,13 @@ namespace swri_image_util
         ROS_ERROR("LUT entries must be two entry arrays");
         return false;
       }
+
       XmlRpc::XmlRpcValue map_key = lut_row[0];
+      if (map_key.getType() != XmlRpc::XmlRpcValue::TypeInt)
+      {
+        ROS_ERROR("Color to replace must be an integer");
+      }
+
       XmlRpc::XmlRpcValue rgb_values = lut_row[1];
       if ((rgb_values.getType() != XmlRpc::XmlRpcValue::TypeArray) || 
         (rgb_values.size() != 3) ||
@@ -149,12 +155,13 @@ namespace swri_image_util
         return false;
       }
 
-      cv::Vec3b rgb_entry(
-        static_cast<uint8_t>(static_cast<int32_t>(rgb_values[0])),
-        static_cast<uint8_t>(static_cast<int32_t>(rgb_values[1])),
-        static_cast<uint8_t>(static_cast<int32_t>(rgb_values[2])));
-      color_lut_.at<cv::Vec3b>(0, static_cast<uint8_t>(
-        static_cast<int32_t>(map_key))) = rgb_entry;
+      uint8_t color_index = static_cast<uint8_t>(static_cast<int32_t>(map_key));
+      uint8_t red = static_cast<uint8_t>(static_cast<int32_t>(rgb_values[0]));
+      uint8_t green = static_cast<uint8_t>(static_cast<int32_t>(rgb_values[1]));
+      uint8_t blue = static_cast<uint8_t>(static_cast<int32_t>(rgb_values[2]));
+
+      cv::Vec3b rgb_entry(red, green, blue);
+      color_lut_.at<cv::Vec3b>(0, color_index) = rgb_entry;
     }
   }
 }
