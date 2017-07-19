@@ -30,6 +30,8 @@
 #include <ros/ros.h>
 #include <swri_image_util/replace_colors.h>
 
+#include <opencv2/imgproc/imgproc.hpp>
+
 namespace swri_image_util
 {
   void replaceColors(
@@ -37,6 +39,8 @@ namespace swri_image_util
     const cv::Mat& lut,
     cv::Mat& modified_image)
   {
-
+    cv::Mat input_rgb;
+    cv::cvtColor(original_image, input_rgb, CV_GRAY2BGR);
+    cv::LUT(input_rgb, lut, modified_image);
   }
 }
