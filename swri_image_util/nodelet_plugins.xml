@@ -36,4 +36,10 @@
     </description>
   </class>
   
+  <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet that replaces colors in an input image
+    </description>
+  </class>
+  
 </library>
