@@ -28,6 +28,7 @@
   <depend>std_msgs</depend>
   <depend>swri_geometry_util</depend>
   <depend>swri_math_util</depend>
+  <build_depend>swri_nodelet</build_depend>
   <depend>swri_opencv_util</depend>
   <depend>tf</depend>
 

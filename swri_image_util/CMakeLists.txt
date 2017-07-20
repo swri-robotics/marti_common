@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   swri_geometry_util
   swri_math_util
+  swri_nodelet
   swri_opencv_util
   tf
 )
