@@ -48,8 +48,7 @@ void markerForRouteSpeeds(
   vm::Marker &m,
   const Route &route,
   const mnm::RouteSpeedArray &speeds,
-  double scale,
-  std_msgs::ColorRGBA color)
+  double scale)
 {
   m.header.frame_id = route.header.frame_id;
   m.header.stamp = ros::Time::now();

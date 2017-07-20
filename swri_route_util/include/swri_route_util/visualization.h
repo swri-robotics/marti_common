@@ -39,12 +39,13 @@ namespace swri_route_util
 // be drawn as a line that starts at the speed's location and extends
 // perpendicular to the route.  The length of the line corresponds to
 // the speed.  The scale parameter sets the length per m/s scale.  The
-// marker's namespace and id will still need to be filled out.
+// marker's namespace and id will still need to be filled out. The
+// line colors defaults to black but can be changed after the marker
+// has been built.
 void markerForRouteSpeeds(
   visualization_msgs::Marker &marker,
   const Route &route,
     const marti_nav_msgs::RouteSpeedArray &speeds,
-    double scale,
-    const std_msgs::ColorRGBA &color);
+    double scale);
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_

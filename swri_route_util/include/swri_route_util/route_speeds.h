@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2016, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,43 +29,60 @@
 #ifndef SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
 #define SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
 
-#include <swri_route_util/Route.h>
-#include <marti_nav_msgs/RouteSpeedArray.h>
+#include <marti_common_msgs/KeyValueArray.h>
 #include <marti_nav_msgs/ObstacleArray.h>
+#include <marti_nav_msgs/RouteSpeedArray.h>
+#include <swri_math_util/interpolation_1d.h>
+#include <swri_route_util/route.h>
 
 namespace swri_route_util
 {
 struct SpeedForCurvatureParameters
 {
+  /// If true, use maximum lateral acceleration constant to calculate
+  /// maximum speed.  Otherwise, the curvature vs speed curve will be
+  /// used.  
+  bool use_speed_from_accel_constant_;
+  /// Maximum lateral acceleration in accel mode in m/s^2
+  double max_lateral_accel_mss_;
+
+  /// Speed as a function of curvature, applies when
+  /// use_speed_from_accel_constant is false
+  swri_math_util::Interpolation1D speed_curve_;
+
+  // Filter constant used when estimating route curvature.  Larger
+  // values result in smoother curvature estiamtes with fewer spikes.
+  double curvature_filter_size_;
+
+  
   SpeedForCurvatureParameters();
   
-  bool loadFromRosParam(const ros::NodeHandle &pnh);
+  void loadFromRosParam(const ros::NodeHandle &pnh);
 
   void loadFromConfig(const marti_common_msgs::KeyValueArray &config);
-  void readToConfig(marti_common_msgs::KeyValueArray &config);
+  void readToConfig(marti_common_msgs::KeyValueArray &config) const;
 };
 
 void speedsForCurvature(
   marti_nav_msgs::RouteSpeedArray &speeds,
-    const swri_route_util::Route &route,
-    const SpeedForCurvatureParameters &parameters);
+  const Route &route,
+  const SpeedForCurvatureParameters &parameters);
 
 
 struct SpeedForObstaclesParameters
 {
   SpeedForObstaclesParameters();
   
-  bool loadFromRosParam(const ros::NodeHandle &pnh);
+  void loadFromRosParam(const ros::NodeHandle &pnh);
 
   void loadFromConfig(const marti_common_msgs::KeyValueArray &config);
-  void readToConfig(marti_common_msgs::KeyValueArray &config);
+  void readToConfig(marti_common_msgs::KeyValueArray &config) const;
 };
 
 void speedsForObstacles(
     marti_nav_msgs::RouteSpeedArray &speeds,
-    const marti_nav_msgs::Route &route,
+    const Route &route,
     const marti_nav_msgs::ObstacleArray &obstacles,
     const SpeedForObstaclesParameters &parameters);
-
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_

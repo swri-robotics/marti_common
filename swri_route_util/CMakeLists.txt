@@ -22,6 +22,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_library(${PROJECT_NAME} 
   src/route.cpp
   src/route_point.cpp
+  src/route_speeds.cpp
   src/util.cpp
   src/visualization.cpp
   )
