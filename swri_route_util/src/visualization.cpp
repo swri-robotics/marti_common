@@ -26,25 +26,72 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_VISUALIZATION_H_
-#define SWRI_ROUTE_UTIL_VISUALIZATION_H_
+#include <swri_route_util/visualization.h>
 
-#include <swri_route_util/route.h>
-#include <marti_nav_msgs/RouteSpeedArray.h>
-#include <visualization_msgs/Marker.h>
+#include <swri_route_util/util.h>
+
+namespace vm = visualization_msgs;
+namespace mnm = marti_nav_msgs;
 
 namespace swri_route_util
 {
-// Create a marker for a set of speeds along a route.  Each speed will
-// be drawn as a line that starts at the speed's location and extends
-// perpendicular to the route.  The length of the line corresponds to
-// the speed.  The scale parameter sets the length per m/s scale.  The
-// marker's namespace and id will still need to be filled out.
+static geometry_msgs::Point makePoint(const double x, const double y)
+{
+  geometry_msgs::Point pt;
+  pt.x = x;
+  pt.y = y;
+  pt.z = 0.0;
+  return pt;
+}
+
 void markerForRouteSpeeds(
-  visualization_msgs::Marker &marker,
+  vm::Marker &m,
   const Route &route,
-    const marti_nav_msgs::RouteSpeedArray &speeds,
-    double scale,
-    const std_msgs::ColorRGBA &color);
+  const mnm::RouteSpeedArray &speeds,
+  double scale,
+  std_msgs::ColorRGBA color)
+{
+  m.header.frame_id = route.header.frame_id;
+  m.header.stamp = ros::Time::now();
+  // m.ns = ;
+  // m.id = ;
+  m.type = vm::Marker::LINE_LIST;
+  m.action = vm::Marker::ADD;
+  m.pose.position.x = 0.0;
+  m.pose.position.y = 0.0;
+  m.pose.position.z = 0.0;
+  m.pose.orientation.x = 0.0;
+  m.pose.orientation.y = 0.0;
+  m.pose.orientation.z = 0.0;
+  m.pose.orientation.w = 1.0;
+  m.scale.x = 1.0;
+  m.scale.y = 1.0;
+  m.scale.z = 1.0;
+  m.color.r = 0.0;
+  m.color.g = 0.0;
+  m.color.b = 0.0;
+  m.color.a = 1.0;
+  m.lifetime = ros::Duration(0);
+  m.frame_locked = false;
+
+  m.points.reserve(speeds.speeds.size()*2);
+
+  for (auto const &speed : speeds.speeds) {
+    mnm::RoutePosition position;
+    position.id = speed.id;
+    position.distance = speed.distance;
+
+    RoutePoint p;
+    if (!interpolateRoutePosition(p, route, position, true)) {
+      continue;
+    }
+
+    tf::Vector3 p1 = p.position();
+    tf::Vector3 v = tf::Transform(p.orientation()) * tf::Vector3(0.0, 1.0, 0.0);
+    tf::Vector3 p2 = p1 + scale*speed.speed*v;
+
+    m.points.push_back(makePoint(p1.x(), p1.y()));
+    m.points.push_back(makePoint(p2.x(), p2.y()));
+  }
+}
 }  // namespace swri_route_util
-#endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_

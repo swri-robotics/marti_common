@@ -23,6 +23,7 @@ add_library(${PROJECT_NAME}
   src/route.cpp
   src/route_point.cpp
   src/util.cpp
+  src/visualization.cpp
   )
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++0x")
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
