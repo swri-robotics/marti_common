@@ -34,6 +34,7 @@
 #include <marti_nav_msgs/RouteSpeedArray.h>
 #include <swri_math_util/interpolation_1d.h>
 #include <swri_route_util/route.h>
+#include <swri_transform_util/transform.h>
 
 namespace swri_route_util
 {
@@ -71,18 +72,59 @@ void speedsForCurvature(
 
 struct SpeedForObstaclesParameters
 {
+  double origin_to_front_m_;
+  double origin_to_rear_m_;
+  double origin_to_left_m_;
+  double origin_to_right_m_;
+
+  double max_distance_m_;
+  double min_distance_m_;
+  double max_speed_;
+  double min_speed_;
+
+  double stop_buffer_m_;
+
   SpeedForObstaclesParameters();
   
   void loadFromRosParam(const ros::NodeHandle &pnh);
-
-  void loadFromConfig(const marti_common_msgs::KeyValueArray &config);
-  void readToConfig(marti_common_msgs::KeyValueArray &config) const;
 };
+
+// ObstacleData is an intermediate representation for obstacles to
+// avoid applying transforms and calculating radii repeatedly.
+struct ObstacleData
+{
+  tf::Vector3 center;
+  double radius;
+
+  std::vector<tf::Vector3> polygon;
+};
+
+
+struct DistanceReport
+{
+  // True if the bounding circles touch but the actual polygons do not.
+  bool near;
+  // True if the actual polygons touch.
+  bool collision;
+  size_t route_index;
+  tf::Vector3 vehicle_point;
+  tf::Vector3 obstacle_point;
+  double distance;
+};
+
+// Convert an obstacle array message into a ObstacleData by applying a
+// transform and calculating the radius of each obstacle.
+void generateObstacleData(
+  std::vector<ObstacleData> &obstacle_data,
+  const swri_transform_util::Transform g_route_from_obs,
+  const marti_nav_msgs::ObstacleArray &obstacles_msg);
 
 void speedsForObstacles(
     marti_nav_msgs::RouteSpeedArray &speeds,
+    std::vector<DistanceReport> &reports,
     const Route &route,
-    const marti_nav_msgs::ObstacleArray &obstacles,
+    const marti_nav_msgs::RoutePosition &route_position,
+    const std::vector<ObstacleData> &obstacles,
     const SpeedForObstaclesParameters &parameters);
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_

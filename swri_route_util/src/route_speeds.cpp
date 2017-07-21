@@ -29,10 +29,13 @@
 #include <swri_route_util/route_speeds.h>
 
 #include <unordered_map>
+
+#include <swri_geometry_util/geometry_util.h>
 #include <swri_roscpp/swri_roscpp.h>
 #include <swri_route_util/util.h>
 
 namespace smu = swri_math_util;
+namespace stu = swri_transform_util;
 namespace mcm = marti_common_msgs;
 namespace mnm = marti_nav_msgs;
 
@@ -257,27 +260,206 @@ void speedsForCurvature(
 }
 
 SpeedForObstaclesParameters::SpeedForObstaclesParameters()
+  :
+  origin_to_front_m_(2.0),
+  origin_to_rear_m_(1.0),
+  origin_to_left_m_(1.0),
+  origin_to_right_m_(1.0),
+  max_distance_m_(10.0),
+  min_distance_m_(1.0),
+  max_speed_(10.0),
+  min_speed_(1.0),
+  stop_buffer_m_(5.0)
 {
 }
 
 void SpeedForObstaclesParameters::loadFromRosParam(const ros::NodeHandle &pnh)
 {
+  swri::param(pnh, "origin_to_front_m", origin_to_front_m_, 2.0);
+  swri::param(pnh, "origin_to_rear_m", origin_to_rear_m_, 1.0);
+  swri::param(pnh, "origin_to_left_m", origin_to_left_m_, 1.0);
+  swri::param(pnh, "origin_to_right_m", origin_to_right_m_, 1.0);
+
+  swri::param(pnh, "max_distance_m", max_distance_m_, 10.0);
+  swri::param(pnh, "min_distance_m", min_distance_m_, 1.0);
+  swri::param(pnh, "max_speed", max_speed_, 10.0);
+  swri::param(pnh, "min_speed", min_speed_, 1.0);
+
+  swri::param(pnh, "stop_buffer_m", stop_buffer_m_, 5.0);
 }
 
-void SpeedForObstaclesParameters::loadFromConfig(const mcm::KeyValueArray &config)
+void generateObstacleData(
+  std::vector<ObstacleData> &obstacle_data,
+  const stu::Transform g_route_from_obs,
+  const mnm::ObstacleArray &obstacles_msg)
 {
-}
+  obstacle_data.resize(obstacles_msg.obstacles.size());
+  for (size_t i = 0; i < obstacle_data.size(); i++) {
+    const mnm::Obstacle &obs_msg = obstacles_msg.obstacles[i];
 
-void SpeedForObstaclesParameters::readToConfig(mcm::KeyValueArray &config) const
-{
+    geometry_msgs::Pose pose = obs_msg.pose;
+    if (pose.orientation.x == 0.0 &&
+        pose.orientation.y == 0.0 &&
+        pose.orientation.z == 0.0 &&
+        pose.orientation.w == 0.0) {
+      pose.orientation.w = 1.0;
+    }
+
+    tf::Transform g_obs_from_local;
+    tf::poseMsgToTF(pose, g_obs_from_local);
+
+    obstacle_data[i].center = g_route_from_obs*g_obs_from_local.getOrigin();
+    obstacle_data[i].center.setZ(0.0);
+
+    double max_radius = 0.0;
+    obstacle_data[i].polygon.resize(obs_msg.polygon.size());
+    for (size_t j = 0; j < obs_msg.polygon.size(); j++) {
+      tf::Vector3 pt;
+      tf::pointMsgToTF(obs_msg.polygon[j], pt);
+      pt = pt - g_obs_from_local.getOrigin();
+
+      max_radius = std::max(max_radius, pt.length());
+      obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
+      obstacle_data[i].polygon[j].setZ(0.0);
+    }
+    obstacle_data[i].radius = max_radius;
+  }
 }
 
 void speedsForObstacles(
   mnm::RouteSpeedArray &speeds,
+  std::vector<DistanceReport> &reports,
   const Route &route,
-  const mnm::ObstacleArray &obstacles,
-  const SpeedForObstaclesParameters &parameters)
+  const mnm::RoutePosition &route_position,
+  const std::vector<ObstacleData> &obstacles,
+  const SpeedForObstaclesParameters &p)
 {
+  tf::Vector3 local_fl(p.origin_to_left_m_, p.origin_to_left_m_, 0.0);
+  tf::Vector3 local_fr(p.origin_to_left_m_, -p.origin_to_right_m_, 0.0);
+  tf::Vector3 local_br(-p.origin_to_right_m_, -p.origin_to_right_m_, 0.0);
+  tf::Vector3 local_bl(-p.origin_to_right_m_, p.origin_to_left_m_, 0.0);
+  double car_r = 0.0;
+  car_r = std::max(car_r, local_fl.length());
+  car_r = std::max(car_r, local_fr.length());
+  car_r = std::max(car_r, local_br.length());
+  car_r = std::max(car_r, local_bl.length());
+
+  size_t route_index = 0;
+
+  bool skip_point = true;
+
+  for (const auto& point: route.points)
+  {
+    if (skip_point)
+    {
+      if (point.id() == route_position.id)
+      {
+        skip_point = false;
+      }
+      continue;
+    }
+
+    for (const auto& obstacle: obstacles)
+    {
+      const tf::Vector3 v = obstacle.center - point.position();
+      const double d = v.length() - car_r - obstacle.radius;
+      if (d > p.max_distance_m_) {
+        // The obstacle is too far away from this point to be a concern
+        continue;
+      }
+
+      tf::Vector3 closest_point = obstacle.center;
+
+      double distance = std::numeric_limits<double>::max();
+      for (size_t i = 1; i < obstacle.polygon.size(); i++)
+      {
+        double dist = swri_geometry_util::DistanceFromLineSegment(
+          obstacle.polygon[i - 1],
+          obstacle.polygon[i],
+          point.position()) - car_r;
+        if (dist < distance)
+        {
+          distance = dist;
+          closest_point = swri_geometry_util::ProjectToLineSegment(
+            obstacle.polygon[i - 1],
+            obstacle.polygon[i],
+            point.position());
+        }
+      }
+      if (obstacle.polygon.size() > 1)
+      {
+        double dist = swri_geometry_util::DistanceFromLineSegment(
+          obstacle.polygon.back(),
+          obstacle.polygon.front(),
+          point.position()) - car_r;
+        if (dist < distance)
+        {
+          distance = dist;
+          closest_point = swri_geometry_util::ProjectToLineSegment(
+            obstacle.polygon.back(),
+            obstacle.polygon.front(),
+            point.position());
+        }
+      }
+
+      if (distance > p.max_distance_m_) {
+        // The obstacle is too far away from this point to be a concern
+        continue;
+      }
+
+      // This obstacle is close enough to be a concern.  If the bounding
+      // circles are still not touching, we apply a speed limit based on the
+      // distance.
+      if (distance > 0.0)
+      {
+        DistanceReport report;
+        report.near = false;
+        report.collision = false;
+        report.route_index = route_index;
+        report.vehicle_point = point.position() + (closest_point - point.position()).normalized() * car_r;
+        report.obstacle_point = closest_point;
+        reports.push_back(report);
+
+        const double s = std::max(0.0, (distance - p.min_distance_m_) / (
+                                    p.max_distance_m_ - p.min_distance_m_));
+        double speed = (1.0-s)*p.min_speed_ + s*p.max_speed_;
+
+        speeds.speeds.emplace_back();
+        speeds.speeds.back().id = point.id();
+        speeds.speeds.back().distance = 0.0;
+        speeds.speeds.back().speed = speed;
+
+        continue;
+      }
+
+      DistanceReport report;
+      report.near = false;
+      report.collision = true;
+      report.route_index = route_index;
+      report.vehicle_point = point.position();
+      report.obstacle_point = closest_point;
+      reports.push_back(report);
+
+      speeds.speeds.emplace_back();
+      speeds.speeds.back().id = point.id();
+      speeds.speeds.back().distance = -p.stop_buffer_m_ - p.origin_to_front_m_;
+      speeds.speeds.back().speed = 0.0;
+
+      speeds.speeds.emplace_back();
+      speeds.speeds.back().id = point.id();
+      speeds.speeds.back().distance = (-p.stop_buffer_m_ - p.origin_to_front_m_) / 2.0;
+      speeds.speeds.back().speed = 0.0;
+
+      speeds.speeds.emplace_back();
+      speeds.speeds.back().id = point.id();
+      speeds.speeds.back().distance = 0.0;
+      speeds.speeds.back().speed = 0.0;
+
+      continue;
+    }
+
+    route_index++;
+  }  
 }
 }  // namespace swri_route_util
 

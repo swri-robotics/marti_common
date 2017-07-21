@@ -4,6 +4,8 @@ project(swri_route_util)
 set(BUILD_DEPS 
   marti_nav_msgs
   roscpp
+  swri_geometry_util
+  swri_math_util
   swri_transform_util
   )
 

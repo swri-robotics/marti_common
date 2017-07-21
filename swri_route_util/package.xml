@@ -16,6 +16,8 @@
   <depend>marti_nav_msgs</depend>
   <depend>roscpp</depend>
   <depend>swri_transform_util</depend>
+  <depend>swri_math_util</depend>
+  <depend>swri_geometry_util</depend>
 
   <export>
   </export>
