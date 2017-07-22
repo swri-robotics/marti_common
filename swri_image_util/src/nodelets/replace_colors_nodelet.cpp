@@ -26,6 +26,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
+#include <opencv2/core/version.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
@@ -36,7 +38,12 @@
 
 namespace swri_image_util
 {
-  const int32_t MAX_GRAY_VALUE = 255;
+  // This constant defines how large our lookup and transform tables are.
+  // Currently assumes 8 bit mono encoded images, so there are 256 gray colors
+  // to potentially replace with a different color
+  const int32_t NUM_GRAY_VALUES = 256;
+  // The output is an RGB8 image. This constant checks that the user passes
+  // in a valid RGB value to replace a gray level with
   const int32_t MAX_RGB_VALUE = 255;
 
   // ROS nodelet for replacing colors in an image
@@ -53,8 +60,10 @@ namespace swri_image_util
     void imageCallback(const sensor_msgs::ImageConstPtr& image_msg);
     // Initialize the lookup table
     void initLut();
-    // Helper function for getting color mapping frC++ static cast to unsigned charom parameter server
-    bool readLut(const XmlRpc::XmlRpcValue &param);
+    // Read in user requested colormap
+    void readColormap(const XmlRpc::XmlRpcValue& param);
+    // Helper function for getting color mapping from parameter server
+    void readUserLut(const XmlRpc::XmlRpcValue& param);
 
     // Lookup table defining color replacement strategy. The row indices 
     // correspond to the gray scale values, and the values in the rows are RGB
@@ -64,11 +73,32 @@ namespace swri_image_util
     image_transport::Publisher image_pub_;
     // Subscribes to the original image
     image_transport::Subscriber image_sub_;
+    // Mapping from a colormap name to the OpenCV integer representation
+    std::map<std::string, int32_t> colormap_names_;
   };
 
   ReplaceColorsNodelet::ReplaceColorsNodelet()
   {
-    // All initialization is deferred to the onInit() call
+    // Initialize the colormap name mapping. Every OpenCV colormap should have
+    // a string identifiying it. This allows the node to easily take a user
+    // parameter and convert it to a representation the algorithm can use.
+    // OpenCV 2.x does not have the Parula colormap, so only include this
+    // when OpenCV 3.x is available
+    colormap_names_["autumn"] = cv::COLORMAP_AUTUMN;
+    colormap_names_["bone"] = cv::COLORMAP_BONE;
+    colormap_names_["jet"] = cv::COLORMAP_JET;
+    colormap_names_["winter"] = cv::COLORMAP_WINTER;
+    colormap_names_["rainbow"] = cv::COLORMAP_RAINBOW;
+    colormap_names_["ocean"] = cv::COLORMAP_OCEAN;
+    colormap_names_["summer"] = cv::COLORMAP_SUMMER;
+    colormap_names_["spring"] = cv::COLORMAP_SPRING;
+    colormap_names_["cool"] = cv::COLORMAP_COOL;
+    colormap_names_["hsv"] = cv::COLORMAP_HSV;
+    colormap_names_["pink"] = cv::COLORMAP_PINK;
+    colormap_names_["hot"] = cv::COLORMAP_HOT;
+    #if CV_MAJOR_VERSION == 3
+    colormap_names_["parula"] = cv::COLORMAP_PARULA;
+    #endif
   }
 
   ReplaceColorsNodelet::~ReplaceColorsNodelet()
@@ -76,6 +106,7 @@ namespace swri_image_util
     // Nothing to clean up on destruction
   }
 
+  // Initialize the nodelet
   void ReplaceColorsNodelet::onInit()
   {
     // Node handles for interacting with ROS
@@ -85,7 +116,7 @@ namespace swri_image_util
     // Lookup table to replace colors with. By default will just convert the
     // gray scale values to their RGB equivalents. If this node is ever extended
     // to more than gray scale, this will have to be changed
-    color_lut_ = cv::Mat::zeros(1, 256, CV_8UC3);
+    color_lut_ = cv::Mat::zeros(1, NUM_GRAY_VALUES, CV_8UC3);
     initLut();
 
     // Get the array representing the color mapping from the parameter server.
@@ -93,14 +124,26 @@ namespace swri_image_util
     // where u is the gray scale value to replace, and r, g, b are the RGB
     // components to replace it with.
     XmlRpc::XmlRpcValue color_param;
+
+    // This node has two different methods of changing gray scale values to
+    // color imagery. The first maps the gray scale values to OpenCV colormaps
+    // This call checks for that option
+    if (priv_nh.getParam("colormap", color_param))
+    {
+      //  Use the colormap the user has requested
+      readColormap(color_param);
+    }
+
+    // The other option for modifying the grayscale images is to define a
+    // lookup table that maps grayscale levels to user defined RGB values.
+    // This can be used in conjunction with the colormap option to replace
+    // values in the OpenCV colormap with user values. This call checks
+    // if the user is attempting this operation, and reads the lookup table
+    // from the parameter server if necessary 
     if (priv_nh.getParam("colors", color_param))
     {
-      // Try to read in the lookup values from the parameter server. Reset the
-      // values if this operation fails
-      if (!readLut(color_param))
-      {
-        initLut();
-      }
+      // Try to read in the lookup values from the parameter server.
+      readUserLut(color_param);
     }
     else
     {
@@ -160,15 +203,144 @@ namespace swri_image_util
     image_pub_.publish(output->toImageMsg());
   }
 
+  // Initialize grayscale lookup table
   void ReplaceColorsNodelet::initLut()
   {
-    for (uint32_t idx; idx < 256; idx++)
+    // Sets every row in the lookup table to a triple <x, x, x>,
+    // where x is the grayscale value. This will directly map
+    // the gray values to their equivalent RGB representation
+    for (uint32_t idx; idx < NUM_GRAY_VALUES; idx++)
     {
       color_lut_.at<cv::Vec3b>(0, idx) = cv::Vec3b(idx, idx, idx);
     }
   }
 
-  bool ReplaceColorsNodelet::readLut(const XmlRpc::XmlRpcValue& param)
+  // Read in the colormap and parameters the parameter server has for this
+  // node
+  void ReplaceColorsNodelet::readColormap(const XmlRpc::XmlRpcValue& param)
+  {
+    // This is a multistep process, and if any step goes wrong then the rest
+    // of the process should be aborted.
+    bool success = true;
+
+    // The colormap parameters should be formatted like:
+    // ["colormap_name", num_colors]
+    // This checks to make sure the parametre is a two element array
+    if ((param.getType() != XmlRpc::XmlRpcValue::TypeArray) ||
+      (param.size() != 2))
+    {
+      ROS_ERROR("Colormap specification must be a two entry array");
+      success = false;
+    }
+
+    // These are the parameters to read from the parameter server
+    std::string colormap_name;
+    int32_t num_entries;
+    int32_t colormap_idx;
+
+    if (success)
+    {
+      // Get the XmpRpc representation of the colormap name the number of
+      // colors to get from that colormap
+      XmlRpc::XmlRpcValue colormap_param = param[0];
+      XmlRpc::XmlRpcValue num_entries_param = param[1];
+
+      // Make sure the colormap name is a string
+      if (colormap_param.getType() != XmlRpc::XmlRpcValue::TypeString)
+      {
+        ROS_ERROR("First colormap parameter must be a string");
+        success = false;
+      }
+
+      // Make sure the number of colors to get from the colormap is
+      // an integer
+      if (num_entries_param.getType() != XmlRpc::XmlRpcValue::TypeInt)
+      {
+        ROS_ERROR("Second colormap parameter must be an integer");
+        success = false;
+      }
+
+      // Parameters had the correct types. Now XmlRpc datatypes to C++ types
+      if (success)
+      {
+        colormap_name = static_cast<std::string>(colormap_param);
+        num_entries = static_cast<int32_t>(num_entries_param);
+      }
+    }
+
+    // Sanity check on the number of classes the user specified
+    if (success && (num_entries <= 1))
+    {
+      ROS_ERROR("Must use at least two colors from the colormap");
+      success = false;
+    }
+
+    // Make sure the number of values from the colormap is at most the number
+    // of grayscale values in our transformation
+    if (success)
+    {
+      if (num_entries > NUM_GRAY_VALUES)
+      {
+        ROS_ERROR("Number of colormap entries was greater");
+        ROS_ERROR(" than %d", NUM_GRAY_VALUES);
+        success = false;
+      }
+    }
+
+    // Get the OpenCV representation of the requested colormap
+    if (success)
+    {
+      if (colormap_names_[colormap_name])
+      {
+        colormap_idx = colormap_names_[colormap_name]; 
+      }
+      else
+      {
+        ROS_ERROR("Unknown colormap requested");
+        success = false;
+      }
+    }
+
+    // Now get the specified number of colors from the requested colormap
+    if (success)
+    {
+      // Make a copy of the grayscale LUT as a working variable
+      cv::Mat original_colors = color_lut_;
+      // color_lut_ will have the transformation from the grayscale values
+      // to the RGB values after this call for every grayscale value
+      cv::applyColorMap(original_colors, color_lut_, colormap_idx);
+
+      // Now modify the orignial colormap to only have the number
+      // of distinct entries specified by the user
+      int32_t replace_idx = 0;
+      original_colors = color_lut_;
+
+      int32_t lut_size = color_lut_.cols;
+
+      // Frequently the input image may have some small subset of values,
+      // like 0-5. In this case, just mapping to a colormap will make the 
+      // resulting image look like one color, because the first 6 colors from
+      // the colormap will be used, which for most colormaps are almost the
+      // same value. This will more intelligently remap this values, so that
+      // the 0, 50, 100, 150, 200, 250 color indices are used from the
+      // colormap. This "pushes" the color values apart to make them more
+      // visually apparent.
+      while (replace_idx < lut_size)
+      {
+        int32_t start_idx = replace_idx;
+        for (int32_t class_idx = 0; class_idx < num_entries; class_idx++)
+        {
+          color_lut_.at<cv::Vec3b>(0, replace_idx) = 
+            original_colors.at<cv::Vec3b>(
+              0, static_cast<uint8_t>(class_idx * lut_size / (num_entries - 1)));
+          replace_idx++;
+        }
+      }
+    }
+  }
+
+  // Read the user lookup table from the parameter server
+  void ReplaceColorsNodelet::readUserLut(const XmlRpc::XmlRpcValue& param)
   {
     // Assume the parameter parsing works by default
     bool success = true;
@@ -177,6 +349,10 @@ namespace swri_image_util
       ROS_ERROR("LUT must be an array");
       success = false;
     }
+
+    // Make a copy of the current LUT. The copy will be modified, and only
+    // if the complete parameter reading works will the real LUT be modified.
+    cv::Mat temp_lut = color_lut_;
 
     // Loop over all values that will be replaced. The casting in here is 
     // complicated because XmlRpc cannot go directly from the parameters to 
@@ -206,9 +382,9 @@ namespace swri_image_util
 
       // Make sure the gray scale index is in the proper range
       int32_t gray_index = static_cast<int32_t>(map_key);
-      if (gray_index > MAX_GRAY_VALUE)
+      if (gray_index >= NUM_GRAY_VALUES)
       {
-        ROS_ERROR("Gray scale index must be less than %d", MAX_GRAY_VALUE);
+        ROS_ERROR("Gray scale index must be less than %d", NUM_GRAY_VALUES);
         success = false;
         break;
       }
@@ -260,12 +436,16 @@ namespace swri_image_util
 
       // Convert the RGB values to OpenCV types and put them in the LUT
       cv::Vec3b rgb_entry(red, green, blue);
-      color_lut_.at<cv::Vec3b>(0, color_index) = rgb_entry;
+      temp_lut.at<cv::Vec3b>(0, color_index) = rgb_entry;
     }
-    
-    return success;
-  }
 
+    // If the parametre were successfully read the modified LUT will be
+    // copied back to the persistent LUT.
+    if (success)
+    {
+      color_lut_ = temp_lut;
+    }
+  }
 }
 
 #include <pluginlib/class_list_macros.h>
