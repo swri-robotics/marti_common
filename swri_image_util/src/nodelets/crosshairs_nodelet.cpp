@@ -66,11 +66,18 @@ namespace swri_image_util
     void ImageCallback(const sensor_msgs::ImageConstPtr& image)
     {
       cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+      // Get image dimensions
       const int h = cv_image->image.rows;
       const int w = cv_image->image.cols;
+      // Define line properties
       const cv::Scalar black(0, 0, 0);
-      cv::line(cv_image->image, cv::Point(0, w/2), cv::Point(h-1, w/2), black, 3, 8);
-      cv::line(cv_image->image, cv::Point(h/2, 0), cv::Point(h/2, w-1), black, 3, 8);
+      const int thickness = 3;
+      const int line_type = 8;  // 8-connected line
+      // Draw vertical line
+      cv::line(cv_image->image, cv::Point(0, w/2), cv::Point(h-1, w/2), black, thickness, line_type);
+      // Draw horizontal line
+      cv::line(cv_image->image, cv::Point(h/2, 0), cv::Point(h/2, w-1), black, thickness, line_type);
+      // Publish image
       image_pub_.publish(cv_image->toImageMsg());
     }
 
