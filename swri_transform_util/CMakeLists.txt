@@ -27,7 +27,7 @@ generate_dynamic_reconfigure_options(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+  LIBRARIES ${PROJECT_NAME} transformer_plugins
   CATKIN_DEPENDS
     diagnostic_msgs
     dynamic_reconfigure
