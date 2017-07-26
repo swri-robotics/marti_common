@@ -51,6 +51,11 @@ TEST(TransformManagerTests, Identity1)
 
   EXPECT_FLOAT_EQ(p1.x(), p2.x());
   EXPECT_FLOAT_EQ(p1.y(), p2.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * p2;
+  EXPECT_FLOAT_EQ(p1.x(), p3.x());
+  EXPECT_FLOAT_EQ(p1.y(), p3.y());
 }
 
 TEST(TransformManagerTests, Identity2)
@@ -67,6 +72,11 @@ TEST(TransformManagerTests, Identity2)
 
   EXPECT_FLOAT_EQ(p1.x(), p2.x());
   EXPECT_FLOAT_EQ(p1.y(), p2.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * p2;
+  EXPECT_FLOAT_EQ(p1.x(), p3.x());
+  EXPECT_FLOAT_EQ(p1.y(), p3.y());
 }
 
 TEST(TransformManagerTests, TfToTf1)
@@ -84,6 +94,11 @@ TEST(TransformManagerTests, TfToTf1)
 
   EXPECT_FLOAT_EQ(-500, near_field.x());
   EXPECT_FLOAT_EQ(-500, near_field.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * near_field;
+  EXPECT_FLOAT_EQ(far_field.x(), p3.x());
+  EXPECT_FLOAT_EQ(far_field.y(), p3.y());
 }
 
 TEST(TransformManagerTests, TfToTf2)
@@ -118,6 +133,11 @@ TEST(TransformManagerTests, WgsToUtm)
 
   EXPECT_FLOAT_EQ(551170, utm.x());
   EXPECT_FLOAT_EQ(3266454, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * utm;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
 TEST(TransformManagerTests, UtmToWgs84)
@@ -135,6 +155,11 @@ TEST(TransformManagerTests, UtmToWgs84)
 
   EXPECT_FLOAT_EQ(29.526667, wgs84.y());
   EXPECT_FLOAT_EQ(-98.471944, wgs84.x());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * wgs84;
+  EXPECT_FLOAT_EQ(utm.x(), p3.x());
+  EXPECT_FLOAT_EQ(utm.y(), p3.y());
 }
 
 TEST(TransformManagerTests, TfToUtm1)
@@ -152,6 +177,11 @@ TEST(TransformManagerTests, TfToUtm1)
 
   EXPECT_FLOAT_EQ(537460.3372816057, utm.x());
   EXPECT_FLOAT_EQ(3258123.434110421, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * utm;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
 TEST(TransformManagerTests, TfToUtm2)
@@ -168,6 +198,11 @@ TEST(TransformManagerTests, TfToUtm2)
 
   EXPECT_NEAR(537460.3372816057 + 500.0, utm.x(), 1.9);
   EXPECT_NEAR(3258123.434110421 + 500.0, utm.y(), 1.5);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * utm;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
 TEST(TransformManagerTests, UtmToTf1)
@@ -185,6 +220,11 @@ TEST(TransformManagerTests, UtmToTf1)
 
   EXPECT_NEAR(0, tf.x(), 0.0005);
   EXPECT_NEAR(0, tf.y(), 0.0005);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
 TEST(TransformManagerTests, UtmToTf2)
@@ -202,6 +242,11 @@ TEST(TransformManagerTests, UtmToTf2)
 
   EXPECT_NEAR(-500, tf.x(), 0.0005);
   EXPECT_NEAR(-500, tf.y(), 0.0005);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
 TEST(TransformManagerTests, UtmToTf3)
@@ -219,6 +264,11 @@ TEST(TransformManagerTests, UtmToTf3)
 
   EXPECT_NEAR(-500, tf.x(), 1.9);
   EXPECT_NEAR(-500, tf.y(), 1.5);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
 TEST(TransformManagerTests, UtmToTf4)
@@ -236,6 +286,11 @@ TEST(TransformManagerTests, UtmToTf4)
 
   EXPECT_FLOAT_EQ(13752.988, tf.x());
   EXPECT_FLOAT_EQ(8280.0176, tf.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
 TEST(TransformManagerTests, Wgs84ToTf1)
@@ -253,6 +308,11 @@ TEST(TransformManagerTests, Wgs84ToTf1)
 
   EXPECT_FLOAT_EQ(0, tf.x());
   EXPECT_FLOAT_EQ(0, tf.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
 TEST(TransformManagerTests, Wgs84ToTf2)
@@ -270,6 +330,11 @@ TEST(TransformManagerTests, Wgs84ToTf2)
 
   EXPECT_FLOAT_EQ(-500, tf.x());
   EXPECT_FLOAT_EQ(-500, tf.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
 TEST(TransformManagerTests, TfToWgs84_1)
@@ -287,6 +352,11 @@ TEST(TransformManagerTests, TfToWgs84_1)
 
   EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
   EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * wgs84;
+  EXPECT_FLOAT_EQ(tf.x(), p3.x());
+  EXPECT_FLOAT_EQ(tf.y(), p3.y());
 }
 
 TEST(TransformManagerTests, TfToWgs84_2)
@@ -303,6 +373,11 @@ TEST(TransformManagerTests, TfToWgs84_2)
 
   EXPECT_FLOAT_EQ(-98.6085519577, wgs84.x());
   EXPECT_FLOAT_EQ(29.4564773982, wgs84.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * wgs84;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
 // Run all the tests that were declared with TEST()

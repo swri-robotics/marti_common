@@ -67,9 +67,12 @@ namespace swri_transform_util
       double w = vector.length() + tf::Vector3(1, 0, 0).dot(vector);
       return tf::Quaternion(cross.x(), cross.y(), cross.z(), w).normalized();
     }
+
+    virtual boost::shared_ptr<TransformImpl> Inverse() const = 0;
     
     ros::Time stamp_;
   };
+  typedef boost::shared_ptr<TransformImpl> TransformImplPtr;
 
   /**
    * An abstraction of the tf::Transform class to support transforms in addition
@@ -189,6 +192,7 @@ namespace swri_transform_util
   public:
     IdentityTransform() { stamp_ = ros::Time::now(); }
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+    virtual TransformImplPtr Inverse() const;
   };
 
   class TfTransform : public TransformImpl
@@ -199,6 +203,7 @@ namespace swri_transform_util
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
     virtual tf::Quaternion GetOrientation() const;
+    virtual TransformImplPtr Inverse() const;
 
   protected:
     tf::Transform transform_;

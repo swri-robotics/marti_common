@@ -106,6 +106,11 @@ namespace swri_transform_util
     return transform_->GetOrientation();
   }
 
+  Transform Transform::Inverse() const
+  {
+    return Transform(transform_->Inverse());
+  }
+
   tf::Transform Transform::GetTF() const
   {
     return tf::Transform(GetOrientation(),GetOrigin());
@@ -116,6 +121,14 @@ namespace swri_transform_util
     v_out = v_in;
   }
   
+  boost::shared_ptr<TransformImpl> IdentityTransform::Inverse() const
+  {
+    TransformImplPtr inverse = 
+        boost::make_shared<IdentityTransform>();
+    inverse->stamp_ = stamp_;
+    return inverse;
+  }
+
   TfTransform::TfTransform(const tf::Transform& transform) :
     transform_(transform)
   {
@@ -136,5 +149,13 @@ namespace swri_transform_util
   tf::Quaternion TfTransform::GetOrientation() const
   {
     return transform_.getRotation();
+  }
+
+  TransformImplPtr TfTransform::Inverse() const
+  {
+    TransformImplPtr inverse = 
+        boost::make_shared<TfTransform>(transform_.inverse());
+    inverse->stamp_ = stamp_;
+    return inverse;
   }
 }
