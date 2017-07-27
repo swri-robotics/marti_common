@@ -669,4 +669,52 @@ bool routeDistances(
 
   return true;
 }
+
+bool extractSubroute(
+  Route &sub_route,
+  const Route &route,
+  const marti_nav_msgs::RoutePosition &start,
+  const marti_nav_msgs::RoutePosition &end)
+{
+  sub_route.header = route.header;
+  sub_route.properties_ = route.properties_;
+  sub_route.guid_ = route.guid_;
+  sub_route.name_ = route.name_;
+
+  mnm::RoutePosition norm_start;
+  if (!normalizeRoutePosition(norm_start, route, start)) {
+    return false;
+  }
+
+  mnm::RoutePosition norm_end;
+  if (!normalizeRoutePosition(norm_end, route, end)) {
+    return false;
+  }
+
+  // Since we have a normalized position, we know it exists in the route.
+  size_t start_index;
+  route.findPointId(start_index, norm_start.id);
+
+  size_t end_index;
+  route.findPointId(end_index, norm_end.id);
+
+  // If the end distance is after the id point, round up to the next
+  // point.
+  if (norm_end.distance > 0.0) {
+    end_index += 1;
+  }
+
+  // Increment the end_index so that we can iterate from [start, end),
+  // and make sure we stay within the array bounds.
+  end_index++;
+  end_index = std::max(end_index, route.points.size());
+
+  sub_route.points.reserve(end_index - start_index);
+  for (size_t i = start_index; i < end_index; i++) {
+    sub_route.points.push_back(route.points[i]);
+  }
+  sub_route.rebuildPointIndex();
+
+  return true;
+}
 }  // namespace swri_route_util
