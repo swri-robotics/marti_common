@@ -344,23 +344,19 @@ void speedsForObstacles(
   car_r = std::max(car_r, local_br.length());
   car_r = std::max(car_r, local_bl.length());
 
-  size_t route_index = 0;
-
   bool skip_point = true;
 
-  for (const auto& point: route.points)
-  {
-    if (skip_point)
-    {
-      if (point.id() == route_position.id)
-      {
-        skip_point = false;
+  for (size_t route_index = 0; route_index < route.points.size(); route_index++) {
+    const RoutePoint &point = route.points[route_index];
+    
+    if (skip_point) {
+      if (point.id() == route_position.id) {
+        skip_point = true;
       }
       continue;
     }
 
-    for (const auto& obstacle: obstacles)
-    {
+    for (const auto& obstacle: obstacles) {
       const tf::Vector3 v = obstacle.center - point.position();
       const double d = v.length() - car_r - obstacle.radius;
       if (d > p.max_distance_m_) {
@@ -371,14 +367,13 @@ void speedsForObstacles(
       tf::Vector3 closest_point = obstacle.center;
 
       double distance = std::numeric_limits<double>::max();
-      for (size_t i = 1; i < obstacle.polygon.size(); i++)
-      {
+      for (size_t i = 1; i < obstacle.polygon.size(); i++) {
         double dist = swri_geometry_util::DistanceFromLineSegment(
           obstacle.polygon[i - 1],
           obstacle.polygon[i],
           point.position()) - car_r;
-        if (dist < distance)
-        {
+        
+        if (dist < distance) {
           distance = dist;
           closest_point = swri_geometry_util::ProjectToLineSegment(
             obstacle.polygon[i - 1],
@@ -386,14 +381,14 @@ void speedsForObstacles(
             point.position());
         }
       }
-      if (obstacle.polygon.size() > 1)
-      {
+      
+      if (obstacle.polygon.size() > 1) {
         double dist = swri_geometry_util::DistanceFromLineSegment(
           obstacle.polygon.back(),
           obstacle.polygon.front(),
           point.position()) - car_r;
-        if (dist < distance)
-        {
+
+        if (dist < distance) {
           distance = dist;
           closest_point = swri_geometry_util::ProjectToLineSegment(
             obstacle.polygon.back(),
@@ -410,8 +405,7 @@ void speedsForObstacles(
       // This obstacle is close enough to be a concern.  If the bounding
       // circles are still not touching, we apply a speed limit based on the
       // distance.
-      if (distance > 0.0)
-      {
+      if (distance > 0.0) {
         DistanceReport report;
         report.near = false;
         report.collision = false;
