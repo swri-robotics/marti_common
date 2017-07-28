@@ -111,6 +111,3 @@ install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets lat_lon_tf_echo
 catkin_install_python(PROGRAMS nodes/initialize_origin.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-install(FILES nodelet_plugins.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
