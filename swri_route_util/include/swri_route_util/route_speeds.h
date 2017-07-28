@@ -42,7 +42,7 @@ struct SpeedForCurvatureParameters
 {
   /// If true, use maximum lateral acceleration constant to calculate
   /// maximum speed.  Otherwise, the curvature vs speed curve will be
-  /// used.  
+  /// used.
   bool use_speed_from_accel_constant_;
   /// Maximum lateral acceleration in accel mode in m/s^2
   double max_lateral_accel_mss_;
@@ -52,12 +52,12 @@ struct SpeedForCurvatureParameters
   swri_math_util::Interpolation1D speed_curve_;
 
   // Filter constant used when estimating route curvature.  Larger
-  // values result in smoother curvature estiamtes with fewer spikes.
+  // values result in smoother curvature estimates with fewer spikes.
   double curvature_filter_size_;
 
-  
+
   SpeedForCurvatureParameters();
-  
+
   void loadFromRosParam(const ros::NodeHandle &pnh);
 
   void loadFromConfig(const marti_common_msgs::KeyValueArray &config);
@@ -85,7 +85,7 @@ struct SpeedForObstaclesParameters
   double stop_buffer_m_;
 
   SpeedForObstaclesParameters();
-  
+
   void loadFromRosParam(const ros::NodeHandle &pnh);
 };
 

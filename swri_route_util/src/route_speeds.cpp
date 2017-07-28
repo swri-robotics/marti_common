@@ -229,7 +229,7 @@ static double maxSpeedForCurvature(double curvature,
     double a = std::abs(params.max_lateral_accel_mss_);
 
     double max_speed = 1000.0;
-    
+
     if (k < 1e-4) {
       return max_speed;
     } else {
@@ -256,7 +256,7 @@ void speedsForCurvature(
 
     double k = estimateCurvature(route, i, parameters.curvature_filter_size_);
     speeds.speeds[i].speed = maxSpeedForCurvature(k, parameters);
-  }  
+  }
 }
 
 SpeedForObstaclesParameters::SpeedForObstaclesParameters()
@@ -348,7 +348,7 @@ void speedsForObstacles(
 
   for (size_t route_index = 0; route_index < route.points.size(); route_index++) {
     const RoutePoint &point = route.points[route_index];
-    
+
     if (skip_point) {
       if (point.id() == route_position.id) {
         skip_point = false;
@@ -372,7 +372,7 @@ void speedsForObstacles(
           obstacle.polygon[i - 1],
           obstacle.polygon[i],
           point.position()) - car_r;
-        
+
         if (dist < distance) {
           distance = dist;
           closest_point = swri_geometry_util::ProjectToLineSegment(
@@ -381,7 +381,7 @@ void speedsForObstacles(
             point.position());
         }
       }
-      
+
       if (obstacle.polygon.size() > 1) {
         double dist = swri_geometry_util::DistanceFromLineSegment(
           obstacle.polygon.back(),
@@ -451,7 +451,6 @@ void speedsForObstacles(
 
       continue;
     }
-  }  
+  }
 }
 }  // namespace swri_route_util
-

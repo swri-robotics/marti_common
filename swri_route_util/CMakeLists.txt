@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(swri_route_util)
 
 set(BUILD_DEPS 
+  marti_common_msgs
   marti_nav_msgs
   roscpp
   swri_geometry_util
   swri_math_util
   swri_transform_util
+  visualization_msgs
   )
 
 set(RUNTIME_DEPS ${BUILD_DEPS})
