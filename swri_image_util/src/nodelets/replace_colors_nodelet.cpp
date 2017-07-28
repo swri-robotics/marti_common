@@ -27,6 +27,9 @@
 //
 // *****************************************************************************
 #include <opencv2/core/version.hpp>
+#if CV_MAJOR_VERSION == 2
+#include <opencv2/contrib/contrib.hpp>
+#endif
 #include <opencv2/imgproc/imgproc.hpp>
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
