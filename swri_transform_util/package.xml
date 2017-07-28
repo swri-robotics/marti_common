@@ -23,7 +23,6 @@
   <depend>gps_common</depend>
   <depend>libgeos++-dev</depend>
   <depend>nodelet</depend>
-  <depend>pluginlib</depend>
   <depend>proj</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
@@ -40,7 +39,6 @@
 
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />
-    <swri_transform_util plugin="${prefix}/transformer_plugins.xml" />
   </export>
 </package>
 
