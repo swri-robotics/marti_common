@@ -351,7 +351,7 @@ void speedsForObstacles(
     
     if (skip_point) {
       if (point.id() == route_position.id) {
-        skip_point = true;
+        skip_point = false;
       }
       continue;
     }
@@ -451,8 +451,6 @@ void speedsForObstacles(
 
       continue;
     }
-
-    route_index++;
   }  
 }
 }  // namespace swri_route_util
