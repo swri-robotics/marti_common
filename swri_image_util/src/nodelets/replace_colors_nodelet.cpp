@@ -353,7 +353,7 @@ namespace swri_image_util
 
     // Make a copy of the current LUT. The copy will be modified, and only
     // if the complete parameter reading works will the real LUT be modified.
-    cv::Mat temp_lut = color_lut_;
+    cv::Mat temp_lut = color_lut_.clone();
 
     // Loop over all values that will be replaced. The casting in here is 
     // complicated because XmlRpc cannot go directly from the parameters to 
@@ -444,7 +444,7 @@ namespace swri_image_util
     // copied back to the persistent LUT.
     if (success)
     {
-      color_lut_ = temp_lut;
+      color_lut_ = temp_lut.clone();
     }
   }
 }
