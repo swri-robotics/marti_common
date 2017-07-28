@@ -131,7 +131,8 @@ namespace swri_image_util
     // This node has two different methods of changing gray scale values to
     // color imagery. The first maps the gray scale values to OpenCV colormaps
     // This call checks for that option
-    if (priv_nh.getParam("colormap", color_param))
+    bool colormap_specified = priv_nh.getParam("colormap", color_param);
+    if (colormap_specified)
     {
       //  Use the colormap the user has requested
       readColormap(color_param);
@@ -148,9 +149,9 @@ namespace swri_image_util
       // Try to read in the lookup values from the parameter server.
       readUserLut(color_param);
     }
-    else
+    else if (!colormap_specified)
     {
-      ROS_ERROR("LUT for color transformation was not specified. Images will ");
+      ROS_ERROR("Color transformation was not specified. Images will ");
       ROS_ERROR("only be converted to their gray scale equivalents");
     }
 
@@ -336,7 +337,6 @@ namespace swri_image_util
         color_lut_.at<cv::Vec3b>(0, static_cast<uint8_t>(replace_idx)) = 
           original_colors.at<cv::Vec3b>(0, static_cast<uint8_t>(lookup_idx));
       }
-
     }
   }
 
