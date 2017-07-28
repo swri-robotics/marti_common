@@ -293,13 +293,15 @@ namespace swri_image_util
     // Get the OpenCV representation of the requested colormap
     if (success)
     {
-      if (colormap_names_[colormap_name])
+      std::map<std::string, int32_t>::iterator iter = 
+        colormap_names_.find(colormap_name);
+      if (iter != colormap_names_.end())
       {
         colormap_idx = colormap_names_[colormap_name]; 
       }
       else
       {
-        ROS_ERROR("Unknown colormap requested");
+        ROS_ERROR("Unknown colormap: %s requested", colormap_name.c_str());
         success = false;
       }
     }
@@ -308,15 +310,14 @@ namespace swri_image_util
     if (success)
     {
       // Make a copy of the grayscale LUT as a working variable
-      cv::Mat original_colors = color_lut_;
+      cv::Mat original_colors = color_lut_.clone();
       // color_lut_ will have the transformation from the grayscale values
       // to the RGB values after this call for every grayscale value
       cv::applyColorMap(original_colors, color_lut_, colormap_idx);
 
       // Now modify the orignial colormap to only have the number
       // of distinct entries specified by the user
-      int32_t replace_idx = 0;
-      original_colors = color_lut_;
+      original_colors = color_lut_.clone();
 
       int32_t lut_size = color_lut_.cols;
 
@@ -328,17 +329,14 @@ namespace swri_image_util
       // the 0, 50, 100, 150, 200, 250 color indices are used from the
       // colormap. This "pushes" the color values apart to make them more
       // visually apparent.
-      while (replace_idx < lut_size)
+      for (int32_t replace_idx = 0; replace_idx < lut_size; replace_idx++)
       {
-        int32_t start_idx = replace_idx;
-        for (int32_t class_idx = 0; class_idx < num_entries; class_idx++)
-        {
-          color_lut_.at<cv::Vec3b>(0, replace_idx) = 
-            original_colors.at<cv::Vec3b>(
-              0, static_cast<uint8_t>(class_idx * lut_size / (num_entries - 1)));
-          replace_idx++;
-        }
+        int32_t lookup_idx = replace_idx % num_entries;
+        lookup_idx = lookup_idx * lut_size / num_entries;
+        color_lut_.at<cv::Vec3b>(0, static_cast<uint8_t>(replace_idx)) = 
+          original_colors.at<cv::Vec3b>(0, static_cast<uint8_t>(lookup_idx));
       }
+
     }
   }
 
