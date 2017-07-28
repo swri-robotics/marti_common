@@ -707,7 +707,7 @@ bool extractSubroute(
   // Increment the end_index so that we can iterate from [start, end),
   // and make sure we stay within the array bounds.
   end_index++;
-  end_index = std::max(end_index, route.points.size());
+  end_index = std::min(end_index, route.points.size());
 
   sub_route.points.reserve(end_index - start_index);
   for (size_t i = start_index; i < end_index; i++) {
