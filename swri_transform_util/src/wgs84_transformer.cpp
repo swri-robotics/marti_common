@@ -34,13 +34,6 @@
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS(
-    transformers,
-    wgs84,
-    swri_transform_util::Wgs84Transformer,
-    swri_transform_util::Transformer)
-
 namespace swri_transform_util
 {
   Wgs84Transformer::Wgs84Transformer()
