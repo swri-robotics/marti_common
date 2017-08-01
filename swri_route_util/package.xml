@@ -13,9 +13,13 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>marti_common_msgs</depend>
   <depend>marti_nav_msgs</depend>
   <depend>roscpp</depend>
   <depend>swri_transform_util</depend>
+  <depend>swri_math_util</depend>
+  <depend>swri_geometry_util</depend>
+  <depend>visualization_msgs</depend>
 
   <export>
   </export>
