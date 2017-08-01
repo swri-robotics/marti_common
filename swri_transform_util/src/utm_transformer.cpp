@@ -34,13 +34,6 @@
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS(
-    transformers,
-    utm,
-    swri_transform_util::UtmTransformer,
-    swri_transform_util::Transformer)
-
 namespace swri_transform_util
 {
   UtmTransformer::UtmTransformer() :

@@ -32,41 +32,35 @@
 #include <vector>
 
 #include <swri_transform_util/frames.h>
+#include <swri_transform_util/utm_transformer.h>
+#include <swri_transform_util/wgs84_transformer.h>
 
 namespace swri_transform_util
 {
-  TransformManager::TransformManager() :
-      loader_("swri_transform_util", "swri_transform_util::Transformer")
+  TransformManager::TransformManager()
   {
-    std::vector<std::string> class_names = loader_.getDeclaredClasses();
+    std::vector<boost::shared_ptr<Transformer> > transformers;
+    transformers.push_back(boost::make_shared<Wgs84Transformer>());
+    transformers.push_back(boost::make_shared<UtmTransformer>());
 
-    for (uint32_t i = 0; i < class_names.size(); i++)
+    for (size_t i = 0; i < transformers.size(); i++)
     {
-      try
+      boost::shared_ptr<Transformer> transformer = transformers[i];
+      std::map<std::string, std::vector<std::string> > supports = transformer->Supports();
+
+      std::map<std::string, std::vector<std::string> >::iterator iter;
+      for (iter = supports.begin(); iter != supports.end(); ++iter)
       {
-        boost::shared_ptr<Transformer> transformer = loader_.createInstance(class_names[i]);
-
-        std::map<std::string, std::vector<std::string> > supports = transformer->Supports();
-
-        std::map<std::string, std::vector<std::string> >::iterator iter;
-        for (iter = supports.begin(); iter != supports.end(); ++iter)
+        for (uint32_t j = 0; j < iter->second.size(); j++)
         {
-          for (uint32_t j = 0; j < iter->second.size(); j++)
+          if (transformers_[iter->first].count(iter->second[j]) > 0)
           {
-            if (transformers_[iter->first].count(iter->second[j]) > 0)
-            {
-              ROS_WARN("[transform_manager]: Transformer conflict for %s to %s",
-                  iter->first.c_str(), iter->second[j].c_str());
-            }
-
-            transformers_[iter->first][iter->second[j]] = transformer;
+            ROS_WARN("[transform_manager]: Transformer conflict for %s to %s",
+                iter->first.c_str(), iter->second[j].c_str());
           }
+
+          transformers_[iter->first][iter->second[j]] = transformer;
         }
-      }
-      catch (const pluginlib::CreateClassException& e)
-      {
-        ROS_ERROR("[transform_manager]: Failed to load transformer plugin '%s': %s",
-            class_names[i].c_str(), e.what());
       }
     }
   }
