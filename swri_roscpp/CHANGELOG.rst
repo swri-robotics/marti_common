@@ -3,8 +3,8 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Forthcoming
------------
+1.0.0 (2017-08-02)
+------------------
 * Add support for boost::function callbacks to swri::Subscriber.
 * Contributors: Elliot Johnson
 

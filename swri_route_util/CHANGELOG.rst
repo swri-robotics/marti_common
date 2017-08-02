@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2017-08-02)
+------------------
 * Add route speed functions (`#466 <https://github.com/evenator/marti_common/issues/466>`_)
   * Add visualization function for swri_route_util.
   * Add code to calculate max speeds based on curvature to swri_route_util.

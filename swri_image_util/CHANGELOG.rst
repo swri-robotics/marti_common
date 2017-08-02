@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2017-08-02)
+------------------
 
 * Create warp_image Nodelet (`#446 <https://github.com/evenator/marti_common/issues/446>`_)
   Add a nodelet to swri_image util that applies a 3x3 transformation matrix to an image using cv::warpPerspective and publishes the resulting image.
