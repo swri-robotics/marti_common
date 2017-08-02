@@ -392,7 +392,7 @@ int main(int argc, char **argv)
 
   ros::AsyncSpinner spinner(1);
   spinner.start();
-  sleep(2);
+  sleep(10);
 
   bool result = RUN_ALL_TESTS();
   spinner.stop();
