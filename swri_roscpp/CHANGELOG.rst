@@ -3,6 +3,11 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+1.0.0 (2017-08-02)
+------------------
+* Add support for boost::function callbacks to swri::Subscriber.
+* Contributors: Elliot Johnson
+
 0.3.0 (2017-06-20)
 ------------------
 * Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
