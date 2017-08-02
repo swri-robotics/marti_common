@@ -2,6 +2,14 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Increase delay before running tests.
+* Integrate transformers as static classes instead of plug-ins.
+* Add inverse transform implementation to transforms. (`#464 <https://github.com/evenator/marti_common/issues/464>`_)
+* Add tests for initialize_origin.py script (`#457 <https://github.com/evenator/marti_common/issues/457>`_)
+* Contributors: Edward Venator, Marc Alban
+
 0.3.0 (2017-06-20)
 ------------------
 * Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)

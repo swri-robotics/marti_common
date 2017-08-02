@@ -2,6 +2,15 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add route speed functions (`#466 <https://github.com/evenator/marti_common/issues/466>`_)
+  * Add visualization function for swri_route_util.
+  * Add code to calculate max speeds based on curvature to swri_route_util.
+  * Add speed/obstacle functionality to swri_route_util.
+* Add extractSubroute function.
+* Contributors: Elliot Johnson, elliotjo
+
 0.3.0 (2017-06-20)
 ------------------
 * Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)

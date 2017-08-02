@@ -2,6 +2,13 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
+* Create warp_image Nodelet (`#446 <https://github.com/evenator/marti_common/issues/446>`_)
+  Add a nodelet to swri_image util that applies a 3x3 transformation matrix to an image using cv::warpPerspective and publishes the resulting image.
+* Contributors: Edward Venator
+
 0.3.0 (2017-06-20)
 ------------------
 * Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
