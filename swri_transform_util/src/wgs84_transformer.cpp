@@ -34,13 +34,6 @@
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS(
-    transformers,
-    wgs84,
-    swri_transform_util::Wgs84Transformer,
-    swri_transform_util::Transformer)
-
 namespace swri_transform_util
 {
   Wgs84Transformer::Wgs84Transformer()
@@ -164,6 +157,19 @@ namespace swri_transform_util
  
     return transform_.getRotation() * reference_angle;
   }
+
+  TransformImplPtr TfToWgs84Transform::Inverse() const
+  {
+    tf::StampedTransform inverse_transform = transform_;
+    inverse_transform.setData(transform_.inverse());
+    inverse_transform.frame_id_ = transform_.child_frame_id_;
+    inverse_transform.child_frame_id_ = transform_.frame_id_;
+    TransformImplPtr inverse = boost::make_shared<Wgs84ToTfTransform>(
+        inverse_transform,
+        local_xy_util_);
+    inverse->stamp_ = stamp_;
+    return inverse;
+  }
   
   Wgs84ToTfTransform::Wgs84ToTfTransform(
     const tf::StampedTransform& transform,
@@ -191,6 +197,19 @@ namespace swri_transform_util
       swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
       
     return transform_.getRotation() * reference_angle.inverse();
+  }
+
+  TransformImplPtr Wgs84ToTfTransform::Inverse() const
+  {
+    tf::StampedTransform inverse_transform = transform_;
+    inverse_transform.setData(transform_.inverse());
+    inverse_transform.frame_id_ = transform_.child_frame_id_;
+    inverse_transform.child_frame_id_ = transform_.frame_id_;
+    TransformImplPtr inverse = boost::make_shared<TfToWgs84Transform>(
+        inverse_transform,
+        local_xy_util_);
+    inverse->stamp_ = stamp_;
+    return inverse;
   }
 }
 

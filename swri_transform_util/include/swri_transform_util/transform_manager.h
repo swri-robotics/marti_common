@@ -36,7 +36,6 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <pluginlib/class_loader.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
 
@@ -85,7 +84,6 @@ namespace swri_transform_util
         tf::StampedTransform& transform) const;
 
   private:
-    pluginlib::ClassLoader<swri_transform_util::Transformer> loader_;
     boost::shared_ptr<tf::TransformListener> tf_listener_;
 
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;

@@ -1,45 +1,42 @@
 <library path="lib/libswri_image_util_nodelets">
-  
-  <class name="swri_image_util/rotate_image" type="swri_image_util::RotateImageNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet to rotate an image a multiple of 90 degrees.
-    </description>
-  </class>
-  
-  <class name="swri_image_util/scale_image" type="swri_image_util::ScaleImageNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet to scale an image.
-    </description>
-  </class>
-  
-  <class name="swri_image_util/contrast_stretch" type="swri_image_util::ContrastStretchNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet to contrast stretch an image.
-    </description>
-  </class>
-
-  <class name="swri_image_util/normalize_response" type="swri_image_util::NormalizeResponseNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet to normalize the response of an image.
-    </description>
-  </class>
-
-  <class name="swri_image_util/draw_text" type="swri_image_util::DrawTextNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet to draw text on an image.
-    </description>
-  </class>
-
-  <class name="swri_image_util/blend_images" type="swri_image_util::BlendImagesNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet that blends one image onto the top of another.
-    </description>
-  </class>
-  
-  <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet" base_class_type="nodelet::Nodelet">
-    <description>
-      Nodelet that replaces colors in an input image
-    </description>
-  </class>
-  
+    <class name="swri_image_util/blend_images" type="swri_image_util::BlendImagesNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet that blends one image onto the top of another.
+        </description>
+    </class>
+    <class name="swri_image_util/contrast_stretch" type="swri_image_util::ContrastStretchNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to contrast stretch an image.
+        </description>
+    </class>
+    <class name="swri_image_util/draw_text" type="swri_image_util::DrawTextNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to draw text on an image.
+        </description>
+    </class>
+    <class name="swri_image_util/normalize_response" type="swri_image_util::NormalizeResponseNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to normalize the response of an image.
+        </description>
+    </class>
+    <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet" 
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet that replaces colors in an input image
+        </description>
+    </class>
+    <class name="swri_image_util/rotate_image" type="swri_image_util::RotateImageNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to rotate an image a multiple of 90 degrees.
+        </description>
+    </class>
+    <class name="swri_image_util/scale_image" type="swri_image_util::ScaleImageNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to scale an image.
+        </description>
+    </class>
+    <class name="swri_image_util/warp_image" type="swri_image_util::WarpImageNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to apply a 3x3 transformation to an image.
+        </description>
+    </class>
 </library>
