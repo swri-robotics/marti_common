@@ -1,4 +1,6 @@
 <library path="lib/libswri_image_util_nodelets">
+<<<<<<< HEAD
+<<<<<<< 430ebc53c515909608447836d4a2e57b278b4a80
     <class name="swri_image_util/blend_images" type="swri_image_util::BlendImagesNodelet"
         base_class_type="nodelet::Nodelet">
         <description> Nodelet that blends one image onto the top of another.
@@ -18,6 +20,11 @@
         base_class_type="nodelet::Nodelet">
         <description> Nodelet to normalize the response of an image.
         </description>
+    </class>
+    <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet" base_class_type="nodelet::Nodelet">
+      <description>
+      Nodelet that replaces colors in an input image
+      </description>
     </class>
     <class name="swri_image_util/rotate_image" type="swri_image_util::RotateImageNodelet"
         base_class_type="nodelet::Nodelet">
