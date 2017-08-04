@@ -118,6 +118,9 @@ target_link_libraries(normalization_image_generator_node ${PROJECT_NAME})
 add_executable(normalize_response src/nodes/normalize_response.cpp)
 target_link_libraries(normalize_response ${catkin_LIBRARIES})
 
+add_executable(replace_colors src/nodes/replace_colors.cpp)
+target_link_libraries(replace_colors ${catkin_LIBRARIES})
+
 add_executable(rotate_image src/nodes/rotate_image.cpp)
 target_link_libraries(rotate_image ${catkin_LIBRARIES})
 
@@ -126,9 +129,6 @@ target_link_libraries(scale_image ${catkin_LIBRARIES})
 
 swri_nodelet_add_node(warp_image ${PROJECT_NAME} WarpImageNodelet)
 target_link_libraries(warp_image ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-
-add_executable(replace_colors src/nodes/replace_colors.cpp)
-target_link_libraries(replace_colors ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
@@ -153,7 +153,6 @@ install(TARGETS ${PROJECT_NAME}
     rotate_image
     scale_image
     warp_image
-    blend_images
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

@@ -1,4 +1,5 @@
 <library path="lib/libswri_image_util_nodelets">
+<<<<<<< HEAD
 <<<<<<< 430ebc53c515909608447836d4a2e57b278b4a80
     <class name="swri_image_util/blend_images" type="swri_image_util::BlendImagesNodelet"
         base_class_type="nodelet::Nodelet">
