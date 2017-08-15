@@ -10,7 +10,7 @@
   <maintainer email="malban@swri.org">Marc Alban</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
@@ -20,4 +20,6 @@
   <depend>libgeos++-dev</depend>
   <depend>roscpp</depend>
   <depend>tf</depend>
+
+  <test_depend>rostest</test_depend>
 </package>
