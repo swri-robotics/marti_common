@@ -45,13 +45,38 @@
 
 namespace swri_transform_util
 {
+  /**
+   * Instantiation of Transformer to handle transforms to/from UTM
+   */
   class UtmTransformer : public Transformer
   {
     public:
       UtmTransformer();
 
+      /**
+       * Get a map of the transforms supported by this Transformer
+       * @return A map from source frame IDs to list of destination frame IDs.
+       *   A source->destination entry does not imply that the inverse
+       *   transform is supported as well.
+       */
       virtual std::map<std::string, std::vector<std::string> > Supports() const;
 
+
+      /**
+       * Get a Transform from a non-UTM frame to UTM or vice-versa
+       *
+       * Gets the swri_transform_util::Transform that transforms coordinates
+       * from the source_frame into the target_frame. If the transform is not
+       * available (or not supported), return false.
+       *
+       * @param[in] target_frame Destination frame for transform
+       * @param[in] source_frame Source frame for transform
+       * @param[in] time Time that the transform is valid for. To get the most
+       *    recent transform, use ros::Time(0)
+       * @param[out] transform Output container for the transform
+       * @return True if the transform was found, false if no transform between
+       *    the specified frames is available for the specified time.
+       */
       virtual bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
@@ -69,6 +94,13 @@ namespace swri_transform_util
       std::string local_xy_frame_;
   };
 
+
+  /**
+   * Class to implement transformation from UTM to TF
+   *
+   * This class should not be used directly. It is used internally by
+   * swri_transform_util::Transform
+   */
   class UtmToTfTransform : public TransformImpl
   {
   public:
@@ -92,6 +124,13 @@ namespace swri_transform_util
     char utm_band_;
   };
 
+
+  /**
+   * Class to implement transformation from TF to UTM
+   *
+   * This class should not be used directly. It is used internally by
+   * swri_transform_util::Transform
+   */
   class TfToUtmTransform : public TransformImpl
   {
   public:
@@ -115,6 +154,13 @@ namespace swri_transform_util
     char    utm_band_;
   };
 
+
+  /**
+   * Class to implement transformation from UTM to WGS84
+   *
+   * This class should not be used directly. It is used internally by
+   * swri_transform_util::Transform
+   */
   class UtmToWgs84Transform : public TransformImpl
   {
   public:
@@ -132,6 +178,12 @@ namespace swri_transform_util
     char    utm_band_;
   };
 
+  /**
+   * Class to implement transformation from WGS84 to UTM
+   *
+   * This class should not be used directly. It is used internally by
+   * swri_transform_util::Transform
+   */
   class Wgs84ToUtmTransform : public TransformImpl
   {
   public:

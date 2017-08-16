@@ -43,16 +43,51 @@
 
 namespace swri_transform_util
 {
+  /**
+   * A base class for transformers.
+   *
+   * Instantiations of this class implement an interface to get transforms from
+   * certain types of frames (e.g. TF, WGS84) to other types of frames.
+   */
   class Transformer
   {
     public:
       Transformer();
       virtual ~Transformer();
 
+      /**
+       * Initialize the Transformer from a tf::TransformListener.
+       *
+       * @param tf A shared pointer to a tf::TransformListener that the
+       *    Transformer wraps. It is recommended that every Transformer in a
+       *    node use the same tf::TransformListener to reduce redundant
+       *    computation.
+       */
       void Initialize(const boost::shared_ptr<tf::TransformListener> tf);
 
+      /**
+       * Get a map of the transforms supported by this Transformer
+       * @return A map from source frame IDs to list of destination frame IDs.
+       *   A source->destination entry does not imply that the inverse
+       *   transform is supported as well.
+       */
       virtual std::map<std::string, std::vector<std::string> > Supports() const = 0;
 
+      /**
+       * Get a swri_transform_util::Transform
+       *
+       * Gets the swri_transform_util::Transform that transforms coordinates
+       * from the source_frame into the target_frame. If the transform is not
+       * available, return false.
+       *
+       * @param[in] target_frame Destination frame for transform
+       * @param[in] source_frame Source frame for transform
+       * @param[in] time Time that the transform is valid for. To get the most
+       *    recent transform, use ros::Time(0)
+       * @param[out] transform Output container for the transform
+       * @return True if the transform was found, false if no transform between
+       *    the specified frames is available for the specified time.
+       */
       virtual bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
