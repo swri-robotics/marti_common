@@ -32,6 +32,25 @@
 
 namespace swri_geometry_util
 {
+
+  /**
+   * Calculate the instersection between two lines defined by 4 points.
+   *
+   * @param[in]   p1   First point of line segemnt 1.
+   * @param[in]   p2   Second point of line segemnt 1.
+   * @param[in]   p3   First point of line segemnt 2.
+   * @param[in]   p4   Second point of line segemnt 2.
+   * @param[out]  c    The intersection point.
+   *
+   * @returns True if the lines are not parallel.
+   */
+  bool LineIntersection(
+      cv::Vec2d p1,
+      cv::Vec2d p2,
+      cv::Vec2d p3,
+      cv::Vec2d p4,
+      cv::Vec2d& c);
+
   bool PolygonsIntersect(
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b);
