@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,36 +26,71 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
+#include <swri_route_util/visualization.h>
 
-#include <vector>
-#include <opencv2/core/core.hpp>
+#include <swri_route_util/util.h>
 
-namespace swri_geometry_util
+namespace vm = visualization_msgs;
+namespace mnm = marti_nav_msgs;
+
+namespace swri_route_util
 {
-
-  /**
-   * Calculate the instersection between two lines defined by 4 points.
-   *
-   * @param[in]   p1   First point of line segemnt 1.
-   * @param[in]   p2   Second point of line segemnt 1.
-   * @param[in]   p3   First point of line segemnt 2.
-   * @param[in]   p4   Second point of line segemnt 2.
-   * @param[out]  c    The intersection point.
-   *
-   * @returns True if the lines are not parallel.
-   */
-  bool LineIntersection(
-      cv::Vec2d p1,
-      cv::Vec2d p2,
-      cv::Vec2d p3,
-      cv::Vec2d p4,
-      cv::Vec2d& c);
-
-  bool PolygonsIntersect(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b);
-
-  double PolygonIntersectionArea(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b);
+static geometry_msgs::Point makePoint(const double x, const double y)
+{
+  geometry_msgs::Point pt;
+  pt.x = x;
+  pt.y = y;
+  pt.z = 0.0;
+  return pt;
 }
+
+void markerForRouteSpeeds(
+  vm::Marker &m,
+  const Route &route,
+  const mnm::RouteSpeedArray &speeds,
+  double scale)
+{
+  m.header.frame_id = route.header.frame_id;
+  m.header.stamp = ros::Time::now();
+  // m.ns = ;
+  // m.id = ;
+  m.type = vm::Marker::LINE_LIST;
+  m.action = vm::Marker::ADD;
+  m.pose.position.x = 0.0;
+  m.pose.position.y = 0.0;
+  m.pose.position.z = 0.0;
+  m.pose.orientation.x = 0.0;
+  m.pose.orientation.y = 0.0;
+  m.pose.orientation.z = 0.0;
+  m.pose.orientation.w = 1.0;
+  m.scale.x = 1.0;
+  m.scale.y = 1.0;
+  m.scale.z = 1.0;
+  m.color.r = 0.0;
+  m.color.g = 0.0;
+  m.color.b = 0.0;
+  m.color.a = 1.0;
+  m.lifetime = ros::Duration(0);
+  m.frame_locked = false;
+
+  m.points.reserve(speeds.speeds.size()*2);
+
+  for (auto const &speed : speeds.speeds) {
+    mnm::RoutePosition position;
+    position.id = speed.id;
+    position.distance = speed.distance;
+
+    RoutePoint p;
+    if (!interpolateRoutePosition(p, route, position, true)) {
+      continue;
+    }
+
+    tf::Vector3 p1 = p.position();
+    tf::Vector3 v = tf::Transform(p.orientation()) * tf::Vector3(0.0, 1.0, 0.0);
+    tf::Vector3 p2 = p1 + scale*speed.speed*v;
+
+    m.points.push_back(makePoint(p1.x(), p1.y()));
+    m.points.push_back(makePoint(p2.x(), p2.y()));
+  }
+}
+}  // namespace swri_route_util

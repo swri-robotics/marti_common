@@ -39,6 +39,28 @@
 
 namespace swri_geometry_util
 {
+  bool LineIntersection(
+      cv::Vec2d p1,
+      cv::Vec2d p2,
+      cv::Vec2d p3,
+      cv::Vec2d p4,
+      cv::Vec2d& c)
+  {
+    double d = (p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]);
+    if (d == 0)
+    {
+      return false;
+    }
+
+    double n_a = (p1[0] * p2[1] - p1[1] * p2[0]) * (p3[0] - p4[0]) - (p1[0] - p2[0]) * (p3[0] * p4[1] - p3[1] * p4[0]);
+    double n_b = (p1[0] * p2[1] - p1[1] * p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] * p4[1] - p3[1] * p4[0]);
+
+    c[0] = n_a / d;
+    c[1] = n_b / d;
+
+    return true;
+  }
+
   bool PolygonsIntersect(
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)

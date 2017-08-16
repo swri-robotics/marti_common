@@ -1,6 +1,6 @@
 <package format="2">
   <name>swri_geometry_util</name>
-  <version>0.3.0</version>
+  <version>1.0.0</version>
   <description>
 
      swri_geometry_util
@@ -10,7 +10,7 @@
   <maintainer email="malban@swri.org">Marc Alban</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
@@ -20,4 +20,6 @@
   <depend>libgeos++-dev</depend>
   <depend>roscpp</depend>
   <depend>tf</depend>
+
+  <test_depend>rostest</test_depend>
 </package>

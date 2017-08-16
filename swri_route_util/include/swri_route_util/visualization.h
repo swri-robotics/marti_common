@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,36 +26,26 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
+#ifndef SWRI_ROUTE_UTIL_VISUALIZATION_H_
+#define SWRI_ROUTE_UTIL_VISUALIZATION_H_
 
-#include <vector>
-#include <opencv2/core/core.hpp>
+#include <swri_route_util/route.h>
+#include <marti_nav_msgs/RouteSpeedArray.h>
+#include <visualization_msgs/Marker.h>
 
-namespace swri_geometry_util
+namespace swri_route_util
 {
-
-  /**
-   * Calculate the instersection between two lines defined by 4 points.
-   *
-   * @param[in]   p1   First point of line segemnt 1.
-   * @param[in]   p2   Second point of line segemnt 1.
-   * @param[in]   p3   First point of line segemnt 2.
-   * @param[in]   p4   Second point of line segemnt 2.
-   * @param[out]  c    The intersection point.
-   *
-   * @returns True if the lines are not parallel.
-   */
-  bool LineIntersection(
-      cv::Vec2d p1,
-      cv::Vec2d p2,
-      cv::Vec2d p3,
-      cv::Vec2d p4,
-      cv::Vec2d& c);
-
-  bool PolygonsIntersect(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b);
-
-  double PolygonIntersectionArea(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b);
-}
+// Create a marker for a set of speeds along a route.  Each speed will
+// be drawn as a line that starts at the speed's location and extends
+// perpendicular to the route.  The length of the line corresponds to
+// the speed.  The scale parameter sets the length per m/s scale.  The
+// marker's namespace and id will still need to be filled out. The
+// line colors defaults to black but can be changed after the marker
+// has been built.
+void markerForRouteSpeeds(
+  visualization_msgs::Marker &marker,
+  const Route &route,
+    const marti_nav_msgs::RouteSpeedArray &speeds,
+    double scale);
+}  // namespace swri_route_util
+#endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_

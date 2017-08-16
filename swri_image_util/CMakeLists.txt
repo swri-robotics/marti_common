@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   swri_math_util
   swri_nodelet
   swri_opencv_util
+  swri_roscpp
   tf
 )
 
@@ -60,6 +61,7 @@ catkin_package(
     std_msgs
     swri_math_util
     swri_opencv_util
+    swri_roscpp
     tf
 )
 
