@@ -1,17 +1,24 @@
 /**
 \mainpage
-\htmlinclude manifest.html
 
-\b ranger_common is ... 
+The swri_transform_util package contains utility functions and classes for
+transforming between coordinate frames.
 
-<!-- 
-Provide an overview of your package.
--->
+The primary function of the swri_transform_util package is to provide
+a swri_transform_util::Transform class similar to the tf::Transform class.
+The swri_transform_util::Transform can perform non-rectalinear transforms,
+such as accurate UTM calculations and transformation from local rectalinear
+frames to WGS84 lattitude/longitude and back.
 
+In addition to swri_transform_util::Transform, swri_transform_util provides
+swri_transform_util::TransformManager, which wraps a tf::TransformListener and
+provides an interface to look up swri_transform_util::Transforms between TF
+frames and special frames, such as /wgs84 and /utm.
+
+<!--
 
 \section codeapi Code API
 
-<!--
 Provide links to specific auto-generated API documentation within your
 package that is of particular interest to a reader. Doxygen will
 document pretty much every part of your code, so do your best here to
