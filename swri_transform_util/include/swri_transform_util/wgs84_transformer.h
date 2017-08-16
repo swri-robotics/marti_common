@@ -134,6 +134,7 @@ namespace swri_transform_util
      * @return The orientation of the transform
      */
     virtual tf::Quaternion GetOrientation() const;
+    virtual TransformImplPtr Inverse() const;
 
   protected:
     tf::StampedTransform transform_;
@@ -186,7 +187,7 @@ namespace swri_transform_util
      * @return The orientation of the transform
      */
     virtual tf::Quaternion GetOrientation() const;
-
+    virtual TransformImplPtr Inverse() const;
   protected:
     tf::StampedTransform transform_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;

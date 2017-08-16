@@ -1,6 +1,6 @@
 <package format="2">
   <name>swri_transform_util</name>
-  <version>0.3.0</version>
+  <version>1.0.0</version>
   <description>
 
      The swri_transform_util package contains utility functions and classes for
@@ -23,7 +23,6 @@
   <depend>gps_common</depend>
   <depend>libgeos++-dev</depend>
   <depend>nodelet</depend>
-  <depend>pluginlib</depend>
   <depend>proj</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
@@ -40,7 +39,6 @@
 
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" />
-    <swri_transform_util plugin="${prefix}/transformer_plugins.xml" />
     <rosdoc config="rosdoc.yaml" />
   </export>
 </package>

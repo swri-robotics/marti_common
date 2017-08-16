@@ -114,6 +114,7 @@ namespace swri_transform_util
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
     virtual tf::Quaternion GetOrientation() const;
+    virtual TransformImplPtr Inverse() const;
 
   protected:
     tf::StampedTransform transform_;
@@ -136,16 +137,21 @@ namespace swri_transform_util
     TfToUtmTransform(
       const tf::StampedTransform& transform,
       boost::shared_ptr<UtmUtil> utm_util,
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util,
+      int32_t utm_zone,
+      char utm_band);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
 
     virtual tf::Quaternion GetOrientation() const;
+    virtual TransformImplPtr Inverse() const;
 
   protected:
     tf::StampedTransform transform_;
     boost::shared_ptr<UtmUtil> utm_util_;
     boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+    int32_t utm_zone_;
+    char    utm_band_;
   };
 
 
@@ -164,6 +170,7 @@ namespace swri_transform_util
         char utm_band);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+    virtual TransformImplPtr Inverse() const;
 
   protected:
     boost::shared_ptr<UtmUtil> utm_util_;
@@ -180,12 +187,18 @@ namespace swri_transform_util
   class Wgs84ToUtmTransform : public TransformImpl
   {
   public:
-    explicit Wgs84ToUtmTransform(boost::shared_ptr<UtmUtil> utm_util);
+    explicit Wgs84ToUtmTransform(
+        boost::shared_ptr<UtmUtil> utm_util,
+        int32_t utm_zone,
+        char utm_band);
 
     virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+    virtual TransformImplPtr Inverse() const;
 
   protected:
     boost::shared_ptr<UtmUtil> utm_util_;
+    int32_t utm_zone_;
+    char    utm_band_;
   };
 }
 

@@ -15,7 +15,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   swri_geometry_util
   swri_math_util
+  swri_nodelet
   swri_opencv_util
+  swri_roscpp
   tf
 )
 
@@ -59,6 +61,7 @@ catkin_package(
     std_msgs
     swri_math_util
     swri_opencv_util
+    swri_roscpp
     tf
 )
 
@@ -91,14 +94,27 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/normalize_response_nodelet.cpp
   src/nodelets/rotate_image_nodelet.cpp
   src/nodelets/scale_image_nodelet.cpp
+  src/nodelets/warp_image_nodelet.cpp
 )
 target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
+
+add_executable(blend_images src/nodes/blend_images_node.cpp)
+target_link_libraries(blend_images ${catkin_LIBRARIES})
+
+add_executable(contrast_stretch src/nodes/contrast_stretch.cpp)
+target_link_libraries(contrast_stretch ${catkin_LIBRARIES})
+
+add_executable(draw_text src/nodes/draw_text.cpp)
+target_link_libraries(draw_text ${catkin_LIBRARIES})
+
+add_executable(dummy_image_publisher src/nodes/dummy_image_publisher.cpp)
+target_link_libraries(dummy_image_publisher ${catkin_LIBRARIES})
 
 add_executable(normalization_image_generator_node src/nodes/normalization_image_generator_node.cpp)
 target_link_libraries(normalization_image_generator_node ${PROJECT_NAME})
 
-add_executable(dummy_image_publisher src/nodes/dummy_image_publisher.cpp)
-target_link_libraries(dummy_image_publisher ${catkin_LIBRARIES})
+add_executable(normalize_response src/nodes/normalize_response.cpp)
+target_link_libraries(normalize_response ${catkin_LIBRARIES})
 
 add_executable(rotate_image src/nodes/rotate_image.cpp)
 target_link_libraries(rotate_image ${catkin_LIBRARIES})
@@ -106,17 +122,8 @@ target_link_libraries(rotate_image ${catkin_LIBRARIES})
 add_executable(scale_image src/nodes/scale_image.cpp)
 target_link_libraries(scale_image ${catkin_LIBRARIES})
 
-add_executable(draw_text src/nodes/draw_text.cpp)
-target_link_libraries(draw_text ${catkin_LIBRARIES})
-
-add_executable(contrast_stretch src/nodes/contrast_stretch.cpp)
-target_link_libraries(contrast_stretch ${catkin_LIBRARIES})
-
-add_executable(normalize_response src/nodes/normalize_response.cpp)
-target_link_libraries(normalize_response ${catkin_LIBRARIES})
-
-add_executable(blend_images src/nodes/blend_images_node.cpp)
-target_link_libraries(blend_images ${catkin_LIBRARIES})
+swri_nodelet_add_node(warp_image ${PROJECT_NAME} WarpImageNodelet)
+target_link_libraries(warp_image ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
@@ -131,14 +138,15 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 install(TARGETS ${PROJECT_NAME} 
     ${PROJECT_NAME}_nodelets
-    normalization_image_generator_node 
+    blend_images
+    contrast_stretch
+    draw_text
     dummy_image_publisher
+    normalization_image_generator_node
+    normalize_response
     rotate_image
     scale_image
-    draw_text
-    contrast_stretch
-    normalize_response
-    blend_images
+    warp_image
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
