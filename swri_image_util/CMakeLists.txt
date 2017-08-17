@@ -89,6 +89,7 @@ target_link_libraries(${PROJECT_NAME}
 
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/blend_images_nodelet.cpp
+  src/nodelets/crosshairs_nodelet.cpp
   src/nodelets/contrast_stretch_nodelet.cpp
   src/nodelets/draw_text_nodelet.cpp
   src/nodelets/normalize_response_nodelet.cpp
@@ -125,6 +126,9 @@ target_link_libraries(scale_image ${catkin_LIBRARIES})
 swri_nodelet_add_node(warp_image ${PROJECT_NAME} WarpImageNodelet)
 target_link_libraries(warp_image ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
+swri_nodelet_add_node(crosshairs ${PROJECT_NAME} CrosshairsNodelet)
+target_link_libraries(crosshairs ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest_gtest(test_geometry_util test/geometry_util.test test/test_geometry_util.cpp)
@@ -140,6 +144,7 @@ install(TARGETS ${PROJECT_NAME}
     ${PROJECT_NAME}_nodelets
     blend_images
     contrast_stretch
+    crosshairs
     draw_text
     dummy_image_publisher
     normalization_image_generator_node
