@@ -78,7 +78,7 @@ namespace swri_math_util
       for (iterations = 0; iterations < max_iterations && iterations < breakout; iterations++)
       {
         indices.clear();
-        rng_->GetUniformRandomSample(0, model.Size(), Model::MIN_SIZE, indices);
+        rng_->GetUniformRandomSample(0, model.Size() - 1, Model::MIN_SIZE, indices);
 
         // Generate a hypothesis model from the random sample.
         // If the sample is not degenerate, calculate the number of inliers.
@@ -165,7 +165,7 @@ namespace swri_math_util
         {
           iterations++;
           indices.clear();
-          rng_->GetUniformRandomSample(0, model.Size(), Model::MIN_SIZE, indices);
+          rng_->GetUniformRandomSample(0, model.Size() - 1, Model::MIN_SIZE, indices);
           model.AddSample(indices, max_error);
         }
 
