@@ -69,4 +69,35 @@ namespace swri_geometry_util
     
     return line_start + (t / b) * v;
   }
+
+  bool ClosestPointToLines(
+      const tf::Vector3& a1,
+      const tf::Vector3& a2,
+      const tf::Vector3& b1,
+      const tf::Vector3& b2,
+      tf::Vector3& point)
+  {
+    tf::Vector3 u = a1 - a2;
+    tf::Vector3 v = b1 - b2;
+    if (u.length() == 0 || v.length() == 0)
+    {
+      return false;
+    }
+    tf::Vector3 w = u.cross(v);
+    tf::Vector3 s = b1 - a1;
+    if (s.length() == 0)
+    {
+      point = a1;
+      return true;
+    }
+    double f = w.dot(w);
+    if (f == 0)
+    {
+      return false;
+    }
+    tf::Vector3 x = a1 + u * (s.cross(v).dot(w) / f);
+    tf::Vector3 y = b1 + v * (s.cross(u).dot(w) / f);
+    point = (x + y) / 2;
+    return true;
+  }
 }

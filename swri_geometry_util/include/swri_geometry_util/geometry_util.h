@@ -57,6 +57,24 @@ namespace swri_geometry_util
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,
       const tf::Vector3& point);
+
+  /**
+   * Find closest point to two 3D lines.
+   *
+   * @param[in]   a1     First point on line 1.
+   * @param[in]   a2     Second point on line 1.
+   * @param[in]   b1     First point on line 2.
+   * @param[in]   b2     Second point on line 2.
+   * @param[out]  point  The closest point to both lines.
+   *
+   * @returns True unless a1 == a2, b1 == b2, or lines are parallel.
+   */
+  bool ClosestPointToLines(
+      const tf::Vector3& a1,
+      const tf::Vector3& a2,
+      const tf::Vector3& b1,
+      const tf::Vector3& b2,
+      tf::Vector3& point);
 }
 
 #endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_
