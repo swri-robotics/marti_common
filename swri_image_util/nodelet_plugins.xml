@@ -23,6 +23,11 @@
         <description> Nodelet to normalize the response of an image.
         </description>
     </class>
+    <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet" 
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet that replaces colors in an input image
+        </description>
+    </class>
     <class name="swri_image_util/rotate_image" type="swri_image_util::RotateImageNodelet"
         base_class_type="nodelet::Nodelet">
         <description> Nodelet to rotate an image a multiple of 90 degrees.

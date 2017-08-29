@@ -79,6 +79,7 @@ add_library(${PROJECT_NAME}
   src/image_matching.cpp
   src/image_normalization.cpp 
   src/image_warp_util.cpp
+  src/replace_colors.cpp
   src/rolling_normalization.cpp 
 )
 target_link_libraries(${PROJECT_NAME} 
@@ -93,6 +94,7 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/contrast_stretch_nodelet.cpp
   src/nodelets/draw_text_nodelet.cpp
   src/nodelets/normalize_response_nodelet.cpp
+  src/nodelets/replace_colors_nodelet.cpp
   src/nodelets/rotate_image_nodelet.cpp
   src/nodelets/scale_image_nodelet.cpp
   src/nodelets/warp_image_nodelet.cpp
@@ -123,6 +125,9 @@ target_link_libraries(rotate_image ${catkin_LIBRARIES})
 add_executable(scale_image src/nodes/scale_image.cpp)
 target_link_libraries(scale_image ${catkin_LIBRARIES})
 
+add_executable(replace_colors src/nodes/replace_colors.cpp)
+target_link_libraries(replace_colors ${catkin_LIBRARIES})
+
 swri_nodelet_add_node(warp_image ${PROJECT_NAME} WarpImageNodelet)
 target_link_libraries(warp_image ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
@@ -149,6 +154,7 @@ install(TARGETS ${PROJECT_NAME}
     dummy_image_publisher
     normalization_image_generator_node
     normalize_response
+    replace_colors
     rotate_image
     scale_image
     warp_image
@@ -160,4 +166,3 @@ install(TARGETS ${PROJECT_NAME}
 install(FILES nodelet_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
