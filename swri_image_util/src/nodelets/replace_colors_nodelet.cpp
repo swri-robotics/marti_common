@@ -67,6 +67,8 @@ namespace swri_image_util
     void readColormap(const XmlRpc::XmlRpcValue& param);
     // Helper function for getting color mapping from parameter server
     void readUserLut(const XmlRpc::XmlRpcValue& param);
+    // Helper function for displaying the type of parameter that was read
+    std::string getValueTypeString(const XmlRpc::XmlRpcValue& value);
 
     // Lookup table defining color replacement strategy. The row indices 
     // correspond to the gray scale values, and the values in the rows are RGB
@@ -175,10 +177,13 @@ namespace swri_image_util
       return;
     }
 
-    // This node currently only support changing gray scale images
+    // This node currently only supports changing gray scale images. Display an
+    // error message if this is not the case, but limit the error reporting rate
+    // to once every minute avoid spamming the user with redundant warnings
     if (image_msg->encoding != sensor_msgs::image_encodings::MONO8)
     {
-      ROS_ERROR("Changing image colors is only supported for MONO8 images");
+      ROS_ERROR_THROTTLE(60, 
+        "Changing image colors is only supported for MONO8 images");
       return;
     }
 
@@ -229,11 +234,13 @@ namespace swri_image_util
 
     // The colormap parameters should be formatted like:
     // ["colormap_name", num_colors]
-    // This checks to make sure the parametre is a two element array
+    // This checks to make sure the parameter is a two element array
     if ((param.getType() != XmlRpc::XmlRpcValue::TypeArray) ||
       (param.size() != 2))
     {
-      ROS_ERROR("Colormap specification must be a two entry array");
+      ROS_ERROR("Colormap specification must be a two entry array with the");
+      ROS_ERROR("Following format:");
+      ROS_ERROR("\t[\"colormap_name\", num_colors]");
       success = false;
     }
 
@@ -316,7 +323,7 @@ namespace swri_image_util
       // to the RGB values after this call for every grayscale value
       cv::applyColorMap(original_colors, color_lut_, colormap_idx);
 
-      // Now modify the orignial colormap to only have the number
+      // Now modify the original colormap to only have the number
       // of distinct entries specified by the user
       original_colors = color_lut_.clone();
 
@@ -347,7 +354,8 @@ namespace swri_image_util
     bool success = true;
     if (param.getType() != XmlRpc::XmlRpcValue::TypeArray)
     {
-      ROS_ERROR("LUT must be an array");
+      ROS_ERROR("LUT must be an array, but type was: %s",
+        getValueTypeString(param).c_str());
       success = false;
     }
 
@@ -361,12 +369,27 @@ namespace swri_image_util
     // smaller value
     for (uint32_t lut_idx = 0; success && (lut_idx < param.size()); lut_idx++)
     {
-      // Each row will be of the form [key, [r, g, b]]
+      // Each row will be of the form [key, [r, g, b]]. The next two checks make
+      // sure the right type and number of entries was passed in
       XmlRpc::XmlRpcValue lut_row = param[lut_idx];
-      if ((lut_row.getType() != XmlRpc::XmlRpcValue::TypeArray) ||
-        (lut_row.size() != 2))
+      if (lut_row.getType() != XmlRpc::XmlRpcValue::TypeArray)
       {
-        ROS_ERROR("LUT entries must be two entry arrays");
+        ROS_ERROR("LUT entries must be two entry arrays with the following");
+        ROS_ERROR("format:");
+        ROS_ERROR("\t[gray_value, [r, g, b]]");
+        ROS_ERROR("but for entry %d a %s was given", 
+          lut_idx, getValueTypeString(lut_row).c_str());
+        success = false;
+        break;
+      }
+
+      if (lut_row.size() != 2)
+      {
+        ROS_ERROR("LUT entries must be two entry arrays with the following");
+        ROS_ERROR("format:");
+        ROS_ERROR("\t[gray_value, [r, g, b]]");
+        ROS_ERROR("but entry %d had an array with only %d values", 
+          lut_idx, lut_row.size());
         success = false;
         break;
       }
@@ -376,16 +399,20 @@ namespace swri_image_util
       XmlRpc::XmlRpcValue map_key = lut_row[0];
       if (map_key.getType() != XmlRpc::XmlRpcValue::TypeInt)
       {
-        ROS_ERROR("Color to replace must be an integer");
+        ROS_ERROR("Color to replace must be an integer, but a %s was given for",
+          getValueTypeString(map_key).c_str());
+        ROS_ERROR("entry %d", lut_idx);
         success = false;
         break;
       }
 
       // Make sure the gray scale index is in the proper range
       int32_t gray_index = static_cast<int32_t>(map_key);
-      if (gray_index >= NUM_GRAY_VALUES)
+      if ((gray_index >= NUM_GRAY_VALUES) || (gray_index < 0))
       {
-        ROS_ERROR("Gray scale index must be less than %d", NUM_GRAY_VALUES);
+        ROS_ERROR("Gray scale value for LUT entry %d was %d, but must be", 
+          lut_idx, gray_index);
+        ROS_ERROR("between 0 and %d", NUM_GRAY_VALUES - 1);
         success = false;
         break;
       }
@@ -394,43 +421,79 @@ namespace swri_image_util
       uint8_t color_index = static_cast<uint8_t>(gray_index);
 
       // Now read the RGB values. There must be three of them, they must be
-      // integers, and less than 256
+      // integers, and less than MAX_RGB_VALUE 
       XmlRpc::XmlRpcValue rgb_values = lut_row[1];
-      if ((rgb_values.getType() != XmlRpc::XmlRpcValue::TypeArray) || 
-        (rgb_values.size() != 3) ||
-        (rgb_values[0].getType() != XmlRpc::XmlRpcValue::TypeInt) ||
-        (rgb_values[1].getType() != XmlRpc::XmlRpcValue::TypeInt) ||
-        (rgb_values[2].getType() != XmlRpc::XmlRpcValue::TypeInt))
+      if (rgb_values.getType() != XmlRpc::XmlRpcValue::TypeArray)
       {
-        ROS_ERROR("RGB entries must be three entry arrays of integers");
+        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
+        ROS_ERROR("LUT row %d was a %s", lut_idx,
+          getValueTypeString(rgb_values).c_str());
         success = false;
         break;
       }
 
-      // Make sure the RGB values are less than 256
-      int32_t original_red = static_cast<int32_t>(rgb_values[0]);
-      if (original_red > MAX_RGB_VALUE)
+      if (rgb_values.size() != 3)
       {
-        ROS_ERROR("Red values must be less than %d", MAX_RGB_VALUE);
+        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
+        ROS_ERROR("LUT row %d had %d entries", lut_idx, rgb_values.size());
+        success = false;
+        break;
+      }
+
+      if (rgb_values[0].getType() != XmlRpc::XmlRpcValue::TypeInt)
+      {
+        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
+        ROS_ERROR("LUT row %d had a red value with type %s", lut_idx,
+          getValueTypeString(rgb_values[0]).c_str());
+        success = false;
+        break;
+      }
+
+      if (rgb_values[1].getType() != XmlRpc::XmlRpcValue::TypeInt)
+      {
+        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
+        ROS_ERROR("LUT row %d had a green value with type %s", lut_idx,
+          getValueTypeString(rgb_values[1]).c_str());
+        success = false;
+        break;
+      }
+
+      if (rgb_values[2].getType() != XmlRpc::XmlRpcValue::TypeInt)
+      {
+        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
+        ROS_ERROR("LUT row %d had a blue value with type %s", lut_idx,
+          getValueTypeString(rgb_values[2]).c_str());
+        success = false;
+        break;
+      }
+
+      // Make sure the RGB values are between 0 and MAX_RGB_VALUE 
+      int32_t original_red = static_cast<int32_t>(rgb_values[0]);
+      if ((original_red > MAX_RGB_VALUE) || (original_red < 0))
+      {
+        ROS_ERROR("Red value on row %d was %d, and must be between 0 and %d",
+          lut_idx, original_red, MAX_RGB_VALUE);
         success = false;
         break;
       }
       int32_t original_green = static_cast<int32_t>(rgb_values[1]);
-      if (original_green > MAX_RGB_VALUE)
+      if ((original_green > MAX_RGB_VALUE) || (original_green < 0))
       {
-        ROS_ERROR("Green values must be less than %d", MAX_RGB_VALUE);
+        ROS_ERROR("Green value on row %d was %d, and must be between 0 and %d",
+          lut_idx, original_green, MAX_RGB_VALUE);
         success = false;
         break;
       }
       int32_t original_blue = static_cast<int32_t>(rgb_values[2]);
-      if (original_blue > MAX_RGB_VALUE)
+      if ((original_blue > MAX_RGB_VALUE) || (original_blue < 0))
       {
-        ROS_ERROR("Blue values must be less than %d", MAX_RGB_VALUE);
+        ROS_ERROR("Blue value on row %d was %d, and must be between 0 and %d",
+          lut_idx, original_blue, MAX_RGB_VALUE);
         success = false;
         break;
       }
 
-      // Get the RGB values to the correct type
+      // make the RGB values the correct type
       uint8_t red = static_cast<uint8_t>(original_red);
       uint8_t green = static_cast<uint8_t>(original_green);
       uint8_t blue = static_cast<uint8_t>(original_blue);
@@ -446,6 +509,57 @@ namespace swri_image_util
     {
       color_lut_ = temp_lut.clone();
     }
+  }
+
+  std::string ReplaceColorsNodelet::getValueTypeString(
+    const XmlRpc::XmlRpcValue& value)
+  {
+    std::string type_str = "unknown";
+    switch(value.getType())
+    {
+      case XmlRpc::XmlRpcValue::TypeInvalid:
+        type_str = "invalid";
+        break;
+
+      case XmlRpc::XmlRpcValue::TypeBoolean:
+        type_str = "boolean";
+        break;
+      
+      case XmlRpc::XmlRpcValue::TypeInt:
+        type_str = "int";
+        break;
+
+      case XmlRpc::XmlRpcValue::TypeDouble:
+        type_str = "double";
+        break;
+
+      case XmlRpc::XmlRpcValue::TypeString:
+        type_str = "string";
+        break;
+        
+      case XmlRpc::XmlRpcValue::TypeDateTime:
+        type_str = "date time";
+        break;
+        
+      case XmlRpc::XmlRpcValue::TypeBase64:
+        type_str = "base 64";
+        break;
+        
+      case XmlRpc::XmlRpcValue::TypeArray:
+        type_str = "array";
+        break;
+        
+      case XmlRpc::XmlRpcValue::TypeStruct:
+        type_str = "struct";
+        break;
+
+      default:
+        ROS_ERROR("Unknown XML RPC value type encountered");
+        type_str = "unknown";
+        break;
+    }
+
+    return type_str;
   }
 }
 
