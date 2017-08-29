@@ -49,14 +49,14 @@ namespace swri_math_util
     explicit Ransac(RandomGeneratorPtr rng = RandomGeneratorPtr()) : rng_(rng) {}
 
     ModelType FitModel(
-      const DataType& data,
+      Model& model,
       double max_error,
       double confidence,
+      int32_t min_iterations,
       int32_t max_iterations,
       std::vector<uint32_t>& inliers, 
       int32_t& iterations)
     {
-      Model model(data);
       int32_t breakout = std::numeric_limits<int32_t>::max();
       ModelType best_fit;
       inliers.clear();
@@ -75,7 +75,7 @@ namespace swri_math_util
       std::vector<int32_t> indices;
 
       ModelType hypothesis;
-      for (iterations = 0; iterations < max_iterations && iterations < breakout; iterations++)
+      for (iterations = 0; (iterations < max_iterations && iterations < breakout) || iterations < min_iterations; iterations++)
       {
         indices.clear();
         rng_->GetUniformRandomSample(0, model.Size() - 1, Model::MIN_SIZE, indices);

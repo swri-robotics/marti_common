@@ -29,10 +29,14 @@
 
 #include <swri_opencv_util/model_fit.h>
 
+#include <ros/ros.h>
+
+#include <opencv2/imgproc/imgproc.hpp>
+
 namespace swri_opencv_util
 {
   cv::Mat FindTranslation2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -49,7 +53,7 @@ namespace swri_opencv_util
   }
 
   cv::Mat FindRigidTransform2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -64,35 +68,35 @@ namespace swri_opencv_util
       points1, points2, inliers1, inliers2, good_points, iterations, max_error,
       confidence, max_iterations, rng);
   }
-  
+
   cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2)
   {
     cv::Mat transform;
-    
+
     if (!Valid2dPointCorrespondences(points1, points2))
     {
       return transform;
     }
-    
-    // The Kabsch algorithm, for calculating the optimal rotation matrix that 
+
+    // The Kabsch algorithm, for calculating the optimal rotation matrix that
     // minimizes the RMSD (root mean squared deviation) between two paired sets
     // of points.  http://en.wikipedia.org/wiki/Kabsch_algorithm
-    
+
     // Get the centroids of the points.
     cv::Scalar centroid1 = cv::mean(points1);
     cv::Scalar centroid2 = cv::mean(points2);
-    
+
     // Center the points around the origin.
     cv::Mat points1_centered = (points1 - centroid1);
     cv::Mat points2_centered = (points2 - centroid2);
-    
+
     // Reshape the points into 2xN matrices.
     points1_centered = points1_centered.reshape(1, points1.rows);
     points2_centered = points2_centered.reshape(1, points1.rows);
-    
+
     // Compute the covariance matrix.
     cv::Mat cov = points1_centered.t() * points2_centered;
-    
+
     // Compute the optimal rotation matrix.
     cv::Mat W, U, Vt;
     cv::SVD::compute(cov, W, U, Vt);
@@ -100,7 +104,7 @@ namespace swri_opencv_util
     cv::Mat I = cv::Mat::eye(2, 2, CV_32F);
     I.at<float>(1, 1) = d;
     cv::Mat rotation = Vt.t() * I * U.t();
-    
+
     // Compute the optimal translation.
     cv::Mat c1_r(2, 1, CV_32F);
     c1_r.at<float>(0, 0) = centroid1[0];
@@ -108,7 +112,7 @@ namespace swri_opencv_util
     c1_r = rotation * c1_r;
     float t_x = centroid2[0] - c1_r.at<float>(0, 0);
     float t_y = centroid2[1] - c1_r.at<float>(1, 0);
-       
+
     transform.create(2, 3, CV_32F);
     transform.at<float>(0, 0) = rotation.at<float>(0, 0);
     transform.at<float>(0, 1) = rotation.at<float>(0, 1);
@@ -116,12 +120,12 @@ namespace swri_opencv_util
     transform.at<float>(1, 1) = rotation.at<float>(1, 1);
     transform.at<float>(0, 2) = t_x;
     transform.at<float>(1, 2) = t_y;
-    
+
     return transform;
   }
-  
+
   cv::Mat FindAffineTransform2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -138,7 +142,7 @@ namespace swri_opencv_util
   }
 
   cv::Mat FindHomography(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -157,15 +161,15 @@ namespace swri_opencv_util
   cv::Mat FitAffineTransform2d(const cv::Mat& points1, const cv::Mat& points2)
   {
     cv::Mat transform;
-    
+
     if (!Valid2dPointCorrespondences(points1, points2))
     {
       return transform;
     }
-    
+
     bool row_order = points1.rows > 1;
     int32_t size = row_order ? points1.rows : points1.cols;
-    
+
     // Perform least squares fit on inliers to refine model.
     //    For least squares there are several decomposition methods:
     //       DECOMP_LU
@@ -190,7 +194,7 @@ namespace swri_opencv_util
     {
       B = points2.t();
       B = B.reshape(1, 2);
-      
+
       for (int32_t i = 0; i < size; ++i)
       {
         const cv::Vec2f& point = points1.at<cv::Vec2f>(0, i);
@@ -200,7 +204,7 @@ namespace swri_opencv_util
         A_i[2] = 1.0;
       }
     }
-    
+
     cv::Mat x;
     if (cv::solve(A, B, x))
     {
@@ -208,5 +212,202 @@ namespace swri_opencv_util
     }
 
     return transform;
+  }
+
+  PlaneModel FindPlane(
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng)
+  {
+    swri_math_util::Ransac<PlaneFit> ransac(rng);
+
+    cv::Mat reshaped = points.reshape(3);
+    PlaneFit fit_model(reshaped);
+    PlaneModel model = ransac.FitModel(
+      fit_model, max_error, confidence, min_iterations, max_iterations, good_points, iterations);
+
+    if (good_points.empty())
+    {
+      return model;
+    }
+
+    inliers = cv::Mat(good_points.size(), reshaped.cols, reshaped.type());
+    for (size_t i = 0; i < good_points.size(); ++i)
+    {
+      inliers.at<cv::Vec3f>(i, 0) = reshaped.at<cv::Vec3f>(good_points[i], 0);
+    }
+    inliers.reshape(points.channels());
+    return model;
+  }
+
+  PlaneModel FitPlane(const cv::Mat& points)
+  {
+    PlaneModel model;
+    if (points.rows < 3)
+    {
+      return model;
+    }
+    cv::Mat centroid;
+    cv::reduce(points.reshape(3), centroid, 0, CV_REDUCE_AVG);
+
+    cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2)); 
+
+    cv::Mat A;
+    cv::subtract(points, c, A);
+
+    cv::SVD svd;
+    cv::Mat w, u, vt;
+    cv::Mat At;
+    cv::transpose(A.reshape(1), At);
+    svd.compute(At, w, u, vt);
+
+    cv::Point min_w_loc;
+    cv::minMaxLoc(w, NULL, NULL, &min_w_loc);
+
+    model.x = centroid.at<float>(0, 0);
+    model.y = centroid.at<float>(0, 1);
+    model.z = centroid.at<float>(0, 2);
+    model.i = u.at<float>(0, min_w_loc.y);
+    model.j = u.at<float>(1, min_w_loc.y);
+    model.k = u.at<float>(2, min_w_loc.y);
+
+    return model;
+  }
+
+  LineModel3d FindLine3d(
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng)
+  {
+    swri_math_util::Ransac<LineFit3d> ransac(rng);
+
+    cv::Mat reshaped = points.reshape(3);
+    LineFit3d fit_model(reshaped);
+    LineModel3d model = ransac.FitModel(
+      fit_model, max_error, confidence, min_iterations, max_iterations, good_points, iterations);
+
+    if (good_points.empty())
+    {
+      return model;
+    }
+
+    inliers = cv::Mat(good_points.size(), reshaped.cols, reshaped.type());
+    for (size_t i = 0; i < good_points.size(); ++i)
+    {
+      inliers.at<cv::Vec3f>(i, 0) = reshaped.at<cv::Vec3f>(good_points[i], 0);
+    }
+    inliers.reshape(points.channels());
+    return model;
+  }
+
+  LineModel3d FindOrthoLine3d(
+    const cv::Mat& points,
+    const LineModel3d& ortho,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng)
+  {
+    swri_math_util::Ransac<LineFit3d> ransac(rng);
+
+    cv::Mat reshaped = points.reshape(3);
+    OrthoLineFit3d fit_model(reshaped, ortho);
+    LineModel3d model = ransac.FitModel(
+      fit_model, max_error, confidence, min_iterations, max_iterations, good_points, iterations);
+
+    if (good_points.empty())
+    {
+      return model;
+    }
+
+    inliers = cv::Mat(good_points.size(), reshaped.cols, reshaped.type());
+    for (size_t i = 0; i < good_points.size(); ++i)
+    {
+      inliers.at<cv::Vec3f>(i, 0) = reshaped.at<cv::Vec3f>(good_points[i], 0);
+    }
+    inliers.reshape(points.channels());
+    return model;
+  }
+
+  LineModel3d FitLine3d(const cv::Mat& points)
+  {
+    LineModel3d model;
+    if (points.rows < 2)
+    {
+      return model;
+    }
+    cv::Mat centroid;
+    cv::reduce(points.reshape(3), centroid, 0, CV_REDUCE_AVG);
+
+    cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2)); 
+   
+    cv::Mat A;
+    cv::subtract(points, c, A);
+
+    cv::SVD svd;
+    cv::Mat w, u, vt;
+    cv::Mat At;
+    cv::transpose(A.reshape(1), At);
+    svd.compute(At, w, u, vt);
+
+    cv::Point max_w_loc;
+    cv::minMaxLoc(w, NULL, NULL, NULL, &max_w_loc);
+
+    model.x = centroid.at<float>(0, 0);
+    model.y = centroid.at<float>(0, 1);
+    model.z = centroid.at<float>(0, 2);
+    model.i = u.at<float>(0, max_w_loc.y);
+    model.j = u.at<float>(1, max_w_loc.y);
+    model.k = u.at<float>(2, max_w_loc.y);
+
+    return model;
+  }
+
+  CrossModel3d FindCross3d(
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng)
+  {
+    swri_math_util::Ransac<CrossFit3d> ransac(rng);
+
+    cv::Mat reshaped = points.reshape(3);
+    CrossFit3d fit_model(reshaped);
+    CrossModel3d model = ransac.FitModel(
+      fit_model, max_error, confidence, min_iterations, max_iterations, good_points, iterations);
+
+    if (good_points.empty())
+    {
+      return model;
+    }
+
+    inliers = cv::Mat(good_points.size(), reshaped.cols, reshaped.type());
+    for (size_t i = 0; i < good_points.size(); ++i)
+    {
+      inliers.at<cv::Vec3f>(i, 0) = reshaped.at<cv::Vec3f>(good_points[i], 0);
+    }
+    inliers.reshape(points.channels());
+    return model;
   }
 }
