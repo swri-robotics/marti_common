@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(swri_opencv_util)
 
-find_package(catkin REQUIRED COMPONENTS swri_math_util)
+find_package(catkin REQUIRED COMPONENTS cv_bridge swri_math_util)
 
 find_package(OpenCV REQUIRED core imgproc)
 
@@ -15,7 +15,7 @@ endif(${Boost_LIB_VERSION} MATCHES "1_46*")
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS swri_math_util
+  CATKIN_DEPENDS cv_bridge swri_math_util
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
