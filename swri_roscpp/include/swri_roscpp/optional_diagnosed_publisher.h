@@ -65,7 +65,7 @@ namespace swri
     virtual ~OptionalDiagnosedPublisher()
     {}
 
-    virtual void run(diagnostic_updater::DiagnosticStatusWrapper& stat) override
+    virtual void run(diagnostic_updater::DiagnosticStatusWrapper& stat)
     {
       if (is_diagnostic_enabled_)
       {
