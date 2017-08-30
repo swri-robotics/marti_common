@@ -1,0 +1,12 @@
+<launch>
+  <!-- Image blending options -->
+  <arg name="image" default="/class_max_prob" />
+
+  <node pkg="nodelet" type="nodelet" name="standalone_nodelet" args="manager" />
+  <node pkg="nodelet" type="nodelet" name="color_changer" args="load swri_image_util/replace_colors standalone_nodelet">
+    <remap from="image" to="$(arg image)" />
+    <rosparam param="colors">
+      [[0, [0, 0, 0]], [1, [50, 50, 50]], [2, [100, 100, 100]], [3, [150, 150, 150]], [4, [200, 200, 200]], [5, [250, 250, 250]]]
+    </rosparam>
+  </node>
+</launch>

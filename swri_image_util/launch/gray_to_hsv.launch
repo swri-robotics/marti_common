@@ -1,0 +1,13 @@
+<launch>
+  <!-- Image blending options -->
+  <arg name="image" default="/class_max_prob" />
+
+  <node pkg="nodelet" type="nodelet" name="standalone_nodelet" args="manager" />
+  <node pkg="nodelet" type="nodelet" name="color_changer" args="load swri_image_util/replace_colors standalone_nodelet">
+    <remap from="image" to="$(arg image)" />
+    <!-- Recolor the image using 8 values from the HSV colormap -->
+    <rosparam param="colormap">
+      ["hsv", 8]
+    </rosparam>
+  </node>
+</launch>
