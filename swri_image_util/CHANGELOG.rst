@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2017-08-31)
+------------------
 * Improving user feedback when checking parameter validity. Breaking apart parameter checks so it is clearer what the error is. Also making sure the user passes in non-negative values for RGB and gray values
 * Add a crosshairs nodelet to swri_image_util (`#461 <https://github.com/pjreed/marti_common/issues/461>`_)
 * Cloning OpenCV matrices to make sure values are not overwritten
