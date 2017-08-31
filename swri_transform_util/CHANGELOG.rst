@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Revert "Remove nodelet_plugins.xml from CMakeLists.txt" (`#475 <https://github.com/pjreed/marti_common/issues/475>`_)
+* Document swri_transform_util (`#456 <https://github.com/pjreed/marti_common/issues/456>`_)
+* Contributors: Edward Venator, Marc Alban, P. J. Reed
+
 1.0.0 (2017-08-02)
 ------------------
 * Increase delay before running tests.

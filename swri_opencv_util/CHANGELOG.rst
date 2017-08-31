@@ -2,6 +2,12 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Implement RANSAC and least squares model fitting for 3d geometry (`#479 <https://github.com/pjreed/marti_common/issues/479>`_)
+* Add missing cv_bridge dependency. (`#480 <https://github.com/pjreed/marti_common/issues/480>`_)
+* Contributors: Edward Venator, Marc Alban, P. J. Reed
+
 1.0.0 (2017-08-02)
 ------------------
 

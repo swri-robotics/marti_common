@@ -2,6 +2,20 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Improving user feedback when checking parameter validity. Breaking apart parameter checks so it is clearer what the error is. Also making sure the user passes in non-negative values for RGB and gray values
+* Add a crosshairs nodelet to swri_image_util (`#461 <https://github.com/pjreed/marti_common/issues/461>`_)
+* Cloning OpenCV matrices to make sure values are not overwritten
+* Fixing conditions which would trigger a warning on node startup
+* Fixing problems caused by OpenCV matrices making shallow copies
+* Adding compiler flag to correctly include file when using OpenCV 2.x
+* Adding ability to recolor image using an OpenCV colormap
+* Improving robustness of parameter parsing
+* Improving error checking
+* Adding color replacer to nodelet list
+* Contributors: David Anthony, Edward Venator, Jerry Towler, Marc Alban, P. J. Reed
+
 1.0.0 (2017-08-02)
 ------------------
 
