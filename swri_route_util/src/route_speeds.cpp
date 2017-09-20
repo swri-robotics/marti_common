@@ -356,11 +356,14 @@ void speedsForObstacles(
       continue;
     }
     
-    // Use lane width as the car radius when smaller
+    // Use half of the vehicle width override as the car radius when smaller
+    // This is used for tight routes that are known to be safe such as when going
+    // though cones. It prevents objects close to the vehicle from causing the vehicle
+    // to stop/slow down too much unnecessarily.
     double veh_r = car_r;
     if (point.hasProperty("vehicle_width_override"))
     {
-      ROS_INFO("Speeds for obstacle found vehicle_width_override property");
+      ROS_DEBUG("Speeds for obstacle found vehicle_width_override property");
       double width = point.getTypedProperty<double>("vehicle_width_override");
 
       // Pick the smaller of the radii
