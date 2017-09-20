@@ -355,10 +355,24 @@ void speedsForObstacles(
       }
       continue;
     }
+    
+    // Use lane width as the car radius when smaller
+    double veh_r = car_r;
+    if (point.hasProperty("lane_width"))
+    {
+      ROS_INFO("Speeds for obstacle found lane width property");
+      double width = point.getTypedProperty<double>("lane_width");
+
+      // Pick the smaller of the radii
+      if (veh_r >= width/2.0)
+      {
+        veh_r = width/2.0;
+      }
+    }
 
     for (const auto& obstacle: obstacles) {
       const tf::Vector3 v = obstacle.center - point.position();
-      const double d = v.length() - car_r - obstacle.radius;
+      const double d = v.length() - veh_r - obstacle.radius;
       if (d > p.max_distance_m_) {
         // The obstacle is too far away from this point to be a concern
         continue;
@@ -371,7 +385,7 @@ void speedsForObstacles(
         double dist = swri_geometry_util::DistanceFromLineSegment(
           obstacle.polygon[i - 1],
           obstacle.polygon[i],
-          point.position()) - car_r;
+          point.position()) - veh_r;
 
         if (dist < distance) {
           distance = dist;
@@ -386,7 +400,7 @@ void speedsForObstacles(
         double dist = swri_geometry_util::DistanceFromLineSegment(
           obstacle.polygon.back(),
           obstacle.polygon.front(),
-          point.position()) - car_r;
+          point.position()) - veh_r;
 
         if (dist < distance) {
           distance = dist;
@@ -410,7 +424,7 @@ void speedsForObstacles(
         report.near = false;
         report.collision = false;
         report.route_index = route_index;
-        report.vehicle_point = point.position() + (closest_point - point.position()).normalized() * car_r;
+        report.vehicle_point = point.position() + (closest_point - point.position()).normalized() * veh_r;
         report.obstacle_point = closest_point;
         reports.push_back(report);
 
