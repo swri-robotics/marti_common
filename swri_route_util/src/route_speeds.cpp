@@ -358,10 +358,10 @@ void speedsForObstacles(
     
     // Use lane width as the car radius when smaller
     double veh_r = car_r;
-    if (point.hasProperty("lane_width"))
+    if (point.hasProperty("vehicle_width_override"))
     {
-      ROS_INFO("Speeds for obstacle found lane width property");
-      double width = point.getTypedProperty<double>("lane_width");
+      ROS_INFO("Speeds for obstacle found vehicle_width_override property");
+      double width = point.getTypedProperty<double>("vehicle_width_override");
 
       // Pick the smaller of the radii
       if (veh_r >= width/2.0)
