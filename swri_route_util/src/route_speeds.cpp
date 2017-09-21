@@ -370,6 +370,7 @@ void speedsForObstacles(
       if (veh_r >= width/2.0)
       {
         veh_r = width/2.0;
+        ROS_WARN_THROTTLE(1.0, "Vehicle width being overriden to %0.2f", (float)veh_r);
       }
     }
 
