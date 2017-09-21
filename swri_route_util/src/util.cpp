@@ -711,6 +711,8 @@ bool extractSubroute(
 
   if (end_index <= start_index)
   {
+    sub_route.points.clear();
+    sub_route.rebuildPointIndex();
     return true;
   }
 
