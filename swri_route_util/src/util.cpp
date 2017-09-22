@@ -709,6 +709,13 @@ bool extractSubroute(
   end_index++;
   end_index = std::min(end_index, route.points.size());
 
+  if (end_index <= start_index)
+  {
+    sub_route.points.clear();
+    sub_route.rebuildPointIndex();
+    return true;
+  }
+
   sub_route.points.reserve(end_index - start_index);
   for (size_t i = start_index; i < end_index; i++) {
     sub_route.points.push_back(route.points[i]);

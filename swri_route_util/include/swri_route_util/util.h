@@ -134,6 +134,7 @@ bool routeDistances(
   const std::vector<marti_nav_msgs::RoutePosition> &ends,
   const Route &route);
 
+// Extracts a subroute from [start, end)
 bool extractSubroute(
   Route &sub_route,
   const Route &route,
