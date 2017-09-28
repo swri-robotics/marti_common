@@ -324,6 +324,78 @@ namespace swri_opencv_util
   }
 
 
+  bool PerpendicularPlaneWithPointFit::GetModel(const std::vector<int32_t>& indices, M& model, 
+                                                double max_error) const
+  {
+    if (indices.size() != MIN_SIZE)
+    {
+      return false;
+    }
+
+    // Check if points are collinear.
+
+    cv::Mat points = data_.reshape(3);
+
+    cv::Vec3f p1 = points.at<cv::Vec3f>(indices[0], 0);
+    cv::Vec3f p2 = points.at<cv::Vec3f>(indices[1], 0);
+    cv::Vec3f p3 = point_;
+
+    cv::Point3f v12 = p2 - p1;
+    cv::Point3f v13 = p3 - p1;
+    float d12 = cv::norm(v12);
+    float d13 = cv::norm(v13);
+    float d = std::fabs(d12 * d13);
+    if (d == 0)
+    {
+      return false;
+    }
+
+    float angle = std::acos(v12.dot(v13) / d);
+    if (angle < min_angle_ || angle + min_angle_ > M_PI)
+    {
+      return false;
+    }
+
+    // Calculate model.
+
+    cv::Vec3f normal = v12.cross(v13);
+    normal = normal / cv::norm(normal);
+
+    if (std::acos(normal.dot(perp_axis_)) > max_axis_angle_)
+    {
+      return false;
+    }
+
+    model.x = p1[0];
+    model.y = p1[1];
+    model.z = p1[2];
+    model.i = normal[0];
+    model.j = normal[1];
+    model.k = normal[2];
+
+    return true;
+  }
+
+  void PerpendicularPlaneWithPointFit::CalculateNorms(const M& model, cv::Mat& norms)
+  {
+    // Subtract the origin point of the plane from each data point
+    cv::Mat single_column = data_.reshape(3);
+    cv::subtract(single_column, cv::Scalar(model.x, model.y, model.z), delta__);
+
+    // Calculate the dot product of each adjusted data point with the normal
+    // of the plane.
+    cv::Mat split_columns = delta__.reshape(1);
+    cv::Mat x = split_columns(cv::Rect(0, 0, 1, split_columns.rows));
+    cv::Mat y = split_columns(cv::Rect(1, 0, 1, split_columns.rows));
+    cv::Mat z = split_columns(cv::Rect(2, 0, 1, split_columns.rows));
+    x = x * model.i;
+    y = y * model.j;
+    z = z * model.k;
+    cv::add(x, y, norms);
+    cv::add(norms, z, norms);
+    norms = cv::abs(norms);
+  }
+
   bool PlaneFit::GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const
   {
     if (indices.size() != MIN_SIZE)

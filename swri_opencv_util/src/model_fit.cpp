@@ -214,6 +214,42 @@ namespace swri_opencv_util
     return transform;
   }
 
+  PlaneModel FindPerpendicularPlaneWithPoint(
+    const cv::Vec3f& point_on_plane,
+    const cv::Vec3f& perp_axis,
+    double max_angle_from_perp,
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng)
+  {
+    swri_math_util::Ransac<PerpendicularPlaneWithPointFit> ransac(rng);
+
+    cv::Mat reshaped = points.reshape(3);
+    PerpendicularPlaneWithPointFit fit_model(reshaped, point_on_plane, perp_axis, max_angle_from_perp);
+    PlaneModel model = ransac.FitModel(
+      fit_model, max_error, confidence, min_iterations, max_iterations, good_points, iterations);
+
+    if (good_points.empty())
+    {
+      return model;
+    }
+
+    inliers = cv::Mat(good_points.size(), reshaped.cols, reshaped.type());
+    for (size_t i = 0; i < good_points.size(); ++i)
+    {
+      inliers.at<cv::Vec3f>(i, 0) = reshaped.at<cv::Vec3f>(good_points[i], 0);
+    }
+    inliers.reshape(points.channels());
+    return model;
+  }
+
+
   PlaneModel FindPlane(
     const cv::Mat& points,
     cv::Mat& inliers,

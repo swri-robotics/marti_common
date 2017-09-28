@@ -218,6 +218,38 @@ namespace swri_opencv_util
     float min_angle_;
   };
 
+  class PerpendicularPlaneWithPointFit : public Fit3d<PlaneModel>
+  {
+  public:
+    enum { MIN_SIZE = 2 };
+
+    PerpendicularPlaneWithPointFit(const T& data, 
+                                   const cv::Vec3f& point_on_plane = cv::Vec3f(0,0,0), 
+                                   const cv::Vec3f& perp_axis = cv::Vec3f(0,0,1),
+                                   float max_axis_angle = 0.5, 
+                                   float min_angle = 0.2) :
+        Fit3d<PlaneModel>(data),
+        point_(point_on_plane),
+        perp_axis_(perp_axis),
+        max_axis_angle_(max_axis_angle),
+        min_angle_(min_angle)
+    {}
+
+    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+    bool ValidData() const
+    {
+      return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
+    }
+
+  protected:
+    virtual void CalculateNorms(const M& model, cv::Mat& norms);
+
+    cv::Vec3f point_;
+    cv::Vec3f perp_axis_;
+    float max_axis_angle_;
+    float min_angle_;
+  };
+
   struct LineModel3d
   {
     LineModel3d() : x(0), y(0), z(0), i(0), j(0), k(0) {}

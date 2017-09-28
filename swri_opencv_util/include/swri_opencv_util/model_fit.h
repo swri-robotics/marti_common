@@ -155,6 +155,20 @@ namespace swri_opencv_util
     int32_t max_iterations = 1000,
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
 
+  PlaneModel FindPerpendicularPlaneWithPoint(
+    const cv::Vec3f& point_on_plane,
+    const cv::Vec3f& perp_axis,
+    double max_angle_from_perp,
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
+
   PlaneModel FindPlane(
     const cv::Mat& points,
     cv::Mat& inliers,
