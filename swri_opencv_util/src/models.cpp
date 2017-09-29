@@ -376,26 +376,6 @@ namespace swri_opencv_util
     return true;
   }
 
-  void PerpendicularPlaneWithPointFit::CalculateNorms(const M& model, cv::Mat& norms)
-  {
-    // Subtract the origin point of the plane from each data point
-    cv::Mat single_column = data_.reshape(3);
-    cv::subtract(single_column, cv::Scalar(model.x, model.y, model.z), delta__);
-
-    // Calculate the dot product of each adjusted data point with the normal
-    // of the plane.
-    cv::Mat split_columns = delta__.reshape(1);
-    cv::Mat x = split_columns(cv::Rect(0, 0, 1, split_columns.rows));
-    cv::Mat y = split_columns(cv::Rect(1, 0, 1, split_columns.rows));
-    cv::Mat z = split_columns(cv::Rect(2, 0, 1, split_columns.rows));
-    x = x * model.i;
-    y = y * model.j;
-    z = z * model.k;
-    cv::add(x, y, norms);
-    cv::add(norms, z, norms);
-    norms = cv::abs(norms);
-  }
-
   bool PlaneFit::GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const
   {
     if (indices.size() != MIN_SIZE)
