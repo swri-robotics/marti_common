@@ -218,7 +218,7 @@ namespace swri_opencv_util
     float min_angle_;
   };
 
-  class PerpendicularPlaneWithPointFit : public PlaneFit//Fit3d<PlaneModel>
+  class PerpendicularPlaneWithPointFit : public PlaneFit
   {
   public:
     enum { MIN_SIZE = 2 };
