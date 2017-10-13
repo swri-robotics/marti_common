@@ -2,12 +2,18 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add support for vehicle_width_override property on route (`#485 <https://github.com/swri-robotics/marti_common/issues/485>`_)
+* Add bounds checking to extractSubroute. (`#486 <https://github.com/swri-robotics/marti_common/issues/486>`_)
+* Contributors: Marc Alban, Matthew Bries
+
 1.1.0 (2017-08-31)
 ------------------
 
 1.0.0 (2017-08-02)
 ------------------
-* Add route speed functions (`#466 <https://github.com/evenator/marti_common/issues/466>`_)
+* Add route speed functions (`#466 <https://github.com/swri-robotics/marti_common/issues/466>`_)
   * Add visualization function for swri_route_util.
   * Add code to calculate max speeds based on curvature to swri_route_util.
   * Add speed/obstacle functionality to swri_route_util.
@@ -16,7 +22,7 @@ Changelog for package swri_route_util
 
 0.3.0 (2017-06-20)
 ------------------
-* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
+* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/swri-robotics/marti_common/issues/443>`_)
 * Contributors: P. J. Reed
 
 0.2.4 (2017-04-11)

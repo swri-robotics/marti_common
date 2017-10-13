@@ -2,6 +2,9 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.0 (2017-08-31)
 ------------------
 * Revert "Remove nodelet_plugins.xml from CMakeLists.txt" (`#475 <https://github.com/pjreed/marti_common/issues/475>`_)

@@ -2,6 +2,9 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.0 (2017-08-31)
 ------------------
 * Add function for closest point to lines in 3d. (`#478 <https://github.com/pjreed/marti_common/issues/478>`_)

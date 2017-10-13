@@ -3,6 +3,9 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+
 1.1.0 (2017-08-31)
 ------------------
 * Add OptionalDiagnosedPublisher class (`#483 <https://github.com/pjreed/marti_common/issues/483>`_)

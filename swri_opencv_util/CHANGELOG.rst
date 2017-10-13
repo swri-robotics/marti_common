@@ -2,10 +2,15 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add PerpendicularPlaneWithPoint RANSAC model (`#487 <https://github.com/swri-robotics/marti_common/issues/487>`_)
+* Contributors: Matthew Bries
+
 1.1.0 (2017-08-31)
 ------------------
-* Implement RANSAC and least squares model fitting for 3d geometry (`#479 <https://github.com/pjreed/marti_common/issues/479>`_)
-* Add missing cv_bridge dependency. (`#480 <https://github.com/pjreed/marti_common/issues/480>`_)
+* Implement RANSAC and least squares model fitting for 3d geometry (`#479 <https://github.com/swri-robotics/marti_common/issues/479>`_)
+* Add missing cv_bridge dependency. (`#480 <https://github.com/swri-robotics/marti_common/issues/480>`_)
 * Contributors: Edward Venator, Marc Alban, P. J. Reed
 
 1.0.0 (2017-08-02)
@@ -13,7 +18,7 @@ Changelog for package swri_opencv_util
 
 0.3.0 (2017-06-20)
 ------------------
-* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/pjreed/marti_common/issues/443>`_)
+* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/swri-robotics/marti_common/issues/443>`_)
 * Contributors: P. J. Reed
 
 0.2.4 (2017-04-11)
