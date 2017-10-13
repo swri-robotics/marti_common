@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2017-10-13)
+------------------
 * Add support for vehicle_width_override property on route (`#485 <https://github.com/swri-robotics/marti_common/issues/485>`_)
 * Add bounds checking to extractSubroute. (`#486 <https://github.com/swri-robotics/marti_common/issues/486>`_)
 * Contributors: Marc Alban, Matthew Bries

@@ -2,8 +2,8 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2017-10-13)
+------------------
 * Add PerpendicularPlaneWithPoint RANSAC model (`#487 <https://github.com/swri-robotics/marti_common/issues/487>`_)
 * Contributors: Matthew Bries
 
