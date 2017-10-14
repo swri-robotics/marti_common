@@ -18,12 +18,17 @@
         <description> Nodelet to draw text on an image.
         </description>
     </class>
+    <class name="swri_image_util/image_pub" type="swri_image_util::ImagePubNodelet"
+        base_class_type="nodelet::Nodelet">
+        <description> Nodelet to publish an image file.
+        </description>
+    </class>
     <class name="swri_image_util/normalize_response" type="swri_image_util::NormalizeResponseNodelet"
         base_class_type="nodelet::Nodelet">
         <description> Nodelet to normalize the response of an image.
         </description>
     </class>
-    <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet" 
+    <class name="swri_image_util/replace_colors" type="swri_image_util::ReplaceColorsNodelet"
         base_class_type="nodelet::Nodelet">
         <description> Nodelet that replaces colors in an input image
         </description>
