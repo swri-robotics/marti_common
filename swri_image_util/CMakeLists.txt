@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(swri_image_util)
 
-find_package(catkin REQUIRED COMPONENTS 
+find_package(catkin REQUIRED COMPONENTS
   camera_calibration_parsers
   cv_bridge
   geometry_msgs
@@ -47,7 +47,7 @@ catkin_package(
   DEPENDS OpenCV EIGEN3
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS 
+  CATKIN_DEPENDS
     camera_calibration_parsers
     cv_bridge
     geometry_msgs
@@ -66,25 +66,25 @@ catkin_package(
 )
 
 include_directories(include
-  ${catkin_INCLUDE_DIRS} 
+  ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME}
   src/blend_images_util.cpp
   src/draw_util.cpp
   src/geometry_util.cpp
   src/image_matching.cpp
-  src/image_normalization.cpp 
+  src/image_normalization.cpp
   src/image_warp_util.cpp
   src/replace_colors.cpp
-  src/rolling_normalization.cpp 
+  src/rolling_normalization.cpp
 )
-target_link_libraries(${PROJECT_NAME} 
-  ${catkin_LIBRARIES} 
-  ${OpenCV_LIBRARIES} 
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 
@@ -93,6 +93,7 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/crosshairs_nodelet.cpp
   src/nodelets/contrast_stretch_nodelet.cpp
   src/nodelets/draw_text_nodelet.cpp
+  src/nodelets/image_pub_nodelet.cpp
   src/nodelets/normalize_response_nodelet.cpp
   src/nodelets/replace_colors_nodelet.cpp
   src/nodelets/rotate_image_nodelet.cpp
@@ -128,6 +129,9 @@ target_link_libraries(scale_image ${catkin_LIBRARIES})
 add_executable(replace_colors src/nodes/replace_colors.cpp)
 target_link_libraries(replace_colors ${catkin_LIBRARIES})
 
+swri_nodelet_add_node(image_pub ${PROJECT_NAME} ImagePubNodelet)
+target_link_libraries(image_pub ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+
 swri_nodelet_add_node(warp_image ${PROJECT_NAME} WarpImageNodelet)
 target_link_libraries(warp_image ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
@@ -145,13 +149,14 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(TARGETS ${PROJECT_NAME} 
+install(TARGETS ${PROJECT_NAME}
     ${PROJECT_NAME}_nodelets
     blend_images
     contrast_stretch
     crosshairs
     draw_text
     dummy_image_publisher
+    image_pub
     normalization_image_generator_node
     normalize_response
     replace_colors
