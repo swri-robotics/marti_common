@@ -76,7 +76,7 @@ bool RoutePoint::hasProperty(const std::string &name) const
 void RoutePoint::setProperty(const std::string &name, const std::string &value)
 {
   if (name == "stop_point") {
-    stop_point_ = (value == "1");
+    stop_point_ = (value == "1") || (value == "true");
   } else if (name == "stop_point_delay") {
     stop_point_delay_ = boost::lexical_cast<double>(value);
   } else {
