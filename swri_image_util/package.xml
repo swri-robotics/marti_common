@@ -1,6 +1,6 @@
 <package format="2">
   <name>swri_image_util</name>
-  <version>0.0.14</version>
+  <version>1.2.0</version>
   <description>
 
      swri_image_util
@@ -15,23 +15,23 @@
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <depend>camera_calibration_parsers</depend>
-  <depend>cmake_modules</depend>
   <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>geometry_msgs</depend>
   <depend>image_geometry</depend>
   <depend>image_transport</depend>
-  <depend>libqt4-dev</depend>
   <depend>message_filters</depend>
   <depend>nav_msgs</depend>
   <depend>nodelet</depend>
   <depend>roscpp</depend>
-  <depend>roslib</depend>
   <depend>rospy</depend>
   <depend>std_msgs</depend>
-  <depend>tf</depend>
+  <depend>swri_geometry_util</depend>
   <depend>swri_math_util</depend>
+  <build_depend>swri_nodelet</build_depend>
   <depend>swri_opencv_util</depend>
+  <depend>swri_roscpp</depend>
+  <depend>tf</depend>
 
   <test_depend>rostest</test_depend>
 

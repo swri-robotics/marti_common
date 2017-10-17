@@ -2,9 +2,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(swri_route_util)
 
 set(BUILD_DEPS 
+  marti_common_msgs
   marti_nav_msgs
   roscpp
+  swri_geometry_util
+  swri_math_util
   swri_transform_util
+  visualization_msgs
   )
 
 set(RUNTIME_DEPS ${BUILD_DEPS})
@@ -22,7 +26,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_library(${PROJECT_NAME} 
   src/route.cpp
   src/route_point.cpp
+  src/route_speeds.cpp
   src/util.cpp
+  src/visualization.cpp
   )
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++0x")
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})

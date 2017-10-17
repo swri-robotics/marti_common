@@ -151,7 +151,7 @@ class Route
   // deletable (e.g. name, guid), this method does nothing.
   void deleteProperty(const std::string &name);
 
- private:
+ public:
   // The point index maps point ids to their index in the points
   // vector.  It is mutable because we want to support fast look ups
   // on const Routes.

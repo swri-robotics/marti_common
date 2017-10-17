@@ -5,9 +5,9 @@ find_package(catkin REQUIRED COMPONENTS
   diagnostic_msgs
   dynamic_reconfigure
   geographic_msgs
+  geometry_msgs
   gps_common
   nodelet
-  pluginlib
   roscpp
   rospy
   swri_math_util
@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   topic_tools
 )
 
-find_package(OpenCV 2 REQUIRED)
+find_package(OpenCV  REQUIRED core highgui imgproc video)
 find_package(Boost REQUIRED)
 
 generate_dynamic_reconfigure_options(
@@ -31,9 +31,9 @@ catkin_package(
     diagnostic_msgs
     dynamic_reconfigure
     geographic_msgs
+    geometry_msgs
     gps_common
     nodelet
-    pluginlib
     roscpp
     rospy
     swri_math_util
@@ -43,7 +43,11 @@ catkin_package(
     topic_tools
 )
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(include 
+  ${catkin_INCLUDE_DIRS} 
+  ${Boost_INCLUDE_DIRS} 
+  ${OpenCV_INCLUDE_DIRS}
+)
 
 add_library(${PROJECT_NAME}
   src/georeference.cpp
@@ -52,18 +56,16 @@ add_library(${PROJECT_NAME}
   src/transform.cpp
   src/transformer.cpp
   src/transform_manager.cpp
-  src/transform_util.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} proj)
+  src/transform_util.cpp
+  src/utm_transformer.cpp
+  src/wgs84_transformer.cpp)
+link_directories(${OpenCV_LIBRARY_DIRS})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} proj)
 
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/dynamic_publisher.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME}_nodelets ${PROJECT_NAME}_gencfg)
-
-add_library(transformer_plugins
-  src/utm_transformer.cpp
-  src/wgs84_transformer.cpp)
-target_link_libraries(transformer_plugins ${PROJECT_NAME})
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
@@ -85,6 +87,13 @@ if(CATKIN_ENABLE_TESTING)
 
   add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
   target_link_libraries(test_transform_util ${PROJECT_NAME})
+
+  if($ENV{ROS_DISTRO} STREQUAL "indigo")
+    add_rostest(test/initialize_origin_auto_gps.test)
+  else()  # Jade, Kinetic, Lunar, etc
+    add_rostest(test/initialize_origin_auto_navsat.test)
+  endif()
+  add_rostest(test/initialize_origin_manual.test)
 endif()
 
 install(DIRECTORY include/${PROJECT_NAME}/
@@ -92,7 +101,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets lat_lon_tf_echo transformer_plugins
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets lat_lon_tf_echo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -102,6 +111,6 @@ install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets lat_lon_tf_echo transfo
 catkin_install_python(PROGRAMS nodes/initialize_origin.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-install(FILES transformer_plugins.xml nodelet_plugins.xml
+install(FILES nodelet_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

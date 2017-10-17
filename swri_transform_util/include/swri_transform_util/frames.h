@@ -54,6 +54,9 @@ namespace swri_transform_util
    */
   static const std::string _local_xy_frame = "/local_xy";
 
+  /**
+   * Special frame id used internally to denote frames that are part of the ROS TF tree
+   */
   static const std::string _tf_frame = "/tf";
 }
 

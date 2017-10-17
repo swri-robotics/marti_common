@@ -2,41 +2,62 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.0.14 (2017-04-11)
--------------------
+1.2.0 (2017-10-13)
+------------------
+* Add support for vehicle_width_override property on route (`#485 <https://github.com/swri-robotics/marti_common/issues/485>`_)
+* Add bounds checking to extractSubroute. (`#486 <https://github.com/swri-robotics/marti_common/issues/486>`_)
+* Contributors: Marc Alban, Matthew Bries
 
-0.0.13 (2016-10-23)
--------------------
+1.1.0 (2017-08-31)
+------------------
 
-0.0.12 (2016-08-14)
--------------------
-* Changes the order of include dirs
+1.0.0 (2017-08-02)
+------------------
+* Add route speed functions (`#466 <https://github.com/swri-robotics/marti_common/issues/466>`_)
+  * Add visualization function for swri_route_util.
+  * Add code to calculate max speeds based on curvature to swri_route_util.
+  * Add speed/obstacle functionality to swri_route_util.
+* Add extractSubroute function.
+* Contributors: Elliot Johnson, elliotjo
+
+0.3.0 (2017-06-20)
+------------------
+* Merge together the indigo, jade, and kinetic branches (`#443 <https://github.com/swri-robotics/marti_common/issues/443>`_)
+* Contributors: P. J. Reed
+
+0.2.4 (2017-04-11)
+------------------
+
+0.2.3 (2016-12-09)
+------------------
+
+0.2.2 (2016-12-07)
+------------------
+* Add support for stop point metadata.
+* Add helper method to find files within a directory and subdirectories based on regular expression matching for the filename.
+* Add sru::projectOntoRouteWindow (`#393 <https://github.com/swri-robotics/marti_common/issues/393>`_)
+  This is a utility function to project a point onto a window of the
+  route.
+* Contributors: P. J. Reed
+
+0.2.1 (2016-10-23)
+------------------
+* Changing the order of include dirs
   "${catkin_INCLUDE_DIRS}" needs to be listed after "include", otherwise gcc may
   try to compile this component's cpp files using headers from a system-installed
   version of swri_route_util.
-* Adds support for stop point metadata.
-* Adds sru::projectOntoRouteWindow, a utility function to project a point onto a
-  window of the route.
-* Fixes projectOntoRoute to return a normalized route coordinate
-  when the point is past the end of the route.
-* Fixes a major bug in nearestDistanceToLineSegment that was
-  affecting projectOntoRoute.  A misnamed variable v_len was actually
-  the square of v_len and caused the reported distance along the route
-  segment to be the square of the desired answer.  Chanes the code to take the
-  appropriate square root and changes the variable name to avoid
-  confusion in the future.
-* Adds an error check when a sru::Route rebuilds its point
-  index.  If the point IDs are not unique, the route will output an
-  error message that should make tracking down problems easier.  This
-  check is extremely lightweight and should not have a performance
-  impact.
+* Contributors: P. J. Reed
+
+0.2.0 (2016-06-21)
+------------------
+* Add error message for non-unique route point IDs.
 * Contributors: Elliot Johnson, P. J. Reed
 
-0.0.11 (2016-05-13)
--------------------
+0.1.5 (2016-05-13)
+------------------
 
-0.0.10 (2016-05-12)
--------------------
+0.1.4 (2016-05-12)
+------------------
 * Fix distances in routeDistances for points before start point.
   There were two bugs in routeDistances that were causing the incorrect
   distance to be calculated for points before the start point.  An error
@@ -44,8 +65,8 @@ Changelog for package swri_route_util
   be 0.0.  Secondly, the arc length for the other points was just the
   relative distance between two points instead of the cummulative
   distance.
-* Merge pull request `#330 <https://github.com/evenator/marti_common/issues/330>`_ from elliotjo/sru-add-distance-functions-indigo
-  Add util functions to calculate distances between route points. (indigo)
+* Merge pull request `#331 <https://github.com/evenator/marti_common/issues/331>`_ from elliotjo/sru-add-distance-functions-jade
+  Add util functions to calculate distances between route points. (jade)
 * Remove commented out code in swri_route_util.
 * Add util functions to calculate distances between route points.
   This commit adds two utility functions to calculate the distances (in
@@ -69,8 +90,6 @@ Changelog for package swri_route_util
   more user-friendly interface to the marti_nav_msgs Route and RoutPoint
   classes, and a set of useful utilities.  At this point, most of the
   code (except the properties) has been well tested on bag files.
-* Contributors: Edward Venator, Elliot Johnson, Marc Alban
-
 * Fix distances in routeDistances for points before start point.
   There were two bugs in routeDistances that were causing the incorrect
   distance to be calculated for points before the start point.  An error
@@ -104,6 +123,50 @@ Changelog for package swri_route_util
   classes, and a set of useful utilities.  At this point, most of the
   code (except the properties) has been well tested on bag files.
 * Contributors: Elliot Johnson, Marc Alban
+
+0.1.3 (2016-03-04)
+------------------
+
+0.1.2 (2016-01-06)
+------------------
+
+0.1.1 (2015-11-17)
+------------------
+
+0.1.0 (2015-09-29)
+------------------
+
+0.0.14 (2017-04-11)
+-------------------
+
+0.0.13 (2016-10-23)
+-------------------
+
+0.0.12 (2016-08-14)
+-------------------
+* Changes the order of include dirs
+  "${catkin_INCLUDE_DIRS}" needs to be listed after "include", otherwise gcc may
+  try to compile this component's cpp files using headers from a system-installed
+  version of swri_route_util.
+* Adds support for stop point metadata.
+* Adds sru::projectOntoRouteWindow, a utility function to project a point onto a
+  window of the route.
+* Fixes projectOntoRoute to return a normalized route coordinate
+  when the point is past the end of the route.
+* Fixes a major bug in nearestDistanceToLineSegment that was
+  affecting projectOntoRoute.  A misnamed variable v_len was actually
+  the square of v_len and caused the reported distance along the route
+  segment to be the square of the desired answer.  Chanes the code to take the
+  appropriate square root and changes the variable name to avoid
+  confusion in the future.
+* Adds an error check when a sru::Route rebuilds its point
+
+0.0.11 (2016-05-13)
+-------------------
+
+0.0.10 (2016-05-12)
+-------------------
+* Contributors: Elliot Johnson
 
 0.0.9 (2016-03-04)
 ------------------

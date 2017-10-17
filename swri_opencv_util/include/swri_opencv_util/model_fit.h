@@ -43,7 +43,7 @@ namespace swri_opencv_util
 {
   template <class Model>
   cv::Mat FindModel2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -55,26 +55,27 @@ namespace swri_opencv_util
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr())
   {
     cv::Mat model;
-    
+
     // Put data into the expected format.
     cv::Mat correspondences;
     if (!ZipCorrespondences(points1, points2, correspondences))
     {
       return model;
     }
-    
-    // Run RANSAC to robustly fit a rigid transform model to the set of 
+
+    // Run RANSAC to robustly fit a rigid transform model to the set of
     // corresponding points.
     swri_math_util::Ransac<Model> ransac(rng);
 
+    Model fit_model(correspondences);
     model = ransac.FitModel(
-      correspondences, max_error, confidence, max_iterations, good_points, iterations);
-    
+      fit_model, max_error, confidence, 1, max_iterations, good_points, iterations);
+
     if (good_points.empty())
     {
       return model;
     }
-    
+
     // Populate output data.
     bool row_order = points1.rows > 1;
     if (row_order)
@@ -97,12 +98,12 @@ namespace swri_opencv_util
         inliers2.at<cv::Vec2f>(0, i) = points2.at<cv::Vec2f>(0, good_points[i]);
       }
     }
-    
+
     return model;
   }
 
   cv::Mat FindTranslation2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -114,7 +115,7 @@ namespace swri_opencv_util
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
 
   cv::Mat FindRigidTransform2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -124,12 +125,12 @@ namespace swri_opencv_util
     double confidence = 0.9,
     int32_t max_iterations = 1000,
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
-    
+
   // Returns a 2x3 transform that can be applied to points1 to align them to points2.
   cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2);
-  
+
   cv::Mat FindAffineTransform2d(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -139,11 +140,11 @@ namespace swri_opencv_util
     double confidence = 0.9,
     int32_t max_iterations = 1000,
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
-    
+
   cv::Mat FitAffineTransform2d(const cv::Mat& points1, const cv::Mat& points2);
-  
+
   cv::Mat FindHomography(
-    const cv::Mat& points1, 
+    const cv::Mat& points1,
     const cv::Mat& points2,
     cv::Mat& inliers1,
     cv::Mat& inliers2,
@@ -151,6 +152,69 @@ namespace swri_opencv_util
     int32_t& iterations,
     double max_error = 1.0,
     double confidence = 0.9,
+    int32_t max_iterations = 1000,
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
+
+  PlaneModel FindPerpendicularPlaneWithPoint(
+    const cv::Vec3f& point_on_plane,
+    const cv::Vec3f& perp_axis,
+    double max_angle_from_perp,
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
+
+  PlaneModel FindPlane(
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error = 1.0,
+    double confidence = 0.9,
+    int32_t min_iterations = 1,
+    int32_t max_iterations = 1000,
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
+
+  PlaneModel FitPlane(const cv::Mat& points);
+
+  LineModel3d FindLine3d(
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error = 1.0,
+    double confidence = 0.9,
+    int32_t min_iterations = 1,
+    int32_t max_iterations = 1000,
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
+
+  LineModel3d FindOrthoLine3d(
+    const cv::Mat& points,
+    const LineModel3d& ortho,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error = 1.0,
+    double confidence = 0.9,
+    int32_t min_iterations = 1,
+    int32_t max_iterations = 1000,
+    swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
+
+  LineModel3d FitLine3d(const cv::Mat& points);
+
+  CrossModel3d FindCross3d(
+    const cv::Mat& points,
+    cv::Mat& inliers,
+    std::vector<uint32_t> &good_points,
+    int32_t& iterations,
+    double max_error = 1.0,
+    double confidence = 0.9,
+    int32_t min_iterations = 1,
     int32_t max_iterations = 1000,
     swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
 }
