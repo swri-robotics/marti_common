@@ -63,7 +63,7 @@ local_xy_origin = rospy.get_param('~local_xy_origin', 'auto')
 manager = OriginManager(local_xy_frame)
 if local_xy_origin == "auto":
     gps_sub = rospy.Subscriber("gps", GPSFix, queue_size=2)
-    navsat_sub = rospy.Subscriber("navsatfix", NavSatFix, queue_size=2)
+    navsat_sub = rospy.Subscriber("fix", NavSatFix, queue_size=2)
     gps_sub.impl.add_callback(gps_callback,
                               (manager, gps_sub, navsat_sub)) # Extra arguments to callback)
     navsat_sub.impl.add_callback(navsat_callback,

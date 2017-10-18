@@ -115,7 +115,7 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
 class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
     def testAutoOriginFromNavSatFix(self):
         rospy.init_node('test_initialize_origin')
-        nsf_pub = rospy.Publisher('gps', NavSatFix, queue_size=2)
+        nsf_pub = rospy.Publisher('fix', NavSatFix, queue_size=2)
         origin_sub = self.subscribeToOrigin()
         nsf_msg = NavSatFix()
         nsf_msg.latitude = swri['latitude']
