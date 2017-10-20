@@ -28,11 +28,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-
 from gps_common.msg import GPSFix
 import rospy
 from sensor_msgs.msg import NavSatFix
 from swri_transform_util.origin_manager import OriginManager, InvalidFixException
+
 
 def navsat_callback(msg, (manager, navsat_sub, gps_sub)):
         try:
@@ -41,9 +41,10 @@ def navsat_callback(msg, (manager, navsat_sub, gps_sub)):
             rospy.logwarn(e)
             return
         finally:
-            rospy.loginfo("Got NavSat message. Setting origin and unsubscribing from NavSat.")
+            rospy.loginfo('Got NavSat message. Setting origin and unsubscribing from NavSat.')
             navsat_sub.unregister()
             gps_sub.unregister()
+
 
 def gps_callback(msg, (manager, gps_sub, navsat_sub)):
         try:
@@ -52,7 +53,7 @@ def gps_callback(msg, (manager, gps_sub, navsat_sub)):
             rospy.logwarn(e)
             return
         finally:
-            rospy.loginfo("Got GPSFix message. Setting origin and unsubscribing from GPSFix.")
+            rospy.loginfo('Got GPSFix message. Setting origin and unsubscribing from GPSFix.')
             gps_sub.unregister()
             navsat_sub.unregister()
 
@@ -61,23 +62,25 @@ rospy.init_node('initialize_origin', anonymous=True)
 local_xy_frame = rospy.get_param('~local_xy_frame', 'map')
 local_xy_origin = rospy.get_param('~local_xy_origin', 'auto')
 manager = OriginManager(local_xy_frame)
-if local_xy_origin == "auto":
-    gps_sub = rospy.Subscriber("gps", GPSFix, queue_size=2)
-    navsat_sub = rospy.Subscriber("fix", NavSatFix, queue_size=2)
+if local_xy_origin == 'auto':
+    gps_sub = rospy.Subscriber('gps', GPSFix, queue_size=2)
+    navsat_sub = rospy.Subscriber('fix', NavSatFix, queue_size=2)
     gps_sub.impl.add_callback(gps_callback,
-                              (manager, gps_sub, navsat_sub)) # Extra arguments to callback)
+                              (manager, gps_sub, navsat_sub))  # Extra arguments to callback
     navsat_sub.impl.add_callback(navsat_callback,
-                                 (manager, navsat_sub, gps_sub)) # Extra arguments to callback
+                                 (manager, navsat_sub, gps_sub))  # Extra arguments to callback
 else:
     try:
         origin_list = rospy.get_param('~local_xy_origins')
     except KeyError:
-        rospy.logfatal('local_xy_frame is "{}", but local_xy_origins is not specified'.format(local_xy_frame))
+        message = 'local_xy_frame is "{}", but local_xy_origins is not specified'
+        rospy.logfatal(message.format(local_xy_frame))
         exit(1)
     try:
         manager.set_origin_from_list(local_xy_origin, origin_list)
     except (TypeError, KeyError) as e:
-        rospy.logfatal('local_xy_origins is malformed or does not contain the local_xy_frame "{}"'.format(local_xy_frame))
+        message = 'local_xy_origins is malformed or does not contain the local_xy_frame "{}"'
+        rospy.logfatal(message.format(local_xy_frame))
         rospy.logfatal(e)
         exit(1)
 manager.start()
