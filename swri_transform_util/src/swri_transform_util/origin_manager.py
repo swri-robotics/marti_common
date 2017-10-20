@@ -60,6 +60,7 @@ class OriginManager(object):
         local_xy_origin = rospy.get_param('~local_xy_origin')
         manager = OriginManager("map")
         origin_list = rospy.get_param('~local_xy_origins')
+        manager.set_origin_from_list(local_xy_origin, origin_list)
         manager.start()
 
     Usage (auto origin from NavSatFix):
