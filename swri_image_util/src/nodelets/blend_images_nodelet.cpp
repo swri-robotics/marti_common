@@ -185,10 +185,6 @@ namespace swri_image_util
   }
 }
 
-// Reigster nodelet plugin
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS(
-    swri_image_util,
-    blend_images,
-    swri_image_util::BlendImagesNodelet,
-    nodelet::Nodelet)
+// Register nodelet plugin
+#include <swri_nodelet/class_list_macros.h>
+SWRI_NODELET_EXPORT_CLASS(swri_image_util, BlendImagesNodelet)

@@ -104,9 +104,5 @@ namespace swri_image_util
 }
 
 // Register nodelet plugin
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS(
-    swri_image_util,
-    normalize_response,
-    swri_image_util::NormalizeResponseNodelet,
-    nodelet::Nodelet)
+#include <swri_nodelet/class_list_macros.h>
+SWRI_NODELET_EXPORT_CLASS(swri_image_util, NormalizeResponseNodelet)

@@ -563,9 +563,6 @@ namespace swri_image_util
   }
 }
 
-#include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS(
-  swri_image_util,
-  replace_colors,
-  swri_image_util::ReplaceColorsNodelet,
-  nodelet::Nodelet)
+// Register nodelet plugin
+#include <swri_nodelet/class_list_macros.h>
+SWRI_NODELET_EXPORT_CLASS(swri_image_util, ReplaceColorsNodelet)
