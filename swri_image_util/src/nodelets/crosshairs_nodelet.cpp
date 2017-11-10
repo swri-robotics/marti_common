@@ -89,4 +89,4 @@ namespace swri_image_util
 
 // Register nodelet plugin
 #include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, CrosshairsNodelet);
+SWRI_NODELET_EXPORT_CLASS(swri_image_util, CrosshairsNodelet)
