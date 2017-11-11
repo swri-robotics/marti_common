@@ -130,8 +130,9 @@ namespace swri_transform_util
 
   void LocalXyWgs84Util::HandleOrigin(const topic_tools::ShapeShifter::ConstPtr msg)
   {
-    if (!initialized_)
+    if (!initialized_ || (ros::Time::now() - prev_update_).toSec() > 1.0 )
     {
+      prev_update_ = ros::Time::now();
       ros::NodeHandle node;
       bool ignore_reference_angle = false;
       node.param("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
@@ -161,7 +162,6 @@ namespace swri_transform_util
         frame_ = frame;
 
         Initialize();
-        origin_sub_.shutdown();
         return;
       }
       catch (...) {}
@@ -191,7 +191,6 @@ namespace swri_transform_util
         frame_ = frame;
 
         Initialize();
-        origin_sub_.shutdown();
         return;
       }
       catch (...) {}
@@ -211,14 +210,12 @@ namespace swri_transform_util
         node.param("/local_xy_frame", frame_, frame_);
 
         Initialize();
-        origin_sub_.shutdown();
         return;
       }
       catch (...) {}
 
       ROS_WARN("Invalid /local_xy topic type.");
     }
-    origin_sub_.shutdown();
   }
 
   double LocalXyWgs84Util::ReferenceLongitude() const
