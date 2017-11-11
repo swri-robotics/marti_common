@@ -84,8 +84,8 @@ namespace swri_image_util
 
 
       image_transport::ImageTransport it(node);
-      image_pub_ = it.advertise("image_in", 1);
-      image_sub_ = it.subscribe("image_out", 1, &DrawPolygonNodelet::imageCallback, this);
+      image_pub_ = it.advertise("image_out", 1);
+      image_sub_ = it.subscribe("image_in", 1, &DrawPolygonNodelet::imageCallback, this);
     }
 
     void imageCallback(const sensor_msgs::ImageConstPtr& image)
