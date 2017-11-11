@@ -158,6 +158,7 @@ install(TARGETS ${PROJECT_NAME}
     blend_images
     contrast_stretch
     crosshairs
+    draw_polygon
     draw_text
     dummy_image_publisher
     image_pub
