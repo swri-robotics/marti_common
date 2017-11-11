@@ -214,6 +214,7 @@ namespace swri_transform_util
 
     ros::Subscriber origin_sub_;
     bool initialized_;
+    ros::Time prev_update_;
 
     void Initialize();
 
