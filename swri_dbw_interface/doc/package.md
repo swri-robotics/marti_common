@@ -1,7 +1,7 @@
 # swri_dbw_interface
 
 This package provides documentation and tools to encourage common
-interface conventions for drive-by-systems.
+interface conventions for drive-by-wire systems.
 
 **Note:** None of our current implementations conform to this spec.
   It is a goal based on lessons-learned. The biggest difference are
@@ -31,7 +31,7 @@ been to use the interface provided by the DBW supplier and write a
 software layer that wraps the manufacturer's interface with a common
 interface that the rest of our system interacts with.  This layer may
 be anything from simple translations between message types to complex
-closed loop controllers.  It may consistent of one node or many nodes.
+closed loop controllers.  It may consist of one node or many nodes.
 The important aspect is a consistent interface presented to the higher
 level autonomy system, not how it is implemented.
 
