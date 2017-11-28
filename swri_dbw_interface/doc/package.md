@@ -1,12 +1,15 @@
 # swri_dbw_interface
 
-This package provides documentation and tools to encourage common
-interface conventions for drive-by-wire systems.
+This package provides documentation and tools to define and specify common 
+interface conventions for various drive-by-wire systems and the SwRI autonomy
+system.
 
-**Note:** None of our current implementations conform to this spec.
-  It is a goal based on lessons-learned. The biggest difference are
-  the current topic names and changing the normal transmission state
-  from drive_high to drive.
+More specifically, the practical purpose here is to define and specify the ROS
+interface between the SwRI autonomy system and a generic/standardized DBW system, 
+where the generic/standardized messages would then be translated to and from the 
+native DBW system. This type standardized interface would enable and encourage 
+consistency across vehicle platforms by ensuring that the autonomy software can
+be decoupled from vehicle-specific implementations.
 
 ## Contents
  - [Overview](#overview-)
@@ -25,30 +28,30 @@ interface conventions for drive-by-wire systems.
 
 ## Overview [⬆](#swri_dbw_interface)
 
-We have found that asking DBW suppliers to conform to a specific
-interface has been fraught with peril.  A more flexible approach has
-been to use the interface provided by the DBW supplier and write a
-software layer that wraps the manufacturer's interface with a common
-interface that the rest of our system interacts with.  This layer may
+The swri_dbw_interface defines an abstract interface to a native
+vehicle drive-by-wire system. In practice, this is most commonly
+implemented as a translation layer by wrapping the native interface
+and translating between the swri_dbw_interface messages and the 
+native drive-by-wire system messages and vice versa.  This layer may
 be anything from simple translations between message types to complex
 closed loop controllers.  It may consist of one node or many nodes.
 The important aspect is a consistent interface presented to the higher
 level autonomy system, not how it is implemented.
 
-This interface has evolved against actuated gas/brake
+This interface was designed for actuated gas/brake
 Ackermann-steered vehicles (as opposed to tracked vehicles or vehicles
 that provide intrinsic speed control).  It is expected that the
 interface will be extended to handle other types of vehicles as they
 are encountered.
 
-Due to the combined unique needs of projects and variations in
+Due to the combined unique needs of use cases and variations in
 drive-by-wire capabilities and implementations, it is expected that
 variations and adaptations may be required for different
 circumastances.  In those cases, any variations should be documented
 along with the implementation.
 
 As new features are required, it is recommended that they be developed
-for the specific project according to the conventions below, tested
+for the specific use case according to the conventions below, tested
 and refined in an actual use case, and then, if they are generic
 enough for other applications, merged into these specifications once
 they are mature.
