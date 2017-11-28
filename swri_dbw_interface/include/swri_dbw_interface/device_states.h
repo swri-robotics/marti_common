@@ -41,6 +41,7 @@ namespace swri_dbw_interface {
 // These values are valid command and feedback states.
 static const std::string TRANSMISSION_PARK = "park";
 static const std::string TRANSMISSION_DRIVE = "drive";
+static const std::string TRANSMISSION_DRIVE_LOW = "drive_low";
 static const std::string TRANSMISSION_REVERSE = "reverse";
 static const std::string TRANSMISSION_NEUTRAL = "neutral";
 
