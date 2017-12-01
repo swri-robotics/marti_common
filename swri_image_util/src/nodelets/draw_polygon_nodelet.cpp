@@ -29,35 +29,25 @@
 
 #include <string>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
+#include <cv_bridge/cv_bridge.h>
 #include <image_transport/image_transport.h>
+#include <nodelet/nodelet.h>
+#include <opencv2/core/core.hpp>
+#include <ros/ros.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Image.h>
-#include <cv_bridge/cv_bridge.h>
-#include <swri_image_util/image_normalization.h>
-
-#include <swri_math_util/math_util.h>
+#include <XmlRpcException.h>
 
 namespace swri_image_util
 {
-  class ContrastStretchNodelet : public nodelet::Nodelet
+  class DrawPolygonNodelet : public nodelet::Nodelet
   {
   public:
-    ContrastStretchNodelet() :
-      bins_(8),
-      max_min_(0.0),
-      min_max_(0.0),
-      over_exposure_threshold_(255.0),
-      over_exposure_dilation_(3)
-    {
-    }
-
-    ~ContrastStretchNodelet()
+      DrawPolygonNodelet() :
+        thickness_(-1),
+        r_(0),
+        g_(0),
+        b_(0)
     {
     }
 
@@ -66,76 +56,70 @@ namespace swri_image_util
       ros::NodeHandle &node = getNodeHandle();
       ros::NodeHandle &priv = getPrivateNodeHandle();
 
-      priv.param("bins", bins_, bins_);
-      priv.param("max_min", max_min_, max_min_);
-      priv.param("min_max", min_max_, min_max_);
-      priv.param("over_exposure_threshold", over_exposure_threshold_, over_exposure_threshold_);
-      priv.param("over_exposure_dilation", over_exposure_dilation_, over_exposure_dilation_);
-      
-      std::string mask;
-      priv.param("mask", mask, std::string(""));
-      if (!mask.empty())
+      priv.param("thickness", thickness_, thickness_);
+      priv.param("r", r_, r_);
+      priv.param("g", g_, g_);
+      priv.param("b", b_, b_);
+
+      try
       {
-        mask_ = cv::imread(mask, 0);
+        XmlRpc::XmlRpcValue polygon;
+        priv.getParam("polygon", polygon);
+        for (size_t i = 0; i < polygon.size(); i++)
+        {
+          const XmlRpc::XmlRpcValue& point = polygon[i];
+          XmlRpc::XmlRpcValue x_param = point[0];
+          XmlRpc::XmlRpcValue y_param = point[1];
+          polygon_.push_back(cv::Point(
+              static_cast<int>(x_param),
+              static_cast<int>(y_param)));
+        }
+      }
+      catch (XmlRpc::XmlRpcException& e)
+      {
+        ROS_ERROR("Failed to parse polygon: %s", e.getMessage().c_str());
+        ros::requestShutdown();
+        return;
       }
 
+
       image_transport::ImageTransport it(node);
-      image_pub_ = it.advertise("normalized_image", 1);
-      image_sub_ = it.subscribe("image", 1, &ContrastStretchNodelet::ImageCallback, this);
+      image_pub_ = it.advertise("image_out", 1);
+      image_sub_ = it.subscribe("image_in", 1, &DrawPolygonNodelet::imageCallback, this);
     }
 
-    void ImageCallback(const sensor_msgs::ImageConstPtr& image)
+    void imageCallback(const sensor_msgs::ImageConstPtr& image)
     {
       cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-      if (mask_.empty())
-      {
-        mask_ = cv::Mat::ones(cv_image->image.size(), CV_8U);
-      }
-      else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols)
-      {
-        cv::resize(mask_, mask_, cv_image->image.size(), 1.0, 1.0, cv::INTER_NEAREST);
-      }
+      const cv::Point* points[1] = { &polygon_[0] };
+      int count = polygon_.size();
 
-      cv::Mat mask;
-
-      if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
+      if (thickness_ < 1)
       {
-        cv::Mat over_exposed = cv_image->image > over_exposure_threshold_;
-        cv::Mat element = cv::getStructuringElement(
-          cv::MORPH_ELLIPSE,
-          cv::Size(2 * over_exposure_dilation_ + 1, 2 * over_exposure_dilation_ + 1 ),
-          cv::Point(over_exposure_dilation_, over_exposure_dilation_ ));
-        cv::dilate(over_exposed, over_exposed, element);
-        
-        mask = mask_.clone();
-        mask.setTo(0, over_exposed);
+        cv::fillPoly(cv_image->image, points, &count, 1, cv::Scalar(b_, g_, r_));
       }
       else
       {
-        mask = mask_;
+        cv::polylines(cv_image->image, points, &count, 1, true, cv::Scalar(b_, g_, r_), thickness_);
       }
-
-      swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask, max_min_, min_max_);
 
       image_pub_.publish(cv_image->toImageMsg());
     }
 
   private:
-    int32_t bins_;
-    double max_min_;
-    double min_max_;
-    double over_exposure_threshold_;
-    int32_t over_exposure_dilation_;
-    
-    cv::Mat mask_;
+    int thickness_;
+    int r_;
+    int g_;
+    int b_;
+
+    std::vector<cv::Point> polygon_;
 
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
-
   };
 }
 
 // Register nodelet plugin
 #include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, ContrastStretchNodelet)
+SWRI_NODELET_EXPORT_CLASS(swri_image_util, DrawPolygonNodelet);
