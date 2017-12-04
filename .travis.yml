@@ -24,7 +24,7 @@ jobs:
     - env: ROS_DISTRO="lunar" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
     - stage: lint
       sudo: false
-      install: pip install -q catkin-lint
+      install: pip install --user -q catkin-lint
       script: catkin_lint -W2 --explain .
       env: JOB="catkin_lint"
   allow_failures:
