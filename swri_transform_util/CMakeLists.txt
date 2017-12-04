@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV  REQUIRED core highgui imgproc video)
 find_package(Boost REQUIRED)
 
-if($ENV{ROS_DISTRO} STREQUAL "jade")
+if($ENV{ROS_DISTRO} STRLESS "kinetic")
   set(PROJ_INCLUDE_DIRS /usr/include)
   set(PROJ_LIBRARY_DIRS /usr/lib)
   find_library(PROJ_LIBRARIES proj
