@@ -92,6 +92,7 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/blend_images_nodelet.cpp
   src/nodelets/crosshairs_nodelet.cpp
   src/nodelets/contrast_stretch_nodelet.cpp
+  src/nodelets/draw_polygon_nodelet.cpp
   src/nodelets/draw_text_nodelet.cpp
   src/nodelets/image_pub_nodelet.cpp
   src/nodelets/normalize_response_nodelet.cpp
@@ -129,6 +130,9 @@ target_link_libraries(scale_image ${catkin_LIBRARIES})
 add_executable(replace_colors src/nodes/replace_colors.cpp)
 target_link_libraries(replace_colors ${catkin_LIBRARIES})
 
+swri_nodelet_add_node(draw_polygon ${PROJECT_NAME} DrawPolygonNodelet)
+target_link_libraries(draw_polygon ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+
 swri_nodelet_add_node(image_pub ${PROJECT_NAME} ImagePubNodelet)
 target_link_libraries(image_pub ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
@@ -154,6 +158,7 @@ install(TARGETS ${PROJECT_NAME}
     blend_images
     contrast_stretch
     crosshairs
+    draw_polygon
     draw_text
     dummy_image_publisher
     image_pub
