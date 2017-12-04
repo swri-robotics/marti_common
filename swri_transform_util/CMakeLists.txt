@@ -20,8 +20,16 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV  REQUIRED core highgui imgproc video)
 find_package(Boost REQUIRED)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(PROJ REQUIRED proj)
+if($ENV{ROS_DISTRO} STREQUAL "indigo")
+  set(PROJ_INCLUDE_DIRS /usr/include)
+  set(PROJ_LIBRARY_DIRS /usr/lib)
+  find_library(PROJ_LIBRARIES proj
+    HINTS ${PROJ_LIB_DIRS}
+  )
+else()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(PROJ REQUIRED proj)
+endif()
 
 generate_dynamic_reconfigure_options(
   cfg/DynamicPublisher.cfg
