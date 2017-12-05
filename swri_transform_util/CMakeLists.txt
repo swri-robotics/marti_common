@@ -20,6 +20,16 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV  REQUIRED core highgui imgproc video)
 find_package(Boost REQUIRED)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PROJ proj)
+if(NOT "${PROJ_FOUND}")
+  set(PROJ_INCLUDE_DIRS /usr/include)
+  set(PROJ_LIBRARY_DIRS /usr/lib)
+  find_library(PROJ_LIBRARIES proj
+    HINTS ${PROJ_LIB_DIRS}
+  )
+endif()
+
 generate_dynamic_reconfigure_options(
   cfg/DynamicPublisher.cfg
 )
@@ -41,12 +51,14 @@ catkin_package(
     swri_yaml_util
     tf
     topic_tools
+  DEPENDS PROJ
 )
 
 include_directories(include 
   ${catkin_INCLUDE_DIRS} 
   ${Boost_INCLUDE_DIRS} 
   ${OpenCV_INCLUDE_DIRS}
+  ${PROJ_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
@@ -60,7 +72,7 @@ add_library(${PROJECT_NAME}
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
 link_directories(${OpenCV_LIBRARY_DIRS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} proj)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PROJ_LIBRARIES})
 
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/dynamic_publisher.cpp)
