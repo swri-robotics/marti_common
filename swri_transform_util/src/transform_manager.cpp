@@ -349,6 +349,16 @@ namespace swri_transform_util
       const ros::Time& time,
       tf::StampedTransform& transform) const
   {
+    return GetTransform(target_frame, source_frame, time, ros::Duration(0.1), transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Time& time,
+      const ros::Duration& timeout,
+      tf::StampedTransform& transform) const
+  {
     if (!tf_listener_)
       return false;
 
@@ -359,7 +369,7 @@ namespace swri_transform_util
           target_frame,
           source_frame,
           time,
-          ros::Duration(0.1));
+          timeout);
 
       tf_listener_->lookupTransform(
           target_frame,
@@ -395,5 +405,14 @@ namespace swri_transform_util
       tf::StampedTransform& transform) const
   {
     return GetTransform(target_frame, source_frame, ros::Time(0), transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Duration& timeout,
+      tf::StampedTransform& transform) const
+  {
+    return GetTransform(target_frame, source_frame, ros::Time(0), timeout, transform);
   }
 }
