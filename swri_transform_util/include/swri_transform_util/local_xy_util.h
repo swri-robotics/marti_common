@@ -169,9 +169,9 @@ namespace swri_transform_util
     std::string Frame() const { return frame_; }
 
     /**
-     * Return the TF frame ID corresponding to the local origin with the slash removed
+     * Return the TF frame ID corresponding to the local origin with a leading slash
      *
-     * @return The TF frame ID corresponding to the local origin with the slash removed
+     * @return The TF frame ID corresponding to the local origin with a leading slash
      */
     std::string NormalizedFrame() const { return NormalizeFrameId(frame_); }
 
