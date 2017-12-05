@@ -118,7 +118,7 @@ class OriginManager(object):
                                               queue_size=2)
         self.tf_broadcaster = tf.TransformBroadcaster()
 
-    def set_origin(self, latitude, longitude, altitude):
+    def set_origin(self, latitude, longitude, altitude, stamp=None):
         """
         Set the origin to the position described by the arguments and publish it.
 
@@ -129,9 +129,14 @@ class OriginManager(object):
             longitude (float): The longitude of the origin in degrees.
             altitude (float): The altitude of the origin in meters.
                 Positive values correspond to altitude above the geoid.
+            stamp (rospy.Time): The time to use for the origin's header.stamp field.
+                If the argument is `None`, the stamp is not set and defaults to
+                `rospy.Time(0)`. (default None).
         """
         origin = PoseStamped()
         origin.header.frame_id = self.local_xy_frame
+        if stamp is not None:
+            origin.header.stamp = stamp
         origin.pose.position.y = latitude
         origin.pose.position.x = longitude
         origin.pose.position.z = altitude
@@ -195,7 +200,7 @@ class OriginManager(object):
         if msg.status.status == GPSStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid GPSFix. Waiting for a valid one...'
             raise InvalidFixException(message)
-        self.set_origin(msg.latitude, msg.longitude, msg.altitude)
+        self.set_origin(msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
         self.origin_source = 'gpsfix'
 
     def set_origin_from_navsat(self, msg):
@@ -211,7 +216,7 @@ class OriginManager(object):
         if msg.status.status == NavSatStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid NavSatFix. Waiting for a valid one...'
             raise InvalidFixException(message)
-        self.set_origin(msg.latitude, msg.longitude, msg.altitude)
+        self.set_origin(msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
         self.origin_source = 'navsat'
 
     def _publish_diagnostic(self):
