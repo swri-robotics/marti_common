@@ -35,6 +35,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <ros/ros.h>
+#include <swri_transform_util/transform_util.h>
 #include <topic_tools/shape_shifter.h>
 
 namespace swri_transform_util
@@ -166,6 +167,13 @@ namespace swri_transform_util
      * @return The TF frame ID corresponding to the local origin
      */
     std::string Frame() const { return frame_; }
+
+    /**
+     * Return the TF frame ID corresponding to the local origin with a leading slash
+     *
+     * @return The TF frame ID corresponding to the local origin with a leading slash
+     */
+    std::string NormalizedFrame() const { return NormalizeFrameId(frame_); }
 
     /**
      * Convert WGS84 latitude and longitude to LocalXY.

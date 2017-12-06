@@ -30,11 +30,10 @@
 #ifndef TRANSFORM_UTIL_TRANSFORM_UTIL_H_
 #define TRANSFORM_UTIL_TRANSFORM_UTIL_H_
 
+#include <string>
 #include <boost/array.hpp>
 
 #include <tf/transform_datatypes.h>
-
-#include <swri_transform_util/local_xy_util.h>
 
 namespace swri_transform_util
 {
@@ -255,6 +254,32 @@ namespace swri_transform_util
   double LatitudeDegreesFromMeters(
     double altitude,
     double arc_length);
+
+  /**
+   * Normalize a TF frame ID by assuming that frames with
+   * relative paths are in the global namespace and adding
+   * a leading slash.
+   *
+   * @param[in] frame_id  A TF frame ID, with or without a leading slash
+   * @returns   frame_id with a leading slash if it did not have one previously
+   */
+  std::string NormalizeFrameId(const std::string& frame_id);
+
+  /**
+   * Compare two TF frame IDs, assuming that frames with
+   * relative paths are in the global namespace. E.g.
+   * "map" == "/map"
+   * "map" == "map"
+   * "//map" != "/map"
+   * "/ns/map" == "ns/map"
+   * "/ns/map" != "map"
+   * "/ns/map" != "/map"
+   *
+   * @param[in] frame1 A TF frame ID, with or without a leading slash
+   * @param[in[ frame2 A TF frame ID, with or without a leading slash
+   * @return True if the frames match
+   **/
+  bool FrameIdsEqual(const std::string& frame1, const std::string& frame2);
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_
