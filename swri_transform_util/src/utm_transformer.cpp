@@ -70,9 +70,9 @@ namespace swri_transform_util
       }
     }
 
-    if (target_frame == _utm_frame)
+    if (FrameIdsEqual(target_frame, _utm_frame))
     {
-      if (source_frame == _wgs84_frame)
+      if (FrameIdsEqual(source_frame, _wgs84_frame))
       {
         transform = boost::make_shared<Wgs84ToUtmTransform>(
             utm_util_,
@@ -100,7 +100,7 @@ namespace swri_transform_util
         return true;
       }
     }
-    else if (target_frame == _wgs84_frame && source_frame == _utm_frame)
+    else if (FrameIdsEqual(target_frame, _wgs84_frame) && FrameIdsEqual(source_frame, _utm_frame))
     {
       transform = boost::make_shared<UtmToWgs84Transform>(
           utm_util_,
@@ -108,7 +108,7 @@ namespace swri_transform_util
           utm_band_);
       return true;
     }
-    else if (source_frame == _utm_frame)
+    else if (FrameIdsEqual(source_frame, _utm_frame))
     {
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
@@ -145,16 +145,6 @@ namespace swri_transform_util
       if (tf_listener_->frameExists(local_xy_frame))
       {
         local_xy_frame_ = local_xy_frame;
-        initialized_ = true;
-      }
-      else if (!local_xy_frame.empty() && local_xy_frame[0] == '/' && tf_listener_->frameExists(local_xy_frame.substr(1)))
-      {
-        local_xy_frame_ = local_xy_frame.substr(1);
-        initialized_ = true;
-      }
-      else if (!local_xy_frame.empty() && local_xy_frame[0] != '/' && tf_listener_->frameExists("/" + local_xy_frame))
-      {
-        local_xy_frame_ = "/" + local_xy_frame;
         initialized_ = true;
       }
     }

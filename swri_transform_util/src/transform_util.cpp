@@ -38,6 +38,7 @@
 #include <boost/math/special_functions/sign.hpp>
 
 #include <swri_transform_util/earth_constants.h>
+#include <swri_transform_util/local_xy_util.h>
 #include <swri_math_util/constants.h>
 #include <swri_math_util/math_util.h>
 #include <swri_math_util/trig_util.h>
@@ -400,5 +401,20 @@ namespace swri_transform_util
     double arc_length)
   {
     return arc_length / (altitude + _earth_equator_radius) * swri_math_util::_rad_2_deg;
+  }
+
+  std::string NormalizeFrameId(const std::string& frame_id)
+  {
+    if (!frame_id.empty() && frame_id[0] != '/')
+    {
+      return "/" + frame_id;
+    }
+    return frame_id;
+  }
+
+  bool FrameIdsEqual(const std::string& frame1, const std::string& frame2)
+  {
+    return (frame1 == frame2) ||
+           (NormalizeFrameId(frame1) == NormalizeFrameId(frame2));
   }
 }
