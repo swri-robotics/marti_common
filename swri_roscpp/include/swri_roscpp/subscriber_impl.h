@@ -75,7 +75,8 @@ class SubscriberImpl
       min_latency_ = latency;
       max_latency_ = latency;
       total_latency_ = latency;
-    } else {
+    }
+    else {
       min_latency_ = std::min(min_latency_, latency);
       max_latency_ = std::max(max_latency_, latency);
       total_latency_ += latency;
@@ -87,7 +88,8 @@ class SubscriberImpl
         min_period_ = period;
         max_period_ = period;
         total_periods_ = period;
-      } else if (message_count_ > 2) {
+      }
+      else if (message_count_ > 2) {
         min_period_ = std::min(min_period_, period);
         max_period_ = std::max(max_period_, period);
         total_periods_ += period;
@@ -123,12 +125,15 @@ class SubscriberImpl
 
 
  public:
-  SubscriberImpl()
+  SubscriberImpl() :
+    unmapped_topic_("N/A"),
+    mapped_topic_("N/A"),
+    message_count_(0),
+    timeout_(-1.0),
+    in_timeout_(false),
+    timeout_count_(0),
+    blocking_timeout_(false)
   {
-    unmapped_topic_ = "N/A";
-    mapped_topic_ = "N/A";
-    timeout_ = ros::Duration(-1.0);
-    blocking_timeout_ = false;
     resetStatistics();
   }
 
