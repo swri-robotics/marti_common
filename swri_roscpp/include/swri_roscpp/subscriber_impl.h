@@ -75,8 +75,7 @@ class SubscriberImpl
       min_latency_ = latency;
       max_latency_ = latency;
       total_latency_ = latency;
-    }
-    else {
+    } else {
       min_latency_ = std::min(min_latency_, latency);
       max_latency_ = std::max(max_latency_, latency);
       total_latency_ += latency;
@@ -88,8 +87,7 @@ class SubscriberImpl
         min_period_ = period;
         max_period_ = period;
         total_periods_ = period;
-      }
-      else if (message_count_ > 2) {
+      } else if (message_count_ > 2) {
         min_period_ = std::min(min_period_, period);
         max_period_ = std::max(max_period_, period);
         total_periods_ += period;
