@@ -239,13 +239,20 @@ namespace swri_transform_util
         const ros::Duration& timeout,
         tf::StampedTransform& transform) const;
 
+    /**
+     * @brief LocalXyUtil exposes the private instance of LocalXyWgs84Util
+     * @return
+     */
+    const LocalXyWgs84UtilPtr& LocalXyUtil() const;
+
   private:
     boost::shared_ptr<tf::TransformListener> tf_listener_;
 
-    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+    LocalXyWgs84UtilPtr local_xy_util_;
 
     SourceTargetMap transformers_;
   };
+  typedef boost::shared_ptr<TransformManager> TransformManagerPtr;
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_MANAGER_H_

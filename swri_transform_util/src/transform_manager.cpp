@@ -363,4 +363,9 @@ namespace swri_transform_util
   {
     return GetTransform(target_frame, source_frame, ros::Time(0), timeout, transform);
   }
+
+  const LocalXyWgs84UtilPtr &TransformManager::LocalXyUtil() const
+  {
+    return local_xy_util_;
+  }
 }

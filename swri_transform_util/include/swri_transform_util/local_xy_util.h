@@ -136,6 +136,12 @@ namespace swri_transform_util
     bool Initialized() const { return initialized_; }
 
     /**
+     * Reset to "not Initialized". Useful when the local_xy_origin
+     * changes and we want this class to be updated.
+     */
+    void ResetInitialization();
+
+    /**
      * Return the longitude coordinate of the local origin
      *
      * @return The WGS84 longitude coordinate of the local origin in degrees
