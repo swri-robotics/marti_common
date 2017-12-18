@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2017-12-18)
+------------------
 * expose TransformManager::LocalXyUtil() and LocalXyWgs84Util::ResetInitialization() (`#501 <https://github.com/swri-robotics/marti_common/issues/501>`_)
 * Complete rewrite of initialize_origin.py (`#491 <https://github.com/swri-robotics/marti_common/issues/491>`_)
 * Normalize TF frames before comparisons. (`#492 <https://github.com/swri-robotics/marti_common/issues/492>`_)
