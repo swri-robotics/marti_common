@@ -70,15 +70,17 @@ class SubscriberImpl
 
     message_count_++;
 
-    ros::Duration latency = now - stamp;
-    if (message_count_ == 1) {
-      min_latency_ = latency;
-      max_latency_ = latency;
-      total_latency_ = latency;
-    } else {
-      min_latency_ = std::min(min_latency_, latency);
-      max_latency_ = std::max(max_latency_, latency);
-      total_latency_ += latency;
+    if (stamp.isValid()) {
+      ros::Duration latency = now - stamp;
+      if (message_count_ == 1) {
+        min_latency_ = latency;
+        max_latency_ = latency;
+        total_latency_ = latency;
+      } else {
+        min_latency_ = std::min(min_latency_, latency);
+        max_latency_ = std::max(max_latency_, latency);
+        total_latency_ += latency;
+      }
     }
 
     if (message_count_ > 1) {
@@ -123,12 +125,15 @@ class SubscriberImpl
 
 
  public:
-  SubscriberImpl()
+  SubscriberImpl() :
+    unmapped_topic_("N/A"),
+    mapped_topic_("N/A"),
+    message_count_(0),
+    timeout_(-1.0),
+    in_timeout_(false),
+    timeout_count_(0),
+    blocking_timeout_(false)
   {
-    unmapped_topic_ = "N/A";
-    mapped_topic_ = "N/A";
-    timeout_ = ros::Duration(-1.0);
-    blocking_timeout_ = false;
     resetStatistics();
   }
 
@@ -163,8 +168,12 @@ class SubscriberImpl
   {
     if (message_count_ < 1) {
       return ros::DURATION_MAX;
-    } else {
+    } else if (last_header_stamp_.isValid()) {
       return now - last_header_stamp_;
+    } else {
+      // If we've received messages but they don't have valid stamps, we can't
+      // actually determine the age, so just return an empty duration.
+      return ros::Duration(0.0);
     }
   }
 

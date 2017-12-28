@@ -44,6 +44,7 @@ NAME = 'test_initialize_origin'
 ORIGIN_TOPIC = '/local_xy_origin'
 ORIGIN_TYPES = [PoseStamped, GPSFix, GeoPose]
 
+msg_stamp = rospy.Time(1337, 0xDEADBEEF)
 swri = {
     'latitude': 29.45196669,
     'longitude': -98.61370577,
@@ -59,6 +60,7 @@ class TestInitializeOrigin(unittest.TestCase):
         rospy.loginfo("Origin is a " + origin_class._type + " message")
         self.assertIsNotNone(origin_class, msg=ORIGIN_TOPIC+" was never advertised")
         self.assertIn(origin_class, ORIGIN_TYPES)
+        self.test_stamp = False  # Enable this for auto origin
         return rospy.Subscriber(ORIGIN_TOPIC, origin_class, self.originCallback)        
 
     def originCallback(self, msg):
@@ -90,6 +92,10 @@ class TestInitializeOrigin(unittest.TestCase):
             yaw = euler[2]
             self.assertAlmostEqual(yaw, 0)
         self.assertEqual(msg.header.frame_id, '/far_field')
+        if self.test_stamp:
+            self.assertEqual(msg.header.stamp, msg_stamp)
+        else:
+            self.assertEqual(msg.header.stamp, rospy.Time(0))
         self.assertAlmostEqual(longitude, swri['longitude'])
         self.assertAlmostEqual(latitude, swri['latitude'])
         self.assertAlmostEqual(altitude, swri['altitude'])
@@ -101,11 +107,13 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
         rospy.init_node('test_initialize_origin')
         gps_pub = rospy.Publisher('gps', GPSFix, queue_size=2)
         origin_sub = self.subscribeToOrigin()
+        self.test_stamp = True
         gps_msg = GPSFix()
         gps_msg.latitude = swri['latitude']
         gps_msg.longitude = swri['longitude']
         gps_msg.altitude = swri['altitude']
         gps_msg.track = swri['heading']
+        gps_msg.header.stamp = msg_stamp
         r = rospy.Rate(10.0)
         while not rospy.is_shutdown():
             gps_pub.publish(gps_msg)
@@ -115,13 +123,15 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
 class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
     def testAutoOriginFromNavSatFix(self):
         rospy.init_node('test_initialize_origin')
-        nsf_pub = rospy.Publisher('gps', NavSatFix, queue_size=2)
+        nsf_pub = rospy.Publisher('fix', NavSatFix, queue_size=2)
         origin_sub = self.subscribeToOrigin()
+        self.test_stamp = True
         nsf_msg = NavSatFix()
         nsf_msg.latitude = swri['latitude']
         nsf_msg.longitude = swri['longitude']
         nsf_msg.altitude = swri['altitude']
         nsf_msg.header.frame_id = "/far_field"
+        nsf_msg.header.stamp = msg_stamp
         r = rospy.Rate(10.0)
         while not rospy.is_shutdown():
             nsf_pub.publish(nsf_msg)

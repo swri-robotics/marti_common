@@ -2,6 +2,11 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.0 (2017-12-18)
+------------------
+* Link in the "highgui" module for swri_opencv_util (`#506 <https://github.com/swri-robotics/marti_common/issues/506>`_)
+* Contributors: P. J. Reed
+
 1.2.0 (2017-10-13)
 ------------------
 * Add PerpendicularPlaneWithPoint RANSAC model (`#487 <https://github.com/swri-robotics/marti_common/issues/487>`_)

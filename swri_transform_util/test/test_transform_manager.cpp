@@ -58,6 +58,19 @@ TEST(TransformManagerTests, Identity1)
   EXPECT_FLOAT_EQ(p1.y(), p3.y());
 }
 
+TEST(TransformManagerTests, IdentityNoSlash)
+{
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "/near_field",
+      "near_field",
+      transform));
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "near_field",
+      "/near_field",
+      transform));
+}
+
 TEST(TransformManagerTests, Identity2)
 {
   tf::Vector3 p1(435, -900, 0);
@@ -88,6 +101,28 @@ TEST(TransformManagerTests, TfToTf1)
   ASSERT_TRUE(_tf_manager.GetTransform(
       "/near_field",
       "/far_field",
+      transform));
+
+  tf::Vector3 near_field = transform * far_field;
+
+  EXPECT_FLOAT_EQ(-500, near_field.x());
+  EXPECT_FLOAT_EQ(-500, near_field.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * near_field;
+  EXPECT_FLOAT_EQ(far_field.x(), p3.x());
+  EXPECT_FLOAT_EQ(far_field.y(), p3.y());
+}
+
+TEST(TransformManagerTests, TfToTf1NoSlash)
+{
+  // Local Origin
+  tf::Vector3 far_field(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "/near_field",
+      "far_field",
       transform));
 
   tf::Vector3 near_field = transform * far_field;
@@ -140,6 +175,28 @@ TEST(TransformManagerTests, WgsToUtm)
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
+TEST(TransformManagerTests, WgsToUtmNoSlash)
+{
+  // San Antonio International Airport
+  tf::Vector3 wgs84(-98.471944, 29.526667, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "utm",
+      "wgs84",
+      transform));
+
+  tf::Vector3 utm = transform * wgs84;
+
+  EXPECT_FLOAT_EQ(551170, utm.x());
+  EXPECT_FLOAT_EQ(3266454, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * utm;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
+}
+
 TEST(TransformManagerTests, UtmToWgs84)
 {
   // San Antonio International Airport
@@ -171,6 +228,28 @@ TEST(TransformManagerTests, TfToUtm1)
   ASSERT_TRUE(_tf_manager.GetTransform(
       swri_transform_util::_utm_frame,
       "/far_field",
+      transform));
+
+  tf::Vector3 utm = transform * tf;
+
+  EXPECT_FLOAT_EQ(537460.3372816057, utm.x());
+  EXPECT_FLOAT_EQ(3258123.434110421, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * utm;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
+}
+
+TEST(TransformManagerTests, TfToUtm1NoSlash)
+{
+  // Local Origin
+  tf::Vector3 tf(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "utm",
+      "far_field",
       transform));
 
   tf::Vector3 utm = transform * tf;
@@ -315,6 +394,28 @@ TEST(TransformManagerTests, Wgs84ToTf1)
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
+TEST(TransformManagerTests, Wgs84ToTf1NoSlash)
+{
+  // Local Origin
+  tf::Vector3 wgs84(-98.61370577, 29.45196669, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "far_field",
+      "wgs84",
+      transform));
+
+  tf::Vector3 tf = transform * wgs84;
+
+  EXPECT_FLOAT_EQ(0, tf.x());
+  EXPECT_FLOAT_EQ(0, tf.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * tf;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
+}
+
 TEST(TransformManagerTests, Wgs84ToTf2)
 {
   // Local Origin
@@ -346,6 +447,28 @@ TEST(TransformManagerTests, TfToWgs84_1)
   ASSERT_TRUE(_tf_manager.GetTransform(
       swri_transform_util::_wgs84_frame,
       "/far_field",
+      transform));
+
+  tf::Vector3 wgs84 = transform * tf;
+
+  EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
+  EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf::Vector3 p3 = inverse * wgs84;
+  EXPECT_FLOAT_EQ(tf.x(), p3.x());
+  EXPECT_FLOAT_EQ(tf.y(), p3.y());
+}
+
+TEST(TransformManagerTests, TfToWgs84_1NoSlash)
+{
+  // Local Origin
+  tf::Vector3 tf(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager.GetTransform(
+      "wgs84",
+      "far_field",
       transform));
 
   tf::Vector3 wgs84 = transform * tf;

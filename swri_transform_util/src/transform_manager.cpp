@@ -92,8 +92,8 @@ namespace swri_transform_util
       const ros::Time& time,
       Transform& transform) const
   {
-    std::string src_frame = source_frame;
-    std::string tgt_frame = target_frame;
+    std::string src_frame = NormalizeFrameId(source_frame);
+    std::string tgt_frame = NormalizeFrameId(target_frame);
     if (tgt_frame == src_frame)
     {
       transform = Transform();
@@ -112,40 +112,12 @@ namespace swri_transform_util
     {
       source = _tf_frame;
     }
-    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
-    {
-      src_frame = source.substr(1);
-      source = _tf_frame;
-    }
-    else if (!source.empty() && source[0] != '/' && tf_listener_->frameExists("/" + source))
-    {
-      src_frame = "/" + source;
-      source = _tf_frame;
-    }
-    else if (!source.empty() && source[0] != '/')
-    {
-      source = "/" + source;
-    }
 
     // Check if the target frame is in the TF tree.
     std::string target = tgt_frame;
     if (tf_listener_->frameExists(target))
     {
       target = _tf_frame;
-    }
-    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
-    {
-      tgt_frame = target.substr(1);
-      target = _tf_frame;
-    }
-    else if (!target.empty() && target[0] != '/' && tf_listener_->frameExists("/" + target))
-    {
-      tgt_frame = "/" + target;
-      target = _tf_frame;
-    }
-    else if (!target.empty() && target[0] != '/')
-    {
-      target = "/" + target;
     }
 
     // Check if either of the frames is local_xy
@@ -242,7 +214,9 @@ namespace swri_transform_util
       const std::string& target_frame,
       const std::string& source_frame) const
   {
-    if (target_frame == source_frame)
+    std::string source = NormalizeFrameId(source_frame);
+    std::string target = NormalizeFrameId(target_frame);
+    if (target == source)
     {
       return true;
     }
@@ -253,41 +227,15 @@ namespace swri_transform_util
     }
 
     // Check if the source frame is in the TF tree.
-    std::string source = source_frame;
     if (tf_listener_->frameExists(source))
     {
       source = _tf_frame;
     }
-    else if (!source.empty() && source[0] == '/' && tf_listener_->frameExists(source.substr(1)))
-    {
-      source = _tf_frame;
-    }
-    else if (!source.empty() && source[0] != '/' && tf_listener_->frameExists("/" + source))
-    {
-      source = _tf_frame;
-    }
-    else if(!source.empty() && source[0] != '/')
-    {
-      source = "/" + source;
-    }
 
     // Check if the target frame is in the TF tree.
-    std::string target = target_frame;
     if (tf_listener_->frameExists(target))
     {
       target = _tf_frame;
-    }
-    else if (!target.empty() && target[0] == '/' && tf_listener_->frameExists(target.substr(1)))
-    {
-      target = _tf_frame;
-    }
-    else if (!target.empty() && target[0] != '/' && tf_listener_->frameExists("/" + target))
-    {
-      target = _tf_frame;
-    }
-    else if (!target.empty() && target[0] != '/')
-    {
-      target = "/" + target;
     }
 
     // Check if either of the frames is local_xy
@@ -349,6 +297,16 @@ namespace swri_transform_util
       const ros::Time& time,
       tf::StampedTransform& transform) const
   {
+    return GetTransform(target_frame, source_frame, time, ros::Duration(0.1), transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Time& time,
+      const ros::Duration& timeout,
+      tf::StampedTransform& transform) const
+  {
     if (!tf_listener_)
       return false;
 
@@ -359,7 +317,7 @@ namespace swri_transform_util
           target_frame,
           source_frame,
           time,
-          ros::Duration(0.1));
+          timeout);
 
       tf_listener_->lookupTransform(
           target_frame,
@@ -395,5 +353,19 @@ namespace swri_transform_util
       tf::StampedTransform& transform) const
   {
     return GetTransform(target_frame, source_frame, ros::Time(0), transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
+      const ros::Duration& timeout,
+      tf::StampedTransform& transform) const
+  {
+    return GetTransform(target_frame, source_frame, ros::Time(0), timeout, transform);
+  }
+
+  const LocalXyWgs84UtilPtr &TransformManager::LocalXyUtil() const
+  {
+    return local_xy_util_;
   }
 }

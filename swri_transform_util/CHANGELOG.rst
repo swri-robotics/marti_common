@@ -2,6 +2,15 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.0 (2017-12-18)
+------------------
+* expose TransformManager::LocalXyUtil() and LocalXyWgs84Util::ResetInitialization() (`#501 <https://github.com/swri-robotics/marti_common/issues/501>`_)
+* Complete rewrite of initialize_origin.py (`#491 <https://github.com/swri-robotics/marti_common/issues/491>`_)
+* Normalize TF frames before comparisons. (`#492 <https://github.com/swri-robotics/marti_common/issues/492>`_)
+* Add new methods that expose the frame timeout. (`#498 <https://github.com/swri-robotics/marti_common/issues/498>`_)
+* Use pkgconfig to include libproj in swri_transform_util
+* Contributors: Davide Faconti, Edward Venator, P. J. Reed
+
 1.2.0 (2017-10-13)
 ------------------
 

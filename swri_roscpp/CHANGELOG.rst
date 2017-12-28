@@ -3,6 +3,11 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+2.0.0 (2017-12-18)
+------------------
+* Ensure all swri::Subscriber members are initialized (`#505 <https://github.com/swri-robotics/marti_common/issues/505>`_)
+* Contributors: P. J. Reed
+
 1.2.0 (2017-10-13)
 ------------------
 

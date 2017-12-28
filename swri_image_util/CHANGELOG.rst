@@ -2,6 +2,13 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.0 (2017-12-18)
+------------------
+* Add nodelet for drawing a polygon on an image. (`#500 <https://github.com/swri-robotics/marti_common/issues/500>`_)
+* update to use non deprecated pluginlib macro (`#493 <https://github.com/swri-robotics/marti_common/issues/493>`_)
+* Implement simple image file publisher. (`#488 <https://github.com/swri-robotics/marti_common/issues/488>`_)
+* Contributors: Marc Alban, Mikael Arguedas
+
 1.2.0 (2017-10-13)
 ------------------
 

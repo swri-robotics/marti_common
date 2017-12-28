@@ -67,7 +67,7 @@ namespace swri_transform_util
       return false;
     }
 
-    if (target_frame == _wgs84_frame)
+    if (FrameIdsEqual(target_frame, _wgs84_frame))
     {
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(local_xy_frame_, source_frame , time, tf_transform))
@@ -81,7 +81,7 @@ namespace swri_transform_util
 
       return true;
     }
-    else if (source_frame == _wgs84_frame)
+    else if (FrameIdsEqual(source_frame, _wgs84_frame))
     {
       tf::StampedTransform tf_transform;
       if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
@@ -113,16 +113,6 @@ namespace swri_transform_util
       if (tf_listener_->frameExists(local_xy_frame))
       {
         local_xy_frame_ = local_xy_frame;
-        initialized_ = true;
-      }
-      else if (!local_xy_frame.empty() && local_xy_frame[0] == '/' && tf_listener_->frameExists(local_xy_frame.substr(1)))
-      {
-        local_xy_frame_ = local_xy_frame.substr(1);
-        initialized_ = true;
-      }
-      else if (!local_xy_frame.empty() && local_xy_frame[0] != '/' && tf_listener_->frameExists("/" + local_xy_frame))
-      {
-        local_xy_frame_ = "/" + local_xy_frame;
         initialized_ = true;
       }
     }

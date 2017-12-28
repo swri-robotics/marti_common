@@ -35,6 +35,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <ros/ros.h>
+#include <swri_transform_util/transform_util.h>
 #include <topic_tools/shape_shifter.h>
 
 namespace swri_transform_util
@@ -135,6 +136,12 @@ namespace swri_transform_util
     bool Initialized() const { return initialized_; }
 
     /**
+     * Reset to "not Initialized". Useful when the local_xy_origin
+     * changes and we want this class to be updated.
+     */
+    void ResetInitialization();
+
+    /**
      * Return the longitude coordinate of the local origin
      *
      * @return The WGS84 longitude coordinate of the local origin in degrees
@@ -166,6 +173,13 @@ namespace swri_transform_util
      * @return The TF frame ID corresponding to the local origin
      */
     std::string Frame() const { return frame_; }
+
+    /**
+     * Return the TF frame ID corresponding to the local origin with a leading slash
+     *
+     * @return The TF frame ID corresponding to the local origin with a leading slash
+     */
+    std::string NormalizedFrame() const { return NormalizeFrameId(frame_); }
 
     /**
      * Convert WGS84 latitude and longitude to LocalXY.

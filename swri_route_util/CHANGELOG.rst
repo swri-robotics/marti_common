@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.0 (2017-12-18)
+------------------
+* Accept '1' or 'true' for stop points. (`#489 <https://github.com/swri-robotics/marti_common/issues/489>`_)
+* Contributors: Marc Alban
+
 1.2.0 (2017-10-13)
 ------------------
 * Add support for vehicle_width_override property on route (`#485 <https://github.com/swri-robotics/marti_common/issues/485>`_)

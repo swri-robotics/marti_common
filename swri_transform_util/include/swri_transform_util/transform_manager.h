@@ -85,6 +85,9 @@ namespace swri_transform_util
      * The frame IDs for target_frame and source_frame can be either a frame id
      * in the current TF tree or one of the special frames /UTM or /WGS84.
      *
+     * This method waits for a 0.1 second timeout if the transform is not
+     * immediately available.
+     *
      * @param[in] target_frame The TF (or special) frame id of the target
      * @param[in] source_frame The TF (or special) frame id of the source
      * @param[in] time         The requested time to request the transform.
@@ -109,6 +112,9 @@ namespace swri_transform_util
      *
      * The frame IDs for target_frame and source_frame can be either a frame id
      * in the current TF tree or one of the special frames /UTM or /WGS84.
+     *
+     * This method waits for a 0.1 second timeout if the transform is not
+     * immediately available.
      *
      * @param[in] target_frame The TF (or special) frame id of the target
      * @param[in] source_frame The TF (or special) frame id of the source
@@ -143,6 +149,9 @@ namespace swri_transform_util
      * This function is a thin wrapper around the tf::TransformListener. Only
      * TF frames are supported.
      *
+     * This method waits for a 0.1 second timeout if the transform is not
+     * immediately available.
+     *
      * @param[in] target_frame The TF frame id of the target
      * @param[in] source_frame The TF frame id of the source
      * @param[in] time         The requested time to request the transform.
@@ -165,6 +174,9 @@ namespace swri_transform_util
      * This function is a thin wrapper around the tf::TransformListener. Only
      * TF frames are supported.
      *
+     * This method waits for a 0.1 second timeout if the transform is not
+     * immediately available.
+     *
      * @param[in] target_frame The TF frame id of the target
      * @param[in] source_frame The TF frame id of the source
      * @param[out] transform   The transform requested. If the function returns
@@ -176,13 +188,71 @@ namespace swri_transform_util
         const std::string& source_frame,
         tf::StampedTransform& transform) const;
 
+    /**
+     * Get the tf::Transform between two frames at a specified time
+     *
+     * This function is a thin wrapper around the tf::TransformListener. Only
+     * TF frames are supported.
+     *
+     * If the frames are not immediately available, this method will wait
+     * for the frames for the specified timeout period.
+     *
+     * @param[in] target_frame The TF frame id of the target
+     * @param[in] source_frame The TF frame id of the source
+     * @param[in] time         The requested time to request the transform.
+     *    ros::Time(0) means the most recent time for which a valid transform
+     *    is available.
+     * @param[in] timeout      How long to wait for the transform to be
+     *    available before returning False.
+     * @param[out] transform   The transform requested. If the function returns
+     *    false, transform is not mutated.
+     * @return True if the transform is available at the requested time. False
+     *    otherwise.
+     */
+    bool GetTransform(
+        const std::string& target_frame,
+        const std::string& source_frame,
+        const ros::Time& time,
+        const ros::Duration& timeout,
+        tf::StampedTransform& transform) const;
+
+    /**
+     * Get the most recent tf::Transform between two frames
+     *
+     * This function is a thin wrapper around the tf::TransformListener. Only
+     * TF frames are supported.
+     *
+     * If the frames are not immediately available, this method will wait
+     * for the frames for the specified timeout period.
+     *
+     * @param[in] target_frame The TF frame id of the target
+     * @param[in] source_frame The TF frame id of the source
+     * @param[in] timeout      How long to wait for the transform to be
+     *    available before returning False.
+     * @param[out] transform   The transform requested. If the function returns
+     *    false, transform is not mutated.
+     * @return True if the transform is available. False otherwise.
+     */
+    bool GetTransform(
+        const std::string& target_frame,
+        const std::string& source_frame,
+        const ros::Duration& timeout,
+        tf::StampedTransform& transform) const;
+
+    /**
+     * @brief LocalXyUtil exposes the private instance of LocalXyWgs84Util
+     * @return
+     */
+    const LocalXyWgs84UtilPtr& LocalXyUtil() const;
+
   private:
     boost::shared_ptr<tf::TransformListener> tf_listener_;
 
-    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+    LocalXyWgs84UtilPtr local_xy_util_;
 
     SourceTargetMap transformers_;
   };
+  typedef boost::shared_ptr<TransformManager> TransformManagerPtr;
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_MANAGER_H_

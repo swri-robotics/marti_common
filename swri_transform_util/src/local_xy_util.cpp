@@ -107,6 +107,16 @@ namespace swri_transform_util
     origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
   }
 
+  void LocalXyWgs84Util::ResetInitialization()
+  {
+    if( initialized_ )
+    {
+      ros::NodeHandle node;
+      origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
+      initialized_ = false;
+    }
+  }
+
   void LocalXyWgs84Util::Initialize()
   {
     reference_angle_ = swri_math_util::WrapRadians(reference_angle_, 0);
