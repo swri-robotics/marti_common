@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>swri_dbw_interface</name>
+  <version>0.0.0</version>
+  <description>
+    This package provides documentation on common interface conventions for
+    drive-by-wire systems.
+  </description>
+
+  <author>Elliot Johnson</author>
+  <maintainer email="elliot.johnson@swri.org">Elliot Johnson</maintainer>
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>
