@@ -75,7 +75,8 @@ internal consistency as possible.
    they are an input to or output from the DBW system.
 
 1. Prefer to use strings (with constants) over integer enumerations so
-   they are easy to introspect using "rostopic echo".
+   they are easy to introspect using "rostopic echo".  Constants should be
+   defined in [device_states.h](../include/swri_dbw_interface/device_states.h)
 
 1. For axes that change infrequently (e.g, transmission), make the
    feedback topic latched.  Publish the state when it changes, and at
