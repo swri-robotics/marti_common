@@ -2,6 +2,9 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.0 (2017-12-18)
 ------------------
 * Accept '1' or 'true' for stop points. (`#489 <https://github.com/swri-robotics/marti_common/issues/489>`_)
