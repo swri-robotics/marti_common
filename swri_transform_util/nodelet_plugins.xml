@@ -6,4 +6,14 @@
     </description>
   </class>
 
+  <class name="swri_transform_util/gps_transform_publisher" 
+         type="swri_transform_util::GpsTransformPublisher"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      Takes in GPSFix messages and publishes a transform from the local XY origin to the
+      corresponding position.
+    </description>
+  </class>
+
+
 </library>
