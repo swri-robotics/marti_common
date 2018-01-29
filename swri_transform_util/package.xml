@@ -28,6 +28,7 @@
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>swri_math_util</depend>
+  <depend>swri_nodelet</depend>
   <depend>swri_roscpp</depend>
   <depend>swri_yaml_util</depend>
   <depend>tf</depend>

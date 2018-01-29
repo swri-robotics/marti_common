@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   swri_math_util
+  swri_nodelet
   swri_roscpp
   swri_yaml_util
   tf
@@ -49,6 +50,7 @@ catkin_package(
     roscpp
     rospy
     swri_math_util
+    swri_nodelet
     swri_roscpp
     swri_yaml_util
     tf
@@ -77,12 +79,16 @@ link_directories(${OpenCV_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PROJ_LIBRARIES})
 
 add_library(${PROJECT_NAME}_nodelets
-  src/nodelets/dynamic_publisher.cpp)
-target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES})
+  src/nodelets/dynamic_publisher.cpp
+  src/nodelets/gps_transform_publisher.cpp)
+target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES} ${PROJECT_NAME})
 add_dependencies(${PROJECT_NAME}_nodelets ${PROJECT_NAME}_gencfg)
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
+
+swri_nodelet_add_node(gps_transform_publisher ${PROJECT_NAME} GpsTransformPublisher)
+target_link_libraries(gps_transform_publisher ${PROJECT_NAME}_nodelets ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
