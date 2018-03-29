@@ -135,6 +135,7 @@ namespace swri_image_util
   {
     cv::Size size(image1.cols + image2.cols, std::max(image1.rows, image2.rows));
     image_out.create(size, CV_MAKETYPE(image1.depth(), 3));
+    image_out.setTo(cv::Vec3b(0, 0, 0));
     cv::Mat draw_image1 = image_out(cv::Rect(0, 0, image1.cols, image1.rows));
     cv::Mat draw_image2 = image_out(cv::Rect(image1.cols, 0, image2.cols, image2.rows));
 
