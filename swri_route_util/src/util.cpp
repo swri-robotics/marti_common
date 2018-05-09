@@ -65,40 +65,41 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     return;
   }
   
+  std::vector<size_t> degenerate_orientations;
+  
   for (size_t i = 0; i < route.points.size(); ++i) {
-    // We're going to estimate the orientation at this point by
-    // getting the vector from the previous point and the vector to
-    // the next point, averaging them together to get a new forward
-    // vector.
-    tf::Vector3 v_prev;
-    tf::Vector3 v_next;
+    // We're going to estimate the orientation by the center difference using 
+    // the vector from the previous point to the next point in the route. This
+    // assumes that the points are evenly spaced, but it is a reasonable
+    // estimate even if they are not. 
+    tf::Vector3 v_forward;
     if (i == 0) {
-      // For the first point, we use v_next for both vectors so the
-      // average is just v_next.
-      v_next = route.points[i+1].position() - route.points[i+0].position();
-      v_prev = v_next;
+      // For the first point, we use the forward difference
+      v_forward = route.points[i+1].position() - route.points[i+0].position();
     } else if (i+1 == route.points.size()) {
-      // For the last point, we use v_prev for both vectors so the
-      // average is just v_prev.
-      v_prev = route.points[i+0].position() - route.points[i-1].position();
-      v_next = v_prev;
+      // For the last point, we use the backward difference
+      v_forward = route.points[i+0].position() - route.points[i-1].position();
     } else {
-      v_prev = route.points[i+0].position() - route.points[i-1].position();
-      v_next = route.points[i+1].position() - route.points[i+0].position();
+      v_forward = route.points[i+1].position() - route.points[i-1].position();
     }
 
-    v_prev.normalize();
-    v_next.normalize();
-
-    tf::Vector3 v_forward = (v_prev+v_next)/2.0;
+    v_forward.normalize();
 
     // Y = Z x X
     tf::Vector3 v_left = up.cross(v_forward);
-    // Since Z and X were not orthogonal, we need to normalize this to
-    // get a unit vector.  This is where we'll have problems if our
+    // Since Z and X are not necessarily orthogonal, we need to normalize this 
+    // to get a unit vector.  This is where we'll have problems if our
     // v_forward happens to be really closely aligned with the up
     // axis.  We ignore that.
     v_left.normalize();
+
+    if (std::isnan(v_left.x()))
+    {
+      // This should catch issues with repeated route points, and co-linear
+      // v_forward and up vectors (though the latter should never happen)
+      degenerate_orientations.push_back(i);
+    }
+
 
     // We now have left unit vector that is perpendicular to the
     // forward unit vector, so we can find our actual up vector, which
@@ -123,6 +124,52 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     route.points[i].setOrientation(orientation);
 
     // There is probably a simpler, more elegant way to do this.
+  }
+
+  // If there are any degenerate orientations, assign the same orientation as 
+  // the nearest neighbor. There is probably a better way to do this.
+  for (size_t i = 0; i < degenerate_orientations.size(); ++i)
+  {
+    size_t d_idx = degenerate_orientations[i];
+    bool repaired_orientation = false;
+    for (size_t j = 1; j < route.points.size(); ++j)
+    {
+      size_t up_idx = d_idx + j;
+      int64_t down_idx = (int64_t)d_idx - (int64_t)j;
+      if (up_idx < route.points.size())
+      {
+        if (std::find(degenerate_orientations.begin(), degenerate_orientations.end(), up_idx) == degenerate_orientations.end())
+        {
+          // Found a neighboring point with valid orientation.
+          route.points[d_idx].setOrientation(route.points[up_idx].orientation());
+          repaired_orientation = true;
+          break;
+        }
+      }
+
+      if (down_idx >= 0)
+      {
+        if (std::find(degenerate_orientations.begin(), degenerate_orientations.end(), down_idx) == degenerate_orientations.end())
+        {
+          // Found a neighboring point with valid orientation.
+          route.points[d_idx].setOrientation(route.points[down_idx].orientation());
+          repaired_orientation = true;
+          break;
+        }
+      }
+    }
+
+    if (!repaired_orientation)
+    {
+      ROS_ERROR_THROTTLE(1.0, "fillOrientations was unable to repair an invalid "
+                        "orientation. The route may be malformed.");
+    }
+    else
+    {
+      ROS_WARN_THROTTLE(1.0, "fillOrientations found and repaired an invalid "
+                        "orientation. Note that the source route may contain "
+                        "repeated points.");     
+    }
   }
 }
 
