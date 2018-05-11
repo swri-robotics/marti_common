@@ -64,7 +64,11 @@ namespace swri_opencv_util
       }
     }
 
+#if (BOOST_VERSION / 100 % 1000) >= 65
+    friend class boost::serialization::singleton<CvWindows>;
+#else
     friend class boost::serialization::detail::singleton_wrapper<CvWindows>;
+#endif
   private:
     CvWindows() {}
     boost::mutex mutex_;
