@@ -2,6 +2,9 @@
 Changelog for package swri_dbw_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.0 (2018-02-12)
 ------------------
 

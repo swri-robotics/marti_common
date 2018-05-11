@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Catch and fix NaNs in the fillOrientations function (`#513 <https://github.com/swri-robotics/marti_common/issues/513>`_)
+* Contributors: kriskozak
+
 2.2.0 (2018-02-12)
 ------------------
 

@@ -3,6 +3,9 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+
 2.2.0 (2018-02-12)
 ------------------
 * Fix crash from messages with null timestamps (`#511 <https://github.com/swri-robotics/marti_common/issues/511>`_)

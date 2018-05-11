@@ -2,6 +2,9 @@
 Changelog for package swri_system_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.2.0 (2018-02-12)
 ------------------
 
