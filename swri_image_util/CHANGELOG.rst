@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2018-05-11)
+------------------
 * Initialize image before drawing on it. (`#512 <https://github.com/swri-robotics/marti_common/issues/512>`_)
 * Contributors: Marc Alban
 
