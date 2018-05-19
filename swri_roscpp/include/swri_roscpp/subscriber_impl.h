@@ -69,7 +69,7 @@ class SubscriberImpl
     checkTimeout(now);
 
     // Do not use this message for statistics if it is arriving out of order
-    if (stamp > last_header_stamp_) {
+    if (stamp >= last_header_stamp_) {
       message_count_++;
 
       if (!stamp.isZero()) {
