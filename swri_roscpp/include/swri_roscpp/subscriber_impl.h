@@ -68,34 +68,36 @@ class SubscriberImpl
     // timeout count.
     checkTimeout(now);
 
-    message_count_++;
+    // Do not use this message for statistics if it is arriving out of order
+    if (stamp >= last_header_stamp_) {
+      message_count_++;
 
-    if (!stamp.isZero()) {
-      ros::Duration latency = now - stamp;
-      if (message_count_ == 1) {
-        min_latency_ = latency;
-        max_latency_ = latency;
-        total_latency_ = latency;
-      } else {
-        min_latency_ = std::min(min_latency_, latency);
-        max_latency_ = std::max(max_latency_, latency);
-        total_latency_ += latency;
+      if (!stamp.isZero()) {
+        ros::Duration latency = now - stamp;
+        if (message_count_ == 1) {
+          min_latency_ = latency;
+          max_latency_ = latency;
+          total_latency_ = latency;
+        } else {
+          min_latency_ = std::min(min_latency_, latency);
+          max_latency_ = std::max(max_latency_, latency);
+          total_latency_ += latency;
+        }
+      }
+
+      if (message_count_ > 1) {
+        ros::Duration period = now - last_receive_time_;
+        if (message_count_ == 2) {
+          min_period_ = period;
+          max_period_ = period;
+          total_periods_ = period;
+        } else if (message_count_ > 2) {
+          min_period_ = std::min(min_period_, period);
+          max_period_ = std::max(max_period_, period);
+          total_periods_ += period;
+        }
       }
     }
-
-    if (message_count_ > 1) {
-      ros::Duration period = now - last_receive_time_;
-      if (message_count_ == 2) {
-        min_period_ = period;
-        max_period_ = period;
-        total_periods_ = period;
-      } else if (message_count_ > 2) {
-        min_period_ = std::min(min_period_, period);
-        max_period_ = std::max(max_period_, period);
-        total_periods_ += period;
-      }
-    }
-
     // Reset the timeout condition to false.
     in_timeout_ = false;
 
