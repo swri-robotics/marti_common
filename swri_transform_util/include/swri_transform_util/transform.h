@@ -60,7 +60,7 @@ namespace swri_transform_util
      */
     virtual void Transform(
       const tf::Vector3& v_in, tf::Vector3& v_out) const = 0;
-    
+
     /**
      * Get the orientation of this transform
      *
@@ -88,7 +88,7 @@ namespace swri_transform_util
     }
 
     virtual boost::shared_ptr<TransformImpl> Inverse() const = 0;
-    
+
     /// Time stamp for this transform
     ros::Time stamp_;
   };
@@ -116,7 +116,7 @@ namespace swri_transform_util
      * @param[in]  transform  The input transform.
      */
     explicit Transform(const tf::Transform& transform);
-    
+
     /**
      * Generates a standard rigid transform from a tf::Transform.
      *
@@ -206,7 +206,7 @@ namespace swri_transform_util
      * @return The orientation (translation component) of the transform
      */
     tf::Quaternion GetOrientation() const;
-    
+
     /**
      * Get the time stamp of the transform
      * @return The time stamp of the transform
@@ -226,9 +226,9 @@ namespace swri_transform_util
   {
   public:
     /**
-     * Construct an identity transform with stamp_=ros::Time::now()
+     * Construct an identity transform.
      */
-    IdentityTransform() { stamp_ = ros::Time::now(); }
+    IdentityTransform() { stamp_ = ros::Time(0); }
 
     /**
      * Apply the identity tranform to a 3D vector(sets v_out=v_in)
