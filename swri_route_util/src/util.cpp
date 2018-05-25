@@ -45,7 +45,7 @@ void transform(Route &route,
   for (auto &point : route.points) {
     point.setPosition(transform*point.position());
     point.setOrientation(transform*point.orientation());
-  }  
+  }
   route.header.frame_id = target_frame;
 }
 
@@ -64,14 +64,14 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
   if (route.points.size() < 2) {
     return;
   }
-  
+
   std::vector<size_t> degenerate_orientations;
-  
+
   for (size_t i = 0; i < route.points.size(); ++i) {
-    // We're going to estimate the orientation by the center difference using 
+    // We're going to estimate the orientation by the center difference using
     // the vector from the previous point to the next point in the route. This
     // assumes that the points are evenly spaced, but it is a reasonable
-    // estimate even if they are not. 
+    // estimate even if they are not.
     tf::Vector3 v_forward;
     if (i == 0) {
       // For the first point, we use the forward difference
@@ -87,7 +87,7 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
 
     // Y = Z x X
     tf::Vector3 v_left = up.cross(v_forward);
-    // Since Z and X are not necessarily orthogonal, we need to normalize this 
+    // Since Z and X are not necessarily orthogonal, we need to normalize this
     // to get a unit vector.  This is where we'll have problems if our
     // v_forward happens to be really closely aligned with the up
     // axis.  We ignore that.
@@ -126,7 +126,7 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     // There is probably a simpler, more elegant way to do this.
   }
 
-  // If there are any degenerate orientations, assign the same orientation as 
+  // If there are any degenerate orientations, assign the same orientation as
   // the nearest neighbor. There is probably a better way to do this.
   for (size_t i = 0; i < degenerate_orientations.size(); ++i)
   {
@@ -168,7 +168,7 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     {
       ROS_WARN_THROTTLE(1.0, "fillOrientations found and repaired an invalid "
                         "orientation. Note that the source route may contain "
-                        "repeated points.");     
+                        "repeated points.");
     }
   }
 }
@@ -178,7 +178,7 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
 // also returns the distance along the segment to the point that is
 // nearest to p.  If extrapolate_start/extrapolate_end are true, the
 // calculation considers the line segment to extend infinitely in the
-// corresponding directions. 
+// corresponding directions.
 static
 void nearestDistanceToLineSegment(
   double &min_distance_from_line,
@@ -230,11 +230,12 @@ bool projectOntoRoute(mnm::RoutePosition &position,
 
   if (route.points.size() == 1) {
     // We can't do much with this.
+    position.route_id = route.guid();
     position.id = route.points[0].id();
     position.distance = 0.0;
     return true;
   }
-  
+
   // First we find the nearest point on the route, without allowing
   // extrapolation.
   double min_distance_from_line = std::numeric_limits<double>::infinity();
@@ -277,7 +278,7 @@ bool projectOntoRoute(mnm::RoutePosition &position,
     // we want to return a position with the id of the last point and
     // the distance past it.  This annoying complicates things in a
     // number of places, but makes it easy to check if a point is past
-    // the end of a route.    
+    // the end of a route.
     size_t i = min_segment_index;
     nearestDistanceToLineSegment(min_distance_from_line,
                                  min_distance_on_line,
@@ -297,6 +298,7 @@ bool projectOntoRoute(mnm::RoutePosition &position,
     }
   }
 
+  position.route_id = route.guid();
   position.id = route.points[min_segment_index].id();
   position.distance = min_distance_on_line;
   return true;
@@ -327,6 +329,7 @@ bool projectOntoRouteWindow(
   // Handle the special case where the start and end points are
   // identical.
   if (start.id == end.id && start.distance == end.distance) {
+    position.route_id = route.guid();
     position = start;
     return true;
   }
@@ -384,9 +387,11 @@ bool projectOntoRouteWindow(
     mnm::RoutePosition denormal_position;
     denormal_position.id = start.id;
     denormal_position.distance = distance_on_line;
-    if (!normalizeRoutePosition(position, route, denormal_position)) {    
+    if (!normalizeRoutePosition(position, route, denormal_position)) {
       return false;
     }
+
+    position.route_id = route.guid();
     return true;
   }
 
@@ -441,10 +446,11 @@ bool projectOntoRouteWindow(
   mnm::RoutePosition denormal_position;
   denormal_position.id = route.points[min_segment_index].id();
   denormal_position.distance = min_distance_on_line;
-  if (!normalizeRoutePosition(position, route, denormal_position)) {    
+  if (!normalizeRoutePosition(position, route, denormal_position)) {
     return false;
   }
 
+  position.route_id = route.guid();
   return true;
 }
 
@@ -482,7 +488,7 @@ void interpolateRouteSegment(
 
   // Interpolate other known properties here.
 }
-  
+
 bool normalizeRoutePosition(mnm::RoutePosition &normalized_position,
                             const Route &route,
                             const mnm::RoutePosition &position)
@@ -498,7 +504,7 @@ bool normalizeRoutePosition(mnm::RoutePosition &normalized_position,
     if (index == 0) {
       break;
     }
-    
+
     // The distance is still negative, so we can't be on this
     // segment.  Move to the preceding segment.
     distance += (route.points[index-0].position() -
@@ -526,11 +532,12 @@ bool normalizeRoutePosition(mnm::RoutePosition &normalized_position,
     }
   }
 
+  normalized_position.route_id = position.route_id;
   normalized_position.distance = distance;
   normalized_position.id = route.points[index].id();
   return true;
 }
-  
+
 
 bool interpolateRoutePosition(RoutePoint &dst,
                               const Route &route,
@@ -584,7 +591,7 @@ bool interpolateRoutePosition(RoutePoint &dst,
                             p0,
                             p1,
                             norm_position.distance + extra_dist);
-    return true;      
+    return true;
   }
 
   interpolateRouteSegment(dst,
