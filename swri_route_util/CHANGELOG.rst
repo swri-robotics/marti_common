@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fill in route id of route positions when possible. (`#517 <https://github.com/swri-robotics/marti_common/issues/517>`_)
+* Contributors: Marc Alban
+
 2.2.1 (2018-05-11)
 ------------------
 * Catch and fix NaNs in the fillOrientations function (`#513 <https://github.com/swri-robotics/marti_common/issues/513>`_)

@@ -3,6 +3,11 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+* Only calculate statistics when messages arrive in order (`#516 <https://github.com/swri-robotics/marti_common/issues/516>`_)
+* Contributors: David Anthony
+
 2.2.1 (2018-05-11)
 ------------------
 

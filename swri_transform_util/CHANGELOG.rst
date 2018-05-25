@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Initialize transform timestamp to 0 instead of ros::Time::now() (`#515 <https://github.com/swri-robotics/marti_common/issues/515>`_)
+* Contributors: Marc Alban
+
 2.2.1 (2018-05-11)
 ------------------
 * Support ROS Melodic (`#514 <https://github.com/swri-robotics/marti_common/issues/514>`_)
