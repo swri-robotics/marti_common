@@ -4,8 +4,8 @@
       <param name="local_xy_frame" value="/far_field"/>
   </node>
   <test
-      test-name="test_initialize_origin_auto_navsat"
+      test-name="test_invalid_gps"
       pkg="swri_transform_util"
       type="test_initialize_origin.py"
-      args="auto_navsat" />
+      args="invalid_gps" />
 </launch>

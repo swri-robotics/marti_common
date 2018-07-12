@@ -108,6 +108,8 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
   target_link_libraries(test_transform_util ${PROJECT_NAME})
 
+  add_rostest(test/initialize_invalid_gps.test)
+  add_rostest(test/initialize_invalid_navsat.test)
   add_rostest(test/initialize_origin_auto_gps.test)
   add_rostest(test/initialize_origin_auto_navsat.test)
   add_rostest(test/initialize_origin_manual.test)

@@ -37,25 +37,23 @@ from swri_transform_util.origin_manager import OriginManager, InvalidFixExceptio
 def navsat_callback(msg, (manager, navsat_sub, gps_sub)):
         try:
             manager.set_origin_from_navsat(msg)
-        except InvalidFixException as e:
-            rospy.logwarn(e)
-            return
-        finally:
             rospy.loginfo('Got NavSat message. Setting origin and unsubscribing from NavSat.')
             navsat_sub.unregister()
             gps_sub.unregister()
+        except InvalidFixException as e:
+            rospy.logwarn(e)
+            return
 
 
 def gps_callback(msg, (manager, gps_sub, navsat_sub)):
         try:
             manager.set_origin_from_gps(msg)
-        except InvalidFixException as e:
-            rospy.logwarn(e)
-            return
-        finally:
             rospy.loginfo('Got GPSFix message. Setting origin and unsubscribing from GPSFix.')
             gps_sub.unregister()
             navsat_sub.unregister()
+        except InvalidFixException as e:
+            rospy.logwarn(e)
+            return
 
 
 rospy.init_node('initialize_origin', anonymous=True)
