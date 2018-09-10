@@ -39,6 +39,15 @@ namespace swri_geometry_util
     return plane_normal.normalized().dot(point - plane_point);
   }
   
+  tf::Vector3 ProjectPointToPlane(
+      const tf::Vector3& plane_normal,
+      const tf::Vector3& plane_point,
+      const tf::Vector3& point)
+  {
+    double d = DistanceFromPlane(plane_normal, plane_point, point);
+    return point - plane_normal * d;
+  }
+
   double DistanceFromLineSegment(
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,

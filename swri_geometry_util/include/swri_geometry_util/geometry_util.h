@@ -48,11 +48,16 @@ namespace swri_geometry_util
       const tf::Vector3& plane_point,
       const tf::Vector3& point);
       
+  tf::Vector3 ProjectPointToPlane(
+      const tf::Vector3& plane_normal,
+      const tf::Vector3& plane_point,
+      const tf::Vector3& point);
+
   double DistanceFromLineSegment(
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,
       const tf::Vector3& point);
-      
+
   tf::Vector3 ProjectToLineSegment(
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,
