@@ -40,6 +40,16 @@ cv::Mat blend(
     const cv::Mat& src2,
     const cv::Mat& alpha2);
 
+cv::Mat blend(
+    const cv::Mat& overlay,
+    const cv::Mat& base,
+    double aplha);
+
+cv::Mat overlayColor(
+    const cv::Mat& src,
+    const cv::Mat& mask,
+    const cv::Scalar& color,
+    double alpha);
 }
 
 #endif  // OPENCV_UTIL_BLEND_H_

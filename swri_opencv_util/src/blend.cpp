@@ -1,4 +1,4 @@
-// *****************************************************************************
+﻿// *****************************************************************************
 //
 // Copyright (c) 2018, Southwest Research Institute® (SwRI®)
 // All rights reserved.
@@ -29,6 +29,8 @@
 
 #include <swri_opencv_util/blend.h>
 
+#include <opencv2/imgproc/imgproc.hpp>
+
 namespace swri_opencv_util {
 
 cv::Mat blend(
@@ -51,6 +53,69 @@ cv::Mat blend(
   cv::Mat blended_out;
   blended.convertTo(blended_out, out_type);
   return blended_out;
+}
+
+cv::Mat blend(
+    const cv::Mat& overlay,
+    const cv::Mat& base,
+    double alpha)
+{
+  alpha = std::min(1.0, alpha);
+  alpha = std::max(0.0, alpha);
+  cv::Mat blended;
+  cv::addWeighted(overlay, alpha, base, 1.0 - alpha, 0, blended);
+  return blended;
+}
+
+cv::Mat overlayColor(
+    const cv::Mat& src,
+    const cv::Mat& mask,
+    const cv::Scalar& color,
+    double alpha)
+{
+  alpha = std::min(1.0, alpha);
+  alpha = std::max(0.0, alpha);
+
+  cv::Size size = src.size();
+  cv::Mat color_image;
+
+  if (src.type() == CV_8U)
+  {
+    cv::cvtColor(src, color_image, cv::COLOR_GRAY2BGR);
+  }
+  else if (src.type() == CV_32F || src.type() == CV_16U)
+  {
+    cv::Mat tmp;
+    src.convertTo(tmp, CV_8U);
+    cv::cvtColor(tmp, color_image, cv::COLOR_GRAY2BGR);
+  }
+  else if (src.type() == CV_32FC3 || src.type() == CV_16UC3)
+  {
+    src.convertTo(color_image, CV_8UC3);
+  }
+  else if (src.type() != CV_8UC3)
+  {
+    color_image = src;
+  }
+  else
+  {
+    return cv::Mat();
+  }
+
+  // Create the color overlay image.
+  cv::Mat overlay(size, CV_8UC3);
+  overlay.setTo(color);
+
+  // Create the alpha channel for the overlay image.
+  cv::Mat overlay_alpha = cv::Mat::zeros(size, CV_32F);
+  overlay_alpha.setTo(alpha, mask);
+
+  // Create the alpha channel for the base image.
+  cv::Mat base_alpha(size, CV_32F);
+  base_alpha = 1.0 - alpha;
+
+  // Blend the images based on the relative alpha values at each pixel.
+  return swri_opencv_util::blend(overlay, overlay_alpha, color_image, base_alpha);
 }
 
 }

@@ -73,7 +73,6 @@ include_directories(include
 )
 
 add_library(${PROJECT_NAME}
-  src/blend_images_util.cpp
   src/draw_util.cpp
   src/geometry_util.cpp
   src/image_matching.cpp
