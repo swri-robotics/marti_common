@@ -12,6 +12,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>diagnostic_updater</depend>
   <test_depend>gtest</test_depend>
+  <depend>marti_common_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
   <test_depend>rostest</test_depend>
