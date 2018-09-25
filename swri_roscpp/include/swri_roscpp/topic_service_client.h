@@ -37,33 +37,74 @@
 
 namespace swri
 {
+
 template<class MReq, class MRes>
-class TopicServiceClient
+class TopicServiceClientRaw
 {
  private:
+  typedef
   boost::mutex request_lock_;
   ros::Subscriber response_sub_;
   ros::Publisher request_pub_;
-  MRes::SharedPtr response_;
+  boost::shared_ptr<MRes> response_;
 
   ros::Duration timeout_;
+  std::string name_;
 
-  std::map<int, boost::function<void(const MReq&, const MRes&)>& fun> callbacks_;
+  std::map<int, boost::function<void(const MReq&, const MRes&)>> callbacks_;
 
   int sequence_;
 
   boost::function<bool(const MReq &, MRes &)> callback_;
 
  public:
-  TopicServiceClient();
+  TopicServiceClientRaw() : sequence_(0), timeout_(ros::Duration(4.0))
+  {
 
-  initialize(ros::NodeHandle &nh,
+  }
+
+  void initialize(ros::NodeHandle &nh,
                 const std::string &service,
-                const std::string &client_name = "");
+                const std::string &client_name = "")
+  {
+    name_ = client_name.length() ? client_name : ros::this_node::getName();
+    response_sub_ = nh.subscribe(service + "/request", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
+    request_pub_ = nh.advertise<MRes>(service + "/response", 10);
+  }
 
-  bool call(MReq& req, MRes& response);
+  bool call(MReq& request, MRes& response)
+  {
+    boost::mutex::scoped_lock scoped_lock(request_lock_);
 
-  bool call_async(MReq& request, boost::function<void(const MReq&, const MRes&)>& fun);
+    // block for response
+    request.srv_header.stamp = ros::Time::now();
+    request.srv_header.sequence = sequence_;
+    request.srv_header.sender = name_;
+    request_pub_.publish(request);
+
+    // Wait until we get a response
+    while (!response_ && ros::Time::now() - request.srv_header.stamp < timeout_)
+    {
+      ros::Duration(0.002).sleep();
+      ros::spinOnce();
+    }
+
+    sequence_++;
+    if (response_)
+    {
+      response = *response_;
+      response_.reset();
+      return response.srv_header.result;
+    }
+    return false;
+  }
+
+  bool exists()
+  {
+    return request_pub_.getNumSubscribers() > 0;
+  }
+
+  //bool call_async(MReq& request, boost::function<void(const MReq&, const MRes&)>& fun);
 
   // The service server can output a console log message when the
   // service is called if desired.
@@ -71,17 +112,18 @@ class TopicServiceClient
   bool logCalls() const;
 private:
 
-  void response_callback(const MRes::SharedPtr& message)
+  void response_callback(const boost::shared_ptr<MRes>& message)
   {
-    ROS_INFO("Got response for %s with sequence %i", message->header.sender.c_str(), message->header.sequence);
+    ROS_INFO("Got response for %s with sequence %i",
+             message->srv_header.sender.c_str(), message->srv_header.sequence);
 
-    if (MRes->header.sender != name_)
+    if (message->srv_header.sender != name_)
     {
       ROS_INFO("Got response from another client, ignoring..");
       return;
     }
 
-    if (MRes->header.sequence != sequence_)
+    if (message->srv_header.sequence != sequence_)
     {
       ROS_INFO("Got wrong sequence number, ignoring..");
       return;
@@ -91,55 +133,25 @@ private:
   }
 };  // class TopicServiceClient
 
-inline
-TopicServiceClient::TopicServiceClient() : sequence_(0), timeout_(ros::Duration(4.0))
+template<class MReq>
+class TopicServiceClient: public TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>
 {
-
-}
-
-inline
-TopicServiceClient::initialize(ros::NodeHandle &nh,
-                          const std::string &service,
-                          const std::string &client_name)
-{
-  name_ = client_name.length() ? client_name : nh.getNamespace();
-  response_sub_ = nh.subscribe(service + "/request", 10, response_callback, this);
-  request_pub_ = nh.advertise(service + "/response", 10);
-}
-
-inline
-bool TopicServiceClient::call(MReq& request, MRes& response)
-{
-  boost::mutex::scoped_lock scoped_lock(request_lock_);
-
-  // block for response
-  request.header.stamp = ros::Time::now();
-  request.header.sequence = sequence_;
-  request.header.sender = name_;
-  request_pub_.send(request);
-
-  // Wait until we get a response
-  while (!response_ && ros::Time::now() - request.header.stamp < timeout_)
+public:
+  bool call(MReq& req)
   {
-    ros::Duration(0.002).sleep();
-    ros::spinOnce();
+    return TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>::call(req.request, req.response);
   }
 
-  sequence_++;
-  if (response_)
-  {
-    response = *response_;
-    response_.reset();
-    return response_.result;
-  }
-  return false;
-}
+};  // class TopicServiceClientEz
 
-inline
+
+
+
+/*inline
 bool TopicServiceClient::call_async(MReq& request, boost::function<void(const MReq&, const MRes&)>& fun)
 {
 
-}
+}*/
 
 }  // namespace swri
 #endif  // SWRI_ROSCPP_TOPIC_SERVICE_SERVER_H_

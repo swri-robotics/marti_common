@@ -61,8 +61,8 @@ public:
     callback_ = srv_func;
     obj_ = obj;
 
-    request_sub_ = nh.subscribe(service + "/request", 10, &TopicServiceServerImpl<MReq, MRes, T>::request_callback, this);
-    response_pub_ = nh.advertise<MRes>(std::string(service + "/response"), 10);
+    request_sub_ = nh.subscribe(ros::this_node::getName() + "/" + service + "/request", 10, &TopicServiceServerImpl<MReq, MRes, T>::request_callback, this);
+    response_pub_ = nh.advertise<MRes>(std::string(ros::this_node::getName() + "/" + service + "/response"), 10);
   }
 
 private:

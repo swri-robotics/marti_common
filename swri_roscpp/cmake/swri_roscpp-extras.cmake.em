@@ -42,8 +42,10 @@ macro(add_topic_service_files)
     file(WRITE ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ReqOut} "marti_common_msgs/ServiceHeader srv_header\n" ${MSG_REQUEST})
     file(WRITE ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ResOut} "marti_common_msgs/ServiceHeader srv_header\n" ${MSG_RESPONSE})
 
+    set(headerName ${_file})
+    string(REPLACE ".srv" ".h" headerName ${headerName})
     add_custom_target(${_file}thing
-      COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${swri_roscpp_BIN}service_splitter.py ${_file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ReqOut} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ResOut}
+      COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${swri_roscpp_BIN}service_splitter.py ${_file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ReqOut} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ResOut} ${PROJECT_NAME} ${_file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}/${headerName}
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/topic_srv"
     )
     add_dependencies(${catkin_EXPORTED_TARGETS}  
@@ -58,6 +60,10 @@ macro(add_topic_service_files)
       add_dependencies(${_proj} ${_file}thing)
     endforeach()
 
+    # install the header
+    install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}/${headerName}
+      DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+    )
     
   endforeach()
 endmacro()
