@@ -50,6 +50,7 @@ class TopicServiceClientRaw
 
   ros::Duration timeout_;
   std::string name_;
+  std::string service_name_;
 
   std::map<int, boost::function<void(const MReq&, const MRes&)>> callbacks_;
 
@@ -68,6 +69,7 @@ class TopicServiceClientRaw
                 const std::string &client_name = "")
   {
     name_ = client_name.length() ? client_name : ros::this_node::getName();
+    service_name_ = service;
     response_sub_ = nh.subscribe(service + "/request", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
     request_pub_ = nh.advertise<MRes>(service + "/response", 10);
   }
@@ -97,6 +99,11 @@ class TopicServiceClientRaw
       return response.srv_header.result;
     }
     return false;
+  }
+
+  std::string getService()
+  {
+    return service_name_;
   }
 
   bool exists()
