@@ -69,9 +69,10 @@ class TopicServiceClientRaw
                 const std::string &client_name = "")
   {
     name_ = client_name.length() ? client_name : ros::this_node::getName();
-    service_name_ = service;
-    response_sub_ = nh.subscribe(service + "/request", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
-    request_pub_ = nh.advertise<MRes>(service + "/response", 10);
+    std::string rservice = nh.resolveName(service);
+    service_name_ = rservice;
+    response_sub_ = nh.subscribe(rservice + "/response", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
+    request_pub_ = nh.advertise<MRes>(rservice + "/request", 10);
   }
 
   bool call(MReq& request, MRes& response)
