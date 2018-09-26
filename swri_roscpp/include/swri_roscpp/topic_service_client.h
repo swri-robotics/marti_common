@@ -82,6 +82,18 @@ class TopicServiceClientRaw
     request.srv_header.stamp = ros::Time::now();
     request.srv_header.sequence = sequence_;
     request.srv_header.sender = name_;
+
+    // Wait until we get a subscriber and publisher
+    while (request_pub_.getNumSubscribers() == 0 && response_sub_.getNumPublishers() == 0)
+    {
+      ros::Duration(0.002).sleep();
+      ros::spinOnce();
+
+      if (ros::Time::now() - request.srv_header.stamp > timeout_)
+      {
+        return false;
+      }
+    }
     request_pub_.publish(request);
 
     // Wait until we get a response
