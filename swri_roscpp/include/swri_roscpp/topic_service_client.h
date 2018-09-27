@@ -52,8 +52,6 @@ class TopicServiceClientRaw
   std::string name_;
   std::string service_name_;
 
-  std::map<int, boost::function<void(const MReq&, const MRes&)>> callbacks_;
-
   int sequence_;
 
   boost::function<bool(const MReq &, MRes &)> callback_;
