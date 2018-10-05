@@ -130,7 +130,7 @@ namespace swri_opencv_util
 
     if (!Valid3dPointCorrespondences(points1, points2))
     {
-      return transform;
+      return matrix;
     }
 
     // The Kabsch algorithm, for calculating the optimal rotation matrix that
