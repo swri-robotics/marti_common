@@ -2,8 +2,8 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.4.0 (2018-10-09)
+------------------
 * Update package maintainers (`#520 <https://github.com/swri-robotics/marti_common/issues/520>`_)
 * Contributors: P. J. Reed
 

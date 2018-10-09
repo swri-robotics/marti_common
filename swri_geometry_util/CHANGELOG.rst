@@ -2,8 +2,8 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.4.0 (2018-10-09)
+------------------
 * Add function for projecting a point onto a plane. (`#521 <https://github.com/swri-robotics/marti_common/issues/521>`_)
 * Contributors: Marc Alban
 
