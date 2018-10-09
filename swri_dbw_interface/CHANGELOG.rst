@@ -2,6 +2,11 @@
 Changelog for package swri_dbw_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update package maintainers (`#520 <https://github.com/swri-robotics/marti_common/issues/520>`_)
+* Contributors: P. J. Reed
+
 2.3.0 (2018-05-25)
 ------------------
 
