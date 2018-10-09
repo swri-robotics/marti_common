@@ -48,7 +48,6 @@ class TopicServiceServerImpl: public ImplRoot
   ros::Subscriber request_sub_;
   ros::Publisher response_pub_;
 
-  //boost::function<bool(const MReq &, MRes &)> callback_;
   bool(T::*callback_)(const MReq &, MRes &);
   T* obj_;
 
@@ -99,11 +98,6 @@ class TopicServiceServer
                 const std::string &service,
                 bool(T::*srv_func)(const MReq &, MRes &),
                 T *obj);
-
-  // The service server can output a console log message when the
-  // service is called if desired.
-  //void setLogCalls(bool enable);
-  //bool logCalls() const;
 };  // class TopicServiceServer
 
 inline

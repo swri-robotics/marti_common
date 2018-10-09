@@ -54,8 +54,6 @@ class TopicServiceClientRaw
 
   int sequence_;
 
-  boost::function<bool(const MReq &, MRes &)> callback_;
-
  public:
   TopicServiceClientRaw() : sequence_(0), timeout_(ros::Duration(4.0))
   {
@@ -70,7 +68,7 @@ class TopicServiceClientRaw
     std::string rservice = nh.resolveName(service);
     service_name_ = rservice;
     response_sub_ = nh.subscribe(rservice + "/response", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
-    request_pub_ = nh.advertise<MRes>(rservice + "/request", 10);
+    request_pub_ = nh.advertise<MReq>(rservice + "/request", 10);
   }
 
   bool call(MReq& request, MRes& response)
