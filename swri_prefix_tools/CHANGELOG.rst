@@ -2,6 +2,11 @@
 Changelog for package swri_prefix_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.4.0 (2018-10-09)
+------------------
+* Update package maintainers (`#520 <https://github.com/swri-robotics/marti_common/issues/520>`_)
+* Contributors: P. J. Reed
+
 2.3.0 (2018-05-25)
 ------------------
 

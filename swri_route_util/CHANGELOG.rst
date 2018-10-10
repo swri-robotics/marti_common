@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.4.0 (2018-10-09)
+------------------
+* Update package maintainers (`#520 <https://github.com/swri-robotics/marti_common/issues/520>`_)
+* Contributors: P. J. Reed
+
 2.3.0 (2018-05-25)
 ------------------
 * Fill in route id of route positions when possible. (`#517 <https://github.com/swri-robotics/marti_common/issues/517>`_)

@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.4.0 (2018-10-09)
+------------------
+* Add function to blend two images with alpha channels. (`#522 <https://github.com/swri-robotics/marti_common/issues/522>`_)
+* Contributors: Marc Alban
+
 2.3.0 (2018-05-25)
 ------------------
 
