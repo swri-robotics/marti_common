@@ -289,6 +289,33 @@ namespace swri_opencv_util
     return true;
   }
 
+  bool Valid3dPointCorrespondences(
+    const cv::Mat& points1,
+    const cv::Mat& points2)
+  {
+    if (points1.type() != points2.type())
+    {
+      return false;
+    }
+
+    if (points1.type() != CV_32FC3)
+    {
+      return false;
+    }
+
+    if (points1.cols != points2.cols  || points1.rows  != points2.rows)
+    {
+      return false;
+    }
+
+    if (points1.cols != 1)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
   bool ZipCorrespondences(
     const cv::Mat& points1,
     const cv::Mat& points2,
@@ -324,7 +351,7 @@ namespace swri_opencv_util
   }
 
 
-  bool PerpendicularPlaneWithPointFit::GetModel(const std::vector<int32_t>& indices, M& model, 
+  bool PerpendicularPlaneWithPointFit::GetModel(const std::vector<int32_t>& indices, M& model,
                                                 double max_error) const
   {
     if (indices.size() != MIN_SIZE)
@@ -486,7 +513,7 @@ namespace swri_opencv_util
     cv::Mat n_z = n_columns(cv::Rect(2, 0, 1, n_columns.rows));
 
     // (x0 - p)
-    cv::subtract(p, x0, x0_p__);    
+    cv::subtract(p, x0, x0_p__);
 
     // (x0 - p) . n
     cv::multiply(x0_p__, temp1__, temp2__);
@@ -623,7 +650,7 @@ namespace swri_opencv_util
     cv::Mat n_z = n_columns(cv::Rect(2, 0, 1, n_columns.rows));
 
     // (x0 - p)
-    cv::subtract(p, x0, x0_p__);    
+    cv::subtract(p, x0, x0_p__);
 
     // (x0 - p) . n
     cv::multiply(x0_p__, temp1__, temp2__);
@@ -655,7 +682,7 @@ namespace swri_opencv_util
     temp1__.setTo(n);
 
     // (x0 - p)
-    cv::subtract(p, x0, x0_p__);    
+    cv::subtract(p, x0, x0_p__);
 
     // (x0 - p) . n
     cv::multiply(x0_p__, temp1__, temp2__);

@@ -124,6 +124,38 @@ namespace swri_opencv_util
     return transform;
   }
 
+  cv::Mat FitRotation3d(const cv::Mat& points1, const cv::Mat& points2)
+  {
+    cv::Mat matrix;
+
+    if (!Valid3dPointCorrespondences(points1, points2))
+    {
+      return matrix;
+    }
+
+    // The Kabsch algorithm, for calculating the optimal rotation matrix that
+    // minimizes the RMSD (root mean squared deviation) between two paired sets
+    // of points.  http://en.wikipedia.org/wiki/Kabsch_algorithm
+
+    // Compute the covariance matrix.
+    cv::Mat src = points1.reshape(1, points1.rows);
+    cv::Mat dst = points2.reshape(1, points1.rows);
+
+    cv::Mat cov = src.t() * dst;
+
+    // Compute the optimal rotation matrix.
+    cv::Mat W, U, Vt;
+    cv::SVD::compute(cov, W, U, Vt);
+    cv::Mat V = Vt.t();
+    double d = cv::determinant(V * U.t()) > 0 ? 1.0 : -1.0;
+    cv::Mat I = cv::Mat::eye(3, 3, CV_32F);
+    I.at<float>(2, 2) = d;
+    matrix = V * I * U.t();
+
+    return matrix;
+  }
+
+
   cv::Mat FindAffineTransform2d(
     const cv::Mat& points1,
     const cv::Mat& points2,
@@ -292,7 +324,7 @@ namespace swri_opencv_util
     cv::Mat centroid;
     cv::reduce(points.reshape(3), centroid, 0, CV_REDUCE_AVG);
 
-    cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2)); 
+    cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2));
 
     cv::Mat A;
     cv::subtract(points, c, A);
@@ -391,8 +423,8 @@ namespace swri_opencv_util
     cv::Mat centroid;
     cv::reduce(points.reshape(3), centroid, 0, CV_REDUCE_AVG);
 
-    cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2)); 
-   
+    cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2));
+
     cv::Mat A;
     cv::subtract(points, c, A);
 
