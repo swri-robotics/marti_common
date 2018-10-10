@@ -131,7 +131,7 @@ namespace swri_opencv_util
   cv::Mat FitRigidTransform2d(const cv::Mat& points1, const cv::Mat& points2);
 
   // Calculate 3x3 rotation matrix that can be applied to points1 to align them
-  // to points2
+  // to points2.
   cv::Mat FitRotation3d(const cv::Mat& points1, const cv::Mat& points2);
 
   cv::Mat FindAffineTransform2d(

@@ -138,15 +138,19 @@ namespace swri_opencv_util
     // of points.  http://en.wikipedia.org/wiki/Kabsch_algorithm
 
     // Compute the covariance matrix.
-    cv::Mat cov = points1.t() * points2;
+    cv::Mat src = points1.reshape(1, points1.rows);
+    cv::Mat dst = points2.reshape(1, points1.rows);
+
+    cv::Mat cov = src.t() * dst;
 
     // Compute the optimal rotation matrix.
     cv::Mat W, U, Vt;
     cv::SVD::compute(cov, W, U, Vt);
-    double d = cv::determinant(Vt.t() * U.t()) > 0 ? 1.0 : -1.0;
+    cv::Mat V = Vt.t();
+    double d = cv::determinant(V * U.t()) > 0 ? 1.0 : -1.0;
     cv::Mat I = cv::Mat::eye(3, 3, CV_32F);
     I.at<float>(2, 2) = d;
-    matrix = Vt.t() * I * U.t();
+    matrix = V * I * U.t();
 
     return matrix;
   }

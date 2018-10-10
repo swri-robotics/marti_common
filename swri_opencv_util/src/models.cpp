@@ -308,7 +308,7 @@ namespace swri_opencv_util
       return false;
     }
 
-    if (points1.cols != 1 && points1.rows != 1)
+    if (points1.cols != 1)
     {
       return false;
     }
