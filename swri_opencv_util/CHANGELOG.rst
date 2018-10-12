@@ -2,6 +2,11 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add function for fitting a rotation on 3D point correspondences. (`#524 <https://github.com/swri-robotics/marti_common/issues/524>`_)
+* Contributors: Marc Alban
+
 2.4.0 (2018-10-09)
 ------------------
 * Add function to blend two images with alpha channels. (`#522 <https://github.com/swri-robotics/marti_common/issues/522>`_)
