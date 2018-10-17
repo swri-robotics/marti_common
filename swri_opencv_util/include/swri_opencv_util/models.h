@@ -128,6 +128,10 @@ namespace swri_opencv_util
     const cv::Mat& points1,
     const cv::Mat& points2);
 
+  bool Valid3dPointCorrespondences(
+    const cv::Mat& points1,
+    const cv::Mat& points2);
+
   bool ZipCorrespondences(
     const cv::Mat& points1,
     const cv::Mat& points2,
@@ -223,10 +227,10 @@ namespace swri_opencv_util
   public:
     enum { MIN_SIZE = 2 };
 
-    PerpendicularPlaneWithPointFit(const T& data, 
-                                   const cv::Vec3f& point_on_plane = cv::Vec3f(0,0,0), 
+    PerpendicularPlaneWithPointFit(const T& data,
+                                   const cv::Vec3f& point_on_plane = cv::Vec3f(0,0,0),
                                    const cv::Vec3f& perp_axis = cv::Vec3f(0,0,1),
-                                   float max_axis_angle = 0.5, 
+                                   float max_axis_angle = 0.5,
                                    float min_angle = 0.2) :
         PlaneFit(data, min_angle),
         point_(point_on_plane),
@@ -278,7 +282,7 @@ namespace swri_opencv_util
   class OrthoLineFit3d : public LineFit3d
   {
   public:
-    OrthoLineFit3d(const T& data, const LineModel3d& ortho, float angle_tolerance = 0.09) : 
+    OrthoLineFit3d(const T& data, const LineModel3d& ortho, float angle_tolerance = 0.09) :
       LineFit3d(data), ortho_(ortho), angle_tolerance_(angle_tolerance) {}
     virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
 

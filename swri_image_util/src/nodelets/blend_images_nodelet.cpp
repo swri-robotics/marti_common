@@ -37,7 +37,7 @@
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 #include <sensor_msgs/Image.h>
-#include <swri_image_util/blend_images_util.h>
+#include <swri_opencv_util/blend.h>
 
 namespace swri_image_util
 {
@@ -159,20 +159,21 @@ namespace swri_image_util
     // Blend the images together
     if (mask_color_ != NO_MASK)
     {
-      swri_image_util::blendImages(
+      cv::Mat mask;
+      cv::inRange(cv_top_image->image, mask_color_, mask_color_, mask);
+
+      blended = swri_opencv_util::overlayColor(
             cv_base_image->image,
-            cv_top_image->image,
-            alpha_,
+            mask,
             mask_color_,
-            blended);
+            alpha_);
     }
     else
     {
-      swri_image_util::blendImages(
-            cv_base_image->image,
+      blended = swri_opencv_util::blend(
             cv_top_image->image,
-            alpha_,
-            blended);
+            cv_base_image->image,
+            alpha_);
     }
 
     // Convert the blended image to a ROS type and publish the result

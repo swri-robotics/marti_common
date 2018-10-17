@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2018, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,29 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_BLEND_IMAGES_H_
-#define IMAGE_UTIL_BLEND_IMAGES_H_
+#ifndef OPENCV_UTIL_BLEND_H_
+#define OPENCV_UTIL_BLEND_H_
 
 #include <opencv2/core/core.hpp>
 
-namespace swri_image_util
-{
-  /**
-   * Blends two images together. top_image will be drawn on top of base_image
-   * with a blending level of alpha. The blended image will be placed in
-   * dest_image
-   */
-  void blendImages(
-      const cv::Mat& base_image,
-      const cv::Mat& top_image,
-      const double alpha,
-      cv::Mat& dest_image);
+namespace swri_opencv_util {
 
-  /**
-   * Blends two images together. top_image will be drawn on top of base_image
-   * with a blending level of alpha. The color mask_color will be made
-   * transparent in the top_image. The blended image will be placed in
-   * dest_image
-   */
-  void blendImages(
-      const cv::Mat& base_image,
-      const cv::Mat& top_image,
-      const double alpha,
-      const cv::Scalar mask_color,
-      cv::Mat& dest_image);
+cv::Mat blend(
+    const cv::Mat& src1,
+    const cv::Mat& alpha1,
+    const cv::Mat& src2,
+    const cv::Mat& alpha2);
+
+cv::Mat blend(
+    const cv::Mat& overlay,
+    const cv::Mat& base,
+    double aplha);
+
+cv::Mat overlayColor(
+    const cv::Mat& src,
+    const cv::Mat& mask,
+    const cv::Scalar& color,
+    double alpha);
 }
 
-#endif // IMAGE_UTIL_BLEND_IMAGES_H_
+#endif  // OPENCV_UTIL_BLEND_H_
