@@ -40,10 +40,10 @@
 namespace swri_geometry_util
 {
   bool LineIntersection(
-      cv::Vec2d p1,
-      cv::Vec2d p2,
-      cv::Vec2d p3,
-      cv::Vec2d p4,
+      const cv::Vec2d& p1,
+      const cv::Vec2d& p2,
+      const cv::Vec2d& p3,
+      const cv::Vec2d& p4,
       cv::Vec2d& c)
   {
     double d = (p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]);
@@ -62,10 +62,10 @@ namespace swri_geometry_util
   }
 
   bool LineSegmentIntersection(
-      cv::Vec2d p1,
-      cv::Vec2d p2,
-      cv::Vec2d p3,
-      cv::Vec2d p4,
+      const cv::Vec2d& p1,
+      const cv::Vec2d& p2,
+      const cv::Vec2d& p3,
+      const cv::Vec2d& p4,
       cv::Vec2d& c)
   {
     // See: "Intersection of two lines in three-space"
@@ -149,9 +149,9 @@ namespace swri_geometry_util
   }
 
   bool PointOnLineSegment(
-      cv::Vec2d p1,
-      cv::Vec2d p2,
-      cv::Vec2d p3)
+      const cv::Vec2d& p1,
+      const cv::Vec2d& p2,
+      const cv::Vec2d& p3)
   {
     // Check if the points are collinear.
     if (((p2[0] - p1[0]) * (p3[1] - p1[0])) - ((p3[0] - p1[0]) * (p2[1] - p1[1])) > std::numeric_limits<float>::epsilon())
