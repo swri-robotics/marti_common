@@ -102,8 +102,10 @@ namespace swri_geometry_util
     double rs = r.cross(s);
     if (std::fabs(rs) > std::numeric_limits<float>::epsilon())
     {
-      double t = qp.cross(s / rs);
-      double u = (qp * -1).cross(r / -rs);
+      // Explicitly divide components since cv::Point doesn't support division
+      // in indigo.
+      double t = qp.cross(cv::Point2d(s.x / rs, s.y / rs));
+      double u = (qp * -1).cross(cv::Point2d(r.x / -rs, r.y / -rs));
 
       if (u >= 0 && t >= 0 && u <= 1.0 && t <= 1.0)
       {
@@ -125,7 +127,8 @@ namespace swri_geometry_util
     else
     {
       // The lines are parellel and coincident.
-      cv::Point2d unit_r = r / r.dot(r);
+      double rlen = r.dot(r);
+      cv::Point2d unit_r(r.x / rlen, r.y / rlen);
       double t0 = qp.dot(unit_r);
       double t1 = t0 + s.dot(unit_r);
 
