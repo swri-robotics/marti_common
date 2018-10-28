@@ -30,6 +30,7 @@
 #ifndef GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 #define GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 
+#include <opencv2/core/core.hpp>
 #include <tf/transform_datatypes.h>
 
 namespace swri_geometry_util
@@ -58,10 +59,20 @@ namespace swri_geometry_util
       const tf::Vector3& line_end,
       const tf::Vector3& point);
 
+  double DistanceFromLineSegment(
+      const cv::Vec2d& line_start,
+      const cv::Vec2d& line_end,
+      const cv::Vec2d& point);
+
   tf::Vector3 ProjectToLineSegment(
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,
       const tf::Vector3& point);
+
+  tf::Vector3 ProjectToLineSegment(
+      const cv::Vec2d& line_start,
+      const cv::Vec2d& line_end,
+      const cv::Vec2d& point);
 
   /**
    * Find closest point to two 3D lines.

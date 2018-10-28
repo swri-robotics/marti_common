@@ -56,6 +56,17 @@ namespace swri_geometry_util
     return point.distance(ProjectToLineSegment(line_start, line_end, point));
   }
   
+  double DistanceFromLineSegment(
+      const cv::Vec2d& line_start,
+      const cv::Vec2d& line_end,
+      const cv::Vec2d& point)
+  {
+    const cv::Vec2d proj = ProjectToLineSegment(line_start, line_end);
+    return std::sqrt(
+          (point[0] - proj[0]) * (point[0] - proj[0]) +
+          (point[1] - proj[1]) * (point[1] - proj[1]));
+  }
+
   tf::Vector3 ProjectToLineSegment(
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,
