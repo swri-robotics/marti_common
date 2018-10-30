@@ -69,9 +69,41 @@ namespace swri_geometry_util
       const tf::Vector3& line_end,
       const tf::Vector3& point);
 
-  tf::Vector3 ProjectToLineSegment(
+  cv::Vec2d ProjectToLineSegment(
       const cv::Vec2d& line_start,
       const cv::Vec2d& line_end,
+      const cv::Vec2d& point);
+
+  /**
+   * Test if a point is within the bounds of a polygon.
+   *
+   * The polygon is assumed to be non-intersecting and that the vertices
+   * are ordered sequentially in clock-wise fashion.
+   *
+   * @param[in]  polygon  The list of polygon vertices.
+   * @param[in]  point    The point.
+   *
+   * @return True if the point is within the bounds of the polygon.
+   */
+  bool PointInPolygon(
+      const std::vector<cv::Vec2d>& polygon,
+      const cv::Vec2d& point);
+
+  /**
+   * Calcuate the distance between a point and the bounds of a polygon.
+   *
+   * The polygon vertices are assumed to be ordered sequentially.
+   *
+   * The distance returned is positive even if the point is within the polygon.
+   *
+   * @param[in]  polygon  The list of polygon vertices.
+   * @param[in]  point    The point.
+   *
+   * @return The distance from the point to the polygon.  -1 is returned if the
+   *         polygon is empty.
+   */
+  double DistanceFromPolygon(
+      const std::vector<cv::Vec2d>& polygon,
       const cv::Vec2d& point);
 
   /**
