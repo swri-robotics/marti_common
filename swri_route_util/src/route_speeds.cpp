@@ -316,7 +316,6 @@ void generateObstacleData(
     for (size_t j = 0; j < obs_msg.polygon.size(); j++) {
       tf::Vector3 pt;
       tf::pointMsgToTF(obs_msg.polygon[j], pt);
-      pt = pt - g_obs_from_local.getOrigin();
 
       max_radius = std::max(max_radius, pt.length());
       obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
