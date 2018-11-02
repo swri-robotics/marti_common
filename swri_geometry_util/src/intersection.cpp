@@ -35,6 +35,7 @@
 #include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/Polygon.h>
+#include <geos/util/TopologyException.h>
 #undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
@@ -243,9 +244,16 @@ namespace swri_geometry_util
     geos::geom::Polygon* b_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(b_ring, 0);
     b_polygon->normalize();
 
-    if (a_polygon->intersects(b_polygon))
+    try
     {
-      area = a_polygon->intersection(b_polygon)->getArea();
+        if (a_polygon->intersects(b_polygon))
+        {
+          area = a_polygon->intersection(b_polygon)->getArea();
+        }
+    }
+    catch (const geos::util::TopologyException& e)
+    {
+        // TODO Fix this
     }
 
     // Free polygon objects.
