@@ -213,6 +213,11 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)
   {
+    if (a.size() < 3 || b.size() < 3)
+    {
+      return 0;
+    }
+
     double area = 0;
     // Create GEOS polygon from vertices in vector a.
     geos::geom::CoordinateSequence* a_coords = new geos::geom::CoordinateArraySequence();
