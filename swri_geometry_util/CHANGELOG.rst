@@ -2,8 +2,8 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.6.0 (2018-11-03)
+------------------
 * Check for valid polygons before calculating intersection area. (`#529 <https://github.com/swri-robotics/marti_common/issues/529>`_)
 * Add polygon utility functions. (`#526 <https://github.com/swri-robotics/marti_common/issues/526>`_)
 * Add function to test if two line segments intersect. (`#525 <https://github.com/swri-robotics/marti_common/issues/525>`_)
