@@ -56,6 +56,17 @@ namespace swri_geometry_util
     return point.distance(ProjectToLineSegment(line_start, line_end, point));
   }
   
+  double DistanceFromLineSegment(
+      const cv::Vec2d& line_start,
+      const cv::Vec2d& line_end,
+      const cv::Vec2d& point)
+  {
+    const cv::Vec2d proj = ProjectToLineSegment(line_start, line_end, point);
+    return std::sqrt(
+          (point[0] - proj[0]) * (point[0] - proj[0]) +
+          (point[1] - proj[1]) * (point[1] - proj[1]));
+  }
+
   tf::Vector3 ProjectToLineSegment(
       const tf::Vector3& line_start,
       const tf::Vector3& line_end,
@@ -77,6 +88,80 @@ namespace swri_geometry_util
     }
     
     return line_start + (t / b) * v;
+  }
+
+
+  cv::Vec2d ProjectToLineSegment(
+      const cv::Vec2d& line_start,
+      const cv::Vec2d& line_end,
+      const cv::Vec2d& point)
+  {
+    cv::Point2d v(line_end - line_start);
+    cv::Point2d r(point - line_start);
+
+    double t = r.dot(v);
+    if (t <= 0)
+    {
+      return line_start;
+    }
+
+    double b = v.dot(v);
+    if (t >= b)
+    {
+      return line_end;
+    }
+
+    // Explicitly multiply components since cv::Point doesn't support operation
+    // in indigo.
+    return line_start + cv::Vec2d(v.x * (t / b), v.y * (t / b));
+  }
+
+  bool PointInPolygon(
+      const std::vector<cv::Vec2d>& polygon,
+      const cv::Vec2d& point)
+  {
+    if (polygon.size() < 2)
+    {
+      return false;
+    }
+
+    bool is_inside = false;
+    if (((polygon.front()[1] > point[1]) != (polygon.back()[1] > point[1])) &&
+         (point[0] < (polygon.back()[0] - polygon.front()[0]) * (point[1] - polygon.front()[1]) /
+                     (polygon.back()[1] - polygon.front()[1]) + polygon.front()[0]))
+    {
+      is_inside = !is_inside;
+    }
+
+    for (size_t i = 1; i < polygon.size(); i++)
+    {
+      if (((polygon[i][1] > point[1]) != (polygon[i - 1][1] > point[1])) &&
+           (point[0] < (polygon[i - 1][0] - polygon[i][0]) * (point[1] - polygon[i][1]) /
+                       (polygon[i - 1][1] - polygon[i][1]) + polygon[i][0]))
+      {
+        is_inside = !is_inside;
+      }
+    }
+
+    return is_inside;
+  }
+
+  double DistanceFromPolygon(
+      const std::vector<cv::Vec2d>& polygon,
+      const cv::Vec2d& point)
+  {
+    if (polygon.empty())
+    {
+      return -1;
+    }
+
+    double dist = DistanceFromLineSegment(polygon.front(), polygon.back(), point);
+    for (size_t i = 1; i < polygon.size(); i++)
+    {
+      dist = std::min(dist, DistanceFromLineSegment(polygon[i], polygon[i - 1], point));
+    }
+
+    return dist;
   }
 
   bool ClosestPointToLines(

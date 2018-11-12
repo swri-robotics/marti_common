@@ -36,20 +36,55 @@ namespace swri_geometry_util
   /**
    * Calculate the instersection between two lines defined by 4 points.
    *
-   * @param[in]   p1   First point of line segemnt 1.
-   * @param[in]   p2   Second point of line segemnt 1.
-   * @param[in]   p3   First point of line segemnt 2.
-   * @param[in]   p4   Second point of line segemnt 2.
+   * @param[in]   p1   First point of line segment 1.
+   * @param[in]   p2   Second point of line segment 1.
+   * @param[in]   p3   First point of line segment 2.
+   * @param[in]   p4   Second point of line segment 2.
    * @param[out]  c    The intersection point.
    *
    * @returns True if the lines are not parallel.
    */
   bool LineIntersection(
-      cv::Vec2d p1,
-      cv::Vec2d p2,
-      cv::Vec2d p3,
-      cv::Vec2d p4,
+      const cv::Vec2d& p1,
+      const cv::Vec2d& p2,
+      const cv::Vec2d& p3,
+      const cv::Vec2d& p4,
       cv::Vec2d& c);
+
+  /**
+   * Calculate the instersection between two line segments defined by 4 points.
+   *
+   * In the case of parallel overlapping segments, the intersection point
+   * closest to p1 is returned.
+   *
+   * @param[in]   p1   First point of line segment 1.
+   * @param[in]   p2   Second point of line segment 1.
+   * @param[in]   p3   First point of line segment 2.
+   * @param[in]   p4   Second point of line segment 2.
+   * @param[out]  c    The intersection point.
+   *
+   * @returns True if the line segments intersect.
+   */
+  bool LineSegmentIntersection(
+      const cv::Vec2d& p1,
+      const cv::Vec2d& p2,
+      const cv::Vec2d& p3,
+      const cv::Vec2d& p4,
+      cv::Vec2d& c);
+
+  /**
+   * Check if a point is on a line segment.
+   *
+   * @param[in]   p1   The point.
+   * @param[in]   p2   First point of the line segemnt.
+   * @param[in]   p3   Second point of the line segemnt.
+   *
+   * @returns True if the point is on the line segment.
+   */
+  bool PointOnLineSegment(
+      const cv::Vec2d& p1,
+      const cv::Vec2d& p2,
+      const cv::Vec2d& p3);
 
   bool PolygonsIntersect(
       const std::vector<cv::Vec2d>& a,

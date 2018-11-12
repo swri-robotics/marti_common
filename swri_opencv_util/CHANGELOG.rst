@@ -2,6 +2,9 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.6.0 (2018-11-03)
+------------------
+
 2.5.0 (2018-10-12)
 ------------------
 * Add function for fitting a rotation on 3D point correspondences. (`#524 <https://github.com/swri-robotics/marti_common/issues/524>`_)
