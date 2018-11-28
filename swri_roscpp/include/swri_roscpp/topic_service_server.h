@@ -72,7 +72,7 @@ private:
 
   void request_callback(const MReq& message)
   {
-    ROS_INFO("Got request from %s with sequence %i", message.srv_header.sender.c_str(), message.srv_header.sequence);
+    ROS_DEBUG("Got request from %s with sequence %i", message.srv_header.sender.c_str(), message.srv_header.sequence);
 
     MRes response;
 

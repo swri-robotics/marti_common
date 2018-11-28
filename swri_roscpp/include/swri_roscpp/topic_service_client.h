@@ -130,18 +130,18 @@ private:
 
   void response_callback(const boost::shared_ptr<MRes>& message)
   {
-    ROS_INFO("Got response for %s with sequence %i",
+    ROS_DEBUG("Got response for %s with sequence %i",
              message->srv_header.sender.c_str(), message->srv_header.sequence);
 
     if (message->srv_header.sender != name_)
     {
-      ROS_INFO("Got response from another client, ignoring..");
+      ROS_DEBUG("Got response from another client, ignoring..");
       return;
     }
 
     if (message->srv_header.sequence != sequence_)
     {
-      ROS_INFO("Got wrong sequence number, ignoring..");
+      ROS_WARN("Got wrong sequence number, ignoring..");
       return;
     }
 
