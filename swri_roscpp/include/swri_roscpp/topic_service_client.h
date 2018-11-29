@@ -41,7 +41,7 @@ namespace swri
 template<class MReq, class MRes>
 class TopicServiceClientRaw
 {
- private:
+private:
   typedef
   boost::mutex request_lock_;
   ros::Subscriber response_sub_;
@@ -54,7 +54,7 @@ class TopicServiceClientRaw
 
   int sequence_;
 
- public:
+public:
   TopicServiceClientRaw() : sequence_(0), timeout_(ros::Duration(4.0))
   {
 
@@ -67,8 +67,9 @@ class TopicServiceClientRaw
     name_ = client_name.length() ? client_name : ros::this_node::getName();
     std::string rservice = nh.resolveName(service);
     service_name_ = rservice;
-    response_sub_ = nh.subscribe(rservice + "/response", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
+
     request_pub_ = nh.advertise<MReq>(rservice + "/request", 10);
+    response_sub_ = nh.subscribe(rservice + "/response", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
   }
 
   bool call(MReq& request, MRes& response)
@@ -81,7 +82,7 @@ class TopicServiceClientRaw
     request.srv_header.sender = name_;
 
     // Wait until we get a subscriber and publisher
-    while (request_pub_.getNumSubscribers() == 0 && response_sub_.getNumPublishers() == 0)
+    while (request_pub_.getNumSubscribers() == 0 || response_sub_.getNumPublishers() == 0)
     {
       ros::Duration(0.002).sleep();
       ros::spinOnce();
@@ -117,10 +118,8 @@ class TopicServiceClientRaw
 
   bool exists()
   {
-    return request_pub_.getNumSubscribers() > 0;
+    return request_pub_.getNumSubscribers() > 0 && response_sub_.getNumPublishers() == 0;
   }
-
-  //bool call_async(MReq& request, boost::function<void(const MReq&, const MRes&)>& fun);
 
   // The service server can output a console log message when the
   // service is called if desired.
@@ -147,7 +146,7 @@ private:
 
     response_ = message;
   }
-};  // class TopicServiceClient
+};  // class TopicServiceClientRaw
 
 template<class MReq>
 class TopicServiceClient: public TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>
@@ -158,16 +157,8 @@ public:
     return TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>::call(req.request, req.response);
   }
 
-};  // class TopicServiceClientEz
+};  // class TopicServiceClient
 
-
-
-
-/*inline
-bool TopicServiceClient::call_async(MReq& request, boost::function<void(const MReq&, const MRes&)>& fun)
-{
-
-}*/
 
 }  // namespace swri
 #endif  // SWRI_ROSCPP_TOPIC_SERVICE_SERVER_H_

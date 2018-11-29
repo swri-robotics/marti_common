@@ -64,8 +64,8 @@ public:
 
     std::string rservice = nh.resolveName(service);
 
-    request_sub_ = nh.subscribe(rservice + "/request", 10, &TopicServiceServerImpl<MReq, MRes, T>::request_callback, this);
     response_pub_ = nh.advertise<MRes>(rservice + "/response", 10);
+    request_sub_ = nh.subscribe(rservice + "/request", 10, &TopicServiceServerImpl<MReq, MRes, T>::request_callback, this);
   }
 
 private:
