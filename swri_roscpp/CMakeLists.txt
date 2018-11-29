@@ -4,6 +4,7 @@ project(swri_roscpp)
 
 set(BUILD_DEPS
   diagnostic_updater 
+  marti_common_msgs
   nav_msgs
   roscpp
   std_msgs
@@ -12,6 +13,7 @@ set(BUILD_DEPS
 
 set(RUNTIME_DEPS
   diagnostic_updater 
+  marti_common_msgs
   nav_msgs 
   roscpp
   std_msgs
@@ -23,7 +25,8 @@ find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
 include_directories(include
   ${catkin_INCLUDE_DIRS})
 catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
-  INCLUDE_DIRS include)
+  INCLUDE_DIRS include
+  CFG_EXTRAS swri_roscpp-extras.cmake)
 
 ### Build Test Node ###
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
@@ -58,6 +61,8 @@ install(TARGETS subscriber_test latched_subscriber_test param_example
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+catkin_install_python(PROGRAMS  scripts/service_splitter.py
+                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
