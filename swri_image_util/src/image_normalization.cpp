@@ -107,7 +107,7 @@ namespace swri_image_util
 
     return norm_image;
   }
-  
+
   void MaskedBoxFilter(cv::Mat& mat, cv::Mat& mask, int32_t kernel_size)
   {
     mask.setTo(1, mask);
@@ -133,20 +133,18 @@ namespace swri_image_util
   }
 
   void ContrastStretch(
-    int32_t grid_size, 
+    int32_t grid_size,
     const cv::Mat& source_image,
     cv::Mat& dest_image,
     const cv::Mat& mask,
     double max_min,
     double min_max)
-  {   
+  {
     int x_bin_w = std::floor(static_cast<double>(source_image.cols) / grid_size);
     int y_bin_h = std::floor(static_cast<double>(source_image.rows) / grid_size);
-    
-    //ROS_ERROR("x_bin_w:%d  y_bin_h:%d", x_bin_w, y_bin_h);
-    
-    cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_64F);
-    cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_64F);
+
+    cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_32F);
+    cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_32F);
     cv::Mat grid_mask = cv::Mat::ones(grid_size + 1, grid_size + 1, CV_8U) * 255;
 
     bool has_mask = !mask.empty();
@@ -155,20 +153,19 @@ namespace swri_image_util
       for(int j = 0; j < grid_size + 1; j++)
       {
         double minVal = 0;
-        double maxVal = 255;
-        
+        double maxVal = 0;
+
         cv::Rect roi = cv::Rect(j * x_bin_w  - x_bin_w / 2,
                        i * y_bin_h - y_bin_h / 2, x_bin_w, y_bin_h);
         roi.x = std::max(0, roi.x);
         roi.y = std::max(0, roi.y);
         roi.width = std::min(source_image.cols - roi.x, roi.width);
         roi.height = std::min(source_image.rows - roi.y, roi.height);
-                       
+
         if (has_mask)
         {
           if (cv::countNonZero(mask(roi)) > 0)
           {
-            //ROS_ERROR("x:%d  y:%d  w:%d  h:%d", roi.x, roi.y, roi.width, roi.height);
             cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0, mask(roi));
           }
           else
@@ -180,11 +177,11 @@ namespace swri_image_util
         {
           cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0);
         }
-        max_vals.at<double>(i, j) = maxVal;
-        min_vals.at<double>(i, j) = minVal;
+        max_vals.at<float>(i, j) = maxVal;
+        min_vals.at<float>(i, j) = minVal;
       }
     }
-    
+
     MaskedBoxFilter(max_vals, grid_mask, 3);
     MaskedBoxFilter(min_vals, grid_mask, 3);
 
@@ -200,26 +197,26 @@ namespace swri_image_util
         int jj = j / x_bin_w;
 
         // Stretch histogram
-        double minVal = min_vals.at<double>(ii, jj);
-        double maxVal = max_vals.at<double>(ii, jj);
+        double minVal = min_vals.at<float>(ii, jj);
+        double maxVal = max_vals.at<float>(ii, jj);
 
         // interp x
         double px = (j - jj * x_bin_w) / static_cast<double>(x_bin_w);
 
         //4-point interpolation
-        double xM1 = maxVal + px * (max_vals.at<double>(ii, jj+1) - maxVal);
-        double xM2 = max_vals.at<double>(ii+1, jj) + px * (max_vals.at<double>(ii+1, jj+1) - max_vals.at<double>(ii+1, jj));
+        double xM1 = maxVal + px * (max_vals.at<float>(ii, jj+1) - maxVal);
+        double xM2 = max_vals.at<float>(ii+1, jj) + px * (max_vals.at<float>(ii+1, jj+1) - max_vals.at<float>(ii+1, jj));
         double M = xM1 + py * (xM2 - xM1);
 
-        double xm1 = minVal + px*(min_vals.at<double>(ii, jj+1) - minVal);
-        double xm2 = min_vals.at<double>(ii+1, jj) + px*(min_vals.at<double>(ii+1, jj+1) - min_vals.at<double>(ii+1, jj));
-        double m = xm1 + py*(xm2 - xm1);
+        double xm1 = minVal + px * (min_vals.at<float>(ii, jj+1) - minVal);
+        double xm2 = min_vals.at<float>(ii+1, jj) + px*(min_vals.at<float>(ii+1, jj+1) - min_vals.at<float>(ii+1, jj));
+        double m = xm1 + py * (xm2 - xm1);
         minVal = m;
         maxVal = M;
 
         if(maxVal > 255) maxVal = 255;
         if(minVal < 0) minVal = 0;
-        
+
         // Put a bound on maxVal and minVal
         maxVal = std::max(maxVal, min_max);
         minVal = std::min(minVal, max_min);
@@ -234,17 +231,17 @@ namespace swri_image_util
   }
 
   void NormalizeResponse(
-      const cv::Mat& src, 
-      cv::Mat& dst, 
-      int winsize, 
-      int ftzero, 
+      const cv::Mat& src,
+      cv::Mat& dst,
+      int winsize,
+      int ftzero,
       uchar* buf)
   {
     if (dst.empty())
     {
       dst.create(src.size(), CV_8U);
     }
-  
+
     // Source code from OpenCV: modules/calib3d/src/stereobm.cpp
     int x, y, wsz2 = winsize / 2;
     int* vsum = reinterpret_cast<int*>(cv::alignPtr(buf + (wsz2 + 1) * sizeof(vsum[0]), 32));
@@ -318,27 +315,27 @@ namespace swri_image_util
   }
 
   cv::Mat scale_2_8bit(const cv::Mat& image)
-	{
-		if (image.type() == CV_8UC1)
-		  return image;
-		cv::Mat Image8Bit(image.rows, image.cols, CV_8U), Image8BitColor; //Define an 8bit image
-		//Convert the image to 32bit float
-		cv::Mat ImageFloat;
-		image.convertTo(ImageFloat, CV_32F, 1, 0);
-		double maxVal; //Define the max value of image
-		cv::minMaxLoc(ImageFloat.reshape(1,1), NULL, &maxVal);//Extract the max value of image
-		//ReScale the image to 0 to 255
-		ImageFloat = ImageFloat*((1 << 8)/pow(2, ceil(log(maxVal)/log(2))));
-		ImageFloat.convertTo(Image8Bit,CV_8U, 1, 0);
-		return Image8Bit;
-	}
+       {
+              if (image.type() == CV_8UC1)
+                return image;
+              cv::Mat Image8Bit(image.rows, image.cols, CV_8U), Image8BitColor; //Define an 8bit image
+              //Convert the image to 32bit float
+              cv::Mat ImageFloat;
+              image.convertTo(ImageFloat, CV_32F, 1, 0);
+              double maxVal; //Define the max value of image
+              cv::minMaxLoc(ImageFloat.reshape(1,1), NULL, &maxVal);//Extract the max value of image
+              //ReScale the image to 0 to 255
+              ImageFloat = ImageFloat*((1 << 8)/pow(2, ceil(log(maxVal)/log(2))));
+              ImageFloat.convertTo(Image8Bit,CV_8U, 1, 0);
+              return Image8Bit;
+       }
 
-	cv::Mat scale_2_8bit_color(const cv::Mat& image)
-	{
-		if (image.type() == CV_8UC3)
-		  return image;
-		cv::Mat Image8Bit = scale_2_8bit(image), Image8BitColor;
-		cvtColor(Image8Bit, Image8BitColor, CV_GRAY2BGR);
-		return Image8BitColor;
-	}
+       cv::Mat scale_2_8bit_color(const cv::Mat& image)
+       {
+              if (image.type() == CV_8UC3)
+                return image;
+              cv::Mat Image8Bit = scale_2_8bit(image), Image8BitColor;
+              cvtColor(Image8Bit, Image8BitColor, CV_GRAY2BGR);
+              return Image8BitColor;
+       }
 }
