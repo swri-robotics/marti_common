@@ -3,7 +3,6 @@ project(swri_transform_util)
 
 find_package(catkin REQUIRED COMPONENTS
   diagnostic_msgs
-  dynamic_reconfigure
   geographic_msgs
   geometry_msgs
   gps_common
@@ -33,16 +32,11 @@ if(NOT "${PROJ_FOUND}")
   )
 endif()
 
-generate_dynamic_reconfigure_options(
-  cfg/DynamicPublisher.cfg
-)
-
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
     diagnostic_msgs
-    dynamic_reconfigure
     geographic_msgs
     geometry_msgs
     gps_common
@@ -82,7 +76,6 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/dynamic_publisher.cpp
   src/nodelets/gps_transform_publisher.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES} ${PROJECT_NAME})
-add_dependencies(${PROJECT_NAME}_nodelets ${PROJECT_NAME}_gencfg)
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})

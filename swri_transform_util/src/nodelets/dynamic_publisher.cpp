@@ -33,6 +33,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <nodelet/nodelet.h>
 #include <ros/ros.h>
+#include <swri_roscpp/dynamic_parameters.h>
 #include <swri_roscpp/swri_roscpp.h>
 #include <swri_transform_util/DynamicPublisherConfig.h>
 #include <tf/transform_broadcaster.h>
@@ -42,6 +43,11 @@ namespace swri_transform_util {
 
 class DynamicPublisher : public nodelet::Nodelet
 {
+  double roll_, pitch_, yaw_;
+  double x_, y_, z_;
+
+  swri::DynamicParameters params_;
+
   public:
   DynamicPublisher() : rate_(50), stamp_offset_(1.0)
   {
@@ -68,43 +74,29 @@ class DynamicPublisher : public nodelet::Nodelet
     swri::param(priv, "stamp_offset", stamp_offset_, stamp_offset_);
     swri::param(priv, "child_frame", child_frame_, "child");
     swri::param(priv, "parent_frame", parent_frame_, "parent");
-    swri::param(priv, "x", config_.x, config_.x);
-    swri::param(priv, "y", config_.y, config_.y);
-    swri::param(priv, "z", config_.z, config_.z);
-    swri::param(priv, "yaw", config_.yaw, config_.yaw);
-    swri::param(priv, "pitch", config_.pitch, config_.pitch);
-    swri::param(priv, "roll", config_.roll, config_.roll);
 
-    server_.setCallback(
-        boost::bind(&DynamicPublisher::ConfigCallback, this, _1, _2));
+    params_.initialize(priv);
+
+    params_.get("x", x_, 0.0, "X offset (m)", -10000.0, 10000.0);
+    params_.get("y", y_, 0.0, "Y offset (m)", -10000.0, 10000.0);
+    params_.get("z", z_, 0.0, "Z offset (m)", -10000.0, 10000.0);
+    params_.get("roll", roll_, 0.0, "Roll offset (rad)", -3.1415, 3.1415);
+    params_.get("pitch", pitch_, 0.0, "Pitch offset (rad)", -3.1415, 3.1415);
+    params_.get("yaw", yaw_, 0.0, "Yaw offset (rad)", -3.1415, 3.1415);
+
+    params_.finalize();
 
     rate_ = std::max(1.0, rate_);
     pub_timer_ = node.createTimer(
         ros::Duration(1.0 / rate_), &DynamicPublisher::Publish, this);
   }
 
-  void ConfigCallback(DynamicPublisherConfig &config, uint32_t level)
-  {
-    if (~level == 0)
-    {
-      // When the dynamic reconfigure server is started, it tries to
-      // set default values by calling this function with all bits of
-      // level set.  We reject these defaults in favor of our
-      // currently stored values.
-      config = config_;
-    }
-    else
-    {
-      config_ = config;
-    }
-  }
-
   void Publish(const ros::TimerEvent& unused)
   {
     tf::Transform transform;
-    tf::Vector3 origin(config_.x, config_.y, config_.z);
+    tf::Vector3 origin(x_, y_, z_);
     tf::Quaternion rotation;
-    rotation.setRPY(config_.roll, config_.pitch, config_.yaw);
+    rotation.setRPY(roll_, pitch_, yaw_);
     transform = tf::Transform(rotation, origin);
 
     tf::StampedTransform stamped_transform(
@@ -125,10 +117,6 @@ class DynamicPublisher : public nodelet::Nodelet
   double stamp_offset_;
   std::string child_frame_;
   std::string parent_frame_;
-  DynamicPublisherConfig config_;
-
-  typedef dynamic_reconfigure::Server<DynamicPublisherConfig> ReconfigureServer;
-  ReconfigureServer server_;
 };
 
 }  // namespace swri_transform_util

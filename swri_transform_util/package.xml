@@ -18,7 +18,6 @@
   <depend>boost</depend>
   <depend>cv_bridge</depend>
   <depend>diagnostic_msgs</depend>
-  <depend>dynamic_reconfigure</depend>
   <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>gps_common</depend>

@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(swri_roscpp)
 
 set(BUILD_DEPS
-  diagnostic_updater 
+  diagnostic_updater
+  dynamic_reconfigure 
   marti_common_msgs
   nav_msgs
   roscpp
@@ -13,6 +14,7 @@ set(BUILD_DEPS
 
 set(RUNTIME_DEPS
   diagnostic_updater 
+  dynamic_reconfigure
   marti_common_msgs
   nav_msgs 
   roscpp
