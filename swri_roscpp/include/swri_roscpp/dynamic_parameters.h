@@ -1,13 +1,9 @@
 #ifndef SWRI_ROSCPP_DYNAMIC_PARAMETERS_H_
 #define SWRI_ROSCPP_DYNAMIC_PARAMETERS_H_
 
-#include <algorithm>
 #include <map>
-#include <set>
 #include <string>
-#include <vector>
 
-#include <boost/bind.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <ros/console.h>
