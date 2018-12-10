@@ -30,12 +30,10 @@
 #include <algorithm>
 #include <string>
 
-#include <dynamic_reconfigure/server.h>
 #include <nodelet/nodelet.h>
 #include <ros/ros.h>
 #include <swri_roscpp/dynamic_parameters.h>
 #include <swri_roscpp/swri_roscpp.h>
-#include <swri_transform_util/DynamicPublisherConfig.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
 
