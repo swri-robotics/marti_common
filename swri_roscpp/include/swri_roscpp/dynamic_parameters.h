@@ -47,7 +47,6 @@ namespace swri
       double d;
       bool b;
       int i;
-      //std::string s;
     } Min;
     union
     {
@@ -55,18 +54,11 @@ namespace swri
       bool b;
       int i;
     } Max;
-    union
-    {
-      double d;
-      bool b;
-      int i;
-      //std::string s;
-    } Current;
+    std::string default_string;// to get around union issues with strings
   };
 
   class DynamicParameters
   {
-    //typedef boost::function<void(std::map<string
     ros::Publisher descr_pub_;
     ros::Publisher update_pub_;
     ros::ServiceServer set_service_;
@@ -133,9 +125,9 @@ namespace swri
         *v = param.value;
       }
 
-      for (int i = 0; i < req.config.ints.size(); i++)
+      for (int i = 0; i < req.config.bools.size(); i++)
       {
-        dynamic_reconfigure::IntParameter param = req.config.ints[i];
+        dynamic_reconfigure::BoolParameter param = req.config.bools[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
         if (iter == values_.end())
         {
@@ -150,6 +142,26 @@ namespace swri
         }
 
         bool* v = (bool*)iter->second.pointer;
+        *v = param.value;
+      }
+
+      for (int i = 0; i < req.config.strs.size(); i++)
+      {
+        dynamic_reconfigure::StrParameter param = req.config.strs[i];
+        std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
+        if (iter == values_.end())
+        {
+          ROS_ERROR("Could not find parameter '%s'", param.name.c_str());
+          continue;
+        }
+
+        if (iter->second.type != DynamicValue::String)
+        {
+          ROS_ERROR("Value '%s' was not a string type.", param.name.c_str());
+          continue;
+        }
+
+        std::string* v = (std::string*)iter->second.pointer;
         *v = param.value;
       }
 
@@ -245,6 +257,14 @@ namespace swri
         else if (param->second.type == DynamicValue::String)
         {
           type = "string";
+          dynamic_reconfigure::StrParameter desc;
+          desc.name = param->first;
+          desc.value = "";
+          rdesc.max.strs.push_back(desc);
+          desc.value = "";
+          rdesc.min.strs.push_back(desc);
+          desc.value = param->second.default_string;
+          rdesc.dflt.strs.push_back(desc);
         }
 
         dynamic_reconfigure::ParamDescription desc;
@@ -296,6 +316,13 @@ namespace swri
           param.name = value->first;
           param.value = *(bool*)value->second.pointer;
           config.bools.push_back(param);
+        }
+        else if (value->second.type == DynamicValue::String)
+        {
+          dynamic_reconfigure::StrParameter param;
+          param.name = value->first;
+          param.value = *(std::string*)value->second.pointer;
+          config.strs.push_back(param);
         }
       }
 
@@ -356,7 +383,7 @@ namespace swri
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
       nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), variable);
+      ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), variable);
     }
 
     inline
@@ -377,7 +404,26 @@ namespace swri
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
       nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), variable);
+      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable ? "true" : "false");
+    }
+
+    inline
+    void get(const std::string &name,
+      std::string &variable,
+      const std::string default_value,
+      const std::string description = "None.")
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Bool;
+      value.description = description;
+      value.default_string = default_value;
+      value.pointer = (void*)&variable;
+      values_[name] = value;
+ 
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, variable, default_value);
+      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable.c_str());
     }
   };
 }  // namespace swri_param
