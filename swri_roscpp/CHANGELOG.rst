@@ -3,6 +3,12 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+2.7.0 (2018-12-04)
+------------------
+* Add topic based services and associated cmake utils (`#523 <https://github.com/swri-robotics/marti_common/issues/523>`_)
+  Provide utilities for implementing service type requests using messages in an almost transparent way.
+* Contributors: Matthew
+
 2.6.0 (2018-11-03)
 ------------------
 

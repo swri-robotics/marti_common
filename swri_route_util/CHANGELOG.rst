@@ -2,6 +2,9 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.7.0 (2018-12-04)
+------------------
+
 2.6.0 (2018-11-03)
 ------------------
 * Remove incorrect translation of object geometry (`#527 <https://github.com/swri-robotics/marti_common/issues/527>`_)
