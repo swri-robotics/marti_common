@@ -3,8 +3,8 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Forthcoming
------------
+2.7.1 (2018-12-14)
+------------------
 * Fix conditional causing exists to not work properly. (`#533 <https://github.com/swri-robotics/marti_common/issues/533>`_)
 * Remove non ascii character to please python (`#530 <https://github.com/swri-robotics/marti_common/issues/530>`_)
 * Contributors: Matthew
