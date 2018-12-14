@@ -2,6 +2,9 @@
 Changelog for package swri_console_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.7.0 (2018-12-04)
 ------------------
 
