@@ -62,10 +62,12 @@ class TestInitializeOrigin(unittest.TestCase):
         self.assertIsNotNone(origin_class, msg=ORIGIN_TOPIC+" was never advertised")
         self.assertIn(origin_class, ORIGIN_TYPES)
         self.test_stamp = False  # Enable this for auto origin
+        self.got_origin = False
         return rospy.Subscriber(ORIGIN_TOPIC, origin_class, self.originCallback)        
 
     def originCallback(self, msg):
         rospy.loginfo("Callback received a " + msg._type + " message.")
+        self.got_origin = True
         if msg._type == PoseStamped._type:
             latitude = msg.pose.position.y
             longitude = msg.pose.position.x
@@ -132,7 +134,7 @@ class TestInvalidOrigin(unittest.TestCase):
 class TestAutoOriginFromGPSFix(TestInitializeOrigin):
     def testAutoOriginFromGPSFix(self):
         rospy.init_node('test_auto_origin_from_gps_fix')
-        gps_pub = rospy.Publisher('gps', GPSFix, queue_size=2)
+        gps_pub = rospy.Publisher('gps', GPSFix, queue_size=2, latch=True)
         origin_sub = self.subscribeToOrigin()
         self.test_stamp = True
         gps_msg = GPSFix()
@@ -142,10 +144,9 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
         gps_msg.altitude = swri['altitude']
         gps_msg.track = swri['heading']
         gps_msg.header.stamp = msg_stamp
-        r = rospy.Rate(100.0)
-        while not rospy.is_shutdown():
-            gps_pub.publish(gps_msg)
-            r.sleep()
+        gps_pub.publish(gps_msg)
+        rospy.spin()
+        self.assertTrue(self.got_origin)
 
 
 class TestInvalidGPSFix(TestInvalidOrigin):
@@ -187,7 +188,7 @@ class TestInvalidGPSFix(TestInvalidOrigin):
 class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
     def testAutoOriginFromNavSatFix(self):
         rospy.init_node('test_auto_origin_from_nav_sat_fix')
-        nsf_pub = rospy.Publisher('fix', NavSatFix, queue_size=2)
+        nsf_pub = rospy.Publisher('fix', NavSatFix, queue_size=2, latch=True)
         origin_sub = self.subscribeToOrigin()
         self.test_stamp = True
         nsf_msg = NavSatFix()
@@ -197,10 +198,9 @@ class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
         nsf_msg.altitude = swri['altitude']
         nsf_msg.header.frame_id = "/far_field"
         nsf_msg.header.stamp = msg_stamp
-        r = rospy.Rate(100.0)
-        while not rospy.is_shutdown():
-            nsf_pub.publish(nsf_msg)
-            r.sleep()
+        nsf_pub.publish(nsf_msg)
+        rospy.spin()
+        self.assertTrue(self.got_origin)
 
 
 class TestInvalidNavSatFix(TestInvalidOrigin):
@@ -237,6 +237,7 @@ class TestManualOrigin(TestInitializeOrigin):
         rospy.init_node('test_manual_origin')
         origin_sub = self.subscribeToOrigin()
         rospy.spin()
+        self.assertTrue(self.got_origin)
 
 
 if __name__ == "__main__":
