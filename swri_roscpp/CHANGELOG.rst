@@ -3,6 +3,11 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+* Fix cmake macro for service_splitter.py (`#535 <https://github.com/swri-robotics/marti_common/issues/535>`_)
+* Contributors: P. J. Reed
+
 2.7.1 (2018-12-14)
 ------------------
 * Fix conditional causing exists to not work properly. (`#533 <https://github.com/swri-robotics/marti_common/issues/533>`_)

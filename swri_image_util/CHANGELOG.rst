@@ -2,6 +2,9 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.7.1 (2018-12-14)
 ------------------
 * Fix masked image normalization. (`#531 <https://github.com/swri-robotics/marti_common/issues/531>`_)
