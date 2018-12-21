@@ -35,8 +35,6 @@
 
 #include <swri_image_util/image_normalization.h>
 
-#include <opencv2/highgui/highgui.hpp>
-
 namespace swri_image_util
 {
   void normalize_illumination(cv::Mat NormImage,
