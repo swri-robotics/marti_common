@@ -7,7 +7,7 @@ set(swri_roscpp_SHARE ${swri_roscpp_PREFIX}/@CATKIN_PACKAGE_SHARE_DESTINATION@)
 set(swri_roscpp_BIN "@(CMAKE_CURRENT_SOURCE_DIR)/scripts/")
 @[else]@
 # bin and template dir variables in installspace
-set(swri_roscpp_BIN "${swri_roscpp_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)")
+set(swri_roscpp_BIN "${swri_roscpp_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)/")
 @[end if]@
 
 macro(add_topic_service_files)

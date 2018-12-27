@@ -118,7 +118,7 @@ public:
 
   bool exists()
   {
-    return request_pub_.getNumSubscribers() > 0 && response_sub_.getNumPublishers() == 0;
+    return request_pub_.getNumSubscribers() > 0 && response_sub_.getNumPublishers() > 0;
   }
 
   // The service server can output a console log message when the
