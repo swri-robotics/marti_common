@@ -140,25 +140,29 @@ namespace swri_image_util
     double max_min,
     double min_max)
   {
-    int x_bin_w = std::floor(static_cast<double>(source_image.cols) / grid_size);
-    int y_bin_h = std::floor(static_cast<double>(source_image.rows) / grid_size);
+    double cell_width = static_cast<double>(source_image.cols) / grid_size;
+    double cell_height = static_cast<double>(source_image.rows) / grid_size;
 
-    cv::Mat max_vals(grid_size + 1, grid_size + 1, CV_32F);
-    cv::Mat min_vals(grid_size + 1, grid_size + 1, CV_32F);
-    cv::Mat grid_mask = cv::Mat::ones(grid_size + 1, grid_size + 1, CV_8U) * 255;
+    cv::Mat max_vals(grid_size, grid_size, CV_32F);
+    cv::Mat min_vals(grid_size, grid_size, CV_32F);
+    cv::Mat grid_mask = cv::Mat::ones(grid_size, grid_size, CV_8U) * 255;
 
     bool has_mask = !mask.empty();
-    for(int i = 0; i < grid_size + 1; i++)
+    for(int i = 0; i < grid_size; i++)
     {
-      for(int j = 0; j < grid_size + 1; j++)
+      for(int j = 0; j < grid_size; j++)
       {
         double minVal = 0;
         double maxVal = 0;
 
-        cv::Rect roi = cv::Rect(j * x_bin_w  - x_bin_w / 2,
-                       i * y_bin_h - y_bin_h / 2, x_bin_w, y_bin_h);
-        roi.x = std::max(0, roi.x);
-        roi.y = std::max(0, roi.y);
+        int x = j * cell_width;
+        int y = i * cell_height;
+        int x2 = (j + 1) * cell_width;
+        int y2 = (i + 1) * cell_height;
+        int w = x2 - x;
+        int h = y2 - y;
+
+        cv::Rect roi = cv::Rect(x, y, w, h);
         roi.width = std::min(source_image.cols - roi.x, roi.width);
         roi.height = std::min(source_image.rows - roi.y, roi.height);
 
@@ -177,6 +181,7 @@ namespace swri_image_util
         {
           cv::minMaxLoc(source_image(roi), &minVal, &maxVal, 0, 0);
         }
+
         max_vals.at<float>(i, j) = maxVal;
         min_vals.at<float>(i, j) = minVal;
       }
@@ -188,31 +193,80 @@ namespace swri_image_util
     // Stretch contrast accordingly
     for(int i = 0; i < source_image.rows; i++)
     {
-      int ii = i / y_bin_h;
-      double py = (i - ii * y_bin_h) / static_cast<double>(y_bin_h);
+      int cell_y = std::min(grid_size - 1, static_cast<int>(i / cell_height));
+      int cell_y_start = cell_y * cell_height;
+      int cell_y_end = std::min(source_image.rows - 1, static_cast<int>((cell_y + 1) * cell_height));
+      double py = (i - cell_y_start) / static_cast<double>(cell_y_end - cell_y_start);
 
       for(int j = 0; j < source_image.cols; j++)
       {
         // Find relevant min and max values
-        int jj = j / x_bin_w;
+        int cell_x = std::min(grid_size - 1, static_cast<int>(j / cell_width));
+        int cell_x_start = cell_x * cell_width;
+        int cell_x_end = std::min(source_image.cols - 1, static_cast<int>((cell_x + 1) * cell_width));
+        double px = (j - cell_x_start) / static_cast<double>(cell_x_end - cell_x_start);
+
+        int cell_x1 = cell_x;
+        int cell_x2 = cell_x;
+        double px1 = 0.5;
+        double px2 = 0.5;
+        if (px < 0.5 && cell_x > 0)
+        {
+          cell_x1 = cell_x - 1;
+          cell_x2 = cell_x;
+          px2 = px + 0.5;
+          px1 = 1.0 - px2;
+        }
+        else if (px > 0.5 && cell_x + 1 < grid_size)
+        {
+          cell_x1 = cell_x;
+          cell_x2 = cell_x + 1;
+          px1 = 1.5 - px;
+          px2 = 1.0 - px1;
+        }
+
+        int cell_y1 = cell_y;
+        int cell_y2 = cell_y;
+        double py1 = 0.5;
+        double py2 = 0.5;
+        if (py < 0.5 && cell_y > 0)
+        {
+          cell_y1 = cell_y - 1;
+          cell_y2 = cell_y;
+          py2 = py + 0.5;
+          py1 = 1.0 - py2;
+        }
+        else if (py > 0.5 && cell_y + 1 < grid_size)
+        {
+          cell_y1 = cell_y;
+          cell_y2 = cell_y + 1;
+          py1 = 1.5 - py;
+          py2 = 1.0 - py1;
+        }
 
         // Stretch histogram
-        double minVal = min_vals.at<float>(ii, jj);
-        double maxVal = max_vals.at<float>(ii, jj);
+        double min_x1_y1 = min_vals.at<float>(cell_y1, cell_x1);
+        double max_x1_y1 = max_vals.at<float>(cell_y1, cell_x1);
 
-        // interp x
-        double px = (j - jj * x_bin_w) / static_cast<double>(x_bin_w);
+        double min_x2_y1 = min_vals.at<float>(cell_y1, cell_x2);
+        double max_x2_y1 = max_vals.at<float>(cell_y1, cell_x2);
+
+        double min_x1_y2 = min_vals.at<float>(cell_y2, cell_x1);
+        double max_x1_y2 = max_vals.at<float>(cell_y2, cell_x1);
+
+        double min_x2_y2 = min_vals.at<float>(cell_y2, cell_x2);
+        double max_x2_y2 = max_vals.at<float>(cell_y2, cell_x2);
 
         //4-point interpolation
-        double xM1 = maxVal + px * (max_vals.at<float>(ii, jj+1) - maxVal);
-        double xM2 = max_vals.at<float>(ii+1, jj) + px * (max_vals.at<float>(ii+1, jj+1) - max_vals.at<float>(ii+1, jj));
-        double M = xM1 + py * (xM2 - xM1);
+        double xM1 = max_x1_y1 * px1 + max_x2_y1 * px2;
+        double xM2 = max_x1_y2 * px1 + max_x2_y2 * px2;
+        double M = xM1 * py1 + xM2 * py2;
 
-        double xm1 = minVal + px * (min_vals.at<float>(ii, jj+1) - minVal);
-        double xm2 = min_vals.at<float>(ii+1, jj) + px*(min_vals.at<float>(ii+1, jj+1) - min_vals.at<float>(ii+1, jj));
-        double m = xm1 + py * (xm2 - xm1);
-        minVal = m;
-        maxVal = M;
+        double xm1 = min_x1_y1 * px1 + min_x2_y1 * px2;
+        double xm2 = min_x1_y2 * px1 + min_x2_y2 * px2;
+        double m = xm1 * py1 + xm2 * py2;
+        double minVal = m;
+        double maxVal = M;
 
         if(maxVal > 255) maxVal = 255;
         if(minVal < 0) minVal = 0;
@@ -228,6 +282,8 @@ namespace swri_image_util
         dest_image.at<uint8_t>(i,j) = val;
       }
     }
+
+    dest_image.setTo(0, mask == 0);
   }
 
   void NormalizeResponse(
