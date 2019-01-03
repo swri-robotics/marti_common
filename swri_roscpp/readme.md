@@ -31,3 +31,51 @@ add_topic_service_files(DIRECTORY topic_srv FILES
 ```
 
 To use the generated topics simply include `your_project/your_service.h`. They have response and request fields just like normal services.
+
+## Dynamic Parameters
+
+A class that implements the same functionality as Dynamic Reconfigure, but in a more dynamic and easier to use way. Instead of declaring configurable parameters at compile time in a config file they are specified in your C++ code.
+
+To use, add the class to your node and call the initalize function with a NodeHandle in your private namespace.
+
+```cpp
+#include <swri_roscpp/dynamic_parameters.h>
+
+void main()
+{
+  // your node stuff here
+
+  ros::NodeHandle pnh("~");
+  swri::DynamicParameters params;
+  params.initialize(pnh);
+...
+```
+
+You can then start declaring and reading in configuration values, giving a long living pointer to a variable for each. This variable is changed on a dynamic reconfigure of that parameter. If you want to ensure no changes are applied during an operation, be sure to lock the mutex you can get by calling the `params.mutex()` function.
+
+```cpp
+  float flt;
+  params.get("float_value", flt, 
+              10.0f /*default*/, "Description...", 
+             -10.0f /* min */, 10.0f /* max */);
+  double dbl;
+  params.get("double_value", dbl, 
+              10.0 /*default*/, "Description...", 
+             -10.0 /* min */, 10.0 /* max */);
+  bool bl;
+  params.get("bool_value", bl, 
+              10.0f /*default*/, "Description...");
+  std::string str;
+  params.get("string_value", str, 
+              "default" /*default*/, "Description...");
+```
+
+These functions read in the current parameter value to the provided variable, if they haven't been set they are set to the default value. After you have read in all the variables you want to be dynamically reconfigurable, call the `finalize()` function.
+
+```cpp
+  params.finalize();
+```
+
+This publishes the configuration options to a latched topic so that the dynamic reconfigure tools can read them in. 
+
+After you call finalize, you should be able to access and dynamically configure your node with any dynamic reconfigure compatible tools.

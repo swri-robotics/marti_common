@@ -30,24 +30,24 @@ namespace swri
     Type type;
     std::string name;
     std::string description;
-    void* pointer;
+
+    void* pointer;//pointer to the parameter to update on change
+
+    // Defaults, maximum and minimum values for this parameter
     union
     {
       double d;
       bool b;
       int i;
-      //std::string s;
     } Default;
     union
     {
       double d;
-      bool b;
       int i;
     } Min;
     union
     {
       double d;
-      bool b;
       int i;
     } Max;
     std::string default_string;// to get around union issues with strings
@@ -161,13 +161,65 @@ namespace swri
         *v = param.value;
       }
 
-      PublishCurrent(rsp.config);
+      updateCurrent(rsp.config);
 
       return true;
     }
 
+    // Updates a config with the current parameter values
+    void updateCurrent(dynamic_reconfigure::Config& config)
+    {
+      for (std::map<std::string, DynamicValue>::iterator value = values_.begin(); value != values_.end(); value++)
+      {
+        if (value->second.type == DynamicValue::Double)
+        {
+          dynamic_reconfigure::DoubleParameter param;
+          param.name = value->first;
+          param.value = *(double*)value->second.pointer;
+          config.doubles.push_back(param);
+        }
+        else if (value->second.type == DynamicValue::Float)
+        {
+          dynamic_reconfigure::DoubleParameter param;
+          param.name = value->first;
+          param.value = *(float*)value->second.pointer;
+          config.doubles.push_back(param);
+        }
+        else if (value->second.type == DynamicValue::Int)
+        {
+          dynamic_reconfigure::IntParameter param;
+          param.name = value->first;
+          param.value = *(int*)value->second.pointer;
+          config.ints.push_back(param);
+        }
+        else if (value->second.type == DynamicValue::Bool)
+        {
+          dynamic_reconfigure::BoolParameter param;
+          param.name = value->first;
+          param.value = *(bool*)value->second.pointer;
+          config.bools.push_back(param);
+        }
+        else if (value->second.type == DynamicValue::String)
+        {
+          dynamic_reconfigure::StrParameter param;
+          param.name = value->first;
+          param.value = *(std::string*)value->second.pointer;
+          config.strs.push_back(param);
+        }
+      }
+
+      dynamic_reconfigure::GroupState gs;
+      gs.name = "Default";
+      gs.state = true;
+      gs.id = 0;
+      gs.parent = 0;
+      config.groups.push_back(gs);
+      update_pub_.publish(config);
+    }
+
     public:
     
+    // Sets up the node handle and publishers. Be sure to call this before finalize or any of the 'get*' calls.
     void initialize(ros::NodeHandle& pnh)
     {
       boost::mutex::scoped_lock lock(mutex_);
@@ -180,6 +232,7 @@ namespace swri
             &DynamicParameters::setConfigCallback, this);
     }
 
+    // Publishes the configuration parameters that have been added
     void finalize()
     {
       // publish the configs as one group
@@ -278,62 +331,35 @@ namespace swri
       descr_pub_.publish(rdesc);
 
       dynamic_reconfigure::Config config;
-      PublishCurrent(config);
-    }
-
-    void PublishCurrent(dynamic_reconfigure::Config& config)
-    {
-      for (std::map<std::string, DynamicValue>::iterator value = values_.begin(); value != values_.end(); value++)
-      {
-        if (value->second.type == DynamicValue::Double)
-        {
-          dynamic_reconfigure::DoubleParameter param;
-          param.name = value->first;
-          param.value = *(double*)value->second.pointer;
-          config.doubles.push_back(param);
-        }
-        else if (value->second.type == DynamicValue::Float)
-        {
-          dynamic_reconfigure::DoubleParameter param;
-          param.name = value->first;
-          param.value = *(float*)value->second.pointer;
-          config.doubles.push_back(param);
-        }
-        else if (value->second.type == DynamicValue::Int)
-        {
-          dynamic_reconfigure::IntParameter param;
-          param.name = value->first;
-          param.value = *(int*)value->second.pointer;
-          config.ints.push_back(param);
-        }
-        else if (value->second.type == DynamicValue::Bool)
-        {
-          dynamic_reconfigure::BoolParameter param;
-          param.name = value->first;
-          param.value = *(bool*)value->second.pointer;
-          config.bools.push_back(param);
-        }
-        else if (value->second.type == DynamicValue::String)
-        {
-          dynamic_reconfigure::StrParameter param;
-          param.name = value->first;
-          param.value = *(std::string*)value->second.pointer;
-          config.strs.push_back(param);
-        }
-      }
-
-      dynamic_reconfigure::GroupState gs;
-      gs.name = "Default";
-      gs.state = true;
-      gs.id = 0;
-      gs.parent = 0;
-      config.groups.push_back(gs);
-      update_pub_.publish(config);
+      updateCurrent(config);
     }
 
     boost::mutex& mutex()
     {
       return mutex_;
+    }
+
+    inline
+    void get(const std::string &name,
+      float &variable,
+      const float default_value,
+      const std::string description = "None.",
+      const float min = -100,
+      const float max = 100)
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Float;
+      value.description = description;
+      value.Min.d = min;
+      value.Max.d = max;
+      value.Default.d = default_value;
+      value.pointer = (void*)&variable;
+      values_[name] = value;
+
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, variable, default_value);
+      ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), variable);
     }
     
     inline
@@ -391,8 +417,6 @@ namespace swri
       DynamicValue value;
       value.type = DynamicValue::Bool;
       value.description = description;
-      value.Min.b = false;
-      value.Max.b = true;
       value.Default.b = default_value;
       value.pointer = (void*)&variable;
       values_[name] = value;
