@@ -3,6 +3,9 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+
 2.7.2 (2018-12-20)
 ------------------
 * Fix cmake macro for service_splitter.py (`#535 <https://github.com/swri-robotics/marti_common/issues/535>`_)
