@@ -3,6 +3,20 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+2.7.3 (2019-01-03)
+------------------
+
+2.7.2 (2018-12-20)
+------------------
+* Fix cmake macro for service_splitter.py (`#535 <https://github.com/swri-robotics/marti_common/issues/535>`_)
+* Contributors: P. J. Reed
+
+2.7.1 (2018-12-14)
+------------------
+* Fix conditional causing exists to not work properly. (`#533 <https://github.com/swri-robotics/marti_common/issues/533>`_)
+* Remove non ascii character to please python (`#530 <https://github.com/swri-robotics/marti_common/issues/530>`_)
+* Contributors: Matthew
+
 2.7.0 (2018-12-04)
 ------------------
 * Add topic based services and associated cmake utils (`#523 <https://github.com/swri-robotics/marti_common/issues/523>`_)

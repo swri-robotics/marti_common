@@ -2,6 +2,17 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.7.3 (2019-01-03)
+------------------
+
+2.7.2 (2018-12-20)
+------------------
+* Fix the unit test that intermittently breaks (`#534 <https://github.com/swri-robotics/marti_common/issues/534>`_)
+* Contributors: P. J. Reed
+
+2.7.1 (2018-12-14)
+------------------
+
 2.7.0 (2018-12-04)
 ------------------
 
