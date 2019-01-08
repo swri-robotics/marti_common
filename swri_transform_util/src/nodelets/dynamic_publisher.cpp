@@ -41,8 +41,8 @@ namespace swri_transform_util {
 
 class DynamicPublisher : public nodelet::Nodelet
 {
-  double roll_, pitch_, yaw_;
-  double x_, y_, z_;
+  swri::DoubleParam roll_, pitch_, yaw_;
+  swri::DoubleParam x_, y_, z_;
 
   swri::DynamicParameters params_;
 
@@ -91,11 +91,13 @@ class DynamicPublisher : public nodelet::Nodelet
 
   void Publish(const ros::TimerEvent& unused)
   {
-    tf::Transform transform;
-    tf::Vector3 origin(x_, y_, z_);
+    params_.mutex().lock();
+    tf::Vector3 origin(*x_, *y_, *z_);
     tf::Quaternion rotation;
-    rotation.setRPY(roll_, pitch_, yaw_);
-    transform = tf::Transform(rotation, origin);
+    rotation.setRPY(*roll_, *pitch_, *yaw_);
+    params_.mutex().unlock();
+
+    tf::Transform transform(rotation, origin);
 
     tf::StampedTransform stamped_transform(
         transform,

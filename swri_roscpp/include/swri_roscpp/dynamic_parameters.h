@@ -1,3 +1,32 @@
+// *****************************************************************************
+//
+// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Southwest Research Institute® (SwRI®) nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL SOUTHWEST RESEARCH INSTITUTE BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// *****************************************************************************
+
 #ifndef SWRI_ROSCPP_DYNAMIC_PARAMETERS_H_
 #define SWRI_ROSCPP_DYNAMIC_PARAMETERS_H_
 
@@ -31,7 +60,12 @@ namespace swri
     std::string name;
     std::string description;
 
-    void* pointer;//pointer to the parameter to update on change
+    //pointer to the parameter to update on change
+    boost::shared_ptr<float> flt;
+    boost::shared_ptr<double> dbl;
+    boost::shared_ptr<std::string> str;
+    boost::shared_ptr<int> integer;
+    boost::shared_ptr<bool> boolean;
 
     // Defaults, maximum and minimum values for this parameter
     union
@@ -53,6 +87,25 @@ namespace swri
     std::string default_string;// to get around union issues with strings
   };
 
+  template <class T>
+  struct TypedParam
+  {
+    boost::shared_ptr<T> data;
+
+    inline
+    T operator* ()
+    {
+      return *data;
+    }
+  };
+
+  typedef TypedParam<double> DoubleParam;
+  typedef TypedParam<float> FloatParam;
+  typedef TypedParam<int> IntParam;
+  typedef TypedParam<bool> BoolParam;
+  typedef TypedParam<std::string> StringParam;
+
+
   class DynamicParameters
   {
     ros::Publisher descr_pub_;
@@ -67,7 +120,7 @@ namespace swri
     bool setConfigCallback(dynamic_reconfigure::Reconfigure::Request &req,
           dynamic_reconfigure::Reconfigure::Response &rsp)
     {
-      ROS_INFO("Got configuration change request");
+      ROS_DEBUG("Got configuration change request");
 
       boost::mutex::scoped_lock lock(mutex_);
       
@@ -90,14 +143,12 @@ namespace swri
 
         if (iter->second.type == DynamicValue::Double)
         {
-          double* v = (double*)iter->second.pointer;
-          *v = param.value;
+          *iter->second.dbl = param.value;
         }
 
         if (iter->second.type == DynamicValue::Float)
         {
-          float* v = (float*)iter->second.pointer;
-          *v = (float)param.value;
+          *iter->second.flt = (float)param.value;
         }
       }
 
@@ -117,8 +168,7 @@ namespace swri
           continue;
         }
 
-        int* v = (int*)iter->second.pointer;
-        *v = param.value;
+        *iter->second.integer = param.value;
       }
 
       for (int i = 0; i < req.config.bools.size(); i++)
@@ -137,8 +187,7 @@ namespace swri
           continue;
         }
 
-        bool* v = (bool*)iter->second.pointer;
-        *v = param.value;
+        *iter->second.boolean = param.value;
       }
 
       for (int i = 0; i < req.config.strs.size(); i++)
@@ -157,8 +206,7 @@ namespace swri
           continue;
         }
 
-        std::string* v = (std::string*)iter->second.pointer;
-        *v = param.value;
+        *iter->second.str = param.value;
       }
 
       updateCurrent(rsp.config);
@@ -175,35 +223,35 @@ namespace swri
         {
           dynamic_reconfigure::DoubleParameter param;
           param.name = value->first;
-          param.value = *(double*)value->second.pointer;
+          param.value = *value->second.dbl;
           config.doubles.push_back(param);
         }
         else if (value->second.type == DynamicValue::Float)
         {
           dynamic_reconfigure::DoubleParameter param;
           param.name = value->first;
-          param.value = *(float*)value->second.pointer;
+          param.value = *value->second.flt;
           config.doubles.push_back(param);
         }
         else if (value->second.type == DynamicValue::Int)
         {
           dynamic_reconfigure::IntParameter param;
           param.name = value->first;
-          param.value = *(int*)value->second.pointer;
+          param.value = *value->second.integer;
           config.ints.push_back(param);
         }
         else if (value->second.type == DynamicValue::Bool)
         {
           dynamic_reconfigure::BoolParameter param;
           param.name = value->first;
-          param.value = *(bool*)value->second.pointer;
+          param.value = *value->second.boolean;
           config.bools.push_back(param);
         }
         else if (value->second.type == DynamicValue::String)
         {
           dynamic_reconfigure::StrParameter param;
           param.name = value->first;
-          param.value = *(std::string*)value->second.pointer;
+          param.value = *value->second.str;
           config.strs.push_back(param);
         }
       }
@@ -334,6 +382,7 @@ namespace swri
       updateCurrent(config);
     }
 
+    inline
     boost::mutex& mutex()
     {
       return mutex_;
@@ -341,7 +390,7 @@ namespace swri
 
     inline
     void get(const std::string &name,
-      float &variable,
+      FloatParam &variable,
       const float default_value,
       const std::string description = "None.",
       const float min = -100,
@@ -353,18 +402,20 @@ namespace swri
       value.Min.d = min;
       value.Max.d = max;
       value.Default.d = default_value;
-      value.pointer = (void*)&variable;
+      value.flt = boost::shared_ptr<float>(new float);
       values_[name] = value;
+
+      variable.data = value.flt;
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), variable);
+      nh_.param(name, *value.flt, default_value);
+      ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), *variable);
     }
     
     inline
     void get(const std::string &name,
-      double &variable,
+      DoubleParam &variable,
       const double default_value,
       const std::string description = "None.",
       const double min = -100,
@@ -376,18 +427,20 @@ namespace swri
       value.Min.d = min;
       value.Max.d = max;
       value.Default.d = default_value;
-      value.pointer = (void*)&variable;
+      value.dbl = boost::shared_ptr<double>(new double);
       values_[name] = value;
+
+      variable.data = value.dbl;
  
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), variable);
+      nh_.param(name, *value.dbl, default_value);
+      ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), *variable);
     }
 
     inline
     void get(const std::string &name,
-      int &variable,
+      IntParam &variable,
       const int default_value,
       const std::string description = "None.",
       const int min = -100,
@@ -399,18 +452,20 @@ namespace swri
       value.Min.i = min;
       value.Max.i = max;
       value.Default.i = default_value;
-      value.pointer = (void*)&variable;
+      value.integer = boost::shared_ptr<int>(new int);
       values_[name] = value;
+
+      variable.data = value.integer;
  
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), variable);
+      nh_.param(name, *value.integer, default_value);
+      ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), *variable);
     }
 
     inline
     void get(const std::string &name,
-      bool &variable,
+      BoolParam &variable,
       const bool default_value,
       const std::string description = "None.")
     {
@@ -418,18 +473,20 @@ namespace swri
       value.type = DynamicValue::Bool;
       value.description = description;
       value.Default.b = default_value;
-      value.pointer = (void*)&variable;
+      value.boolean = boost::shared_ptr<bool>(new bool);
       values_[name] = value;
+
+      variable.data = value.boolean;
  
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable ? "true" : "false");
+      nh_.param(name, *value.boolean, default_value);
+      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), *variable ? "true" : "false");
     }
 
     inline
     void get(const std::string &name,
-      std::string &variable,
+      StringParam &variable,
       const std::string default_value,
       const std::string description = "None.")
     {
@@ -437,13 +494,15 @@ namespace swri
       value.type = DynamicValue::Bool;
       value.description = description;
       value.default_string = default_value;
-      value.pointer = (void*)&variable;
+      value.str = boost::shared_ptr<std::string>(new std::string());
       values_[name] = value;
  
+      variable.data = value.str;
+
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, variable, default_value);
-      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable.c_str());
+      nh_.param(name, *value.str, default_value);
+      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), (*variable).c_str());
     }
   };
 }  // namespace swri_param
