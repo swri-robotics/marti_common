@@ -51,7 +51,7 @@ void main()
 ...
 ```
 
-You can then start declaring and reading in configuration values, giving a long living pointer to a variable for each. This variable is changed on a dynamic reconfigure of that parameter. Be sure to lock the parameter mutex you can get by calling the `params.mutex()` function or by using the `.get()` function on each `*Param`.
+You can then start declaring and reading in configuration values, giving a long living pointer to a variable for each. This variable is changed on a dynamic reconfigure of that parameter. Be sure to lock the parameter mutex before reading any of these parameters. You can do this by calling the `params.mutex()` function and manually locking/unlocking it, or by using the `.get()` function on each `*Param` to do it automatically.
 
 ```cpp
   FloatParam flt;
@@ -86,4 +86,17 @@ Then to use/read in the parameter values in your code:
 
 ```cpp
   float val = flt.get();// or *flt to get it without locking the mutex if you know what you are doing
+```
+
+You can also lock the mutex manually for getting the parameters in a block as follows:
+
+```cpp
+  params.mutex().lock();
+
+  float a = *flt;
+  double b = *dbl;
+  bool c = *bl;
+  std::string d = *str; 
+
+  params.mutex().unlock();
 ```
