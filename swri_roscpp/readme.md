@@ -51,24 +51,25 @@ void main()
 ...
 ```
 
-You can then start declaring and reading in configuration values, giving a long living pointer to a variable for each. This variable is changed on a dynamic reconfigure of that parameter. If you want to ensure no changes are applied during an operation, be sure to lock the mutex you can get by calling the `params.mutex()` function.
+You can then start declaring and reading in configuration values, giving a long living pointer to a variable for each. This variable is changed on a dynamic reconfigure of that parameter. Be sure to lock the parameter mutex you can get by calling the `params.mutex()` function or by using the `.get()` function on each `*Param`.
 
 ```cpp
-  float flt;
+  FloatParam flt;
   params.get("float_value", flt, 
               10.0f /*default*/, "Description...", 
              -10.0f /* min */, 10.0f /* max */);
-  double dbl;
+  DoubleParam dbl;
   params.get("double_value", dbl, 
               10.0 /*default*/, "Description...", 
              -10.0 /* min */, 10.0 /* max */);
-  bool bl;
+  BoolParam bl;
   params.get("bool_value", bl, 
               10.0f /*default*/, "Description...");
-  std::string str;
+  StringParam str;
   params.get("string_value", str, 
               "default" /*default*/, "Description...");
 ```
+
 
 These functions read in the current parameter value to the provided variable, if they haven't been set they are set to the default value. After you have read in all the variables you want to be dynamically reconfigurable, call the `finalize()` function.
 
@@ -76,6 +77,13 @@ These functions read in the current parameter value to the provided variable, if
   params.finalize();
 ```
 
+
 This publishes the configuration options to a latched topic so that the dynamic reconfigure tools can read them in. 
 
 After you call finalize, you should be able to access and dynamically configure your node with any dynamic reconfigure compatible tools.
+
+Then to use/read in the parameter values in your code:
+
+```cpp
+  float val = flt.get();// or *flt to get it without locking the mutex if you know what you are doing
+```
