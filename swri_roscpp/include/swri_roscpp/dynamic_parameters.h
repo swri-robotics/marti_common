@@ -91,11 +91,21 @@ namespace swri
   struct TypedParam
   {
     boost::shared_ptr<T> data;
+    boost::shared_ptr<boost::mutex> mutex;
 
     inline
     T operator* ()
     {
       return *data;
+    }
+
+    T get()
+    {
+      mutex->lock();
+      T d = *data;
+      mutex->unlock();
+
+      return d;
     }
   };
 
@@ -115,14 +125,15 @@ namespace swri
 
     std::map<std::string, DynamicValue> values_;
 
-    boost::mutex mutex_;
+
+    boost::shared_ptr<boost::mutex> mutex_;
 
     bool setConfigCallback(dynamic_reconfigure::Reconfigure::Request &req,
           dynamic_reconfigure::Reconfigure::Response &rsp)
     {
       ROS_DEBUG("Got configuration change request");
 
-      boost::mutex::scoped_lock lock(mutex_);
+      boost::mutex::scoped_lock lock(*mutex_);
       
       // update the parameters
       for (int i = 0; i < req.config.doubles.size(); i++)
@@ -266,23 +277,28 @@ namespace swri
     }
 
     public:
+
+
+    DynamicParameters() : mutex_(new boost::mutex)
+    {
+
+    }
     
     // Sets up the node handle and publishers. Be sure to call this before finalize or any of the 'get*' calls.
     void initialize(ros::NodeHandle& pnh)
     {
-      boost::mutex::scoped_lock lock(mutex_);
+      boost::mutex::scoped_lock lock(*mutex_);
       nh_ = pnh;
 
       descr_pub_ = nh_.advertise<dynamic_reconfigure::ConfigDescription>("parameter_descriptions", 1, true);
       update_pub_ = nh_.advertise<dynamic_reconfigure::Config>("parameter_updates", 1, true);
-
-      set_service_ = nh_.advertiseService("set_parameters",
-            &DynamicParameters::setConfigCallback, this);
     }
 
     // Publishes the configuration parameters that have been added
     void finalize()
     {
+      boost::mutex::scoped_lock lock(*mutex_);
+
       // publish the configs as one group
       dynamic_reconfigure::ConfigDescription rdesc;
       dynamic_reconfigure::Group group;
@@ -380,12 +396,15 @@ namespace swri
 
       dynamic_reconfigure::Config config;
       updateCurrent(config);
+
+      set_service_ = nh_.advertiseService("set_parameters",
+            &DynamicParameters::setConfigCallback, this);
     }
 
     inline
     boost::mutex& mutex()
     {
-      return mutex_;
+      return *mutex_;
     }
 
     inline
@@ -406,6 +425,7 @@ namespace swri
       values_[name] = value;
 
       variable.data = value.flt;
+      variable.mutex = mutex_;
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -431,7 +451,8 @@ namespace swri
       values_[name] = value;
 
       variable.data = value.dbl;
- 
+      variable.mutex = mutex_;
+
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
       nh_.param(name, *value.dbl, default_value);
@@ -456,6 +477,7 @@ namespace swri
       values_[name] = value;
 
       variable.data = value.integer;
+      variable.mutex = mutex_;
  
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -477,6 +499,7 @@ namespace swri
       values_[name] = value;
 
       variable.data = value.boolean;
+      variable.mutex = mutex_;
  
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -498,6 +521,7 @@ namespace swri
       values_[name] = value;
  
       variable.data = value.str;
+      variable.mutex = mutex_;
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
