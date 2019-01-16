@@ -40,10 +40,12 @@ namespace swri_transform_util
   }
 
   void Transformer::Initialize(
-      const boost::shared_ptr<tf::TransformListener> tf)
+      const boost::shared_ptr<tf::TransformListener> tf,
+      const boost::shared_ptr<LocalXyWgs84Util> xy_util)
   {
     tf_listener_ = tf;
     initialized_ = Initialize();
+    local_xy_util_ = xy_util;
   }
 
   bool Transformer::Initialize()

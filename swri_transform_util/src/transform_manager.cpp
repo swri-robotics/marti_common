@@ -81,7 +81,7 @@ namespace swri_transform_util
       std::map<std::string, boost::shared_ptr<Transformer> >::iterator iter2;
       for (iter2 = iter1->second.begin(); iter2 != iter1->second.end(); ++iter2)
       {
-        iter2->second->Initialize(tf);
+        iter2->second->Initialize(tf, local_xy_util_);
       }
     }
   }

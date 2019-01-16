@@ -87,7 +87,6 @@ namespace swri_transform_util
       virtual bool Initialize();
 
       boost::shared_ptr<UtmUtil> utm_util_;
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
 
       int32_t utm_zone_;
       char utm_band_;
