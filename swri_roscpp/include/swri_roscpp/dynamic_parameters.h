@@ -276,8 +276,7 @@ namespace swri
       update_pub_.publish(config);
     }
 
-    public:
-
+  public:
 
     DynamicParameters() : mutex_(new boost::mutex)
     {
@@ -405,6 +404,12 @@ namespace swri
     boost::mutex& mutex()
     {
       return *mutex_;
+    }
+
+    inline
+    boost::mutex::scoped_lock lock_guard()
+    {
+      return boost::mutex::scoped_lock(*mutex_);
     }
 
     inline
