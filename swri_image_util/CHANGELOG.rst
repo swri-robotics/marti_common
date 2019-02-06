@@ -2,6 +2,9 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.7.3 (2019-01-03)
 ------------------
 * Fixes for image normalization. (`#536 <https://github.com/swri-robotics/marti_common/issues/536>`_)
