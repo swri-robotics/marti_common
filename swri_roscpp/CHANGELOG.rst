@@ -3,8 +3,8 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Forthcoming
------------
+2.8.0 (2019-02-06)
+------------------
 * Add dynamic parameters (`#532 <https://github.com/swri-robotics/marti_common/issues/532>`_)
 * Contributors: Matthew
 
