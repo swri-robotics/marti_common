@@ -40,6 +40,7 @@
 #include <tf/transform_listener.h>
 
 #include <swri_transform_util/transform.h>
+#include <swri_transform_util/local_xy_util.h>
 
 namespace swri_transform_util
 {
@@ -63,7 +64,8 @@ namespace swri_transform_util
        *    node use the same tf::TransformListener to reduce redundant
        *    computation.
        */
-      void Initialize(const boost::shared_ptr<tf::TransformListener> tf);
+      void Initialize(const boost::shared_ptr<tf::TransformListener> tf, 
+                      const boost::shared_ptr<LocalXyWgs84Util> xy_util = boost::shared_ptr<LocalXyWgs84Util>());
 
       /**
        * Get a map of the transforms supported by this Transformer
@@ -97,6 +99,7 @@ namespace swri_transform_util
     protected:
       bool initialized_;
       boost::shared_ptr<tf::TransformListener> tf_listener_;
+      boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
 
       virtual bool Initialize();
 

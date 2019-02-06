@@ -84,7 +84,6 @@ namespace swri_transform_util
     protected:
       virtual bool Initialize();
 
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
       std::string local_xy_frame_;
   };
 
