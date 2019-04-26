@@ -423,7 +423,7 @@ namespace swri
       }
       if (iter->second.type != DynamicValue::Double)
       {
-        ROS_ERROR("Tried to load double parameter %s with the wrong type.", name.c_str());
+        ROS_ERROR("Tried to load parameter %s with the wrong type: double.", name.c_str());
         return 0.0;
       }
 
@@ -441,7 +441,7 @@ namespace swri
       }
       if (iter->second.type != DynamicValue::Float)
       {
-        ROS_ERROR("Tried to load double parameter %s with the wrong type.", name.c_str());
+        ROS_ERROR("Tried to load parameter %s with the wrong type: float.", name.c_str());
         return 0.0f;
       }
 
@@ -458,7 +458,7 @@ namespace swri
       }
       if (iter->second.type != DynamicValue::Int)
       {
-        ROS_ERROR("Tried to load double parameter %s with the wrong type.", name.c_str());
+        ROS_ERROR("Tried to load parameter %s with the wrong type: int.", name.c_str());
         return 0.0f;
       }
 
@@ -476,7 +476,7 @@ namespace swri
       }
       if (iter->second.type != DynamicValue::Bool)
       {
-        ROS_ERROR("Tried to load double parameter %s with the wrong type.", name.c_str());
+        ROS_ERROR("Tried to load parameter %s with the wrong type: bool.", name.c_str());
         return false;
       }
 
@@ -494,7 +494,7 @@ namespace swri
       }
       if (iter->second.type != DynamicValue::String)
       {
-        ROS_ERROR("Tried to load double parameter %s with the wrong type.", name.c_str());
+        ROS_ERROR("Tried to load parameter %s with the wrong type: string.", name.c_str());
         return "";
       }
 
