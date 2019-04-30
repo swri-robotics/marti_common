@@ -55,7 +55,7 @@ private:
   int sequence_;
 
 public:
-  TopicServiceClientRaw() : sequence_(0), timeout_(ros::Duration(4.0))
+  TopicServiceClientRaw() : sequence_(rand()), timeout_(ros::Duration(4.0))
   {
 
   }
@@ -89,9 +89,11 @@ public:
 
       if (ros::Time::now() - request.srv_header.stamp > timeout_)
       {
+        ROS_ERROR("Topic service timeout exceeded");
         return false;
       }
     }
+    response_.reset();
     request_pub_.publish(request);
 
     // Wait until we get a response
@@ -137,10 +139,11 @@ private:
       ROS_DEBUG("Got response from another client, ignoring..");
       return;
     }
-
+    
     if (message->srv_header.sequence != sequence_)
     {
       ROS_WARN("Got wrong sequence number, ignoring..");
+      ROS_DEBUG("message seq:%i vs current seq: %i", message->srv_header.sequence, sequence_);
       return;
     }
 
