@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="swri_roscpp"
+        type="test_topic_service"
+        name="topic_service_server_test"
+        args="--gtest_filter=TopicServiceServerTests.*"/>
+  <test pkg="swri_roscpp"
+        type="test_topic_service"
+        test-name="topic_service_client_test"
+        args="--gtest_filter=TopicServiceClientTests.*"/>
+</launch>
