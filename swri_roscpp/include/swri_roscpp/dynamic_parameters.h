@@ -125,6 +125,8 @@ namespace swri
 
     std::map<std::string, DynamicValue> values_;
 
+    boost::function<void(DynamicParameters&)> on_change_;
+
 
     boost::shared_ptr<boost::mutex> mutex_;
 
@@ -221,6 +223,11 @@ namespace swri
       }
 
       updateCurrent(rsp.config);
+
+      if (on_change_)
+      {
+        on_change_(*this);
+      }
 
       return true;
     }
@@ -400,6 +407,101 @@ namespace swri
             &DynamicParameters::setConfigCallback, this);
     }
 
+    void setCallback(boost::function<void(DynamicParameters&)> fun)
+    {
+      on_change_ = fun;
+    }
+
+    //for use in the on change callback
+    double getDouble(const std::string& name)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(name);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to get nonexistant param %s", name.c_str());
+        return 0.0;
+      }
+      if (iter->second.type != DynamicValue::Double)
+      {
+        ROS_ERROR("Tried to load parameter %s with the wrong type: double.", name.c_str());
+        return 0.0;
+      }
+
+      return *iter->second.dbl;
+    }
+
+    //for use in the on change callback
+    float getFloat(const std::string& name)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(name);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to get nonexistant param %s", name.c_str());
+        return 0.0f;
+      }
+      if (iter->second.type != DynamicValue::Float)
+      {
+        ROS_ERROR("Tried to load parameter %s with the wrong type: float.", name.c_str());
+        return 0.0f;
+      }
+
+      return *iter->second.flt;
+    }
+
+    int getInt(const std::string& name)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(name);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to get nonexistant param %s", name.c_str());
+        return 0.0f;
+      }
+      if (iter->second.type != DynamicValue::Int)
+      {
+        ROS_ERROR("Tried to load parameter %s with the wrong type: int.", name.c_str());
+        return 0.0f;
+      }
+
+      return *iter->second.integer;
+    }
+
+    //for use in the on change callback
+    bool getBool(const std::string& name)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(name);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to get nonexistant param %s", name.c_str());
+        return false;
+      }
+      if (iter->second.type != DynamicValue::Bool)
+      {
+        ROS_ERROR("Tried to load parameter %s with the wrong type: bool.", name.c_str());
+        return false;
+      }
+
+      return *iter->second.boolean;
+    }
+
+    //for use in the on change callback
+    std::string getString(const std::string& name)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(name);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to get nonexistant param %s", name.c_str());
+        return "";
+      }
+      if (iter->second.type != DynamicValue::String)
+      {
+        ROS_ERROR("Tried to load parameter %s with the wrong type: string.", name.c_str());
+        return "";
+      }
+
+      return *iter->second.str;
+    }
+
+
     inline
     boost::mutex& mutex()
     {
@@ -410,6 +512,31 @@ namespace swri
     boost::mutex::scoped_lock lock_guard()
     {
       return boost::mutex::scoped_lock(*mutex_);
+    }
+
+    // for use with on change callbacks
+    inline
+    void get(const std::string &name,
+      float &variable,
+      const float default_value,
+      const std::string description = "None.",
+      const float min = -100,
+      const float max = 100)
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Float;
+      value.description = description;
+      value.Min.d = min;
+      value.Max.d = max;
+      value.Default.d = default_value;
+      value.flt = boost::shared_ptr<float>(new float);
+      values_[name] = value;
+
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, *value.flt, default_value);
+      variable = *value.flt;
+      ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), variable);
     }
 
     inline
@@ -436,6 +563,31 @@ namespace swri
       //_used_params.insert(resolved_name);
       nh_.param(name, *value.flt, default_value);
       ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), *variable);
+    }
+
+    // for use with on change callbacks
+    inline
+    void get(const std::string &name,
+      double &variable,
+      const double default_value,
+      const std::string description = "None.",
+      const double min = -100,
+      const double max = 100)
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Double;
+      value.description = description;
+      value.Min.d = min;
+      value.Max.d = max;
+      value.Default.d = default_value;
+      value.dbl = boost::shared_ptr<double>(new double);
+      values_[name] = value;
+
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, *value.dbl, default_value);
+      variable = *value.dbl;
+      ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), variable);
     }
     
     inline
@@ -466,6 +618,30 @@ namespace swri
 
     inline
     void get(const std::string &name,
+      int &variable,
+      const int default_value,
+      const std::string description = "None.",
+      const int min = -100,
+      const int max = 100)
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Int;
+      value.description = description;
+      value.Min.i = min;
+      value.Max.i = max;
+      value.Default.i = default_value;
+      value.integer = boost::shared_ptr<int>(new int);
+      values_[name] = value;
+
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, *value.integer, default_value);
+      variable = *value.integer;
+      ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), variable);
+    }
+
+    inline
+    void get(const std::string &name,
       IntParam &variable,
       const int default_value,
       const std::string description = "None.",
@@ -490,6 +666,27 @@ namespace swri
       ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), *variable);
     }
 
+    // for use with on change callbacks
+    inline
+    void get(const std::string &name,
+      bool &variable,
+      const bool default_value,
+      const std::string description = "None.")
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Bool;
+      value.description = description;
+      value.Default.b = default_value;
+      value.boolean = boost::shared_ptr<bool>(new bool);
+      values_[name] = value;
+
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, *value.boolean, default_value);
+      variable = *value.boolean;
+      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable ? "true" : "false");
+    }
+
     inline
     void get(const std::string &name,
       BoolParam &variable,
@@ -510,6 +707,27 @@ namespace swri
       //_used_params.insert(resolved_name);
       nh_.param(name, *value.boolean, default_value);
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), *variable ? "true" : "false");
+    }
+
+    // for use with on change callbacks
+    inline
+    void get(const std::string &name,
+      std::string &variable,
+      const std::string default_value,
+      const std::string description = "None.")
+    {
+      DynamicValue value;
+      value.type = DynamicValue::Bool;
+      value.description = description;
+      value.default_string = default_value;
+      value.str = boost::shared_ptr<std::string>(new std::string());
+      values_[name] = value;
+
+      std::string resolved_name = nh_.resolveName(name);
+      //_used_params.insert(resolved_name);
+      nh_.param(name, *value.str, default_value);
+      variable = *value.str;
+      ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable.c_str());
     }
 
     inline
