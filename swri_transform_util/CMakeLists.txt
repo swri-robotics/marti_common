@@ -103,6 +103,7 @@ if(CATKIN_ENABLE_TESTING)
 
   add_rostest(test/initialize_invalid_gps.test)
   add_rostest(test/initialize_invalid_navsat.test)
+  add_rostest(test/initialize_origin_auto_custom.test)
   add_rostest(test/initialize_origin_auto_gps.test)
   add_rostest(test/initialize_origin_auto_navsat.test)
   add_rostest(test/initialize_origin_manual.test)

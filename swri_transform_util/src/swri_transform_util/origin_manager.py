@@ -64,7 +64,8 @@ class OriginManager(object):
         manager.start()
 
     Usage (auto origin from NavSatFix):
-        def navsat_callback(msg, (manager, navsat_sub)):
+        def navsat_callback(msg, params):
+            (manager, navsat_sub) = params
             try:
                 manager.set_origin_from_navsat(msg)
             except InvalidFixException as e:
@@ -78,7 +79,8 @@ class OriginManager(object):
         manager.start()
 
     Usage (auto origin from GPSFix):
-        def gps_callback(msg, (manager, gps_sub)):
+        def gps_callback(msg, params):
+            (manager, gps_sub) = params
             try:
                 manager.set_origin_from_gps(msg)
             except InvalidFixException as e:
@@ -89,6 +91,17 @@ class OriginManager(object):
         manager = OriginManager("/map")
         gps_sub = rospy.Subscriber("gps", GPSFix, queue_size=2)
         gps_sub.impl.add_callback(gps_callback, (manager, gps_sub))
+        manager.start()
+
+    Usage (auto origin from custom topic):
+        def navsat_callback(msg, params):
+            (manager, custom_sub) = params
+            pos = (msg.latitude, msg.longitude, mgs.altitude)
+            manager.set_origin_from_custom(pos, msg.header.stamp)
+            custom_sub.unregister()
+        manager = OriginManager("/map")
+        custom_sub = rospy.Subscriber(custom_topic, CustomMsg, queue_size=2)
+        custom_sub.impl.add_callback(custom_callback, (manager, custom_sub))
         manager.start()
     """
 
@@ -118,7 +131,7 @@ class OriginManager(object):
                                               queue_size=2)
         self.tf_broadcaster = tf.TransformBroadcaster()
 
-    def set_origin(self, latitude, longitude, altitude, stamp=None):
+    def set_origin(self, source, latitude, longitude, altitude, stamp=None):
         """
         Set the origin to the position described by the arguments and publish it.
 
@@ -133,6 +146,8 @@ class OriginManager(object):
                 If the argument is `None`, the stamp is not set and defaults to
                 `rospy.Time(0)`. (default None).
         """
+        if self.origin is not None:
+            return
         origin = PoseStamped()
         origin.header.frame_id = self.local_xy_frame
         if stamp is not None:
@@ -145,8 +160,11 @@ class OriginManager(object):
         origin.pose.orientation.y = 0.0
         origin.pose.orientation.z = 0.0
         origin.pose.orientation.w = 1.0
+        self.origin_source = source
         self.origin = origin
         self.origin_pub.publish(self.origin)
+        rospy.loginfo("Origin from '{}' source set to {}, {}, {}".format(
+            source, latitude, longitude, altitude))
 
     def set_origin_from_dict(self, origin_dict):
         """
@@ -159,10 +177,9 @@ class OriginManager(object):
         Raises:
             KeyError: If `origin_dict` does not contain all of the required keys.
         """
-        self.origin = self.set_origin(origin_dict["latitude"],
-                                      origin_dict["longitude"],
-                                      origin_dict["altitude"])
-        self.origin_source = "manual"
+        self.set_origin("manual", origin_dict["latitude"],
+                                  origin_dict["longitude"],
+                                  origin_dict["altitude"])
 
     def set_origin_from_list(self, origin_name, origin_list):
         """
@@ -177,13 +194,12 @@ class OriginManager(object):
             KeyError: If any origin in `origins_list` lacks a "name" key or if there exists
                 no origin in `origins_list` whose "name" is `origin_name`
         """
-        for origin in origin_list:
-            if origin['name'] == origin_name:
-                self.set_origin_from_dict(origin)
-                return
+        origin = next((x for x in origin_list if x['name'] == origin_name), None)
+        if origin:
+            self.set_origin_from_dict(origin)
         else:
-            origins_list_str = ','.join(['"{}"'.format(x.name) for x in origin_list])
-            message = 'Origin "{}" is not in the origin list. Available origins are '.format(
+            origins_list_str = ', '.join(['"{}"'.format(x['name']) for x in origin_list])
+            message = 'Origin "{}" is not in the origin list. Available origins are {}'.format(
                 origin_name, origins_list_str)
             raise KeyError(message)
 
@@ -200,8 +216,7 @@ class OriginManager(object):
         if msg.status.status == GPSStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid GPSFix. Waiting for a valid one...'
             raise InvalidFixException(message)
-        self.set_origin(msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
-        self.origin_source = 'gpsfix'
+        self.set_origin("gpsfix", msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
 
     def set_origin_from_navsat(self, msg):
         """
@@ -216,8 +231,18 @@ class OriginManager(object):
         if msg.status.status == NavSatStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid NavSatFix. Waiting for a valid one...'
             raise InvalidFixException(message)
-        self.set_origin(msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
-        self.origin_source = 'navsat'
+        self.set_origin("navsat", msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
+
+    def set_origin_from_custom(self, pos, stamp):
+        """
+        Set the local origin from a custom object.
+
+        Args:
+            pos: Tuple with the local origin
+            source: Message type
+            stamp: Msg header stamp if available
+        """
+        self.set_origin("custom", pos[0], pos[1], pos[2], stamp)
 
     def _publish_diagnostic(self):
         """Publish diagnostics."""
@@ -236,6 +261,9 @@ class OriginManager(object):
             elif self.origin_source == "navsat":
                 status.level = DiagnosticStatus.OK
                 status.message = "Has Origin (NavSatFix)"
+            elif self.origin_source == "custom":
+                status.level = DiagnosticStatus.OK
+                status.message = "Has Origin (Custom Topic)"
             else:
                 status.level = DiagnosticStatus.WARN
                 status.message = "Origin Was Set Manually"

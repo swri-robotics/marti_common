@@ -26,24 +26,24 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import sys
 import time
+import unittest
 
+from geographic_msgs.msg import GeoPose, GeoPoseStamped
 from geometry_msgs.msg import PoseStamped
 from gps_common.msg import GPSFix, GPSStatus
-from geographic_msgs.msg import GeoPose
+from sensor_msgs.msg import NavSatFix, NavSatStatus
 import rospy
 import rostest
 import rostopic
-from sensor_msgs.msg import NavSatFix, NavSatStatus
-import sys
 import tf.transformations
-import unittest
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
 
 ORIGIN_TOPIC = '/local_xy_origin'
-ORIGIN_TYPES = [PoseStamped, GPSFix, GeoPose]
+ORIGIN_TYPES = [PoseStamped, GPSFix, GeoPose, GeoPoseStamped]
 
 msg_stamp = rospy.Time(1337, 0xDEADBEEF)
 swri = {
@@ -63,7 +63,7 @@ class TestInitializeOrigin(unittest.TestCase):
         self.assertIn(origin_class, ORIGIN_TYPES)
         self.test_stamp = False  # Enable this for auto origin
         self.got_origin = False
-        return rospy.Subscriber(ORIGIN_TOPIC, origin_class, self.originCallback)        
+        return rospy.Subscriber(ORIGIN_TOPIC, origin_class, self.originCallback)
 
     def originCallback(self, msg):
         rospy.loginfo("Callback received a " + msg._type + " message.")
@@ -232,6 +232,23 @@ class TestInvalidNavSatFix(TestInvalidOrigin):
                          "initialize_origin unsubscribed without getting a valid fix.")
 
 
+class TestAutoOriginFromCustom(TestInitializeOrigin):
+    def testAutoOriginFromCustom(self):
+        rospy.init_node('test_auto_origin_from_custom')
+        custom_pub = rospy.Publisher('pose', GeoPoseStamped, queue_size=2, latch=True)
+        origin_sub = self.subscribeToOrigin()
+        self.test_stamp = True
+        custom_msg = GeoPoseStamped()
+        custom_msg.pose.position.latitude = swri['latitude']
+        custom_msg.pose.position.longitude = swri['longitude']
+        custom_msg.pose.position.altitude = swri['altitude']
+        custom_msg.header.frame_id = "/far_field"
+        custom_msg.header.stamp = msg_stamp
+        custom_pub.publish(custom_msg)
+        rospy.spin()
+        self.assertTrue(self.got_origin)
+
+
 class TestManualOrigin(TestInitializeOrigin):
     def testManualOrigin(self):
         rospy.init_node('test_manual_origin')
@@ -241,14 +258,15 @@ class TestManualOrigin(TestInitializeOrigin):
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "auto_gps":
+    if sys.argv[1] == "auto_custom":
+        rostest.rosrun(PKG, NAME, TestAutoOriginFromCustom, sys.argv)
+    elif sys.argv[1] == "auto_gps":
         rostest.rosrun(PKG, NAME, TestAutoOriginFromGPSFix, sys.argv)
-    elif sys.argv[1] == "manual":
-        rostest.rosrun(PKG, NAME, TestManualOrigin, sys.argv)
     elif sys.argv[1] == "auto_navsat":
         rostest.rosrun(PKG, NAME, TestAutoOriginFromNavSatFix, sys.argv)
     elif sys.argv[1] == "invalid_gps":
         rostest.rosrun(PKG, NAME, TestInvalidGPSFix, sys.argv)
     elif sys.argv[1] == "invalid_navsat":
         rostest.rosrun(PKG, NAME, TestInvalidNavSatFix, sys.argv)
-
+    elif sys.argv[1] == "manual":
+        rostest.rosrun(PKG, NAME, TestManualOrigin, sys.argv)

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="origin" pkg="swri_transform_util" type="initialize_origin.py">
+      <param name="local_xy_frame" value="/far_field"/>
+      <param name="local_xy_custom_topic" value="pose"/>
+  </node>
+  <test
+      test-name="test_initialize_origin_auto_custom"
+      pkg="swri_transform_util"
+      type="test_initialize_origin.py"
+      args="auto_custom" />
+</launch>
