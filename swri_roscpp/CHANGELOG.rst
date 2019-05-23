@@ -3,8 +3,8 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Forthcoming
------------
+2.9.0 (2019-05-23)
+------------------
 * Add callback for on change for dynamic parameters (`#540 <https://github.com/swri-robotics/marti_common/issues/540>`_)
 * Add topic service unit tests (`#538 <https://github.com/swri-robotics/marti_common/issues/538>`_)
 * Contributors: Matthew, P. J. Reed
