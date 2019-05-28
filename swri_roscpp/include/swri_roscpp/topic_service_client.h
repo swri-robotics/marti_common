@@ -37,7 +37,6 @@
 
 namespace swri
 {
-
 template<class MReq, class MRes>
 class TopicServiceClientRaw
 {
@@ -55,7 +54,7 @@ private:
   int sequence_;
 
 public:
-  TopicServiceClientRaw() : sequence_(rand()), timeout_(ros::Duration(4.0))
+  TopicServiceClientRaw() : sequence_(0), timeout_(ros::Duration(4.0))
   {
 
   }
@@ -64,7 +63,12 @@ public:
                 const std::string &service,
                 const std::string &client_name = "")
   {
-    name_ = client_name.length() ? client_name : ros::this_node::getName();
+    int random_int = rand()%10000;
+    //Converts using string stream instead of to_string so non C++ 11 nodes won't fail
+    std::ostringstream ss;
+    ss << random_int;
+    std::string random_str = ss.str();
+    name_ = client_name.length() ? client_name : (ros::this_node::getName() + random_str);
     std::string rservice = nh.resolveName(service);
     service_name_ = rservice;
 
