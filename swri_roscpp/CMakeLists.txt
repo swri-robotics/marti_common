@@ -26,6 +26,17 @@ set(RUNTIME_DEPS
 find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
 include_directories(include
   ${catkin_INCLUDE_DIRS})
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(message_generation REQUIRED)
+  find_package(message_runtime REQUIRED)
+  add_message_files(DIRECTORY msg FILES
+    TestTopicServiceRequest.msg
+    TestTopicServiceResponse.msg
+    )
+  generate_messages(DEPENDENCIES marti_common_msgs)
+endif()
+
 catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
   INCLUDE_DIRS include
   CFG_EXTRAS swri_roscpp-extras.cmake)
@@ -55,6 +66,19 @@ if (CATKIN_ENABLE_TESTING)
                     test/params.test
                     test/params.cpp)
   target_link_libraries(test_params ${catkin_LIBRARIES})
+
+  ### Test the TopicService server and client ###
+  # This is a little different from the way tests are normally declared because we
+  # have a single binary that contains both server and client tests, but the tests
+  # themselves are run in separate .test files.
+  add_executable(test_topic_service
+    test/topic_service_test.cpp)
+  target_link_libraries(test_topic_service
+    ${catkin_LIBRARIES}
+    ${GTEST_LIBRARIES})
+  add_dependencies(test_topic_service ${${PROJECT_NAME}_EXPORTED_TARGETS})
+  add_rostest(test/topic_service_client_test.test DEPENDENCIES test_topic_service)
+  add_rostest(test/topic_service_server_test.test DEPENDENCIES test_topic_service)
 endif()
 
 ### Install Test Node and Headers ###

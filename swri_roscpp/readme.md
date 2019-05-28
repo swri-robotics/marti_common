@@ -70,6 +70,25 @@ You can then start declaring and reading in configuration values, giving a long 
               "default" /*default*/, "Description...");
 ```
 
+You can also load the parameters directly in to normal variables (doubles, ints, strings), but you will have to get the new values in the on change callback function discussed below.
+
+```cpp
+  float flt;
+  params.get("float_value", flt, 
+              10.0f /*default*/, "Description...", 
+             -10.0f /* min */, 10.0f /* max */);
+  double dbl;
+  params.get("double_value", dbl, 
+              10.0 /*default*/, "Description...", 
+             -10.0 /* min */, 10.0 /* max */);
+  bool bl;
+  params.get("bool_value", bl, 
+              10.0f /*default*/, "Description...");
+  std::string str;
+  params.get("string_value", str, 
+              "default" /*default*/, "Description...");
+```
+
 
 These functions read in the current parameter value to the provided variable, if they haven't been set they are set to the default value. After you have read in all the variables you want to be dynamically reconfigurable, call the `finalize()` function.
 
@@ -99,4 +118,22 @@ You can also lock the mutex manually for getting the parameters in a block as fo
   std::string d = *str; 
 
   params.mutex().unlock();
+```
+
+Alternatively you can use the on change callback to be notified when variables change and load the updated values then.
+
+```cpp
+
+void callback(swri::DynamicParameters& params)
+{
+  double param1 = params.getDouble("double_value");
+  float  param2 = params.getFloat("float_value");
+  int    param3 = params.getInt("int_value");
+  bool   param4 = params.getBool("bool_value");
+  std::string param5 = params.getString("string_value");
+}
+
+// somewhere in your initialization....
+params.setCallback(callback);
+
 ```
