@@ -32,6 +32,8 @@
 #include <ros/node_handle.h>
 
 #include <boost/thread/mutex.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include <map>
 
@@ -63,11 +65,10 @@ public:
                 const std::string &service,
                 const std::string &client_name = "")
   {
-    int random_int = rand()%10000;
     //Converts using string stream instead of to_string so non C++ 11 nodes won't fail
-    std::ostringstream ss;
-    ss << random_int;
-    std::string random_str = ss.str();
+    boost::uuids::random_generator gen;
+    boost::uuids::uuid u = gen();
+    std::string random_str = boost::uuids::to_string(u);
     name_ = client_name.length() ? client_name : (ros::this_node::getName() + random_str);
     std::string rservice = nh.resolveName(service);
     service_name_ = rservice;
