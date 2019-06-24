@@ -39,7 +39,18 @@
 #include <swri_math_util/math_util.h>
 #include <swri_transform_util/transform_util.h>
 
-// TODO(malban): Add unit tests for GetRelativeTransform()
+TEST(TransformUtilTests, GetRelativeTransform)
+{
+  tf::Transform offset = swri_transform_util::GetRelativeTransform(
+                29.441679990508018, -98.602031700252184, -1.2030287,
+                29.441609529848606, -98.601997698933161, -1.21015707397341
+                );
+
+  tf::Vector3 origin = offset.getOrigin();
+  EXPECT_FLOAT_EQ(-8.47174665, origin.x());
+  EXPECT_FLOAT_EQ(-0.3306987, origin.y());
+  EXPECT_FLOAT_EQ(0.0, origin.z());
+}
 
 TEST(TransformUtilTests, GetBearing)
 {
