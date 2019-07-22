@@ -72,7 +72,7 @@ class SubscriberImpl
     if (stamp >= last_header_stamp_) {
       message_count_++;
 
-      if (!stamp.isZero()) {
+      if (!stamp.isZero() && !now.isZero()) {
         ros::Duration latency = now - stamp;
         if (message_count_ == 1) {
           min_latency_ = latency;
