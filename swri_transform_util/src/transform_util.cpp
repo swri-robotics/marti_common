@@ -77,7 +77,7 @@ namespace swri_transform_util
         x, y);
 
     tf::Vector3 origin =
-        tf::Transform(reference_rotation) * tf::Vector3(x, y, 0);
+        tf::Transform(reference_rotation.inverse()) * tf::Vector3(x, y, 0);
     transform.setOrigin(origin);
 
     return transform;
