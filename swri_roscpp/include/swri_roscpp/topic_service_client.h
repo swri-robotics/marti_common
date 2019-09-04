@@ -32,12 +32,13 @@
 #include <ros/node_handle.h>
 
 #include <boost/thread/mutex.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include <map>
 
 namespace swri
 {
-
 template<class MReq, class MRes>
 class TopicServiceClientRaw
 {
@@ -64,7 +65,11 @@ public:
                 const std::string &service,
                 const std::string &client_name = "")
   {
-    name_ = client_name.length() ? client_name : ros::this_node::getName();
+    //Converts using string stream instead of to_string so non C++ 11 nodes won't fail
+    boost::uuids::random_generator gen;
+    boost::uuids::uuid u = gen();
+    std::string random_str = boost::uuids::to_string(u);
+    name_ = client_name.length() ? client_name : (ros::this_node::getName() + random_str);
     std::string rservice = nh.resolveName(service);
     service_name_ = rservice;
 
@@ -89,9 +94,11 @@ public:
 
       if (ros::Time::now() - request.srv_header.stamp > timeout_)
       {
+        ROS_ERROR("Topic service timeout exceeded");
         return false;
       }
     }
+    response_.reset();
     request_pub_.publish(request);
 
     // Wait until we get a response
@@ -137,10 +144,11 @@ private:
       ROS_DEBUG("Got response from another client, ignoring..");
       return;
     }
-
+    
     if (message->srv_header.sequence != sequence_)
     {
       ROS_WARN("Got wrong sequence number, ignoring..");
+      ROS_DEBUG("message seq:%i vs current seq: %i", message->srv_header.sequence, sequence_);
       return;
     }
 
