@@ -3,8 +3,8 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Forthcoming
------------
+2.10.0 (2019-09-04)
+-------------------
 * Prevent swri:Subscriber latency calculations if current time is zero (`#548 <https://github.com/swri-robotics/marti_common/issues/548>`_)
 * Change way name is created for topic services (`#541 <https://github.com/swri-robotics/marti_common/issues/541>`_)
 * Contributors: jgassaway, nick-alton

@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.10.0 (2019-09-04)
+-------------------
 * Support in initialize_origin.py specifying custom ROS topic in parameter (`#544 <https://github.com/swri-robotics/marti_common/issues/544>`_)
 * Fix get relative transform (`#546 <https://github.com/swri-robotics/marti_common/issues/546>`_)
 * Contributors: Arkady Shapkin, Matthew
