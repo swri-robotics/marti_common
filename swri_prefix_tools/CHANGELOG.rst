@@ -2,6 +2,9 @@
 Changelog for package swri_prefix_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.9.0 (2019-05-23)
 ------------------
 

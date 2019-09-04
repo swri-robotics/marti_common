@@ -3,6 +3,12 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+* Prevent swri:Subscriber latency calculations if current time is zero (`#548 <https://github.com/swri-robotics/marti_common/issues/548>`_)
+* Change way name is created for topic services (`#541 <https://github.com/swri-robotics/marti_common/issues/541>`_)
+* Contributors: jgassaway, nick-alton
+
 2.9.0 (2019-05-23)
 ------------------
 * Add callback for on change for dynamic parameters (`#540 <https://github.com/swri-robotics/marti_common/issues/540>`_)
