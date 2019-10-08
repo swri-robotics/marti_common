@@ -1,7 +1,0 @@
-<library path="lib/libswri_nodelet_test">
-  <class name="swri_nodelet/TestNodelet" type="swri_nodelet::TestNodelet" base_class_type="nodelet::Nodelet">
-  <description>
-  A simple nodelet for testing swri_nodelet functionality.
-  </description>
-  </class>
-</library>

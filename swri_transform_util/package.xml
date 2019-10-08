@@ -1,4 +1,4 @@
-<package format="2">
+<package format="3">
   <name>swri_transform_util</name>
   <version>2.10.0</version>
   <description>
@@ -8,11 +8,11 @@
 
   </description>
   <author>Marc Alban</author>
-  <maintainer email="malban@swri.org">Marc Alban</maintainer>
+  <maintainer email="preed@swri.org">P. J. Reed</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <depend>boost</depend>
@@ -20,26 +20,25 @@
   <depend>diagnostic_msgs</depend>
   <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
-  <depend>gps_common</depend>
+  <depend>gps_msgs</depend>
   <depend>libgeos++-dev</depend>
-  <depend>nodelet</depend>
   <depend>proj</depend>
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>rclpy</depend>
   <depend>swri_math_util</depend>
-  <depend>swri_nodelet</depend>
   <depend>swri_roscpp</depend>
-  <depend>swri_yaml_util</depend>
-  <depend>tf</depend>
+  <depend>tf2</depend>
+  <!--
+  TODO pjr Used for the topic Shapeshifter, but maybe this is unnecessary in ROS2
   <depend>topic_tools</depend>
+  -->
   <depend>yaml-cpp</depend>
 
   <exec_depend>sensor_msgs</exec_depend>
 
-  <test_depend>rostest</test_depend>
-
   <export>
-    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+    <build_type>ament_cmake</build_type>
     <rosdoc config="rosdoc.yaml" />
   </export>
 </package>

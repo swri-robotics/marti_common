@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager"/>
-  <node name="nodelet" pkg="swri_nodelet" type="nodelet" args="swri_nodelet/TestNodelet nodelet_manager"/>
-  <test test-name="standalone_test" pkg="swri_nodelet" type="test_nodelet_exists.py" />
-</launch>

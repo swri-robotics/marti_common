@@ -1,4 +1,4 @@
-<package format="2">
+<package format="3">
   <name>swri_image_util</name>
   <version>2.10.0</version>
   <description>
@@ -7,11 +7,11 @@
 
   </description>
   <author>Kris Kozak</author>
-  <maintainer email="kkozak@swri.org">Kris Kozak</maintainer>
+  <maintainer email="preed@swri.org">P. J. Reed</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
  
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <depend>camera_calibration_parsers</depend>
@@ -22,21 +22,17 @@
   <depend>image_transport</depend>
   <depend>message_filters</depend>
   <depend>nav_msgs</depend>
-  <depend>nodelet</depend>
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>swri_geometry_util</depend>
   <depend>swri_math_util</depend>
-  <build_depend>swri_nodelet</build_depend>
   <depend>swri_opencv_util</depend>
-  <depend>swri_roscpp</depend>
-  <depend>tf</depend>
-
-  <test_depend>rostest</test_depend>
+  <depend>tf2</depend>
 
   <export>
-    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
 
