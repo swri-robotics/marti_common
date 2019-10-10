@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(swri_prefix_tools)
 
-find_package(catkin REQUIRED)
-catkin_package()
+find_package(ament_cmake REQUIRED)
 
 install(PROGRAMS xterm_prefix
                  xterm_prefix_callgrind
@@ -10,5 +9,7 @@ install(PROGRAMS xterm_prefix
                  xterm_prefix_gdb
                  xterm_prefix_hold
                  xterm_prefix_normal
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        DESTINATION bin
 )
+
+ament_package()
