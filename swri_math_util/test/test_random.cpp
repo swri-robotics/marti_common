@@ -31,8 +31,6 @@
 #include <gtest/gtest.h>
 #include <swri_math_util/random.h>
 
-#include <ros/ros.h>
-
 #ifdef BOOST_1_46
 namespace boost_random = boost;
 #else

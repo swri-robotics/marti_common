@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="test_random" pkg="swri_math_util" type="test_random" />
-</launch>
