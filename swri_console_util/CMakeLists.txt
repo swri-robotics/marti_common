@@ -1,27 +1,32 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(swri_console_util)
 
-find_package(catkin REQUIRED COMPONENTS roscpp)
+set(CMAKE_CXX_STANDARD 14)
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp
-)
+find_package(ament_cmake REQUIRED)
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+find_package(rclcpp REQUIRED)
+
+include_directories(include)
 
 add_library(${PROJECT_NAME} src/progress_bar.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME}
+  "rclcpp"
+)
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+install(DIRECTORY include/
+  DESTINATION include
 )
 
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(rclcpp)
+ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
+ament_export_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
+
+ament_package()
