@@ -1,7 +1,12 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(swri_opencv_util)
 
-find_package(catkin REQUIRED COMPONENTS cv_bridge swri_math_util)
+set(CMAKE_CXX_STANDARD 14)
+
+find_package(ament_cmake REQUIRED)
+
+find_package(cv_bridge REQUIRED)
+find_package(swri_math_util REQUIRED)
 
 find_package(OpenCV REQUIRED core imgproc highgui)
 
@@ -12,13 +17,7 @@ if(${Boost_LIB_VERSION} MATCHES "1_46*")
   add_definitions( -DBOOST_1_46 )
 endif(${Boost_LIB_VERSION} MATCHES "1_46*")
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS cv_bridge swri_math_util
-)
-
-include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+include_directories(include ${Boost_INCLUDE_DIRS})
   
 add_library(${PROJECT_NAME}
   src/blend.cpp
@@ -26,15 +25,32 @@ add_library(${PROJECT_NAME}
   src/model_fit.cpp
   src/show.cpp
   src/convert.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+ament_target_dependencies(${PROJECT_NAME}
+  "cv_bridge"
+  "swri_math_util"
+)
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
+install(DIRECTORY include/
+  DESTINATION include
 )
 
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
+
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(cv_bridge)
+ament_export_dependencies(swri_math_util)
+ament_export_include_directories(include
+  ${cv_bridge_INCLUDE_DIRS}
+  ${swri_math_util_INCLUDE_DIRS}
+)
+ament_export_libraries(${PROJECT_NAME}
+  ${cv_bridge_LIBRARIES}
+  ${swri_math_util_LIBRARIES}
+)
+
+ament_package()
