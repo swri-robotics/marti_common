@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="test_intersection" pkg="swri_geometry_util" type="test_intersection" />
-</launch>

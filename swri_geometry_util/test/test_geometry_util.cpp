@@ -33,109 +33,109 @@
 
 TEST(GeometryUtilTests, ClosestPointToLinesInvalid)
 {
-  tf::Vector3 point;
+  tf2::Vector3 point;
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(1, 0, 0),
-    tf::Vector3(1, 0, 0),
-    tf::Vector3(0, 1, 0),
-    tf::Vector3(1, 0, 1),
+    tf2::Vector3(1, 0, 0),
+    tf2::Vector3(1, 0, 0),
+    tf2::Vector3(0, 1, 0),
+    tf2::Vector3(1, 0, 1),
     point));
  
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(1, 0, 1),
-    tf::Vector3(0, 1, 0),
-    tf::Vector3(0, 0, 1),
-    tf::Vector3(0, 0, 1),
+    tf2::Vector3(1, 0, 1),
+    tf2::Vector3(0, 1, 0),
+    tf2::Vector3(0, 0, 1),
+    tf2::Vector3(0, 0, 1),
     point));
 
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(20, 0, 0),
-    tf::Vector3(30, 0, 0),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(20, 0, 0),
+    tf2::Vector3(30, 0, 0),
     point));
 
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(30, 0, 0),
-    tf::Vector3(10, 0, 0),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(30, 0, 0),
+    tf2::Vector3(10, 0, 0),
     point));
 
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(20, 10, 10),
-    tf::Vector3(30, 10, 10),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(20, 10, 10),
+    tf2::Vector3(30, 10, 10),
     point));
 
 
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(30, 10, 10),
-    tf::Vector3(10, 10, 10),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(30, 10, 10),
+    tf2::Vector3(10, 10, 10),
     point));
 }
 
 TEST(GeometryUtilTests, ClosestPointToLines)
 {
-  tf::Vector3 point;
+  tf2::Vector3 point;
   ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(0, 10, 0),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(0, 10, 0),
     point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
   ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(0, 5, 0),
-    tf::Vector3(0, 10, 0),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(0, 5, 0),
+    tf2::Vector3(0, 10, 0),
     point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
   ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(5, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(0, 5, 0),
-    tf::Vector3(0, 10, 0),
+    tf2::Vector3(5, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(0, 5, 0),
+    tf2::Vector3(0, 10, 0),
     point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
   ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(0, -5, 0),
-    tf::Vector3(0, 10, 0),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(0, -5, 0),
+    tf2::Vector3(0, 10, 0),
     point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
   ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(0, 0, 20),
-    tf::Vector3(0, 10, 20),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(0, 0, 20),
+    tf2::Vector3(0, 10, 20),
     point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 10);
 
   ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf::Vector3(0, 0, 0),
-    tf::Vector3(10, 0, 0),
-    tf::Vector3(0, 10, 20),
-    tf::Vector3(0, 0, 20),
+    tf2::Vector3(0, 0, 0),
+    tf2::Vector3(10, 0, 0),
+    tf2::Vector3(0, 10, 20),
+    tf2::Vector3(0, 0, 20),
     point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
@@ -144,10 +144,10 @@ TEST(GeometryUtilTests, ClosestPointToLines)
 
 TEST(GeometryUtilTests, ProjectPointToLineSegment3D)
 {
-  tf::Vector3 p1(0, 0, 0);
-  tf::Vector3 p2(10, 0, 0);
-  tf::Vector3 p3(2, 0, 0);
-  tf::Vector3 p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
+  tf2::Vector3 p1(0, 0, 0);
+  tf2::Vector3 p2(10, 0, 0);
+  tf2::Vector3 p3(2, 0, 0);
+  tf2::Vector3 p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(p3.x(), p4.x());
   EXPECT_FLOAT_EQ(p3.y(), p4.y());
   EXPECT_FLOAT_EQ(p3.z(), p4.z());
@@ -157,52 +157,52 @@ TEST(GeometryUtilTests, ProjectPointToLineSegment3D)
   EXPECT_FLOAT_EQ(p3.y(), p4.y());
   EXPECT_FLOAT_EQ(p3.z(), p4.z());
 
-  p3 = tf::Vector3(0, 0, 0);
+  p3 = tf2::Vector3(0, 0, 0);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(p3.x(), p4.x());
   EXPECT_FLOAT_EQ(p3.y(), p4.y());
   EXPECT_FLOAT_EQ(p3.z(), p4.z());
 
-  p3 = tf::Vector3(0, 1, 0);
+  p3 = tf2::Vector3(0, 1, 0);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(0, p4.x());
   EXPECT_FLOAT_EQ(0, p4.y());
   EXPECT_FLOAT_EQ(0, p4.z());
 
-  p3 = tf::Vector3(5, -1, 0);
+  p3 = tf2::Vector3(5, -1, 0);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(5, p4.x());
   EXPECT_FLOAT_EQ(0, p4.y());
   EXPECT_FLOAT_EQ(0, p4.z());
 
-  p3 = tf::Vector3(5, -1, 10);
+  p3 = tf2::Vector3(5, -1, 10);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(5, p4.x());
   EXPECT_FLOAT_EQ(0, p4.y());
   EXPECT_FLOAT_EQ(0, p4.z());
 
-  p3 = tf::Vector3(-5, -1, 10);
+  p3 = tf2::Vector3(-5, -1, 10);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(0, p4.x());
   EXPECT_FLOAT_EQ(0, p4.y());
   EXPECT_FLOAT_EQ(0, p4.z());
 
-  p3 = tf::Vector3(15, -1, 10);
+  p3 = tf2::Vector3(15, -1, 10);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(10, p4.x());
   EXPECT_FLOAT_EQ(0, p4.y());
   EXPECT_FLOAT_EQ(0, p4.z());
 
-  p1 = tf::Vector3(0, 0, 0);
-  p2 = tf::Vector3(10, 10, 10);
-  p3 = tf::Vector3(1, 1, 1);
+  p1 = tf2::Vector3(0, 0, 0);
+  p2 = tf2::Vector3(10, 10, 10);
+  p3 = tf2::Vector3(1, 1, 1);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(1, p4.x());
   EXPECT_FLOAT_EQ(1, p4.y());
   EXPECT_FLOAT_EQ(1, p4.z());
 
-  p2 = tf::Vector3(10, 10, 0);
-  p3 = tf::Vector3(0, 10, 0);
+  p2 = tf2::Vector3(10, 10, 0);
+  p3 = tf2::Vector3(0, 10, 0);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(5, p4.x());
   EXPECT_FLOAT_EQ(5, p4.y());
@@ -213,7 +213,7 @@ TEST(GeometryUtilTests, ProjectPointToLineSegment3D)
   EXPECT_FLOAT_EQ(5, p4.y());
   EXPECT_FLOAT_EQ(0, p4.z());
 
-  p3 = tf::Vector3(-100, 10, 0);
+  p3 = tf2::Vector3(-100, 10, 0);
   p4 = swri_geometry_util::ProjectToLineSegment(p1, p2, p3);
   EXPECT_FLOAT_EQ(0, p4.x());
   EXPECT_FLOAT_EQ(0, p4.y());
@@ -283,41 +283,41 @@ TEST(GeometryUtilTests, ProjectPointToLineSegment2D)
 
 TEST(GeometryUtilTests, DistanceFromLineSegment3D)
 {
-  tf::Vector3 p1(0, 0, 0);
-  tf::Vector3 p2(10, 0, 0);
-  tf::Vector3 p3(2, 0, 0);
+  tf2::Vector3 p1(0, 0, 0);
+  tf2::Vector3 p2(10, 0, 0);
+  tf2::Vector3 p3(2, 0, 0);
   EXPECT_FLOAT_EQ(0, swri_geometry_util::DistanceFromLineSegment(p1, p2, p3));
   EXPECT_FLOAT_EQ(0, swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p3 = tf::Vector3(0, 0, 0);
+  p3 = tf2::Vector3(0, 0, 0);
   EXPECT_FLOAT_EQ(0, swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p3 = tf::Vector3(0, 1, 0);
+  p3 = tf2::Vector3(0, 1, 0);
   EXPECT_FLOAT_EQ(1, swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p3 = tf::Vector3(5, -1, 0);
+  p3 = tf2::Vector3(5, -1, 0);
   EXPECT_FLOAT_EQ(1, swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p3 = tf::Vector3(5, -1, 10);
+  p3 = tf2::Vector3(5, -1, 10);
   EXPECT_FLOAT_EQ(std::sqrt(101), swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p3 = tf::Vector3(-5, -1, 10);
+  p3 = tf2::Vector3(-5, -1, 10);
   EXPECT_FLOAT_EQ(std::sqrt(126), swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p3 = tf::Vector3(15, -1, 10);
+  p3 = tf2::Vector3(15, -1, 10);
   EXPECT_FLOAT_EQ(std::sqrt(126), swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p1 = tf::Vector3(0, 0, 0);
-  p2 = tf::Vector3(10, 10, 10);
-  p3 = tf::Vector3(1, 1, 1);
+  p1 = tf2::Vector3(0, 0, 0);
+  p2 = tf2::Vector3(10, 10, 10);
+  p3 = tf2::Vector3(1, 1, 1);
   EXPECT_FLOAT_EQ(0, swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
 
-  p2 = tf::Vector3(10, 10, 0);
-  p3 = tf::Vector3(0, 10, 0);
+  p2 = tf2::Vector3(10, 10, 0);
+  p3 = tf2::Vector3(0, 10, 0);
   EXPECT_FLOAT_EQ(std::sqrt(50), swri_geometry_util::DistanceFromLineSegment(p2, p1, p3));
   EXPECT_FLOAT_EQ(std::sqrt(50), swri_geometry_util::DistanceFromLineSegment(p1, p2, p3));
 
-  p3 = tf::Vector3(-100, 10, 0);
+  p3 = tf2::Vector3(-100, 10, 0);
   EXPECT_FLOAT_EQ(std::sqrt(10100), swri_geometry_util::DistanceFromLineSegment(p1, p2, p3));
 }
 

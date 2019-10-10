@@ -157,9 +157,9 @@ namespace swri_geometry_util
   }
 
   bool CubicSplineInterpolation(
-    const std::vector<tf::Vector3>& points,
+    const std::vector<tf2::Vector3>& points,
     double delta,
-    std::vector<std::vector<tf::Vector3> >& splines)
+    std::vector<std::vector<tf2::Vector3> >& splines)
   {
     std::vector<cv::Vec2d> cv_points(points.size());
     for (size_t i = 0; i < points.size(); i++)
@@ -176,7 +176,7 @@ namespace swri_geometry_util
       splines[i].resize(cv_splines[i].size());
       for (size_t j = 0; j < cv_splines[i].size(); j++)
       {
-        splines[i][j] = tf::Vector3(cv_splines[i][j][0], cv_splines[i][j][1], 0);
+        splines[i][j] = tf2::Vector3(cv_splines[i][j][0], cv_splines[i][j][1], 0);
       }
     }
 
