@@ -29,8 +29,8 @@
 #ifndef SWRI_ROSCPP_SERVICE_SERVER_H_
 #define SWRI_ROSCPP_SERVICE_SERVER_H_
 
-#include <ros/node_handle.h>
-#include <diagnostic_updater/DiagnosticStatusWrapper.h>
+#include <rclcpp/rclcpp.hpp>
+#include <diagnostic_updater/diagnostic_status_wrapper.hpp>
 #include <swri_roscpp/service_server_impl.h>
 #include <swri_roscpp/service_server_statistics.h>
 
@@ -39,29 +39,19 @@ namespace swri
 class ServiceServer
 {
  private:
-  boost::shared_ptr<ServiceServerImpl> impl_;
+  std::shared_ptr<ServiceServerImpl> impl_;
 
  public:
   ServiceServer();
 
-  template<class MReq, class MRes, class T>
-  ServiceServer(ros::NodeHandle &nh,
-                const std::string &service,
-                bool(T::*srv_func)(MReq &, MRes &),
-                T *obj);
+  ServiceServer(std::shared_ptr<ServiceServerImpl>& impl);
 
-  template<class MReq, class MRes, class T>
-  ServiceServer(ros::NodeHandle &nh,
-                const std::string &service,
-                bool(T::*srv_func)(ros::ServiceEvent< MReq, MRes > &),                
-                T *obj);
+  template<class S, class MReq, class MRes, class T>
+  static ServiceServer createService(rclcpp::Node &nh,
+                                     const std::string &service,
+                                     bool(T::*srv_func)(const MReq &, const MRes &),
+                                     T *obj);
 
-  template<class MReq, class MRes, class T>
-  ServiceServer(ros::NodeHandle &nh,
-                const std::string &service,
-                bool(T::*srv_func)(const std::string &, const MReq &, MRes &),
-                T *obj);
-  
   ServiceServer& operator=(const ServiceServer &other);
 
   // Reset all statistics, including message and timeout counts.
@@ -70,11 +60,8 @@ class ServiceServer
   // Returns the unmapped service name that was provided when the
   // service was created.
   const std::string& unmappedService() const;
-  // Returns the fully mapped service name that the server is
-  // listening on.
-  const std::string& mappedService() const;
 
-  // Retrieve the statitics for all service calls handled by the
+  // Retrieve the statistics for all service calls handled by the
   // server.
   const ServiceServerStatistics& statistics() const;  
 
@@ -123,43 +110,24 @@ ServiceServer::ServiceServer()
 {
   // Setup an empty implementation so that we can assume impl_ is
   // non-null and avoid a lot of unnecessary NULL checks.
-  impl_ = boost::make_shared<ServiceServerImpl>();
+  impl_ = std::make_shared<ServiceServerImpl>();
 }
 
-template<class MReq, class MRes, class T>
 inline
-ServiceServer::ServiceServer(ros::NodeHandle &nh,
-                             const std::string &service,
-                             bool(T::*srv_func)(MReq &, MRes &),
-                             T *obj)
-{
-  impl_ = boost::shared_ptr<ServiceServerImpl>(
-    new TypedServiceServerImpl<MReq, MRes, T>(
-      nh, service, srv_func, obj));
-}
+ServiceServer::ServiceServer(std::shared_ptr<ServiceServerImpl>& impl) :
+impl_(impl)
+{}
 
-template<class MReq, class MRes, class T>
+template<class S, class MReq, class MRes, class T>
 inline
-ServiceServer::ServiceServer(ros::NodeHandle &nh,
+ServiceServer ServiceServer::createService(rclcpp::Node &nh,
                              const std::string &service,
-                             bool(T::*srv_func)(ros::ServiceEvent< MReq, MRes > &),                
+                             bool(T::*srv_func)(const MReq &, const MRes &),
                              T *obj)
 {
-  impl_ = boost::shared_ptr<ServiceServerImpl>(
-    new TypedServiceServerImpl<MReq, MRes, T>(
-      nh, service, srv_func, obj));
-}
-
-template<class MReq, class MRes, class T>
-inline
-ServiceServer::ServiceServer(ros::NodeHandle &nh,
-                             const std::string &service,
-                             bool(T::*srv_func)(const std::string &, const MReq &, MRes &),
-                             T *obj)
-{
-  impl_ = boost::shared_ptr<ServiceServerImpl>(
-    new TypedServiceServerImpl<MReq, MRes, T>(
-      nh, service, srv_func, obj));
+  std::shared_ptr<ServiceServerImpl> impl = std::make_shared<TypedServiceServerImpl<S, const MReq, const MRes, T> >(
+      nh, service, srv_func, obj);
+  return ServiceServer(impl);
 }
 
 inline
@@ -183,12 +151,6 @@ inline
 const std::string& ServiceServer::unmappedService() const
 {
   return impl_->unmappedService();
-}
-
-inline
-const std::string& ServiceServer::mappedService() const
-{
-  return impl_->mappedService();
 }
 
 inline
@@ -243,7 +205,7 @@ void ServiceServer::appendDiagnostics(
   const ServiceServerStatistics& stats = statistics();
 
   // Alias a type for easier access to DiagnosticStatus enumerations.
-  typedef diagnostic_msgs::DiagnosticStatus DS;
+  typedef diagnostic_msgs::msg::DiagnosticStatus DS;
 
   if (stats.lastFailed()) {
     status.mergeSummaryf(DS::ERROR, "Last %s service called failed", name.c_str());
@@ -252,13 +214,7 @@ void ServiceServer::appendDiagnostics(
   }
 
   if (flags & DIAG_CONNECTION) {
-    if (mappedService() == unmappedService()) {
-      status.addf(name + "service name", "%s", mappedService().c_str());
-    } else {
-      status.addf(name + "service name", "%s -> %s",
-                  unmappedService().c_str(),
-                  mappedService().c_str());
-    }
+    status.addf(name + "service name", "%s", unmappedService().c_str());
   }
 
   if (flags & DIAG_SERVINGS) {
@@ -268,9 +224,9 @@ void ServiceServer::appendDiagnostics(
 
   if (flags & DIAG_TIMING) {
     status.addf(name + "service call time", "%.2f [s] (%.2f [s] - %.2f [s])",
-                stats.meanTime().toSec(),
-                stats.minTime().toSec(),
-                stats.maxTime().toSec());
+                stats.meanTime().count() / 1000000000.0,
+                stats.minTime().count() / 1000000000.0,
+                stats.maxTime().count() / 1000000000.0);
   }
 
   if (flags & DIAG_CLIENTS) {
@@ -287,9 +243,9 @@ void ServiceServer::appendDiagnostics(
 
       if (flags & DIAG_TIMING) {
         status.addf(name + " calls from " + names[i] + " time", "%.2f [s] (%.2f [s] - %.2f [s])",
-                client_stats.meanTime().toSec(),
-                client_stats.minTime().toSec(),
-                client_stats.maxTime().toSec());
+                client_stats.meanTime().count() / 1000000000.0,
+                client_stats.minTime().count() / 1000000000.0,
+                client_stats.maxTime().count() / 1000000000.0);
       }
     }
   }
