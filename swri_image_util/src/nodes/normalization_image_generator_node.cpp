@@ -31,9 +31,9 @@
 #include <vector>
 
 // ROS Libraries
-#include <ros/ros.h>
-#include <ros/package.h>
-#include <sensor_msgs/Image.h>
+#include <ament_index_cpp/get_package_prefix.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
 
 // OpenCV Libraries
@@ -43,12 +43,10 @@
 // RANGER Libraries
 #include <swri_image_util/image_normalization.h>
 
-class NormalizationImageNode
+class NormalizationImageNode : public rclcpp::Node
 {
  private:
-  ros::NodeHandle nh_;
-
-  ros::Subscriber image_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
 
   int32_t num_to_skip_;
   int32_t max_num_to_average_;
@@ -64,61 +62,58 @@ class NormalizationImageNode
 
   void get_parameters()
   {
-    nh_.param(ros::this_node::getName() + "/num_to_skip",
+    this->get_parameter_or("num_to_skip",
               num_to_skip_,
               200);
 
-    nh_.param(ros::this_node::getName() + "/max_num_to_average",
+    this->get_parameter_or("max_num_to_average",
               max_num_to_average_,
               100);
 
     std::string temp_filename;
-    temp_filename = ros::package::getPath("ranger_common") +
+    temp_filename = ament_index_cpp::get_package_prefix("ranger_common") +
                 "/normalization_image.png";
 
 
-    nh_.param(ros::this_node::getName() + "/filename",
+    this->get_parameter_or("filename",
               filename_,
               temp_filename);
 
-    ROS_ERROR("Planning to write normalization image to: %s",
+    RCLCPP_ERROR(this->get_logger(), "Planning to write normalization image to: %s",
               filename_.c_str());
   }
 
 
   void subscribe_to_topics()
   {
-    image_sub_ = nh_.subscribe("image",
-                               2,
-                               &NormalizationImageNode::image_cb,
-                               this);
-  }
-
-  void image_cb(const sensor_msgs::ImageConstPtr& msg)
-  {
-    if (image_count_ >= max_num_to_average_)
-    {
-      ::sleep(1);
-      return;
-    }
-
-    if (raw_count_++ % num_to_skip_ == 0)
-    {
-      image_count_++;
-      ROS_ERROR("Got image %d of %d",
-                image_count_,
-                max_num_to_average_);
-
-      cv_bridge::CvImagePtr im_ptr = cv_bridge::toCvCopy(msg);
-      cv::Mat image(im_ptr->image);
-      image_array_.push_back(image);
+    auto callback = [this](sensor_msgs::msg::Image::UniquePtr msg) -> void {
       if (image_count_ >= max_num_to_average_)
       {
-        generate_and_write_image();
+        // ::sleep(1);
+        return;
       }
-    }
-  }
 
+      if (raw_count_++ % num_to_skip_ == 0)
+      {
+        image_count_++;
+        RCLCPP_ERROR(this->get_logger(), "Got image %d of %d",
+                     image_count_,
+                     max_num_to_average_);
+
+        cv_bridge::CvImagePtr im_ptr = cv_bridge::toCvCopy(*msg);
+        cv::Mat image(im_ptr->image);
+        image_array_.push_back(image);
+        if (image_count_ >= max_num_to_average_)
+        {
+          generate_and_write_image();
+        }
+      }
+    };
+    image_sub_ = this->create_subscription<sensor_msgs::msg::Image>(
+        "image",
+        2,
+        callback);
+  }
 
   void generate_and_write_image()
   {
@@ -131,31 +126,31 @@ class NormalizationImageNode
       }
       catch (const std::exception& e)
       {
-        ROS_ERROR("Failed to save the normalization image: %s",
+        RCLCPP_ERROR(this->get_logger(), "Failed to save the normalization image: %s",
                   e.what());
         return;
       }
-      ROS_ERROR("Successfully wrote normalization image to: %s",
+      RCLCPP_ERROR(this->get_logger(), "Successfully wrote normalization image to: %s",
                 filename_.c_str());
 
       image_written_ = true;
     }
     else
     {
-      ROS_ERROR("Failed to generate a normalization image");
+      RCLCPP_ERROR(this->get_logger(), "Failed to generate a normalization image");
     }
   }
 
  public:
-  explicit NormalizationImageNode(const ros::NodeHandle& nh):
-    nh_(nh),
+  explicit NormalizationImageNode():
+    rclcpp::Node("image_normalization_node"),
     num_to_skip_(20),
     max_num_to_average_(100),
     raw_count_(0),
     image_count_(0),
     image_written_(false)
   {
-    filename_ = ros::package::getPath("ranger_common") +
+    filename_ = ament_index_cpp::get_package_prefix("ranger_common") +
                 "/normalization_image.png";
 
     get_parameters();
@@ -194,15 +189,11 @@ class NormalizationImageNode
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "image_normalization_node");
+  rclcpp::init(argc, argv);
 
-  ros::NodeHandle n;
+  std::shared_ptr<NormalizationImageNode> node = std::make_shared<NormalizationImageNode>();
 
-  NormalizationImageNode node(n);
-
-  ros::spin();
-
-  node.shut_down();
+  rclcpp::spin(node);
 
   return 0;
 }

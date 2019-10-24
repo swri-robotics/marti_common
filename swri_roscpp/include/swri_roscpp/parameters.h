@@ -40,34 +40,34 @@
 
 namespace swri
 {
- std::string clean(const std::string& name)
- {
-   std::string clean = name;
+  static inline std::string clean(const std::string& name)
+  {
+    std::string clean = name;
 
-   size_t pos = clean.find("//");
-   while (pos != std::string::npos)
-   {
-     clean.erase(pos, 1);
-     pos = clean.find("//", pos);
-   }
+    size_t pos = clean.find("//");
+    while (pos != std::string::npos)
+    {
+      clean.erase(pos, 1);
+      pos = clean.find("//", pos);
+    }
 
-   if (*clean.rbegin() == '/')
-   {
-     clean.erase(clean.size() - 1, 1);
-   }
+    if (*clean.rbegin() == '/')
+    {
+      clean.erase(clean.size() - 1, 1);
+    }
 
-   return clean;
- }
+    return clean;
+  }
 
- std::string append(const std::string& left, const std::string& right)
- {
-   return clean(left + "/" + right);
- }
+  static inline std::string append(const std::string& left, const std::string& right)
+  {
+    return clean(left + "/" + right);
+  }
 
   static inline
-  bool getParam(const rclcpp::Node &nh,
-      const std::string &name,
-      int &variable)
+  bool getParam(const rclcpp::Node& nh,
+                const std::string& name,
+                int& variable)
   {
     if (!nh.get_parameter(name, variable))
     {
@@ -79,9 +79,9 @@ namespace swri
   }
 
   static inline
-  bool getParam(const rclcpp::Node &nh,
-      const std::string &name,
-      double &variable)
+  bool getParam(const rclcpp::Node& nh,
+                const std::string& name,
+                double& variable)
   {
     if (!nh.get_parameter(name, variable))
     {
@@ -93,9 +93,9 @@ namespace swri
   }
 
   static inline
-  bool getParam(const rclcpp::Node &nh,
-      const std::string &name,
-      float &variable)
+  bool getParam(const rclcpp::Node& nh,
+                const std::string& name,
+                float& variable)
   {
     double dbl_value;
     if (!nh.get_parameter(name, dbl_value))
@@ -109,9 +109,9 @@ namespace swri
   }
 
   static inline
-  bool getParam(const rclcpp::Node &nh,
-      const std::string &name,
-      std::string &variable)
+  bool getParam(const rclcpp::Node& nh,
+                const std::string& name,
+                std::string& variable)
   {
     if (!nh.get_parameter(name, variable))
     {
@@ -123,9 +123,9 @@ namespace swri
   }
 
   static inline
-  bool getParam(const rclcpp::Node &nh,
-      const std::string &name,
-      bool &variable)
+  bool getParam(const rclcpp::Node& nh,
+                const std::string& name,
+                bool& variable)
   {
     if (!nh.get_parameter(name, variable))
     {
@@ -137,30 +137,30 @@ namespace swri
   }
 
   static inline
-  void param(const rclcpp::Node &nh,
-      const std::string &name,
-      int &variable,
-      const int default_value)
+  void param(const rclcpp::Node& nh,
+             const std::string& name,
+             int& variable,
+             const int default_value)
   {
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %d", name.c_str(), variable);
   }
 
   static inline
-  void param(const rclcpp::Node &nh,
-      const std::string &name,
-      double &variable,
-      const double default_value)
+  void param(const rclcpp::Node& nh,
+             const std::string& name,
+             double& variable,
+             const double default_value)
   {
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %lf", name.c_str(), variable);
   }
 
   static inline
-  void param(const rclcpp::Node &nh,
-      const std::string &name,
-      float &variable,
-      const float default_value)
+  void param(const rclcpp::Node& nh,
+             const std::string& name,
+             float& variable,
+             const float default_value)
   {
     double dbl_value;
     double dbl_default = default_value;
@@ -170,20 +170,20 @@ namespace swri
   }
 
   static inline
-  void param(const rclcpp::Node &nh,
-      const std::string &name,
-      std::string &variable,
-      const std::string default_value)
+  void param(const rclcpp::Node& nh,
+             const std::string& name,
+             std::string& variable,
+             const std::string default_value)
   {
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = \"%s\"", name.c_str(), variable.c_str());
   }
 
   static inline
-  void param(const rclcpp::Node &nh,
-      const std::string &name,
-      bool &variable,
-      const bool default_value)
+  void param(const rclcpp::Node& nh,
+             const std::string& name,
+             bool& variable,
+             const bool default_value)
   {
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %s", name.c_str(), variable ? "true" : "false");

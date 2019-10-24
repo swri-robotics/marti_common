@@ -4,6 +4,7 @@ project(swri_image_util)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(camera_calibration_parsers REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -95,10 +96,21 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::Warp
 target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
 
 add_executable(dummy_image_publisher src/nodes/dummy_image_publisher.cpp)
-target_link_libraries(dummy_image_publisher ${catkin_LIBRARIES})
+ament_target_dependencies(dummy_image_publisher
+  rclcpp
+  sensor_msgs
+)
 
 add_executable(normalization_image_generator_node src/nodes/normalization_image_generator_node.cpp)
-target_link_libraries(normalization_image_generator_node ${PROJECT_NAME})
+ament_target_dependencies(normalization_image_generator_node
+  ament_index_cpp
+  cv_bridge
+  rclcpp
+  sensor_msgs
+)
+target_link_libraries(normalization_image_generator_node
+  ${PROJECT_NAME}
+)
 
 #swri_nodelet_add_node(draw_polygon ${PROJECT_NAME} DrawPolygonNodelet)
 #target_link_libraries(draw_polygon ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})

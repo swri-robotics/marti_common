@@ -30,42 +30,35 @@
 #include <string>
 
 // ROS Libraries
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
 
-class DummyImagePublisherNode
+class DummyImagePublisherNode : public rclcpp::Node
 {
   public:
-    DummyImagePublisherNode()
+    DummyImagePublisherNode() :
+      rclcpp::Node("dummy_image_publisher")
     {
-      ros::NodeHandle node;
-      ros::NodeHandle priv("~");
-      image_pub_ = node.advertise<sensor_msgs::Image>("image", 100);
+      image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("image", 100);
       
-      priv.param("rate", rate_, 10.0);
-      priv.param("width", width_, 640);
-      priv.param("height", height_, 480);
-      priv.param("encoding", encoding_, std::string("mono8"));
-    }
+      this->get_parameter_or("rate", rate_, 10.0);
+      this->get_parameter_or("width", width_, 640);
+      this->get_parameter_or("height", height_, 480);
+      this->get_parameter_or("encoding", encoding_, std::string("mono8"));
 
-    void Spin()
-    {
-      sensor_msgs::Image image;
-      image.encoding = encoding_;
-      image.width = width_;
-      image.height = height_;
-      image.step = width_;
-      image.data.resize(height_ * width_);
-    
-      ros::Rate rate(rate_);
-      while (ros::ok())
-      {
-        image.header.stamp = ros::Time::now();
-        image_pub_.publish(image);
-      
-        ros::spinOnce();
-        rate.sleep();
-      }
+      auto publisher = [this]() -> void {
+        sensor_msgs::msg::Image::UniquePtr image = std::make_unique<sensor_msgs::msg::Image>();
+        image->header.stamp = rclcpp::Clock().now();
+        image->encoding = encoding_;
+        image->width = width_;
+        image->height = height_;
+        image->step = width_;
+        image->data.resize(height_ * width_);
+
+        image_pub_->publish(std::move(image));
+      };
+
+      timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / rate_), publisher);
     }
 
   private:
@@ -74,13 +67,16 @@ class DummyImagePublisherNode
     int32_t height_;
     std::string encoding_;
     
-    ros::Publisher image_pub_;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
+
+    rclcpp::TimerBase::SharedPtr timer_;
 };
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "dummy_image_publisher", ros::init_options::AnonymousName);
+  rclcpp::init(argc, argv);//, "dummy_image_publisher", ros::init_options::AnonymousName);
 
-  DummyImagePublisherNode node;
-  node.Spin();
+  std::shared_ptr<DummyImagePublisherNode> node = std::make_shared<DummyImagePublisherNode>();
+
+  rclcpp::spin(node);
 }
