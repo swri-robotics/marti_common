@@ -44,42 +44,46 @@ namespace swri_image_util
   const cv::Scalar NO_MASK = cv::Scalar(-1, -1, -1);
 
   // ROS nodelet for blending the images together
-class BlendImagesNodelet : public rclcpp::Node
+  class BlendImagesNode : public rclcpp::Node
   {
   public:
-      explicit BlendImagesNodelet(const rclcpp::NodeOptions& options);
+    explicit BlendImagesNode(const rclcpp::NodeOptions& options);
+
   private:
-      // Use the message_filters to listen for the base and top image
-      // using an approximate time synchronization policy. These typedefs
-      // make creating the filter cleaner looking
-      typedef message_filters::sync_policies::ApproximateTime<
+    // Use the message_filters to listen for the base and top image
+    // using an approximate time synchronization policy. These typedefs
+    // make creating the filter cleaner looking
+    typedef message_filters::sync_policies::ApproximateTime<
         sensor_msgs::msg::Image, sensor_msgs::msg::Image> ApproximateTimePolicy;
-      typedef message_filters::Synchronizer<ApproximateTimePolicy>
+    typedef message_filters::Synchronizer<ApproximateTimePolicy>
         ApproximateTimeSync;
-      // Called when the nodelet starts up. This does all of the initialization
-      virtual void onInit();
-      // Callback for the two images we are blending together
-      void imageCallback(
-          const sensor_msgs::msg::Image::ConstSharedPtr &base_image,
-          const sensor_msgs::msg::Image::ConstSharedPtr &top_image);
-      // Alpha blending level of the two images
-      double alpha_;
-      // Color to mask, if necessary
-      cv::Scalar mask_color_;
-      // Publishes the blended image
-      image_transport::Publisher image_pub_;
-      // The subscribers for the base and top image
-      message_filters::Subscriber<sensor_msgs::msg::Image> base_image_sub_;
-      message_filters::Subscriber<sensor_msgs::msg::Image> top_image_sub_;
-      // Synchronization object for the two images we need for the blending
-      // process
-      std::shared_ptr<ApproximateTimeSync> image_sync_;
+
+    // Called when the nodelet starts up. This does all of the initialization
+    virtual void onInit();
+
+    // Callback for the two images we are blending together
+    void imageCallback(
+        const sensor_msgs::msg::Image::ConstSharedPtr& base_image,
+        const sensor_msgs::msg::Image::ConstSharedPtr& top_image);
+
+    // Alpha blending level of the two images
+    double alpha_;
+    // Color to mask, if necessary
+    cv::Scalar mask_color_;
+    // Publishes the blended image
+    image_transport::Publisher image_pub_;
+    // The subscribers for the base and top image
+    message_filters::Subscriber<sensor_msgs::msg::Image> base_image_sub_;
+    message_filters::Subscriber<sensor_msgs::msg::Image> top_image_sub_;
+    // Synchronization object for the two images we need for the blending
+    // process
+    std::shared_ptr<ApproximateTimeSync> image_sync_;
   };
 
-  BlendImagesNodelet::BlendImagesNodelet(const rclcpp::NodeOptions& options) :
-    Node("blend_images", options),
-    alpha_(DEFAULT_ALPHA_LEVEL),
-    mask_color_(NO_MASK)
+  BlendImagesNode::BlendImagesNode(const rclcpp::NodeOptions& options) :
+      Node("blend_images", options),
+      alpha_(DEFAULT_ALPHA_LEVEL),
+      mask_color_(NO_MASK)
   {
     // User setting for the alpha value. The constructor should have
     // already set this to the default value
@@ -112,18 +116,18 @@ class BlendImagesNodelet : public rclcpp::Node
     base_image_sub_.subscribe(this, "base_image");
     top_image_sub_.subscribe(this, "top_image");
     image_sync_.reset(new ApproximateTimeSync(
-                        ApproximateTimePolicy(10),
-                        base_image_sub_,
-                        top_image_sub_));
+        ApproximateTimePolicy(10),
+        base_image_sub_,
+        top_image_sub_));
     // Start listening for the images
     image_sync_->registerCallback(std::bind(
-                                    &BlendImagesNodelet::imageCallback,
-                                    this,
-                                    std::placeholders::_1,
-                                    std::placeholders::_2));
+        &BlendImagesNode::imageCallback,
+        this,
+        std::placeholders::_1,
+        std::placeholders::_2));
   }
 
-  void BlendImagesNodelet::imageCallback(
+  void BlendImagesNode::imageCallback(
       const sensor_msgs::msg::Image::ConstSharedPtr& base_image,
       const sensor_msgs::msg::Image::ConstSharedPtr& top_image)
   {
@@ -134,14 +138,14 @@ class BlendImagesNodelet : public rclcpp::Node
     // Use the base image encoding during the conversion so different types of
     // images can be blended together
     cv_bridge::CvImageConstPtr cv_top_image = cv_bridge::toCvShare(
-          top_image,
-          base_image->encoding);
+        top_image,
+        base_image->encoding);
 
     // Initialize the output to the same size and type as the base image
     cv::Mat blended = cv::Mat::zeros(
-          cv_base_image->image.rows,
-          cv_base_image->image.cols,
-          cv_base_image->image.type());
+        cv_base_image->image.rows,
+        cv_base_image->image.cols,
+        cv_base_image->image.type());
 
     // Blend the images together
     if (mask_color_ != NO_MASK)
@@ -150,17 +154,17 @@ class BlendImagesNodelet : public rclcpp::Node
       cv::inRange(cv_top_image->image, mask_color_, mask_color_, mask);
 
       blended = swri_opencv_util::overlayColor(
-            cv_base_image->image,
-            mask,
-            mask_color_,
-            alpha_);
+          cv_base_image->image,
+          mask,
+          mask_color_,
+          alpha_);
     }
     else
     {
       blended = swri_opencv_util::blend(
-            cv_top_image->image,
-            cv_base_image->image,
-            alpha_);
+          cv_top_image->image,
+          cv_base_image->image,
+          alpha_);
     }
 
     // Convert the blended image to a ROS type and publish the result
@@ -174,4 +178,4 @@ class BlendImagesNodelet : public rclcpp::Node
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::BlendImagesNodelet)
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::BlendImagesNode)

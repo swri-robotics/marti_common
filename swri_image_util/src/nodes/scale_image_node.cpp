@@ -40,16 +40,17 @@
 
 namespace swri_image_util
 {
-class ScaleImageNodelet : public rclcpp::Node
+  class ScaleImageNode : public rclcpp::Node
   {
   public:
-      explicit ScaleImageNodelet(const rclcpp::NodeOptions& options) :
+    explicit ScaleImageNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("scale_image", options),
         scale_(1.0)
     {
       this->get_parameter_or("scale", scale_, scale_);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+      {
         if (scale_ == 1.0)
         {
           image_pub_.publish(image);
@@ -86,4 +87,4 @@ class ScaleImageNodelet : public rclcpp::Node
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ScaleImageNodelet)
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ScaleImageNode)

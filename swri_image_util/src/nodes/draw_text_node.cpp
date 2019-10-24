@@ -30,98 +30,65 @@
 #include <string>
 
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
-#include <swri_image_util/image_normalization.h>
-
 #include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {
-class ContrastStretchNodelet : public rclcpp::Node
+  class DrawTextNode : public rclcpp::Node
   {
   public:
-    explicit ContrastStretchNodelet(const rclcpp::NodeOptions& options) :
-      rclcpp::Node("contrast_stretch", options),
-      bins_(8),
-      max_min_(0.0),
-      min_max_(0.0),
-      over_exposure_threshold_(255.0),
-      over_exposure_dilation_(3)
+    explicit DrawTextNode(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("draw_text", options),
+        text_("label"),
+        offset_x_(0),
+        offset_y_(0),
+        font_scale_(1.0),
+        font_thickness_(1)
     {
-      this->get_parameter_or("bins", bins_, bins_);
-      this->get_parameter_or("max_min", max_min_, max_min_);
-      this->get_parameter_or("min_max", min_max_, min_max_);
-      this->get_parameter_or("over_exposure_threshold", over_exposure_threshold_, over_exposure_threshold_);
-      this->get_parameter_or("over_exposure_dilation", over_exposure_dilation_, over_exposure_dilation_);
-      
-      std::string mask;
-      this->get_parameter_or("mask", mask, std::string(""));
-      if (!mask.empty())
-      {
-        mask_ = cv::imread(mask, 0);
-      }
+      this->get_parameter_or("text", text_, text_);
+      this->get_parameter_or("offset_x", offset_x_, offset_x_);
+      this->get_parameter_or("offset_y", offset_y_, offset_y_);
+      this->get_parameter_or("font_scale", font_scale_, font_scale_);
+      this->get_parameter_or("font_thickness", font_thickness_, font_thickness_);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+      {
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-        if (mask_.empty())
-        {
-          mask_ = cv::Mat::ones(cv_image->image.size(), CV_8U);
-        }
-        else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols)
-        {
-          cv::resize(mask_, mask_, cv_image->image.size(), 1.0, 1.0, cv::INTER_NEAREST);
-        }
-
-        cv::Mat mask;
-
-        if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
-        {
-          cv::Mat over_exposed = cv_image->image > over_exposure_threshold_;
-          cv::Mat element = cv::getStructuringElement(
-              cv::MORPH_ELLIPSE,
-              cv::Size(2 * over_exposure_dilation_ + 1, 2 * over_exposure_dilation_ + 1 ),
-              cv::Point(over_exposure_dilation_, over_exposure_dilation_ ));
-          cv::dilate(over_exposed, over_exposed, element);
-
-          mask = mask_.clone();
-          mask.setTo(0, over_exposed);
-        }
-        else
-        {
-          mask = mask_;
-        }
-
-        swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask, max_min_, min_max_);
+        cv::putText(
+            cv_image->image,
+            text_,
+            cv::Point(offset_x_, offset_y_),
+            cv::FONT_HERSHEY_SIMPLEX,
+            font_scale_,
+            cv::Scalar(255, 255, 255),
+            font_thickness_);
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
       image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("normalized_image", 1);
+      image_pub_ = it.advertise("stamped_image", 1);
       image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
-    int32_t bins_;
-    double max_min_;
-    double min_max_;
-    double over_exposure_threshold_;
-    int32_t over_exposure_dilation_;
-    
-    cv::Mat mask_;
+    std::string text_;
+    double offset_x_;
+    double offset_y_;
+    double font_scale_;
+    int font_thickness_;
 
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
-
   };
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ContrastStretchNodelet)
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DrawTextNode)

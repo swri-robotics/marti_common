@@ -43,63 +43,63 @@
 
 namespace swri_image_util
 {
-class ImagePubNodelet : public rclcpp::Node
+  class ImagePubNode : public rclcpp::Node
   {
-    public:
-      explicit ImagePubNodelet(const rclcpp::NodeOptions& options) :
+  public:
+    explicit ImagePubNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("image_pub", options)
+    {
+      std::string image_file;
+      this->get_parameter_or("image_file", image_file, image_file);
+
+      std::string mode;
+      const std::string bgr8(sensor_msgs::image_encodings::BGR8);
+      this->get_parameter_or("mode", mode, bgr8);
+
+      double rate = 1;
+      this->get_parameter_or("rate", rate, rate);
+      rate = std::max(0.1, rate);
+
+      cv_image.header.stamp = rclcpp::Clock().now();
+      if (mode == sensor_msgs::image_encodings::BGR8)
       {
-        std::string image_file;
-        this->get_parameter_or("image_file", image_file, image_file);
-
-        std::string mode;
-        const std::string bgr8(sensor_msgs::image_encodings::BGR8);
-        this->get_parameter_or("mode", mode, bgr8);
-
-        double rate = 1;
-        this->get_parameter_or("rate", rate, rate);
-        rate = std::max(0.1, rate);
-
-        cv_image.header.stamp = rclcpp::Clock().now();
-        if (mode == sensor_msgs::image_encodings::BGR8)
-        {
-          cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_COLOR);
-          cv_image.encoding = sensor_msgs::image_encodings::BGR8;
-        }
-        else
-        {
-          cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_GRAYSCALE);
-          cv_image.encoding = sensor_msgs::image_encodings::MONO8;
-        }
-
-        if (!cv_image.image.empty())
-        {
-          image_transport::ImageTransport it(shared_from_this());
-          image_pub_ = it.advertise("image", 2, true);
-          pub_timer_ = this->create_wall_timer(
-             std::chrono::duration<float>(1.0 / rate),
-                 std::bind(&ImagePubNodelet::publish, this));
-        }
-        else
-        {
-          RCLCPP_FATAL(this->get_logger(), "Failed to load image.");
-          rclcpp::shutdown();
-        }
+        cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_COLOR);
+        cv_image.encoding = sensor_msgs::image_encodings::BGR8;
+      }
+      else
+      {
+        cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_GRAYSCALE);
+        cv_image.encoding = sensor_msgs::image_encodings::MONO8;
       }
 
-      void publish()
+      if (!cv_image.image.empty())
       {
-        cv_image.header.stamp = rclcpp::Clock().now();
-        image_pub_.publish(cv_image.toImageMsg());
+        image_transport::ImageTransport it(shared_from_this());
+        image_pub_ = it.advertise("image", 2, true);
+        pub_timer_ = this->create_wall_timer(
+            std::chrono::duration<float>(1.0 / rate),
+            std::bind(&ImagePubNode::publish, this));
       }
+      else
+      {
+        RCLCPP_FATAL(this->get_logger(), "Failed to load image.");
+        rclcpp::shutdown();
+      }
+    }
 
-    private:
-      rclcpp::TimerBase::SharedPtr pub_timer_;
-      image_transport::Publisher image_pub_;
+    void publish()
+    {
+      cv_image.header.stamp = rclcpp::Clock().now();
+      image_pub_.publish(cv_image.toImageMsg());
+    }
 
-      cv_bridge::CvImage cv_image;
+  private:
+    rclcpp::TimerBase::SharedPtr pub_timer_;
+    image_transport::Publisher image_pub_;
+
+    cv_bridge::CvImage cv_image;
   };
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ImagePubNodelet)
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ImagePubNode)

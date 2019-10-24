@@ -29,80 +29,66 @@
 
 #include <string>
 
-#include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.h>
 #include <opencv2/core/core.hpp>
+
 #include <rclcpp/rclcpp.hpp>
+#include <image_transport/image_transport.h>
 #include <sensor_msgs/msg/image.hpp>
+#include <cv_bridge/cv_bridge.h>
+
+#include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {
-class DrawPolygonNodelet : public rclcpp::Node
+  class RotateImageNode : public rclcpp::Node
   {
   public:
-      explicit DrawPolygonNodelet(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("draw_polygon", options),
-        thickness_(-1),
-        r_(0),
-        g_(0),
-        b_(0)
+    explicit RotateImageNode(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("rotate_image", options),
+        angle_(0),
+        operations_(0),
+        flip_axis_(false)
     {
-      this->get_parameter_or("thickness", thickness_, thickness_);
-      this->get_parameter_or("r", r_, r_);
-      this->get_parameter_or("g", g_, g_);
-      this->get_parameter_or("b", b_, b_);
+      this->get_parameter_or("angle", angle_, angle_);
 
-      std::map<std::string, std::vector<int64_t> > points;
+      int32_t angle_90 = static_cast<int32_t>(swri_math_util::ToNearest(angle_, 90));
+      flip_axis_ = angle_90 > 0 ? 1 : 0;
+      operations_ = std::abs(angle_90 / 90);
 
-      this->get_parameters("polygon", points);
-      if (points.find("x") == points.end() ||
-          points.find("y") == points.end() ||
-          points["x"].size() != points["y"].size())
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
       {
-        RCLCPP_FATAL(this->get_logger(), "'polygon' param must have an equal number of 'x' and 'y' points.");
-      }
-      std::vector<int64_t>& x_points = points["x"];
-      std::vector<int64_t>& y_points = points["y"];
-      for(size_t i = 0; i < x_points.size(); i++)
-      {
-        polygon_.emplace_back(cv::Point(x_points[i], y_points[i]));
-      }
+        if (operations_ == 0)
+        {
+          image_pub_.publish(image);
+          return;
+        }
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-        const cv::Point* points[1] = { &polygon_[0] };
-        int count = polygon_.size();
-
-        if (thickness_ < 1)
+        for (int32_t i = 0; i < operations_; i++)
         {
-          cv::fillPoly(cv_image->image, points, &count, 1, cv::Scalar(b_, g_, r_));
-        }
-        else
-        {
-          cv::polylines(cv_image->image, points, &count, 1, true, cv::Scalar(b_, g_, r_), thickness_);
+          cv::transpose(cv_image->image, cv_image->image);
+          cv::flip(cv_image->image, cv_image->image, flip_axis_);
         }
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
       image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("image_out", 1);
-      image_sub_ = it.subscribe("image_in", 1, callback);
+      image_pub_ = it.advertise("rotated_image", 1);
+      image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
-    int thickness_;
-    int r_;
-    int g_;
-    int b_;
-
-    std::vector<cv::Point> polygon_;
+    double angle_;
+    int32_t operations_;
+    bool flip_axis_;
 
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
+
   };
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DrawPolygonNodelet)
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::RotateImageNode)

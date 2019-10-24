@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,54 +29,52 @@
 
 #include <string>
 
-// ROS Libraries
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include <rclcpp/rclcpp.hpp>
+#include <image_transport/image_transport.h>
 #include <sensor_msgs/msg/image.hpp>
+#include <cv_bridge/cv_bridge.h>
 
-class DummyImagePublisherNode : public rclcpp::Node
+namespace swri_image_util
 {
+  class CrosshairsNode : public rclcpp::Node
+  {
   public:
-    DummyImagePublisherNode() :
-      rclcpp::Node("dummy_image_publisher")
+    explicit CrosshairsNode(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("crosshairs", options)
     {
-      image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("image", 100);
-      
-      this->get_parameter_or("rate", rate_, 10.0);
-      this->get_parameter_or("width", width_, 640);
-      this->get_parameter_or("height", height_, 480);
-      this->get_parameter_or("encoding", encoding_, std::string("mono8"));
+      image_transport::ImageTransport it(shared_from_this());
+      image_pub_ = it.advertise("crosshairs_image", 1);
 
-      auto publisher = [this]() -> void {
-        sensor_msgs::msg::Image::UniquePtr image = std::make_unique<sensor_msgs::msg::Image>();
-        image->header.stamp = rclcpp::Clock().now();
-        image->encoding = encoding_;
-        image->width = width_;
-        image->height = height_;
-        image->step = width_;
-        image->data.resize(height_ * width_);
-
-        image_pub_->publish(std::move(image));
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+      {
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+        // Get image dimensions
+        const int h = cv_image->image.rows;
+        const int w = cv_image->image.cols;
+        // Define line properties
+        const cv::Scalar black(0, 0, 0);
+        const int thickness = 3;
+        const int line_type = 8;  // 8-connected line
+        // Draw vertical line
+        cv::line(cv_image->image, cv::Point(0, w / 2), cv::Point(h - 1, w / 2), black, thickness, line_type);
+        // Draw horizontal line
+        cv::line(cv_image->image, cv::Point(h / 2, 0), cv::Point(h / 2, w - 1), black, thickness, line_type);
+        // Publish image
+        image_pub_.publish(cv_image->toImageMsg());
       };
 
-      timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / rate_), publisher);
+      image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
-    double rate_;
-    int32_t width_;
-    int32_t height_;
-    std::string encoding_;
-    
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
-
-    rclcpp::TimerBase::SharedPtr timer_;
-};
-
-int main(int argc, char **argv)
-{
-  rclcpp::init(argc, argv);//, "dummy_image_publisher", ros::init_options::AnonymousName);
-
-  std::shared_ptr<DummyImagePublisherNode> node = std::make_shared<DummyImagePublisherNode>();
-
-  rclcpp::spin(node);
+    image_transport::Subscriber image_sub_;
+    image_transport::Publisher image_pub_;
+  };
 }
+
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::CrosshairsNode)

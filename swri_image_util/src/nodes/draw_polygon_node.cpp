@@ -29,65 +29,81 @@
 
 #include <string>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-#include <rclcpp/rclcpp.hpp>
-#include <image_transport/image_transport.h>
-#include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
-#include <swri_math_util/math_util.h>
+#include <image_transport/image_transport.h>
+#include <opencv2/core/core.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
 
 namespace swri_image_util
 {
-class DrawTextNodelet : public rclcpp::Node
+  class DrawPolygonNode : public rclcpp::Node
   {
   public:
-      explicit DrawTextNodelet(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("draw_text", options),
-        text_("label"),
-        offset_x_(0),
-        offset_y_(0),
-        font_scale_(1.0),
-        font_thickness_(1)
+    explicit DrawPolygonNode(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("draw_polygon", options),
+        thickness_(-1),
+        r_(0),
+        g_(0),
+        b_(0)
     {
-      this->get_parameter_or("text", text_, text_);
-      this->get_parameter_or("offset_x", offset_x_, offset_x_);
-      this->get_parameter_or("offset_y", offset_y_, offset_y_);
-      this->get_parameter_or("font_scale", font_scale_, font_scale_);
-      this->get_parameter_or("font_thickness", font_thickness_, font_thickness_);
+      this->get_parameter_or("thickness", thickness_, thickness_);
+      this->get_parameter_or("r", r_, r_);
+      this->get_parameter_or("g", g_, g_);
+      this->get_parameter_or("b", b_, b_);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+      std::map<std::string, std::vector<int64_t> > points;
+
+      this->get_parameters("polygon", points);
+      if (points.find("x") == points.end() ||
+          points.find("y") == points.end() ||
+          points["x"].size() != points["y"].size())
+      {
+        RCLCPP_FATAL(this->get_logger(), "'polygon' param must have an equal number of 'x' and 'y' points.");
+      }
+      std::vector<int64_t>& x_points = points["x"];
+      std::vector<int64_t>& y_points = points["y"];
+      for (size_t i = 0; i < x_points.size(); i++)
+      {
+        polygon_.emplace_back(cv::Point(x_points[i], y_points[i]));
+      }
+
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+      {
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-        cv::putText(
-            cv_image->image,
-            text_,
-            cv::Point(offset_x_, offset_y_),
-            cv::FONT_HERSHEY_SIMPLEX,
-            font_scale_,
-            cv::Scalar(255, 255, 255),
-            font_thickness_);
+        const cv::Point* points[1] = {&polygon_[0]};
+        int count = polygon_.size();
+
+        if (thickness_ < 1)
+        {
+          cv::fillPoly(cv_image->image, points, &count, 1, cv::Scalar(b_, g_, r_));
+        }
+        else
+        {
+          cv::polylines(cv_image->image, points, &count, 1, true, cv::Scalar(b_, g_, r_), thickness_);
+        }
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
       image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("stamped_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = it.advertise("image_out", 1);
+      image_sub_ = it.subscribe("image_in", 1, callback);
     }
 
   private:
-    std::string text_;
-    double offset_x_;
-    double offset_y_;
-    double font_scale_;
-    int font_thickness_;
-    
+    int thickness_;
+    int r_;
+    int g_;
+    int b_;
+
+    std::vector<cv::Point> polygon_;
+
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DrawTextNodelet)
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DrawPolygonNode)

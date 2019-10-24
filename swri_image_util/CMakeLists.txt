@@ -67,62 +67,40 @@ ament_target_dependencies(${PROJECT_NAME}
   tf2
 )
 
-add_library(${PROJECT_NAME}_nodelets SHARED
-  src/nodes/blend_images_nodelet.cpp
-  src/nodes/crosshairs_nodelet.cpp
-  src/nodes/contrast_stretch_nodelet.cpp
-  src/nodes/draw_polygon_nodelet.cpp
-  src/nodes/draw_text_nodelet.cpp
-  src/nodes/image_pub_nodelet.cpp
-  src/nodes/normalize_response_nodelet.cpp
+add_library(${PROJECT_NAME}_nodes SHARED
+  src/nodes/blend_images_node.cpp
+  src/nodes/crosshairs_node.cpp
+  src/nodes/contrast_stretch_node.cpp
+  src/nodes/draw_polygon_node.cpp
+  src/nodes/draw_text_node.cpp
+  src/nodes/dummy_image_publisher_node.cpp
+  src/nodes/image_pub_node.cpp
+  src/nodes/normalization_image_node.cpp
+  src/nodes/normalize_response_node.cpp
 #  src/nodes/replace_colors_nodelet.cpp
-  src/nodes/rotate_image_nodelet.cpp
-  src/nodes/scale_image_nodelet.cpp
-  src/nodes/warp_image_nodelet.cpp
+  src/nodes/rotate_image_node.cpp
+  src/nodes/scale_image_node.cpp
+  src/nodes/warp_image_node.cpp
 )
-target_compile_definitions(${PROJECT_NAME}_nodelets
+target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::BlendImagesNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::ContrastStretchNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::CrosshairsNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::DrawPolygonNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::DrawTextNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::ImagePubNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::NormalizeResponseNodelet")
-# rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::ReplaceColorsNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::RotateImageNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::ScaleImageNodelet")
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodelets "swri_image_util::WarpImageNodelet")
-target_link_libraries(${PROJECT_NAME}_nodelets ${PROJECT_NAME})
-
-add_executable(dummy_image_publisher src/nodes/dummy_image_publisher.cpp)
-ament_target_dependencies(dummy_image_publisher
-  rclcpp
-  sensor_msgs
-)
-
-add_executable(normalization_image_generator_node src/nodes/normalization_image_generator_node.cpp)
-ament_target_dependencies(normalization_image_generator_node
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::BlendImagesNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ContrastStretchNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::CrosshairsNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::DrawPolygonNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::DrawTextNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::DummyImagePublisherNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ImagePubNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::NormalizationImageNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::NormalizeResponseNode")
+# rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ReplaceColorsNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateImageNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")
+target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
+ament_target_dependencies(${PROJECT_NAME}_nodes
   ament_index_cpp
-  cv_bridge
-  rclcpp
-  sensor_msgs
 )
-target_link_libraries(normalization_image_generator_node
-  ${PROJECT_NAME}
-)
-
-#swri_nodelet_add_node(draw_polygon ${PROJECT_NAME} DrawPolygonNodelet)
-#target_link_libraries(draw_polygon ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-#
-#swri_nodelet_add_node(image_pub ${PROJECT_NAME} ImagePubNodelet)
-#target_link_libraries(image_pub ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-#
-#swri_nodelet_add_node(warp_image ${PROJECT_NAME} WarpImageNodelet)
-#target_link_libraries(warp_image ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-#
-#swri_nodelet_add_node(crosshairs ${PROJECT_NAME} CrosshairsNodelet)
-#target_link_libraries(crosshairs ${PROJECT_NAME}_nodelets ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -135,20 +113,7 @@ install(DIRECTORY include/
 )
 
 install(TARGETS ${PROJECT_NAME}
-    ${PROJECT_NAME}_nodelets
-    # blend_images
-    # contrast_stretch
-    # crosshairs
-    # draw_polygon
-    # draw_text
-    # dummy_image_publisher
-    # image_pub
-    # normalization_image_generator_node
-    # normalize_response
-    # replace_colors
-    # rotate_image
-    # scale_image
-    # warp_image
+    ${PROJECT_NAME}_nodes
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -157,6 +122,6 @@ install(TARGETS ${PROJECT_NAME}
 ament_export_dependencies(ament_cmake)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
-  ${PROJECT_NAME}_nodelets)
+  ${PROJECT_NAME}_nodes)
 
 ament_package()
