@@ -29,6 +29,7 @@
   <depend>swri_geometry_util</depend>
   <depend>swri_math_util</depend>
   <depend>swri_opencv_util</depend>
+  <depend>swri_roscpp</depend>
   <depend>tf2</depend>
 
   <export>

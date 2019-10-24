@@ -26,6 +26,8 @@ add_library(${PROJECT_NAME}
   src/show.cpp
   src/convert.cpp)
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY POSITION_INDEPENDENT_CODE ON)
 ament_target_dependencies(${PROJECT_NAME}
   "cv_bridge"
   "swri_math_util"
@@ -44,13 +46,7 @@ install(TARGETS ${PROJECT_NAME}
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(cv_bridge)
 ament_export_dependencies(swri_math_util)
-ament_export_include_directories(include
-  ${cv_bridge_INCLUDE_DIRS}
-  ${swri_math_util_INCLUDE_DIRS}
-)
-ament_export_libraries(${PROJECT_NAME}
-  ${cv_bridge_LIBRARIES}
-  ${swri_math_util_LIBRARIES}
-)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

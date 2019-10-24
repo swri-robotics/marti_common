@@ -21,6 +21,8 @@ add_library(${PROJECT_NAME}
   src/trig_util.cpp
   src/random.cpp
   src/interpolation_1d.cpp)
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 ament_target_dependencies(${PROJECT_NAME}
   "rclcpp"
@@ -52,6 +54,6 @@ install(TARGETS ${PROJECT_NAME}
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
-ament_export_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
+ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

@@ -27,16 +27,11 @@
 //
 // *****************************************************************************
 #include <opencv2/core/version.hpp>
-#if CV_MAJOR_VERSION == 2
-#include <opencv2/contrib/contrib.hpp>
-#endif
 #include <opencv2/imgproc/imgproc.hpp>
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
-#include <nodelet/nodelet.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/msg/image.hpp>
 #include <swri_image_util/replace_colors.h>
 
 namespace swri_image_util
@@ -50,17 +45,14 @@ namespace swri_image_util
   const int32_t MAX_RGB_VALUE = 255;
 
   // ROS nodelet for replacing colors in an image
-  class ReplaceColorsNodelet : public nodelet::Nodelet
+class ReplaceColorsNodelet : public rclcpp::Node
   {
   public:
-    ReplaceColorsNodelet();
-    ~ReplaceColorsNodelet();
+    explicit ReplaceColorsNodelet(const rclcpp::NodeOptions& options);
   
   private:
-    // Does the actual initialization since this is a nodelet
-    virtual void onInit();
     // Callback for the input image
-    void imageCallback(const sensor_msgs::ImageConstPtr& image_msg);
+    void imageCallback(const sensor_msgs::msg::Image::ConstSharedPtr& image_msg);
     // Initialize the lookup table
     void initLut();
     // Read in user requested colormap
@@ -82,7 +74,8 @@ namespace swri_image_util
     std::map<std::string, int32_t> colormap_names_;
   };
 
-  ReplaceColorsNodelet::ReplaceColorsNodelet()
+  ReplaceColorsNodelet::ReplaceColorsNodelet(const rclcpp::NodeOptions& options) :
+    rclcpp::Node("replace_colors", options)
   {
     // Initialize the colormap name mapping. Every OpenCV colormap should have
     // a string identifiying it. This allows the node to easily take a user
@@ -101,23 +94,8 @@ namespace swri_image_util
     colormap_names_["hsv"] = cv::COLORMAP_HSV;
     colormap_names_["pink"] = cv::COLORMAP_PINK;
     colormap_names_["hot"] = cv::COLORMAP_HOT;
-    #if CV_MAJOR_VERSION == 3
     colormap_names_["parula"] = cv::COLORMAP_PARULA;
-    #endif
-  }
-
-  ReplaceColorsNodelet::~ReplaceColorsNodelet()
-  {
-    // Nothing to clean up on destruction
-  }
-
-  // Initialize the nodelet
-  void ReplaceColorsNodelet::onInit()
-  {
-    // Node handles for interacting with ROS
-    ros::NodeHandle& nh = getNodeHandle();
-    ros::NodeHandle& priv_nh  = getPrivateNodeHandle();
-
+    
     // Lookup table to replace colors with. By default will just convert the
     // gray scale values to their RGB equivalents. If this node is ever extended
     // to more than gray scale, this will have to be changed
@@ -133,7 +111,7 @@ namespace swri_image_util
     // This node has two different methods of changing gray scale values to
     // color imagery. The first maps the gray scale values to OpenCV colormaps
     // This call checks for that option
-    bool colormap_specified = priv_nh.getParam("colormap", color_param);
+    bool colormap_specified = this->get_parameter("colormap", color_param);
     if (colormap_specified)
     {
       //  Use the colormap the user has requested
@@ -146,19 +124,19 @@ namespace swri_image_util
     // values in the OpenCV colormap with user values. This call checks
     // if the user is attempting this operation, and reads the lookup table
     // from the parameter server if necessary 
-    if (priv_nh.getParam("colors", color_param))
+    if (this->get_parameter("colors", color_param))
     {
       // Try to read in the lookup values from the parameter server.
       readUserLut(color_param);
     }
     else if (!colormap_specified)
     {
-      ROS_ERROR("Color transformation was not specified. Images will ");
-      ROS_ERROR("only be converted to their gray scale equivalents");
+      RCLCPP_ERROR(this->get_logger(), "Color transformation was not specified. Images will ");
+      RCLCPP_ERROR(this->get_logger(), "only be converted to their gray scale equivalents");
     }
 
     // Set up the ROS interface
-    image_transport::ImageTransport it(nh);
+    image_transport::ImageTransport it(shared_from_this());
     image_pub_ = it.advertise("modified_image", 1);
     image_sub_ = it.subscribe(
       "image",
@@ -169,7 +147,7 @@ namespace swri_image_util
 
   // Callback for getting the input image to change the colors on
   void ReplaceColorsNodelet::imageCallback(
-    const sensor_msgs::ImageConstPtr& image_msg)
+    const sensor_msgs::msg::Image::ConstSharedPtr& image_msg)
   {
     // Only do the color conversion if someone is subscribing to the data
     if (image_pub_.getNumSubscribers() == 0)
@@ -182,7 +160,7 @@ namespace swri_image_util
     // to once every minute avoid spamming the user with redundant warnings
     if (image_msg->encoding != sensor_msgs::image_encodings::MONO8)
     {
-      ROS_ERROR_THROTTLE(60, 
+      RCLCPP_ERROR_ONCE(this->get_logger(),
         "Changing image colors is only supported for MONO8 images");
       return;
     }
@@ -203,7 +181,7 @@ namespace swri_image_util
       modified_image);
 
     // Copy results to output message and set up the header and encoding values
-    cv_bridge::CvImagePtr output = boost::make_shared<cv_bridge::CvImage>();
+    cv_bridge::CvImagePtr output = std::make_shared<cv_bridge::CvImage>();
     output->image = modified_image;
     output->encoding = sensor_msgs::image_encodings::RGB8;
     output->header = image_msg->header;
@@ -238,9 +216,9 @@ namespace swri_image_util
     if ((param.getType() != XmlRpc::XmlRpcValue::TypeArray) ||
       (param.size() != 2))
     {
-      ROS_ERROR("Colormap specification must be a two entry array with the");
-      ROS_ERROR("Following format:");
-      ROS_ERROR("\t[\"colormap_name\", num_colors]");
+      RCLCPP_ERROR(this->get_logger(), "Colormap specification must be a two entry array with the");
+      RCLCPP_ERROR(this->get_logger(), "Following format:");
+      RCLCPP_ERROR(this->get_logger(), "\t[\"colormap_name\", num_colors]");
       success = false;
     }
 
@@ -259,7 +237,7 @@ namespace swri_image_util
       // Make sure the colormap name is a string
       if (colormap_param.getType() != XmlRpc::XmlRpcValue::TypeString)
       {
-        ROS_ERROR("First colormap parameter must be a string");
+        RCLCPP_ERROR(this->get_logger(), "First colormap parameter must be a string");
         success = false;
       }
 
@@ -267,7 +245,7 @@ namespace swri_image_util
       // an integer
       if (num_entries_param.getType() != XmlRpc::XmlRpcValue::TypeInt)
       {
-        ROS_ERROR("Second colormap parameter must be an integer");
+        RCLCPP_ERROR(this->get_logger(), "Second colormap parameter must be an integer");
         success = false;
       }
 
@@ -282,7 +260,7 @@ namespace swri_image_util
     // Sanity check on the number of classes the user specified
     if (success && (num_entries <= 1))
     {
-      ROS_ERROR("Must use at least two colors from the colormap");
+      RCLCPP_ERROR(this->get_logger(), "Must use at least two colors from the colormap");
       success = false;
     }
 
@@ -292,8 +270,8 @@ namespace swri_image_util
     {
       if (num_entries > NUM_GRAY_VALUES)
       {
-        ROS_ERROR("Number of colormap entries was greater");
-        ROS_ERROR(" than %d", NUM_GRAY_VALUES);
+        RCLCPP_ERROR(this->get_logger(), "Number of colormap entries was greater");
+        RCLCPP_ERROR(this->get_logger(), " than %d", NUM_GRAY_VALUES);
         success = false;
       }
     }
@@ -309,7 +287,7 @@ namespace swri_image_util
       }
       else
       {
-        ROS_ERROR("Unknown colormap: %s requested", colormap_name.c_str());
+        RCLCPP_ERROR(this->get_logger(), "Unknown colormap: %s requested", colormap_name.c_str());
         success = false;
       }
     }
@@ -354,7 +332,7 @@ namespace swri_image_util
     bool success = true;
     if (param.getType() != XmlRpc::XmlRpcValue::TypeArray)
     {
-      ROS_ERROR("LUT must be an array, but type was: %s",
+      RCLCPP_ERROR(this->get_logger(), "LUT must be an array, but type was: %s",
         getValueTypeString(param).c_str());
       success = false;
     }
@@ -374,10 +352,10 @@ namespace swri_image_util
       XmlRpc::XmlRpcValue lut_row = param[lut_idx];
       if (lut_row.getType() != XmlRpc::XmlRpcValue::TypeArray)
       {
-        ROS_ERROR("LUT entries must be two entry arrays with the following");
-        ROS_ERROR("format:");
-        ROS_ERROR("\t[gray_value, [r, g, b]]");
-        ROS_ERROR("but for entry %d a %s was given", 
+        RCLCPP_ERROR(this->get_logger(), "LUT entries must be two entry arrays with the following");
+        RCLCPP_ERROR(this->get_logger(), "format:");
+        RCLCPP_ERROR(this->get_logger(), "\t[gray_value, [r, g, b]]");
+        RCLCPP_ERROR(this->get_logger(), "but for entry %d a %s was given", 
           lut_idx, getValueTypeString(lut_row).c_str());
         success = false;
         break;
@@ -385,10 +363,10 @@ namespace swri_image_util
 
       if (lut_row.size() != 2)
       {
-        ROS_ERROR("LUT entries must be two entry arrays with the following");
-        ROS_ERROR("format:");
-        ROS_ERROR("\t[gray_value, [r, g, b]]");
-        ROS_ERROR("but entry %d had an array with only %d values", 
+        RCLCPP_ERROR(this->get_logger(), "LUT entries must be two entry arrays with the following");
+        RCLCPP_ERROR(this->get_logger(), "format:");
+        RCLCPP_ERROR(this->get_logger(), "\t[gray_value, [r, g, b]]");
+        RCLCPP_ERROR(this->get_logger(), "but entry %d had an array with only %d values", 
           lut_idx, lut_row.size());
         success = false;
         break;
@@ -399,9 +377,9 @@ namespace swri_image_util
       XmlRpc::XmlRpcValue map_key = lut_row[0];
       if (map_key.getType() != XmlRpc::XmlRpcValue::TypeInt)
       {
-        ROS_ERROR("Color to replace must be an integer, but a %s was given for",
+        RCLCPP_ERROR(this->get_logger(), "Color to replace must be an integer, but a %s was given for",
           getValueTypeString(map_key).c_str());
-        ROS_ERROR("entry %d", lut_idx);
+        RCLCPP_ERROR(this->get_logger(), "entry %d", lut_idx);
         success = false;
         break;
       }
@@ -410,9 +388,9 @@ namespace swri_image_util
       int32_t gray_index = static_cast<int32_t>(map_key);
       if ((gray_index >= NUM_GRAY_VALUES) || (gray_index < 0))
       {
-        ROS_ERROR("Gray scale value for LUT entry %d was %d, but must be", 
+        RCLCPP_ERROR(this->get_logger(), "Gray scale value for LUT entry %d was %d, but must be", 
           lut_idx, gray_index);
-        ROS_ERROR("between 0 and %d", NUM_GRAY_VALUES - 1);
+        RCLCPP_ERROR(this->get_logger(), "between 0 and %d", NUM_GRAY_VALUES - 1);
         success = false;
         break;
       }
@@ -425,8 +403,8 @@ namespace swri_image_util
       XmlRpc::XmlRpcValue rgb_values = lut_row[1];
       if (rgb_values.getType() != XmlRpc::XmlRpcValue::TypeArray)
       {
-        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
-        ROS_ERROR("LUT row %d was a %s", lut_idx,
+        RCLCPP_ERROR(this->get_logger(), "RGB entries must be three entry arrays of integers, but");
+        RCLCPP_ERROR(this->get_logger(), "LUT row %d was a %s", lut_idx,
           getValueTypeString(rgb_values).c_str());
         success = false;
         break;
@@ -434,16 +412,16 @@ namespace swri_image_util
 
       if (rgb_values.size() != 3)
       {
-        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
-        ROS_ERROR("LUT row %d had %d entries", lut_idx, rgb_values.size());
+        RCLCPP_ERROR(this->get_logger(), "RGB entries must be three entry arrays of integers, but");
+        RCLCPP_ERROR(this->get_logger(), "LUT row %d had %d entries", lut_idx, rgb_values.size());
         success = false;
         break;
       }
 
       if (rgb_values[0].getType() != XmlRpc::XmlRpcValue::TypeInt)
       {
-        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
-        ROS_ERROR("LUT row %d had a red value with type %s", lut_idx,
+        RCLCPP_ERROR(this->get_logger(), "RGB entries must be three entry arrays of integers, but");
+        RCLCPP_ERROR(this->get_logger(), "LUT row %d had a red value with type %s", lut_idx,
           getValueTypeString(rgb_values[0]).c_str());
         success = false;
         break;
@@ -451,8 +429,8 @@ namespace swri_image_util
 
       if (rgb_values[1].getType() != XmlRpc::XmlRpcValue::TypeInt)
       {
-        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
-        ROS_ERROR("LUT row %d had a green value with type %s", lut_idx,
+        RCLCPP_ERROR(this->get_logger(), "RGB entries must be three entry arrays of integers, but");
+        RCLCPP_ERROR(this->get_logger(), "LUT row %d had a green value with type %s", lut_idx,
           getValueTypeString(rgb_values[1]).c_str());
         success = false;
         break;
@@ -460,8 +438,8 @@ namespace swri_image_util
 
       if (rgb_values[2].getType() != XmlRpc::XmlRpcValue::TypeInt)
       {
-        ROS_ERROR("RGB entries must be three entry arrays of integers, but");
-        ROS_ERROR("LUT row %d had a blue value with type %s", lut_idx,
+        RCLCPP_ERROR(this->get_logger(), "RGB entries must be three entry arrays of integers, but");
+        RCLCPP_ERROR(this->get_logger(), "LUT row %d had a blue value with type %s", lut_idx,
           getValueTypeString(rgb_values[2]).c_str());
         success = false;
         break;
@@ -471,7 +449,7 @@ namespace swri_image_util
       int32_t original_red = static_cast<int32_t>(rgb_values[0]);
       if ((original_red > MAX_RGB_VALUE) || (original_red < 0))
       {
-        ROS_ERROR("Red value on row %d was %d, and must be between 0 and %d",
+        RCLCPP_ERROR(this->get_logger(), "Red value on row %d was %d, and must be between 0 and %d",
           lut_idx, original_red, MAX_RGB_VALUE);
         success = false;
         break;
@@ -479,7 +457,7 @@ namespace swri_image_util
       int32_t original_green = static_cast<int32_t>(rgb_values[1]);
       if ((original_green > MAX_RGB_VALUE) || (original_green < 0))
       {
-        ROS_ERROR("Green value on row %d was %d, and must be between 0 and %d",
+        RCLCPP_ERROR(this->get_logger(), "Green value on row %d was %d, and must be between 0 and %d",
           lut_idx, original_green, MAX_RGB_VALUE);
         success = false;
         break;
@@ -487,7 +465,7 @@ namespace swri_image_util
       int32_t original_blue = static_cast<int32_t>(rgb_values[2]);
       if ((original_blue > MAX_RGB_VALUE) || (original_blue < 0))
       {
-        ROS_ERROR("Blue value on row %d was %d, and must be between 0 and %d",
+        RCLCPP_ERROR(this->get_logger(), "Blue value on row %d was %d, and must be between 0 and %d",
           lut_idx, original_blue, MAX_RGB_VALUE);
         success = false;
         break;
@@ -554,7 +532,7 @@ namespace swri_image_util
         break;
 
       default:
-        ROS_ERROR("Unknown XML RPC value type encountered");
+        RCLCPP_ERROR(this->get_logger(), "Unknown XML RPC value type encountered");
         type_str = "unknown";
         break;
     }
@@ -563,6 +541,5 @@ namespace swri_image_util
   }
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, ReplaceColorsNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ReplaceColorsNodelet)

@@ -192,13 +192,13 @@ namespace swri_image_util
     return ellipse;
   }
 
-  std::vector<tf::Vector3> GetEllipsePoints(
+  std::vector<tf2::Vector3> GetEllipsePoints(
       const cv::Mat& ellipse,
-      const tf::Vector3& center,
+      const tf2::Vector3& center,
       double scale,
       int32_t num_points)
   {
-    std::vector<tf::Vector3> perimeter;
+    std::vector<tf2::Vector3> perimeter;
 
     if (ellipse.rows == 2 && ellipse.cols == 2 && ellipse.type() == CV_32FC1 &&
         num_points > 2)

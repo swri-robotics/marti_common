@@ -69,15 +69,7 @@ ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(cv_bridge)
 ament_export_dependencies(tf2)
-ament_export_include_directories(include
-  ${rclcpp_INCLUDE_DIRS}
-  ${cv_bridge_INCLUDE_DIRS}
-  ${tf2_INCLUDE_DIRS}
-)
-ament_export_libraries(${PROJECT_NAME}
-  ${rclcpp_LIBRARIES}
-  ${cv_bridge_LIBRARIES}
-  ${tf2_LIBRARIES}
-)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

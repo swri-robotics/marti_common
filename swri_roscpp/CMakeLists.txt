@@ -118,21 +118,6 @@ ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(std_msgs)
 ament_export_dependencies(std_srvs)
-ament_export_include_directories(include
-  ${diagnostic_updater_INCLUDE_DIRS}
-  ${marti_common_msgs_INCLUDE_DIRS}
-  ${nav_msgs_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-  ${std_msgs_INCLUDE_DIRS}
-  ${std_srvs_INCLUDE_DIRS}
-)
-ament_export_libraries(${PROJECT_NAME}
-  ${diagnostic_updater_LIBRARIES}
-  ${marti_common_msgs_LIBRARIES}
-  ${nav_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${std_srvs_LIBRARIES}
-)
+ament_export_include_directories(include)
 
 ament_package()

@@ -27,21 +27,54 @@
 //
 // *****************************************************************************
 
-#include <ros/ros.h>
-#include <nodelet/loader.h>
+#include <string>
 
-int main(int argc, char **argv)
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <rclcpp/rclcpp.hpp>
+#include <image_transport/image_transport.h>
+// #include <sensor_msgs//image_encodings.h>
+#include <sensor_msgs/msg/image.hpp>
+#include <cv_bridge/cv_bridge.h>
+
+namespace swri_image_util
 {
-  ros::init(argc, argv, "blend_images", ros::init_options::AnonymousName);
-  nodelet::Loader manager(false);
+class CrosshairsNodelet : public rclcpp::Node
+  {
+  public:
+    explicit CrosshairsNodelet(const rclcpp::NodeOptions& options) :
+      rclcpp::Node("crosshairs", options)
+    {
+      image_transport::ImageTransport it(shared_from_this());
+      image_pub_ = it.advertise("crosshairs_image", 1);
 
-  nodelet::M_string remappings;
-  nodelet::V_string my_argv;
-  manager.load(
-        ros::this_node::getName(),
-        "swri_image_util/blend_images",
-        remappings,
-        my_argv);
-  ros::spin();
-  return 0;
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+        // Get image dimensions
+        const int h = cv_image->image.rows;
+        const int w = cv_image->image.cols;
+        // Define line properties
+        const cv::Scalar black(0, 0, 0);
+        const int thickness = 3;
+        const int line_type = 8;  // 8-connected line
+        // Draw vertical line
+        cv::line(cv_image->image, cv::Point(0, w/2), cv::Point(h-1, w/2), black, thickness, line_type);
+        // Draw horizontal line
+        cv::line(cv_image->image, cv::Point(h/2, 0), cv::Point(h/2, w-1), black, thickness, line_type);
+        // Publish image
+        image_pub_.publish(cv_image->toImageMsg());
+      };
+
+      image_sub_ = it.subscribe("image", 1, callback);
+    }
+
+  private:
+    image_transport::Subscriber image_sub_;
+    image_transport::Publisher image_pub_;
+  };
 }
+
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::CrosshairsNodelet)

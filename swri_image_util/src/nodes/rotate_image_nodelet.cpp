@@ -27,20 +27,67 @@
 //
 // *****************************************************************************
 
-#include <ros/ros.h>
-#include <nodelet/loader.h>
+#include <string>
 
-int main(int argc, char **argv)
+#include <opencv2/core/core.hpp>
+
+#include <rclcpp/rclcpp.hpp>
+#include <image_transport/image_transport.h>
+#include <sensor_msgs/msg/image.hpp>
+#include <cv_bridge/cv_bridge.h>
+
+#include <swri_math_util/math_util.h>
+
+namespace swri_image_util
 {
-  ros::init(argc, argv, "rotate_image", ros::init_options::AnonymousName);
+class RotateImageNodelet : public rclcpp::Node
+  {
+  public:
+    explicit RotateImageNodelet(const rclcpp::NodeOptions& options) :
+      rclcpp::Node("rotate_image", options),
+      angle_(0),
+      operations_(0),
+      flip_axis_(false)
+    {
+      this->get_parameter_or("angle", angle_, angle_);
 
-  nodelet::Loader manager(false);
+      int32_t angle_90 = static_cast<int32_t>(swri_math_util::ToNearest(angle_, 90));
+      flip_axis_ = angle_90 > 0 ? 1 : 0;
+      operations_ = std::abs(angle_90 / 90);
 
-  nodelet::M_string remappings;
-  nodelet::V_string my_argv;
-  manager.load(ros::this_node::getName(), "swri_image_util/rotate_image",
-      remappings, my_argv);
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        if (operations_ == 0)
+        {
+          image_pub_.publish(image);
+          return;
+        }
 
-  ros::spin();
-  return 0;
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+
+        for (int32_t i = 0; i < operations_; i++)
+        {
+          cv::transpose(cv_image->image, cv_image->image);
+          cv::flip(cv_image->image, cv_image->image, flip_axis_);
+        }
+
+        image_pub_.publish(cv_image->toImageMsg());
+      };
+
+      image_transport::ImageTransport it(shared_from_this());
+      image_pub_ = it.advertise("rotated_image", 1);
+      image_sub_ = it.subscribe("image", 1, callback);
+    }
+
+  private:
+    double angle_;
+    int32_t operations_;
+    bool flip_axis_;
+
+    image_transport::Subscriber image_sub_;
+    image_transport::Publisher image_pub_;
+
+  };
 }
+
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::RotateImageNodelet)

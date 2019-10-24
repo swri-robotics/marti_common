@@ -32,72 +32,65 @@
 #include <image_transport/publisher.h>
 #include <image_transport/subscriber.h>
 #include <opencv2/core/core.hpp>
-#include <nodelet/nodelet.h>
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
 #include <swri_roscpp/parameters.h>
 
 namespace swri_image_util
 {
-  class WarpImageNodelet : public nodelet::Nodelet
+class WarpImageNodelet : public rclcpp::Node
   {
     public:
-      WarpImageNodelet(): use_input_size_(false)
+      explicit WarpImageNodelet(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("warp_image", options),
+        use_input_size_(false)
       {
-      }
-
-      ~WarpImageNodelet()
-      {
-      }
-
-      void onInit()
-      {
-        ros::NodeHandle &node = getNodeHandle();
-        ros::NodeHandle &priv = getPrivateNodeHandle();
-
         std::vector<double> transform;
-        if (priv.hasParam("width") && priv.hasParam("height"))
+        if (this->has_parameter("width") && this->has_parameter("height"))
         {
           use_input_size_ = false;
-          swri::getParam(priv, "width", output_size_.width);
-          swri::getParam(priv, "height", output_size_.height);
+          this->get_parameter("width", output_size_.width);
+          this->get_parameter("height", output_size_.height);
         }
         else
         {
           use_input_size_ = true;
-          NODELET_INFO("No ~width and ~height parameters given. Output images will be same size as input.");
+          RCLCPP_INFO(this->get_logger(),
+              "No ~width and ~height parameters given. Output images will be same size as input.");
         }
-        priv.param("transform", transform, transform);
+        this->get_parameter_or("transform", transform, transform);
         if (transform.size() != 9)
         {
-          NODELET_FATAL("~transform must be a 9-element list of doubles (3x3 matrix, row major)");
+          RCLCPP_FATAL(this->get_logger(),
+              "~transform must be a 9-element list of doubles (3x3 matrix, row major)");
           // Return without setting up callbacks
           // Don't shut down, because that would bring down all other nodelets as well
           return;
         }
         m_ = cv::Mat(transform, true).reshape(0, 3);
-        NODELET_INFO_STREAM("Transformation matrix:" << std::endl << m_);
+        std::stringstream matstring;
+        matstring << m_;
+        RCLCPP_INFO(this->get_logger(), "Transformation matrix: %s", matstring.str().c_str());
 
-        image_transport::ImageTransport it(node);
+        auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+          cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
+
+          cv_bridge::CvImagePtr cv_warped = std::make_shared<cv_bridge::CvImage>();
+          if (use_input_size_)
+          {
+            output_size_ = cv_image->image.size();
+          }
+          cv::warpPerspective(cv_image->image, cv_warped->image, m_, output_size_, CV_INTER_LANCZOS4);
+
+          cv_warped->encoding = cv_image->encoding;
+          cv_warped->header = cv_image->header;
+
+          image_pub_.publish(cv_warped->toImageMsg());
+        };
+
+        image_transport::ImageTransport it(shared_from_this());
         image_pub_ = it.advertise("warped_image", 1);
-        image_sub_ = it.subscribe("image", 1, &WarpImageNodelet::handleImage, this);
-      }
-
-      void handleImage(sensor_msgs::ImageConstPtr const& image)
-      {
-        cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
-
-        cv_bridge::CvImagePtr cv_warped = boost::make_shared<cv_bridge::CvImage>();
-        if (use_input_size_)
-        {
-          output_size_ = cv_image->image.size();
-        }
-        cv::warpPerspective(cv_image->image, cv_warped->image, m_, output_size_, CV_INTER_LANCZOS4);
-
-        cv_warped->encoding = cv_image->encoding;
-        cv_warped->header = cv_image->header;
-
-        image_pub_.publish(cv_warped->toImageMsg());
+        image_sub_ = it.subscribe("image", 1, callback);
       }
 
     private:
@@ -109,6 +102,5 @@ namespace swri_image_util
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, WarpImageNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::WarpImageNodelet)

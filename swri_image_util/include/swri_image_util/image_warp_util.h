@@ -35,9 +35,6 @@
 // Boost Libraries
 #include <boost/circular_buffer.hpp>
 
-// ROS Libraries
-#include <ros/ros.h>
-
 // OpenCV Libraries
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -47,6 +44,8 @@
 
 // RANGER Libraries
 #include <swri_image_util/image_matching.h>
+
+#include <rclcpp/logger.hpp>
 
 namespace swri_image_util
 {
@@ -119,7 +118,8 @@ namespace swri_image_util
      */
     cv::Mat EstimateNominalAngle(double& nominal_pitch,
                                  double& nominal_roll,
-                                 bool show_image_diff = false);
+                                 bool show_image_diff,
+                                 rclcpp::Logger logger=rclcpp::get_logger("swri_image_util"));
 
 
     /**
@@ -157,7 +157,7 @@ namespace swri_image_util
      *
      * @retval     Returns false if unable to find valid matches
      */
-    bool ComputeGeometricMatches();
+    bool ComputeGeometricMatches(rclcpp::Logger logger=rclcpp::get_logger("swri_image_util"));
 
 
     /**
@@ -190,7 +190,8 @@ namespace swri_image_util
     void WarpPoints(double pitch,
                     double roll,
                     const cv::Mat& pts_in,
-                    cv::Mat& pts_out);
+                    cv::Mat& pts_out,
+                    rclcpp::Logger logger=rclcpp::get_logger("swri_image_util"));
 
     /**
      * @brief      Warps a matrix of points (in the same form as the inliers)

@@ -33,11 +33,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
+#include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
-#include <sensor_msgs/image_encodings.h>
-#include <sensor_msgs/Image.h>
+#include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <swri_image_util/image_normalization.h>
 
@@ -45,80 +43,69 @@
 
 namespace swri_image_util
 {
-  class ContrastStretchNodelet : public nodelet::Nodelet
+class ContrastStretchNodelet : public rclcpp::Node
   {
   public:
-    ContrastStretchNodelet() :
+    explicit ContrastStretchNodelet(const rclcpp::NodeOptions& options) :
+      rclcpp::Node("contrast_stretch", options),
       bins_(8),
       max_min_(0.0),
       min_max_(0.0),
       over_exposure_threshold_(255.0),
       over_exposure_dilation_(3)
     {
-    }
-
-    ~ContrastStretchNodelet()
-    {
-    }
-
-    void onInit()
-    {
-      ros::NodeHandle &node = getNodeHandle();
-      ros::NodeHandle &priv = getPrivateNodeHandle();
-
-      priv.param("bins", bins_, bins_);
-      priv.param("max_min", max_min_, max_min_);
-      priv.param("min_max", min_max_, min_max_);
-      priv.param("over_exposure_threshold", over_exposure_threshold_, over_exposure_threshold_);
-      priv.param("over_exposure_dilation", over_exposure_dilation_, over_exposure_dilation_);
+      this->get_parameter_or("bins", bins_, bins_);
+      this->get_parameter_or("max_min", max_min_, max_min_);
+      this->get_parameter_or("min_max", min_max_, min_max_);
+      this->get_parameter_or("over_exposure_threshold", over_exposure_threshold_, over_exposure_threshold_);
+      this->get_parameter_or("over_exposure_dilation", over_exposure_dilation_, over_exposure_dilation_);
       
       std::string mask;
-      priv.param("mask", mask, std::string(""));
+      this->get_parameter_or("mask", mask, std::string(""));
       if (!mask.empty())
       {
         mask_ = cv::imread(mask, 0);
       }
 
-      image_transport::ImageTransport it(node);
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+
+        if (mask_.empty())
+        {
+          mask_ = cv::Mat::ones(cv_image->image.size(), CV_8U);
+        }
+        else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols)
+        {
+          cv::resize(mask_, mask_, cv_image->image.size(), 1.0, 1.0, cv::INTER_NEAREST);
+        }
+
+        cv::Mat mask;
+
+        if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
+        {
+          cv::Mat over_exposed = cv_image->image > over_exposure_threshold_;
+          cv::Mat element = cv::getStructuringElement(
+              cv::MORPH_ELLIPSE,
+              cv::Size(2 * over_exposure_dilation_ + 1, 2 * over_exposure_dilation_ + 1 ),
+              cv::Point(over_exposure_dilation_, over_exposure_dilation_ ));
+          cv::dilate(over_exposed, over_exposed, element);
+
+          mask = mask_.clone();
+          mask.setTo(0, over_exposed);
+        }
+        else
+        {
+          mask = mask_;
+        }
+
+        swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask, max_min_, min_max_);
+
+        image_pub_.publish(cv_image->toImageMsg());
+      };
+
+      image_transport::ImageTransport it(shared_from_this());
       image_pub_ = it.advertise("normalized_image", 1);
-      image_sub_ = it.subscribe("image", 1, &ContrastStretchNodelet::ImageCallback, this);
-    }
-
-    void ImageCallback(const sensor_msgs::ImageConstPtr& image)
-    {
-      cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
-
-      if (mask_.empty())
-      {
-        mask_ = cv::Mat::ones(cv_image->image.size(), CV_8U);
-      }
-      else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols)
-      {
-        cv::resize(mask_, mask_, cv_image->image.size(), 1.0, 1.0, cv::INTER_NEAREST);
-      }
-
-      cv::Mat mask;
-
-      if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
-      {
-        cv::Mat over_exposed = cv_image->image > over_exposure_threshold_;
-        cv::Mat element = cv::getStructuringElement(
-          cv::MORPH_ELLIPSE,
-          cv::Size(2 * over_exposure_dilation_ + 1, 2 * over_exposure_dilation_ + 1 ),
-          cv::Point(over_exposure_dilation_, over_exposure_dilation_ ));
-        cv::dilate(over_exposed, over_exposed, element);
-        
-        mask = mask_.clone();
-        mask.setTo(0, over_exposed);
-      }
-      else
-      {
-        mask = mask_;
-      }
-
-      swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask, max_min_, min_max_);
-
-      image_pub_.publish(cv_image->toImageMsg());
+      image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
@@ -136,6 +123,5 @@ namespace swri_image_util
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, ContrastStretchNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ContrastStretchNodelet)

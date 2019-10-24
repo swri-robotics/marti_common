@@ -32,76 +32,58 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
+#include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
-#include <sensor_msgs/image_encodings.h>
-#include <sensor_msgs/Image.h>
+#include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {
-  class DrawTextNodelet : public nodelet::Nodelet
+class ScaleImageNodelet : public rclcpp::Node
   {
   public:
-      DrawTextNodelet() :
-        text_("label"),
-        offset_x_(0),
-        offset_y_(0),
-        font_scale_(1.0),
-        font_thickness_(1)
+      explicit ScaleImageNodelet(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("scale_image", options),
+        scale_(1.0)
     {
-    }
+      this->get_parameter_or("scale", scale_, scale_);
 
-    ~DrawTextNodelet()
-    {
-    }
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        if (scale_ == 1.0)
+        {
+          image_pub_.publish(image);
+          return;
+        }
 
-    void onInit()
-    {
-      ros::NodeHandle &node = getNodeHandle();
-      ros::NodeHandle &priv = getPrivateNodeHandle();
+        cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
-      priv.param("text", text_, text_);
-      priv.param("offset_x", offset_x_, offset_x_);
-      priv.param("offset_y", offset_y_, offset_y_);
-      priv.param("font_scale", font_scale_, font_scale_);
-      priv.param("font_thickness", font_thickness_, font_thickness_);
+        cv::Size size(
+            swri_math_util::Round(image->width * scale_),
+            swri_math_util::Round(image->height * scale_));
+        cv::Mat scaled;
+        cv::resize(cv_image->image, scaled, size);
 
-      image_transport::ImageTransport it(node);
-      image_pub_ = it.advertise("stamped_image", 1);
-      image_sub_ = it.subscribe("image", 1, &DrawTextNodelet::ImageCallback, this);
-    }
+        cv_bridge::CvImagePtr cv_scaled = std::make_shared<cv_bridge::CvImage>();
+        cv_scaled->image = scaled;
+        cv_scaled->encoding = cv_image->encoding;
+        cv_scaled->header = cv_image->header;
 
-    void ImageCallback(const sensor_msgs::ImageConstPtr& image)
-    {
-      cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+        image_pub_.publish(cv_scaled->toImageMsg());
+      };
 
-      cv::putText(
-        cv_image->image, 
-        text_,
-        cv::Point(offset_x_, offset_y_),
-        cv::FONT_HERSHEY_SIMPLEX, 
-        font_scale_,
-        cv::Scalar(255, 255, 255),
-        font_thickness_);
-
-      image_pub_.publish(cv_image->toImageMsg());
+      image_transport::ImageTransport it(shared_from_this());
+      image_pub_ = it.advertise("scaled_image", 1);
+      image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
-    std::string text_;
-    double offset_x_;
-    double offset_y_;
-    double font_scale_;
-    int font_thickness_;
-    
+    double scale_;
+
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, DrawTextNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ScaleImageNodelet)

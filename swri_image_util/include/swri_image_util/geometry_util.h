@@ -24,7 +24,8 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <tf/transform_datatypes.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2/LinearMath/Vector3.h>
 
 namespace swri_image_util
 {
@@ -74,9 +75,9 @@ namespace swri_image_util
    * @returns A list of points on the perimeter of the ellipse if successful.
    *          An empty list otherwise.
    */
-  std::vector<tf::Vector3> GetEllipsePoints(
+  std::vector<tf2::Vector3> GetEllipsePoints(
       const cv::Mat& ellipse,
-      const tf::Vector3& center,
+      const tf2::Vector3& center,
       double scale,
       int32_t num_points);
 }

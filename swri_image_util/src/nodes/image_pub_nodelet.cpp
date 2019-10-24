@@ -37,41 +37,30 @@
 #include <image_transport/subscriber.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <nodelet/nodelet.h>
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
 #include <swri_roscpp/parameters.h>
 
 namespace swri_image_util
 {
-  class ImagePubNodelet : public nodelet::Nodelet
+class ImagePubNodelet : public rclcpp::Node
   {
     public:
-      virtual void onInit()
+      explicit ImagePubNodelet(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("image_pub", options)
       {
-        ros::NodeHandle node = getNodeHandle();
-
-        init_timer_ = node.createTimer(
-            ros::Duration(1.0), &ImagePubNodelet::initialize, this, true);
-      }
-
-      void initialize(const ros::TimerEvent& unused)
-      {
-        ros::NodeHandle &node = getNodeHandle();
-        ros::NodeHandle &priv = getPrivateNodeHandle();
-
         std::string image_file;
-        swri::param(priv, "image_file", image_file, image_file);
+        this->get_parameter_or("image_file", image_file, image_file);
 
         std::string mode;
-        swri::param(priv, "mode", mode, sensor_msgs::image_encodings::BGR8);
+        const std::string bgr8(sensor_msgs::image_encodings::BGR8);
+        this->get_parameter_or("mode", mode, bgr8);
 
         double rate = 1;
-        swri::param(priv, "rate", rate, rate);
+        this->get_parameter_or("rate", rate, rate);
         rate = std::max(0.1, rate);
 
-        cv_image.header.stamp = ros::Time::now();
+        cv_image.header.stamp = rclcpp::Clock().now();
         if (mode == sensor_msgs::image_encodings::BGR8)
         {
           cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_COLOR);
@@ -85,33 +74,32 @@ namespace swri_image_util
 
         if (!cv_image.image.empty())
         {
-          image_transport::ImageTransport it(node);
+          image_transport::ImageTransport it(shared_from_this());
           image_pub_ = it.advertise("image", 2, true);
-          pub_timer_ = node.createTimer(
-              ros::Duration(1.0 / rate), &ImagePubNodelet::publish, this);
+          pub_timer_ = this->create_wall_timer(
+             std::chrono::duration<float>(1.0 / rate),
+                 std::bind(&ImagePubNodelet::publish, this));
         }
         else
         {
-          ROS_FATAL("Failed to load image.");
-          ros::requestShutdown();
+          RCLCPP_FATAL(this->get_logger(), "Failed to load image.");
+          rclcpp::shutdown();
         }
       }
 
-      void publish(const ros::TimerEvent& e)
+      void publish()
       {
-        cv_image.header.stamp = e.current_real;
+        cv_image.header.stamp = rclcpp::Clock().now();
         image_pub_.publish(cv_image.toImageMsg());
       }
 
     private:
-      ros::Timer init_timer_;
-      ros::Timer pub_timer_;
+      rclcpp::TimerBase::SharedPtr pub_timer_;
       image_transport::Publisher image_pub_;
 
       cv_bridge::CvImage cv_image;
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, ImagePubNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ImagePubNodelet)

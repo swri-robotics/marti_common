@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,62 +31,64 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
+#include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
-#include <sensor_msgs/image_encodings.h>
-#include <sensor_msgs/Image.h>
+#include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
+#include <swri_image_util/image_normalization.h>
+
+#include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {
-  class CrosshairsNodelet : public nodelet::Nodelet
+class NormalizeResponseNodelet : public rclcpp::Node
   {
   public:
-    CrosshairsNodelet()
+    explicit NormalizeResponseNodelet(const rclcpp::NodeOptions& options) :
+      rclcpp::Node("normalize_response", options),
+      filter_size_(9),
+      filter_cap_(31)
     {
-    }
+      this->get_parameter_or("filter_size", filter_size_, filter_size_);
+      this->get_parameter_or("filter_cap", filter_cap_, filter_cap_);
 
-    ~CrosshairsNodelet()
-    {
-    }
+      buffer_.create(1, 10000000, CV_8U);
 
-    void onInit()
-    {
-      ros::NodeHandle &node = getNodeHandle();
-      ros::NodeHandle &priv = getPrivateNodeHandle();
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
-      image_transport::ImageTransport it(node);
-      image_pub_ = it.advertise("crosshairs_image", 1);
-      image_sub_ = it.subscribe("image", 1, &CrosshairsNodelet::ImageCallback, this);
-    }
+        if (image->encoding == sensor_msgs::image_encodings::MONO8)
+        {
+          swri_image_util::NormalizeResponse(cv_image->image, normalized_, filter_size_, filter_cap_, buffer_.ptr());
+          cv_bridge::CvImage normalized_image;
+          normalized_image.header = image->header;
+          normalized_image.encoding = image->encoding;
+          normalized_image.image = normalized_;
+          image_pub_.publish(normalized_image.toImageMsg());
+        }
+        else
+        {
+          RCLCPP_WARN(this->get_logger(), "Unsupported image encoding: %s", image->encoding.c_str());
+        }
+      };
 
-    void ImageCallback(const sensor_msgs::ImageConstPtr& image)
-    {
-      cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
-      // Get image dimensions
-      const int h = cv_image->image.rows;
-      const int w = cv_image->image.cols;
-      // Define line properties
-      const cv::Scalar black(0, 0, 0);
-      const int thickness = 3;
-      const int line_type = 8;  // 8-connected line
-      // Draw vertical line
-      cv::line(cv_image->image, cv::Point(0, w/2), cv::Point(h-1, w/2), black, thickness, line_type);
-      // Draw horizontal line
-      cv::line(cv_image->image, cv::Point(h/2, 0), cv::Point(h/2, w-1), black, thickness, line_type);
-      // Publish image
-      image_pub_.publish(cv_image->toImageMsg());
+      image_transport::ImageTransport it(shared_from_this());
+      image_pub_ = it.advertise("normalized_image", 1);
+      image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
+    int32_t filter_size_;
+    int32_t filter_cap_;
+    
+    cv::Mat normalized_;
+    cv::Mat buffer_;
+
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, CrosshairsNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::NormalizeResponseNodelet)

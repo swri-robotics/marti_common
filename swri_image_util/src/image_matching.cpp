@@ -36,8 +36,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
-#include <ros/ros.h>
-
 namespace swri_image_util
 {
   void GetFundamentalInliers(const cv::Mat points1,

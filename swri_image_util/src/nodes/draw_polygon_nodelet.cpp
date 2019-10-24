@@ -31,80 +31,64 @@
 
 #include <cv_bridge/cv_bridge.h>
 #include <image_transport/image_transport.h>
-#include <nodelet/nodelet.h>
 #include <opencv2/core/core.hpp>
-#include <ros/ros.h>
-#include <sensor_msgs/image_encodings.h>
-#include <sensor_msgs/Image.h>
-#include <XmlRpcException.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
 
 namespace swri_image_util
 {
-  class DrawPolygonNodelet : public nodelet::Nodelet
+class DrawPolygonNodelet : public rclcpp::Node
   {
   public:
-      DrawPolygonNodelet() :
+      explicit DrawPolygonNodelet(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("draw_polygon", options),
         thickness_(-1),
         r_(0),
         g_(0),
         b_(0)
     {
-    }
+      this->get_parameter_or("thickness", thickness_, thickness_);
+      this->get_parameter_or("r", r_, r_);
+      this->get_parameter_or("g", g_, g_);
+      this->get_parameter_or("b", b_, b_);
 
-    void onInit()
-    {
-      ros::NodeHandle &node = getNodeHandle();
-      ros::NodeHandle &priv = getPrivateNodeHandle();
+      std::map<std::string, std::vector<int64_t> > points;
 
-      priv.param("thickness", thickness_, thickness_);
-      priv.param("r", r_, r_);
-      priv.param("g", g_, g_);
-      priv.param("b", b_, b_);
-
-      try
+      this->get_parameters("polygon", points);
+      if (points.find("x") == points.end() ||
+          points.find("y") == points.end() ||
+          points["x"].size() != points["y"].size())
       {
-        XmlRpc::XmlRpcValue polygon;
-        priv.getParam("polygon", polygon);
-        for (size_t i = 0; i < polygon.size(); i++)
+        RCLCPP_FATAL(this->get_logger(), "'polygon' param must have an equal number of 'x' and 'y' points.");
+      }
+      std::vector<int64_t>& x_points = points["x"];
+      std::vector<int64_t>& y_points = points["y"];
+      for(size_t i = 0; i < x_points.size(); i++)
+      {
+        polygon_.emplace_back(cv::Point(x_points[i], y_points[i]));
+      }
+
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
+
+        const cv::Point* points[1] = { &polygon_[0] };
+        int count = polygon_.size();
+
+        if (thickness_ < 1)
         {
-          const XmlRpc::XmlRpcValue& point = polygon[i];
-          XmlRpc::XmlRpcValue x_param = point[0];
-          XmlRpc::XmlRpcValue y_param = point[1];
-          polygon_.push_back(cv::Point(
-              static_cast<int>(x_param),
-              static_cast<int>(y_param)));
+          cv::fillPoly(cv_image->image, points, &count, 1, cv::Scalar(b_, g_, r_));
         }
-      }
-      catch (XmlRpc::XmlRpcException& e)
-      {
-        ROS_ERROR("Failed to parse polygon: %s", e.getMessage().c_str());
-        ros::requestShutdown();
-        return;
-      }
+        else
+        {
+          cv::polylines(cv_image->image, points, &count, 1, true, cv::Scalar(b_, g_, r_), thickness_);
+        }
 
+        image_pub_.publish(cv_image->toImageMsg());
+      };
 
-      image_transport::ImageTransport it(node);
+      image_transport::ImageTransport it(shared_from_this());
       image_pub_ = it.advertise("image_out", 1);
-      image_sub_ = it.subscribe("image_in", 1, &DrawPolygonNodelet::imageCallback, this);
-    }
-
-    void imageCallback(const sensor_msgs::ImageConstPtr& image)
-    {
-      cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
-
-      const cv::Point* points[1] = { &polygon_[0] };
-      int count = polygon_.size();
-
-      if (thickness_ < 1)
-      {
-        cv::fillPoly(cv_image->image, points, &count, 1, cv::Scalar(b_, g_, r_));
-      }
-      else
-      {
-        cv::polylines(cv_image->image, points, &count, 1, true, cv::Scalar(b_, g_, r_), thickness_);
-      }
-
-      image_pub_.publish(cv_image->toImageMsg());
+      image_sub_ = it.subscribe("image_in", 1, callback);
     }
 
   private:
@@ -120,6 +104,5 @@ namespace swri_image_util
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, DrawPolygonNodelet);
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DrawPolygonNodelet)

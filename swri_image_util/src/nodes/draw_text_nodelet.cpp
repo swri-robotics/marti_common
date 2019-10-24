@@ -30,78 +30,64 @@
 #include <string>
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
+#include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
-#include <sensor_msgs/image_encodings.h>
-#include <sensor_msgs/Image.h>
+#include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
-
 #include <swri_math_util/math_util.h>
 
 namespace swri_image_util
 {
-  class RotateImageNodelet : public nodelet::Nodelet
+class DrawTextNodelet : public rclcpp::Node
   {
   public:
-    RotateImageNodelet() :
-      angle_(0),
-      operations_(0),
-      flip_axis_(false)
+      explicit DrawTextNodelet(const rclcpp::NodeOptions& options) :
+        rclcpp::Node("draw_text", options),
+        text_("label"),
+        offset_x_(0),
+        offset_y_(0),
+        font_scale_(1.0),
+        font_thickness_(1)
     {
-    }
+      this->get_parameter_or("text", text_, text_);
+      this->get_parameter_or("offset_x", offset_x_, offset_x_);
+      this->get_parameter_or("offset_y", offset_y_, offset_y_);
+      this->get_parameter_or("font_scale", font_scale_, font_scale_);
+      this->get_parameter_or("font_thickness", font_thickness_, font_thickness_);
 
-    ~RotateImageNodelet()
-    {
-    }
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-    void onInit()
-    {
-      ros::NodeHandle &node = getNodeHandle();
-      ros::NodeHandle &priv = getPrivateNodeHandle();
+        cv::putText(
+            cv_image->image,
+            text_,
+            cv::Point(offset_x_, offset_y_),
+            cv::FONT_HERSHEY_SIMPLEX,
+            font_scale_,
+            cv::Scalar(255, 255, 255),
+            font_thickness_);
 
-      priv.param("angle", angle_, angle_);
+        image_pub_.publish(cv_image->toImageMsg());
+      };
 
-      int32_t angle_90 = static_cast<int32_t>(swri_math_util::ToNearest(angle_, 90));
-      flip_axis_ = angle_90 > 0 ? 1 : 0;
-      operations_ = std::abs(angle_90 / 90);
-
-      image_transport::ImageTransport it(node);
-      image_pub_ = it.advertise("rotated_image", 1);
-      image_sub_ = it.subscribe("image", 1, &RotateImageNodelet::ImageCallback, this);
-    }
-
-    void ImageCallback(const sensor_msgs::ImageConstPtr& image)
-    {
-      if (operations_ == 0)
-      {
-        image_pub_.publish(image);
-        return;
-      }
-
-      cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
-
-      for (int32_t i = 0; i < operations_; i++)
-      {
-        cv::transpose(cv_image->image, cv_image->image);
-        cv::flip(cv_image->image, cv_image->image, flip_axis_);
-      }
-
-      image_pub_.publish(cv_image->toImageMsg());
+      image_transport::ImageTransport it(shared_from_this());
+      image_pub_ = it.advertise("stamped_image", 1);
+      image_sub_ = it.subscribe("image", 1, callback);
     }
 
   private:
-    double angle_;
-    int32_t operations_;
-    bool flip_axis_;
-
+    std::string text_;
+    double offset_x_;
+    double offset_y_;
+    double font_scale_;
+    int font_thickness_;
+    
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
-
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_image_util, RotateImageNodelet)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DrawTextNodelet)
