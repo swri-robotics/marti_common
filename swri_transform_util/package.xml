@@ -29,6 +29,8 @@
   <depend>swri_math_util</depend>
   <depend>swri_roscpp</depend>
   <depend>tf2</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_ros</depend>
   <!--
   TODO pjr Used for the topic Shapeshifter, but maybe this is unnecessary in ROS2
   <depend>topic_tools</depend>

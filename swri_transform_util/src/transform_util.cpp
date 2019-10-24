@@ -52,7 +52,7 @@ namespace swri_transform_util
     return i.second > j.second;
   }
 
-  tf::Transform GetRelativeTransform(
+  tf2::Transform GetRelativeTransform(
         double latitude,
         double longitude,
         double yaw,
@@ -60,13 +60,13 @@ namespace swri_transform_util
         double reference_longitude,
         double reference_yaw)
   {
-    tf::Transform transform = tf::Transform::getIdentity();
+    tf2::Transform transform = tf2::Transform::getIdentity();
 
-    tf::Quaternion reference_rotation = tf::Quaternion::getIdentity();
-    reference_rotation.setRotation(tf::Vector3(0, 0, 1), reference_yaw);
+    tf2::Quaternion reference_rotation = tf2::Quaternion::getIdentity();
+    reference_rotation.setRotation(tf2::Vector3(0, 0, 1), reference_yaw);
 
-    tf::Quaternion rotation = tf::Quaternion::getIdentity();
-    rotation.setRotation(tf::Vector3(0, 0, 1), yaw);
+    tf2::Quaternion rotation = tf2::Quaternion::getIdentity();
+    rotation.setRotation(tf2::Vector3(0, 0, 1), yaw);
 
     transform.setRotation(reference_rotation.inverse() * rotation);
 
@@ -76,8 +76,8 @@ namespace swri_transform_util
         reference_latitude, reference_longitude,
         x, y);
 
-    tf::Vector3 origin =
-        tf::Transform(reference_rotation.inverse()) * tf::Vector3(x, y, 0);
+    tf2::Vector3 origin =
+        tf2::Transform(reference_rotation.inverse()) * tf2::Vector3(x, y, 0);
     transform.setOrigin(origin);
 
     return transform;
@@ -103,7 +103,7 @@ namespace swri_transform_util
     return _earth_mean_radius * distance;
   }
 
-  double GreatCircleDistance(const tf::Vector3& src, const tf::Vector3& dst)
+  double GreatCircleDistance(const tf2::Vector3& src, const tf2::Vector3& dst)
   {
     return GreatCircleDistance(src.y(), src.x(), dst.y(), dst.x());
   }
@@ -169,14 +169,14 @@ namespace swri_transform_util
     return swri_math_util::ToRadians(-(heading - 90.0));
   }
 
-  tf::Quaternion SnapToRightAngle(const tf::Quaternion& rotation)
+  tf2::Quaternion SnapToRightAngle(const tf2::Quaternion& rotation)
   {
-    if (rotation == tf::Quaternion::getIdentity())
+    if (rotation == tf2::Quaternion::getIdentity())
     {
       return rotation;
     }
 
-    tf::Matrix3x3 matrix(rotation);
+    tf2::Matrix3x3 matrix(rotation);
 
     // First determine the order to process the rows in.  Rows with the largest
     // absolute max values will be ordered first.
@@ -185,7 +185,7 @@ namespace swri_transform_util
     {
       process_order[i].first = i;
 
-      tf::Vector3 row = matrix.getRow(i).absolute();
+      tf2::Vector3 row = matrix.getRow(i).absolute();
       process_order[i].second = row[row.maxAxis()];
     }
     std::sort(process_order.begin(), process_order.end(), compare_rows);
@@ -196,7 +196,7 @@ namespace swri_transform_util
     for (int32_t i = 0; i < 3; i++)
     {
       int32_t row_num = process_order[i].first;
-      tf::Vector3 row = GetPrimaryAxis(matrix.getRow(row_num));
+      tf2::Vector3 row = GetPrimaryAxis(matrix.getRow(row_num));
 
       for (int32_t j = 0; j < 3; j++)
       {
@@ -219,18 +219,18 @@ namespace swri_transform_util
     if (!IsRotation(matrix))
     {
        // If this fails return the identity matrix.
-       return tf::Quaternion::getIdentity();
+       return tf2::Quaternion::getIdentity();
     }
 
-    tf::Quaternion snapped_rotation;
+    tf2::Quaternion snapped_rotation;
     matrix.getRotation(snapped_rotation);
 
     return snapped_rotation;
   }
 
-  tf::Vector3 GetPrimaryAxis(const tf::Vector3& vector)
+  tf2::Vector3 GetPrimaryAxis(const tf2::Vector3& vector)
   {
-    tf::Vector3 vector_out = vector;
+    tf2::Vector3 vector_out = vector;
 
     if (vector.length() > 0)
     {
@@ -262,7 +262,7 @@ namespace swri_transform_util
     return vector_out;
   }
 
-  bool IsRotation(tf::Matrix3x3 matrix)
+  bool IsRotation(tf2::Matrix3x3 matrix)
   {
     // Check that determinant is near 1.
     if (!swri_math_util::IsNear(matrix.determinant(), 1, 0.00001))
@@ -291,9 +291,9 @@ namespace swri_transform_util
     return true;
   }
 
-  tf::Matrix3x3 GetUpperLeft(const boost::array<double, 36>& matrix)
+  tf2::Matrix3x3 GetUpperLeft(const boost::array<double, 36>& matrix)
   {
-    tf::Matrix3x3 sub_matrix;
+    tf2::Matrix3x3 sub_matrix;
 
     sub_matrix[0][0] = matrix[0];
     sub_matrix[0][1] = matrix[1];
@@ -308,9 +308,9 @@ namespace swri_transform_util
     return sub_matrix;
   }
 
-  tf::Matrix3x3 GetLowerRight(const boost::array<double, 36>& matrix)
+  tf2::Matrix3x3 GetLowerRight(const boost::array<double, 36>& matrix)
   {
-    tf::Matrix3x3 sub_matrix;
+    tf2::Matrix3x3 sub_matrix;
 
     sub_matrix[0][0] = matrix[21];
     sub_matrix[0][1] = matrix[22];
@@ -325,9 +325,9 @@ namespace swri_transform_util
     return sub_matrix;
   }
 
-  tf::Matrix3x3 Get3x3Cov(const boost::array<double, 9>& matrix)
+  tf2::Matrix3x3 Get3x3Cov(const boost::array<double, 9>& matrix)
   {
-    tf::Matrix3x3 matrix_out;
+    tf2::Matrix3x3 matrix_out;
 
     matrix_out[0][0] = matrix[0];
     matrix_out[0][1] = matrix[1];
@@ -343,7 +343,7 @@ namespace swri_transform_util
   }
 
   void Set3x3Cov(
-      const tf::Matrix3x3& matrix_in,
+      const tf2::Matrix3x3& matrix_in,
       boost::array<double, 9>& matrix_out)
   {
     matrix_out[0] = matrix_in[0][0];
@@ -358,7 +358,7 @@ namespace swri_transform_util
   }
 
   void SetUpperLeft(
-      const tf::Matrix3x3& sub_matrix,
+      const tf2::Matrix3x3& sub_matrix,
       boost::array<double, 36>& matrix)
   {
     matrix[0] = sub_matrix[0][0];
@@ -373,7 +373,7 @@ namespace swri_transform_util
   }
 
   void SetLowerRight(
-      const tf::Matrix3x3& sub_matrix,
+      const tf2::Matrix3x3& sub_matrix,
       boost::array<double, 36>& matrix)
   {
     matrix[21] = sub_matrix[0][0];

@@ -30,14 +30,11 @@
 #include <swri_transform_util/local_xy_util.h>
 
 #include <cmath>
+#include <functional>
 
 #include <boost/make_shared.hpp>
 
-#include <tf/transform_datatypes.h>
-
-#include <geographic_msgs/GeoPose.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <gps_common/GPSFix.h>
+#include <tf2/utils.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
@@ -74,7 +71,9 @@ namespace swri_transform_util
       double reference_latitude,
       double reference_longitude,
       double reference_angle,
-      double reference_altitude) :
+      double reference_altitude,
+      rclcpp::Node::SharedPtr node) :
+    node_(node),
     reference_latitude_(reference_latitude * swri_math_util::_deg_2_rad),
     reference_longitude_(reference_longitude * swri_math_util::_deg_2_rad),
     reference_angle_(reference_angle * swri_math_util::_deg_2_rad),
@@ -89,7 +88,8 @@ namespace swri_transform_util
     Initialize();
   }
 
-  LocalXyWgs84Util::LocalXyWgs84Util() :
+  LocalXyWgs84Util::LocalXyWgs84Util(rclcpp::Node::SharedPtr node) :
+    node_(node),
     reference_latitude_(0),
     reference_longitude_(0),
     reference_angle_(0),
@@ -101,20 +101,26 @@ namespace swri_transform_util
     frame_("map"),
     initialized_(false)
   {
-    ros::NodeHandle node;
-
-    ROS_INFO("Subscribing to /local_xy_origin");
-    origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
+    RCLCPP_INFO(node->get_logger(), "Subscribing to /local_xy_origin");
+    ResetInitialization();
   }
 
   void LocalXyWgs84Util::ResetInitialization()
   {
-    if( initialized_ )
-    {
-      ros::NodeHandle node;
-      origin_sub_ = node.subscribe("/local_xy_origin", 1, &LocalXyWgs84Util::HandleOrigin, this);
-      initialized_ = false;
-    }
+    //ros::NodeHandle node;
+    gps_sub_ = node_->create_subscription<gps_msgs::msg::GPSFix>(
+        "/local_xy_origin",
+        1,
+        std::bind(&LocalXyWgs84Util::HandleGpsFix, this, std::placeholders::_1));
+    point_sub_ = node_->create_subscription<geographic_msgs::msg::GeoPose>(
+        "/local_xy_origin",
+        1,
+        std::bind(&LocalXyWgs84Util::HandleGeoPose, this, std::placeholders::_1));
+    pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
+        "/local_xy_origin",
+        1,
+        std::bind(&LocalXyWgs84Util::HandlePoseStamped, this, std::placeholders::_1));
+    initialized_ = false;
   }
 
   void LocalXyWgs84Util::Initialize()
@@ -138,97 +144,67 @@ namespace swri_transform_util
     initialized_ = true;
   }
 
-  void LocalXyWgs84Util::HandleOrigin(const topic_tools::ShapeShifter::ConstPtr msg)
+  void LocalXyWgs84Util::HandleGpsFix(const gps_msgs::msg::GPSFix::UniquePtr fix)
+  {
+    HandleOrigin(fix->latitude,
+        fix->longitude,
+        fix->altitude,
+        ToYaw(fix->track),
+        fix->header.frame_id);
+  }
+
+  void LocalXyWgs84Util::HandleGeoPose(const geographic_msgs::msg::GeoPose::UniquePtr point)
+  {
+    HandleOrigin(point->position.latitude,
+        point->position.longitude,
+        point->position.altitude,
+        tf2::getYaw(point->orientation),
+        frame_);
+  }
+
+  void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
+  {
+    HandleOrigin(pose->pose.position.y,
+        pose->pose.position.x,
+        pose->pose.position.z,
+        tf2::getYaw(pose->pose.orientation),
+        pose->header.frame_id);
+  }
+
+  void LocalXyWgs84Util::HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id)
   {
     if (!initialized_)
     {
-      ros::NodeHandle node;
       bool ignore_reference_angle = false;
-      node.param("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
-    
-      try
+      node_->get_parameter_or("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
+
+      reference_latitude_ = latitude * swri_math_util::_deg_2_rad;
+      reference_longitude_ = longitude * swri_math_util::_deg_2_rad;
+      reference_altitude_ = altitude;
+
+      if (!ignore_reference_angle)
       {
-        const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
-        reference_latitude_ = origin->latitude * swri_math_util::_deg_2_rad;
-        reference_longitude_ = origin->longitude * swri_math_util::_deg_2_rad;
-        reference_altitude_ = origin->altitude;
-        
-        if (!ignore_reference_angle)
-        {
-          reference_angle_ = ToYaw(origin->track);
-        }
-        
-        std::string frame = origin->header.frame_id;
-
-        if (frame.empty()) 
-        {
-          // If the origin has an empty frame id, look for a frame in
-          // the global parameter /local_xy_frame.  This provides
-          // compatibility with older bag files.
-          node.param("/local_xy_frame", frame, frame_);
-        }
-
-        frame_ = frame;
-
-        Initialize();
-        origin_sub_.shutdown();
-        return;
+        reference_angle_ = angle;
       }
-      catch (...) {}
 
-      try
+      std::string frame = frame_id;
+
+      if (frame.empty())
       {
-        const geometry_msgs::PoseStampedConstPtr origin = msg->instantiate<geometry_msgs::PoseStamped>();
-        reference_latitude_ = origin->pose.position.y * swri_math_util::_deg_2_rad;
-        reference_longitude_ = origin->pose.position.x * swri_math_util::_deg_2_rad;
-        reference_altitude_ = origin->pose.position.z;
-
-        if (!ignore_reference_angle)
-        {
-          reference_angle_ = tf::getYaw(origin->pose.orientation);
-        }
-
-        std::string frame = origin->header.frame_id;
-
-        if (frame.empty()) 
-        {
-          // If the origin has an empty frame id, look for a frame in
-          // the global parameter /local_xy_frame.  This provides
-          // compatibility with older bag files.
-          node.param("/local_xy_frame", frame, frame_);
-        }
-
-        frame_ = frame;
-
-        Initialize();
-        origin_sub_.shutdown();
-        return;
+        // If the origin has an empty frame id, look for a frame in
+        // the global parameter /local_xy_frame.  This provides
+        // compatibility with older bag files.
+        node_->get_parameter_or("/local_xy_frame", frame, frame_);
       }
-      catch (...) {}
 
-      try
-      {
-        const geographic_msgs::GeoPoseConstPtr origin = msg->instantiate<geographic_msgs::GeoPose>();
-        reference_latitude_ = origin->position.latitude * swri_math_util::_deg_2_rad;
-        reference_longitude_ = origin->position.longitude * swri_math_util::_deg_2_rad;
-        reference_altitude_ = origin->position.altitude;
-        
-        if (!ignore_reference_angle)
-        {
-          reference_angle_ = tf::getYaw(origin->orientation);
-        }
-        
-        node.param("/local_xy_frame", frame_, frame_);
+      frame_ = frame;
 
-        Initialize();
-        origin_sub_.shutdown();
-        return;
-      }
-      catch (...) {}
-
-      ROS_WARN("Invalid /local_xy topic type.");
+      Initialize();
+      gps_sub_.reset();
+      pose_sub_.reset();
+      point_sub_.reset();
+      return;
     }
-    origin_sub_.shutdown();
   }
 
   double LocalXyWgs84Util::ReferenceLongitude() const
