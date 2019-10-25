@@ -19,7 +19,7 @@
   <depend>swri_transform_util</depend>
   <depend>swri_math_util</depend>
   <depend>swri_geometry_util</depend>
-  <depend>swri_roscpp></depend>
+  <depend>swri_roscpp</depend>
   <depend>visualization_msgs</depend>
 
   <export>
