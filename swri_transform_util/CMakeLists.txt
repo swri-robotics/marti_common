@@ -130,7 +130,6 @@ ament_export_include_directories(include
   ${YAML_CPP_INCLUDE_DIR}
 )
 ament_export_libraries(${PROJECT_NAME}
-  ${PROJECT_NAME}_nodelets
   ${OpenCV_LIBS}
   ${PROJ_LIBRARIES}
   ${YAML_CPP_LIBRARIES}

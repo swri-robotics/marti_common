@@ -27,8 +27,11 @@
 //
 // *****************************************************************************
 
+// TODO pjr I'm not even sure what to do with this for ROS2...
+
 #include <ros/message_traits.h>
 #include <ros/serialization.h>
+
 
 namespace ros
 {

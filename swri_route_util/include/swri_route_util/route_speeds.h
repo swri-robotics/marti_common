@@ -29,17 +29,20 @@
 #ifndef SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
 #define SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
 
-#include <marti_common_msgs/KeyValueArray.h>
-#include <marti_nav_msgs/ObstacleArray.h>
-#include <marti_nav_msgs/RouteSpeedArray.h>
+#include <rclcpp/rclcpp.hpp>
+#include <marti_common_msgs/msg/key_value_array.hpp>
+#include <marti_nav_msgs/msg/obstacle_array.hpp>
+#include <marti_nav_msgs/msg/route_speed_array.hpp>
 #include <swri_math_util/interpolation_1d.h>
 #include <swri_route_util/route.h>
 #include <swri_transform_util/transform.h>
+#include <tf2/LinearMath/Vector3.h>
 
 namespace swri_route_util
 {
 struct SpeedForCurvatureParameters
 {
+  rclcpp::Node::SharedPtr node_;
   /// If true, use maximum lateral acceleration constant to calculate
   /// maximum speed.  Otherwise, the curvature vs speed curve will be
   /// used.
@@ -55,23 +58,24 @@ struct SpeedForCurvatureParameters
   // values result in smoother curvature estimates with fewer spikes.
   double curvature_filter_size_;
 
+  explicit SpeedForCurvatureParameters(const rclcpp::Node::SharedPtr& node);
 
-  SpeedForCurvatureParameters();
+  void loadFromRosParam();
 
-  void loadFromRosParam(const ros::NodeHandle &pnh);
-
-  void loadFromConfig(const marti_common_msgs::KeyValueArray &config);
-  void readToConfig(marti_common_msgs::KeyValueArray &config) const;
+  void loadFromConfig(const marti_common_msgs::msg::KeyValueArray &config);
+  void readToConfig(marti_common_msgs::msg::KeyValueArray &config) const;
 };
 
 void speedsForCurvature(
-  marti_nav_msgs::RouteSpeedArray &speeds,
+  marti_nav_msgs::msg::RouteSpeedArray &speeds,
   const Route &route,
   const SpeedForCurvatureParameters &parameters);
 
 
 struct SpeedForObstaclesParameters
 {
+  rclcpp::Node::SharedPtr node_;
+
   double origin_to_front_m_;
   double origin_to_rear_m_;
   double origin_to_left_m_;
@@ -84,19 +88,19 @@ struct SpeedForObstaclesParameters
 
   double stop_buffer_m_;
 
-  SpeedForObstaclesParameters();
+  explicit SpeedForObstaclesParameters(const rclcpp::Node::SharedPtr& node);
 
-  void loadFromRosParam(const ros::NodeHandle &pnh);
+  void loadFromRosParam();
 };
 
 // ObstacleData is an intermediate representation for obstacles to
 // avoid applying transforms and calculating radii repeatedly.
 struct ObstacleData
 {
-  tf::Vector3 center;
+  tf2::Vector3 center;
   double radius;
 
-  std::vector<tf::Vector3> polygon;
+  std::vector<tf2::Vector3> polygon;
 };
 
 
@@ -107,8 +111,8 @@ struct DistanceReport
   // True if the actual polygons touch.
   bool collision;
   size_t route_index;
-  tf::Vector3 vehicle_point;
-  tf::Vector3 obstacle_point;
+  tf2::Vector3 vehicle_point;
+  tf2::Vector3 obstacle_point;
   double distance;
 };
 
@@ -116,15 +120,16 @@ struct DistanceReport
 // transform and calculating the radius of each obstacle.
 void generateObstacleData(
   std::vector<ObstacleData> &obstacle_data,
-  const swri_transform_util::Transform g_route_from_obs,
-  const marti_nav_msgs::ObstacleArray &obstacles_msg);
+  swri_transform_util::Transform g_route_from_obs,
+  marti_nav_msgs::msg::ObstacleArray &obstacles_msg);
 
 void speedsForObstacles(
-    marti_nav_msgs::RouteSpeedArray &speeds,
+    marti_nav_msgs::msg::RouteSpeedArray &speeds,
     std::vector<DistanceReport> &reports,
     const Route &route,
-    const marti_nav_msgs::RoutePosition &route_position,
+    const marti_nav_msgs::msg::RoutePosition &route_position,
     const std::vector<ObstacleData> &obstacles,
-    const SpeedForObstaclesParameters &parameters);
+    const SpeedForObstaclesParameters &parameters,
+    rclcpp::Logger logger = rclcpp::get_logger("swri_route_util::speedsForObstacles"));
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_

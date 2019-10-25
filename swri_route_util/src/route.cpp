@@ -34,215 +34,241 @@ namespace mnm = marti_nav_msgs;
 
 namespace swri_route_util
 {
-Route::Route()
-{
-}
+  Route::Route()
+  {
+  }
 
 // Helper function used by the Route(mnm::Route) constructor.
-static
-void pointFromMsg(RoutePoint &dst, const marti_nav_msgs::RoutePoint &src)
-{
-  dst.setPose(src.pose);
-  dst.setId(src.id);
+  static
+  void pointFromMsg(RoutePoint& dst, const marti_nav_msgs::msg::RoutePoint& src)
+  {
+    dst.setPose(src.pose);
+    dst.setId(src.id);
 
-  for (auto const &prop : src.properties) {
-    dst.setProperty(prop.key, prop.value);
-  }
-}
-
-Route::Route(const mnm::Route &msg)
-{
-  header = msg.header;
-
-  points.resize(msg.route_points.size());
-  for (size_t i = 0; i < points.size(); ++i) {
-    pointFromMsg(points[i], msg.route_points[i]);
+    for (auto const& prop : src.properties)
+    {
+      dst.setProperty(prop.key, prop.value);
+    }
   }
 
-  for (auto const &prop : msg.properties) {
-    setProperty(prop.key, prop.value);
-  }
+  Route::Route(const mnm::msg::Route& msg)
+  {
+    header = msg.header;
 
-  rebuildPointIndex();
-}
+    points.resize(msg.route_points.size());
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+      pointFromMsg(points[i], msg.route_points[i]);
+    }
+
+    for (auto const& prop : msg.properties)
+    {
+      setProperty(prop.key, prop.value);
+    }
+
+    rebuildPointIndex();
+  }
 
 // Helper method used by the toMsg() method.
-static
-void msgFromPoint(marti_nav_msgs::RoutePoint &dst, const RoutePoint &src)
-{
-  dst.pose = src.poseMsg();
-  dst.id = src.id();
-  
-  std::vector<std::string> names = src.getPropertyNames();
-  dst.properties.resize(names.size());
-  for (size_t i = 0; i < names.size(); ++i) {
-    dst.properties[i].key = names[i];
-    dst.properties[i].value = src.getProperty(names[i]);
+  static
+  void msgFromPoint(marti_nav_msgs::msg::RoutePoint& dst, const RoutePoint& src)
+  {
+    dst.pose = src.poseMsg();
+    dst.id = src.id();
+
+    std::vector<std::string> names = src.getPropertyNames();
+    dst.properties.resize(names.size());
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+      dst.properties[i].key = names[i];
+      dst.properties[i].value = src.getProperty(names[i]);
+    }
   }
-}
 
-void Route::toMsg(mnm::Route &msg) const
-{
-  msg.header = header;  
+  void Route::toMsg(mnm::msg::Route& msg) const
+  {
+    msg.header = header;
 
-  msg.route_points.resize(points.size());
-  for (size_t i = 0; i < points.size(); ++i) {
-    msgFromPoint(msg.route_points[i], points[i]);
+    msg.route_points.resize(points.size());
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+      msgFromPoint(msg.route_points[i], points[i]);
+    }
+
+    std::vector<std::string> names = getPropertyNames();
+    msg.properties.resize(names.size());
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+      msg.properties[i].key = names[i];
+      msg.properties[i].value = getProperty(names[i]);
+    }
   }
-  
-  std::vector<std::string> names = getPropertyNames();
-  msg.properties.resize(names.size());
-  for (size_t i = 0; i < names.size(); ++i) {
-    msg.properties[i].key = names[i];
-    msg.properties[i].value = getProperty(names[i]);
-  }  
-}
 
-mnm::RoutePtr Route::toMsgPtr() const
-{
-  mnm::RoutePtr ptr = boost::make_shared<mnm::Route>();
-  toMsg(*ptr);
-  return ptr;
-}
+  mnm::msg::Route::SharedPtr Route::toMsgPtr() const
+  {
+    mnm::msg::Route::SharedPtr ptr = std::make_shared<mnm::msg::Route>();
+    toMsg(*ptr);
+    return ptr;
+  }
 
-bool Route::valid() const
-{
-  return !points.empty();
-}
+  bool Route::valid() const
+  {
+    return !points.empty();
+  }
 
-bool Route::findPointId(size_t &index, const std::string &id) const
-{
-  if (point_index_.count(id)) {
-    size_t i = point_index_.at(id);
-    if (i < points.size() && points[i].id() == id) {
-      // This is a cache hit!
-      index = i;
+  bool Route::findPointId(size_t& index, const std::string& id) const
+  {
+    if (point_index_.count(id))
+    {
+      size_t i = point_index_.at(id);
+      if (i < points.size() && points[i].id() == id)
+      {
+        // This is a cache hit!
+        index = i;
+        return true;
+      }
+
+      // This is cache miss... our cache is out of date.
+    }
+
+    // If we reach here, either our cache is out of date or the point
+    // doesn't exist in the cache.  We will rebuild the cache index to
+    // make sure it is current.
+    rebuildPointIndex();
+
+    if (point_index_.count(id))
+    {
+      // If the point was found, we expect the id to be valid (unless
+      // you're using this class from multiple threads, which is not
+      // supported.
+      index = point_index_.at(id);
       return true;
     }
 
-    // This is cache miss... our cache is out of date.
+    // The point does not exist in this route.
+    return false;
   }
 
-  // If we reach here, either our cache is out of date or the point
-  // doesn't exist in the cache.  We will rebuild the cache index to
-  // make sure it is current.
-  rebuildPointIndex();
+  bool Route::findPointIdConst(size_t& index, const std::string& id) const
+  {
+    if (point_index_.count(id))
+    {
+      size_t i = point_index_.at(id);
+      if (i < points.size() && points[i].id() == id)
+      {
+        // This is a cache hit!
+        index = i;
+        return true;
+      }
+      // This is cache miss... our cache is out of date.
+    }
 
-  if (point_index_.count(id)) {
-    // If the point was found, we expect the id to be valid (unless
-    // you're using this class from multiple threads, which is not
-    // supported.
-    index = point_index_.at(id);
-    return true;
+    return false;
   }
 
-  // The point does not exist in this route.
-  return false;
-}
+  std::vector<std::string> Route::getPropertyNames() const
+  {
+    std::vector<std::string> names;
+    names.push_back("name");
+    names.push_back("guid");
 
-bool Route::findPointIdConst(size_t &index, const std::string &id) const
-{
-  if (point_index_.count(id)) {
-    size_t i = point_index_.at(id);
-    if (i < points.size() && points[i].id() == id) {
-      // This is a cache hit!
-      index = i;
+    for (auto const& it : properties_)
+    {
+      names.push_back(it.first);
+    }
+
+    return names;
+  }
+
+  std::string Route::getProperty(const std::string& name) const
+  {
+    if (name == "name")
+    {
+      return name_;
+    }
+    else if (name == "guid")
+    {
+      return guid_;
+    }
+    else if (properties_.count(name))
+    {
+      return properties_.at(name);
+    }
+    else
+    {
+      return "";
+    }
+  }
+
+  bool Route::hasProperty(const std::string& name) const
+  {
+    if (name == "name")
+    {
       return true;
     }
-    // This is cache miss... our cache is out of date.    
+    else if (name == "guid")
+    {
+      return true;
+    }
+    else
+    {
+      return properties_.count(name) > 0;
+    }
   }
 
-  return false;
-}
-
-std::vector<std::string> Route::getPropertyNames() const
-{
-  std::vector<std::string> names;
-  names.push_back("name");
-  names.push_back("guid");
-
-  for (auto const &it : properties_) {
-    names.push_back(it.first);
+  void Route::setProperty(const std::string& name, const std::string& value)
+  {
+    if (name == "name")
+    {
+      name_ = value;
+    }
+    else if (name == "guid")
+    {
+      guid_ = value;
+    }
+    else
+    {
+      properties_[name] = value;
+    }
   }
-  
-  return names;
-}
-  
-std::string Route::getProperty(const std::string &name) const
-{
-  if (name == "name") {
+
+  void Route::deleteProperty(const std::string& name)
+  {
+    // If we add "native" properties that are erasable, we should check
+    // for those here first and mark them as deleted when appropriate.
+
+    // Otherwise, fall back to the generic properties.
+    // std::map::erase() ignores the call if the key is not found.
+    properties_.erase(name);
+  }
+
+  std::string Route::name() const
+  {
     return name_;
-  } else if (name == "guid") {
+  }
+
+  void Route::setName(const std::string& name)
+  {
+    name_ = name;
+  }
+
+  std::string Route::guid() const
+  {
     return guid_;
-  } else if (properties_.count(name)) {
-    return properties_.at(name);
-  } else {
-    return "";
-  }
-}
-
-bool Route::hasProperty(const std::string &name) const
-{
-  if (name == "name") {
-    return true;
-  } else if (name == "guid") {
-    return true;
-  } else {
-    return properties_.count(name) > 0;
-  }
-}
-
-void Route::setProperty(const std::string &name, const std::string &value)
-{
-  if (name == "name") {
-    name_ = value;
-  } else if (name == "guid") {
-    guid_ = value;
-  } else {
-    properties_[name] = value;
-  } 
-}
-
-void Route::deleteProperty(const std::string &name)
-{
-  // If we add "native" properties that are erasable, we should check
-  // for those here first and mark them as deleted when appropriate.
-  
-  // Otherwise, fall back to the generic properties.
-  // std::map::erase() ignores the call if the key is not found.
-  properties_.erase(name);
-}
-
-std::string Route::name() const
-{
-  return name_;
-}
-
-void Route::setName(const std::string &name)
-{
-  name_ = name;
-}
-  
-std::string Route::guid() const
-{
-  return guid_;
-}
-
-void Route::setGuid(const std::string &guid)
-{
-  guid_ = guid;
-}
-
-void Route::rebuildPointIndex() const
-{
-  // Throw away the old index.
-  point_index_.clear();
-  for (size_t i = 0; i < points.size(); ++i) {
-    point_index_[points[i].id()] = i;
   }
 
-  if (point_index_.size() != points.size()) {
-    ROS_ERROR("Route points do not have unique IDs.  This will likely cause problems.");
+  void Route::setGuid(const std::string& guid)
+  {
+    guid_ = guid;
   }
-}
+
+  void Route::rebuildPointIndex() const
+  {
+    // Throw away the old index.
+    point_index_.clear();
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+      point_index_[points[i].id()] = i;
+    }
+  }
 }  // namespace swri_route_util

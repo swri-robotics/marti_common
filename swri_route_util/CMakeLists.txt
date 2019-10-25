@@ -9,6 +9,7 @@ find_package(marti_nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(swri_geometry_util REQUIRED)
 find_package(swri_math_util REQUIRED)
+find_package(swri_roscpp REQUIRED)
 find_package(swri_transform_util REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
@@ -29,6 +30,7 @@ ament_target_dependencies(${PROJECT_NAME}
   rclcpp
   swri_geometry_util
   swri_math_util
+  swri_roscpp
   swri_transform_util
   visualization_msgs
 )
