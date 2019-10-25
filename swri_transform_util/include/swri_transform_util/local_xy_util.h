@@ -126,7 +126,7 @@ namespace swri_transform_util
      * constructor is only used to create placeholder objects in containers
      * that require a zero-argument constructor.
      */
-    LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
+    explicit LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
 
     /**
      * Return whether the object has been initialized
@@ -244,7 +244,7 @@ namespace swri_transform_util
     void HandleGeoPose(geographic_msgs::msg::GeoPose::UniquePtr point);
     void HandlePoseStamped(geometry_msgs::msg::PoseStamped::UniquePtr pose);
   };
-  typedef boost::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
+  typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_

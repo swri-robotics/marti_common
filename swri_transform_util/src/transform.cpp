@@ -125,21 +125,20 @@ namespace swri_transform_util
   {
     TransformImplPtr inverse = 
         std::make_shared<IdentityTransform>();
-    inverse->stamp_ = stamp_;
+    inverse->SetStamp(stamp_);
     return inverse;
   }
 
   TfTransform::TfTransform(const tf2::Transform& transform) :
     transform_(transform)
   {
-    stamp_ = std::chrono::system_clock::now();
+    Tf2StampStampInterface::SetStamp(std::chrono::system_clock::now());
   }
   
   TfTransform::TfTransform(const tf2::Stamped<tf2::Transform>& transform) :
     transform_(transform)
   {
-
-    stamp_ = transform.stamp_;
+    Tf2StampStampInterface::SetStamp(transform.stamp_);
   }
 
   void TfTransform::Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const
@@ -156,7 +155,7 @@ namespace swri_transform_util
   {
     TransformImplPtr inverse = 
         std::make_shared<TfTransform>(transform_.inverse());
-    inverse->stamp_ = stamp_;
+    inverse->SetStamp(stamp_);
     return inverse;
   }
 }

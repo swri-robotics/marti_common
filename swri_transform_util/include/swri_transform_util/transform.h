@@ -32,6 +32,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <rclcpp/rclcpp.hpp>
 
 #include <tf2/transform_datatypes.h>
@@ -41,6 +44,55 @@
 
 namespace swri_transform_util
 {
+  class StampInterface
+  {
+  public:
+    virtual tf2::TimePoint GetStamp() const = 0;
+
+    virtual void SetStamp(const tf2::TimePoint&) = 0;
+  };
+
+  class StampedTransformStampInterface : virtual public StampInterface
+  {
+  public:
+    tf2::TimePoint GetStamp() const final
+    {
+      return tf2_ros::fromMsg(transform_.header.stamp);
+    }
+
+    void SetStamp(const tf2::TimePoint& time) final
+    {
+      transform_.header.stamp = tf2_ros::toMsg(time);
+    };
+
+    tf2::Stamped<tf2::Transform> GetStampedTransform() const
+    {
+      tf2::Stamped<tf2::Transform> tf;
+      tf2::fromMsg(transform_, tf);
+      return tf;
+    }
+
+  protected:
+    geometry_msgs::msg::TransformStamped transform_;
+  };
+
+  class Tf2StampStampInterface : virtual public StampInterface
+  {
+  public:
+    tf2::TimePoint GetStamp() const final
+    {
+      return stamp_;
+    }
+
+    void SetStamp(const tf2::TimePoint& time) final
+    {
+      stamp_ = time;
+    };
+
+  protected:
+    tf2::TimePoint stamp_;
+  };
+
   /**
    * Base class for Transform implementations.
    *
@@ -49,7 +101,7 @@ namespace swri_transform_util
    * TransformImpl and its descendants should not be used bare, only as part
    * of a swri_transform_util::Transform.
    */
-  class TransformImpl
+  class TransformImpl : virtual public StampInterface
   {
   public:
     explicit TransformImpl(const rclcpp::Logger& logger = rclcpp::get_logger("swri_transform_util::TransformImpl")) :
@@ -94,8 +146,7 @@ namespace swri_transform_util
 
     virtual std::shared_ptr<TransformImpl> Inverse() const = 0;
 
-    /// Time stamp for this transform
-    tf2::TimePoint stamp_;
+  protected:
 
     rclcpp::Logger logger_;
   };
@@ -218,7 +269,7 @@ namespace swri_transform_util
      * Get the time stamp of the transform
      * @return The time stamp of the transform
      */
-    tf2::TimePoint GetStamp() { return transform_->stamp_; }
+    tf2::TimePoint GetStamp() { return transform_->GetStamp(); }
 
   private:
     /// Pointer to the implementation of the transform
@@ -229,13 +280,13 @@ namespace swri_transform_util
    * Specialization of swri_transform_util::TransformImpl that represents
    * the identity transform
    */
-  class IdentityTransform : public TransformImpl
+  class IdentityTransform : public TransformImpl, public Tf2StampStampInterface
   {
   public:
     /**
      * Construct an identity transform.
      */
-    IdentityTransform() { stamp_ = tf2::TimePointZero; }
+    IdentityTransform() { Tf2StampStampInterface::SetStamp(tf2::TimePointZero); }
 
     /**
      * Apply the identity tranform to a 3D vector(sets v_out=v_in)
@@ -251,7 +302,7 @@ namespace swri_transform_util
    * Specialization of swri_transform_util::TransformImpl that performs
    * TF transformation
    */
-  class TfTransform : public TransformImpl
+  class TfTransform : public TransformImpl, public Tf2StampStampInterface
   {
   public:
     /**

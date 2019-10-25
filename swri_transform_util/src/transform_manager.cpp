@@ -39,12 +39,13 @@
 
 namespace swri_transform_util
 {
-  TransformManager::TransformManager(rclcpp::Logger& logger) :
-    logger_(logger)
+  TransformManager::TransformManager(rclcpp::Node::SharedPtr node) :
+    node_(node)
   {
+    transformers_.clear();
     std::vector<std::shared_ptr<Transformer> > transformers;
-    transformers.push_back(std::make_shared<Wgs84Transformer>());
-    transformers.push_back(std::make_shared<UtmTransformer>());
+    transformers.push_back(std::make_shared<Wgs84Transformer>(nullptr));
+    transformers.push_back(std::make_shared<UtmTransformer>(nullptr));
 
     for (size_t i = 0; i < transformers.size(); i++)
     {
@@ -58,7 +59,7 @@ namespace swri_transform_util
         {
           if (transformers_[iter->first].count(iter->second[j]) > 0)
           {
-            RCLCPP_WARN(logger_, "[transform_manager]: Transformer conflict for %s to %s",
+            RCLCPP_WARN(node_->get_logger(), "[transform_manager]: Transformer conflict for %s to %s",
                 iter->first.c_str(), iter->second[j].c_str());
           }
 
@@ -68,11 +69,11 @@ namespace swri_transform_util
     }
   }
 
-  void TransformManager::Initialize(std::shared_ptr<tf2_ros::Buffer> tf_buffer)
+  void TransformManager::Initialize()
   {
-    tf_buffer_ = tf_buffer;
+    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
 
-    local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
+    local_xy_util_ = std::make_shared<LocalXyWgs84Util>(node_);
 
     std::map<std::string, std::map<std::string, std::shared_ptr<Transformer> > >::iterator iter1;
     for (iter1 = transformers_.begin(); iter1 != transformers_.end(); ++iter1)
@@ -101,7 +102,7 @@ namespace swri_transform_util
 
     if (!tf_buffer_)
     {
-      RCLCPP_WARN(logger_, "[transform_manager]: TF listener not initialized.");
+      RCLCPP_WARN(node_->get_logger(), "[transform_manager]: TF listener not initialized.");
       return false;
     }
 
@@ -126,7 +127,7 @@ namespace swri_transform_util
 
       if (!local_xy_util_->Initialized())
       {
-        RCLCPP_WARN(logger_, "[transform_manager]: Local XY frame has not been initialized.");
+        RCLCPP_WARN(node_->get_logger(), "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
 
@@ -138,7 +139,7 @@ namespace swri_transform_util
       target = _tf_frame;
       if (!local_xy_util_->Initialized())
       {
-        RCLCPP_WARN(logger_, "[transform_manager]: Local XY frame has not been initialized.");
+        RCLCPP_WARN(node_->get_logger(), "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
 
@@ -157,7 +158,7 @@ namespace swri_transform_util
       }
 
       RCLCPP_WARN(
-        logger_,
+        node_->get_logger(),
         "[transform_manager]: Failed to get tf transform ('%s' to '%s').  Both "
         "frames exist in tf.",
         source_frame.c_str(), target_frame.c_str());
@@ -168,7 +169,7 @@ namespace swri_transform_util
     if (source_iter == transformers_.end())
     {
       RCLCPP_WARN(
-        logger_,
+        node_->get_logger(),
         "[transform_manager]: No transformer from '%s' to '%s'."
         " If '%s' is a /tf frame, it may not have been broadcast recently.",
         source.c_str(), target.c_str(), source.c_str());
@@ -180,7 +181,7 @@ namespace swri_transform_util
     if (target_iter == source_iter->second.end())
     {
       RCLCPP_WARN(
-        logger_,
+        node_->get_logger(),
         "[transform_manager]: No transformer from '%s' to '%s'."
         " If '%s' is a /tf frame, it may not have been broadcast recently.",
         source.c_str(), target.c_str(), target.c_str());
@@ -192,7 +193,7 @@ namespace swri_transform_util
 
     if (!transformer)
     {
-      RCLCPP_ERROR(logger_, "[transform_manager]: Encountered null transformer for '%s' to '%s'.",
+      RCLCPP_ERROR(node_->get_logger(), "[transform_manager]: Encountered null transformer for '%s' to '%s'.",
           source.c_str(), target.c_str());
 
       return false;
@@ -243,7 +244,7 @@ namespace swri_transform_util
       source = _tf_frame;
       if (!local_xy_util_->Initialized())
       {
-        RCLCPP_WARN(logger_, "[transform_manager]: Local XY frame has not been initialized.");
+        RCLCPP_WARN(node_->get_logger(), "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
     }
@@ -253,7 +254,7 @@ namespace swri_transform_util
       target = _tf_frame;
       if (!local_xy_util_->Initialized())
       {
-        RCLCPP_WARN(logger_, "[transform_manager]: Local XY frame has not been initialized.");
+        RCLCPP_WARN(node_->get_logger(), "[transform_manager]: Local XY frame has not been initialized.");
         return false;
       }
     }
@@ -267,7 +268,7 @@ namespace swri_transform_util
     if (source_iter == transformers_.end())
     {
       RCLCPP_WARN(
-        logger_,
+        node_->get_logger(),
         "[transform_manager]: No transformer for transforming '%s' to '%s'."
         " If '%s' is a /tf frame, it may not have been broadcast recently.",
         source.c_str(), target.c_str(), source.c_str());
@@ -279,7 +280,7 @@ namespace swri_transform_util
     if (target_iter == source_iter->second.end())
     {
       RCLCPP_WARN(
-        logger_,
+        node_->get_logger(),
         "[transform_manager]: No transformer for transforming '%s' to '%s'."
         " If '%s' is a /tf frame, it may not have been broadcast recently.",
         source.c_str(), target.c_str(), target.c_str());
@@ -322,19 +323,19 @@ namespace swri_transform_util
     }
     catch (const tf2::LookupException& e)
     {
-      RCLCPP_ERROR(logger_, "[transform_manager]: %s", e.what());
+      RCLCPP_ERROR(node_->get_logger(), "[transform_manager]: %s", e.what());
     }
     catch (const tf2::ConnectivityException& e)
     {
-      RCLCPP_ERROR(logger_, "[transform_manager]: %s", e.what());
+      RCLCPP_ERROR(node_->get_logger(), "[transform_manager]: %s", e.what());
     }
     catch (const tf2::ExtrapolationException& e)
     {
-      RCLCPP_ERROR(logger_, "[transform_manager]: %s", e.what());
+      RCLCPP_ERROR(node_->get_logger(), "[transform_manager]: %s", e.what());
     }
     catch (...)
     {
-      RCLCPP_ERROR(logger_, "[transform_manager]: Exception looking up transform");
+      RCLCPP_ERROR(node_->get_logger(), "[transform_manager]: Exception looking up transform");
     }
 
     return has_transform;

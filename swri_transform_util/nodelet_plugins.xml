@@ -1,6 +1,6 @@
 <library path="lib/libswri_transform_util_nodelets">
 
-  <class name="swri_transform_util/dynamic_publisher" type="swri_transform_util::DynamicPublisher" base_class_type="nodelet::Nodelet">
+  <class name="swri_transform_util/dynamic_publisher" type="swri_transform_util::DynamicTransformPublisher" base_class_type="nodelet::Nodelet">
     <description>
       Nodelet to publish a dynamically reconfigurable TF transform.
     </description>

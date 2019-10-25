@@ -68,7 +68,7 @@ namespace swri_transform_util
        *    computation.
        */
       void Initialize(std::shared_ptr<tf2_ros::Buffer> tf,
-                      std::shared_ptr<LocalXyWgs84Util> xy_util = std::shared_ptr<LocalXyWgs84Util>());
+                      std::shared_ptr<LocalXyWgs84Util> xy_util);
 
       /**
        * Get a map of the transforms supported by this Transformer

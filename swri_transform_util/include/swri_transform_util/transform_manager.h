@@ -67,7 +67,7 @@ namespace swri_transform_util
   class TransformManager
   {
   public:
-    explicit TransformManager(rclcpp::Logger& logger);
+    explicit TransformManager(rclcpp::Node::SharedPtr node);
 
     /**
      * Initialize the TransformManager with a tf::TransformListener
@@ -77,7 +77,7 @@ namespace swri_transform_util
      * @param tf A shared pointer to a tf::TransformListener that the
      *    Transformer wraps.
      */
-    void Initialize(std::shared_ptr<tf2_ros::Buffer> tf_buffer);
+    void Initialize();
 
     /**
      * Get the Transform between two frames at a specified time
@@ -249,7 +249,7 @@ namespace swri_transform_util
     const LocalXyWgs84UtilPtr& LocalXyUtil() const;
 
   private:
-    rclcpp::Logger logger_;
+    rclcpp::Node::SharedPtr node_;
     std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
 
     LocalXyWgs84UtilPtr local_xy_util_;

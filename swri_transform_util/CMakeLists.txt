@@ -9,6 +9,7 @@ find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
@@ -45,6 +46,8 @@ add_library(${PROJECT_NAME}
   src/transform_util.cpp
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY POSITION_INDEPENDENT_CODE ON)
 link_directories(${OpenCV_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
@@ -66,16 +69,17 @@ ament_target_dependencies(${PROJECT_NAME}
   tf2_ros
 )
 
-add_library(${PROJECT_NAME}_nodelets
-  src/nodelets/dynamic_publisher.cpp
+add_library(${PROJECT_NAME}_nodes SHARED
+  src/nodelets/dynamic_transform_publisher.cpp
   src/nodelets/gps_transform_publisher.cpp)
-target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES} ${PROJECT_NAME})
+target_compile_definitions(${PROJECT_NAME}_nodes
+  PRIVATE "COMPOSITION_BUILDING_DLL")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::GpsTransformPublisher")
+target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
-
-#swri_nodelet_add_node(gps_transform_publisher ${PROJECT_NAME} GpsTransformPublisher)
-#target_link_libraries(gps_transform_publisher ${PROJECT_NAME}_nodelets ${catkin_LIBRARIES})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -107,7 +111,10 @@ install(DIRECTORY include/
   DESTINATION include
 )
 
-install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_nodelets lat_lon_tf_echo
+install(TARGETS
+  ${PROJECT_NAME}
+  ${PROJECT_NAME}_nodes
+  lat_lon_tf_echo
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib

@@ -34,6 +34,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <rclcpp/logger.hpp>
+
 //opencv includes
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -45,9 +47,11 @@ namespace swri_transform_util
   class GeoReference
   {
   public:
-    explicit GeoReference(const std::string& path);
-    GeoReference(const GeoReference& geo);
-    ~GeoReference();
+    explicit GeoReference(const std::string& path,
+        rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::GeoReference"));
+    GeoReference(const GeoReference& geo,
+                 rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::GeoReference"));
+    ~GeoReference() = default;
 
     bool Load();
     void Print();
@@ -66,6 +70,8 @@ namespace swri_transform_util
     void GetPixel(double x_coordinate, double y_coordinate, int& x_pixel, int& y_pixel) const;
 
   private:
+    void GetTransform();
+
     bool loaded_;
 
     // Image properties
@@ -91,7 +97,7 @@ namespace swri_transform_util
     double x_offset_;
     double y_offset_;
 
-    void GetTransform();
+    rclcpp::Logger logger_;
   };
 }
 

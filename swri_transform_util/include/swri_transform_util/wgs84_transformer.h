@@ -51,7 +51,7 @@ namespace swri_transform_util
   class Wgs84Transformer : public Transformer
   {
     public:
-      Wgs84Transformer();
+      explicit Wgs84Transformer(LocalXyWgs84UtilPtr local_xy_util);
 
       /**
        * Get a map of the transforms supported by this Transformer
@@ -94,7 +94,7 @@ namespace swri_transform_util
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
    */
-  class TfToWgs84Transform : public TransformImpl
+  class TfToWgs84Transform : public TransformImpl, public StampedTransformStampInterface
   {
   public:
     /**
@@ -134,10 +134,10 @@ namespace swri_transform_util
      * @return The orientation of the transform
      */
     tf2::Quaternion GetOrientation() const override;
+
     TransformImplPtr Inverse() const override;
 
   protected:
-    geometry_msgs::msg::TransformStamped transform_;
     std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
 
@@ -147,7 +147,7 @@ namespace swri_transform_util
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
    */
-  class Wgs84ToTfTransform : public TransformImpl
+  class Wgs84ToTfTransform : public TransformImpl, public StampedTransformStampInterface
   {
   public:
       /**
@@ -189,7 +189,6 @@ namespace swri_transform_util
     tf2::Quaternion GetOrientation() const override;
     TransformImplPtr Inverse() const override;
   protected:
-    geometry_msgs::msg::TransformStamped transform_;
     std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
 }
