@@ -11,6 +11,8 @@ include_directories(include)
 add_library(${PROJECT_NAME} 
   src/serial_port.cpp
 )
+set_property(TARGET ${PROJECT_NAME}
+  PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
 )
@@ -30,5 +32,6 @@ ament_export_dependencies(Boost)
 ament_export_include_directories(include
   ${Boost_INCLUDE_DIRS}
 )
+ament_export_libraries(${PROJECT_NAME})
 
 ament_package()
