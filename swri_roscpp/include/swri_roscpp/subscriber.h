@@ -145,7 +145,7 @@ class Subscriber
   void setTimeout(const rclcpp::Duration &time_out);
   void setTimeout(const double time_out);
   // Read the timeout directly from the parameter server.
-  void timeoutParam(const rclcpp::Node &nh,
+  void timeoutParam(rclcpp::Node &nh,
                     const std::string &parameter_name,
                     const double default_value);
   
@@ -409,7 +409,7 @@ void Subscriber::setTimeout(const double time_out)
 
 inline
 void Subscriber::timeoutParam(
-  const rclcpp::Node &nh,
+  rclcpp::Node &nh,
   const std::string &parameter_name,
   const double default_value)
 {

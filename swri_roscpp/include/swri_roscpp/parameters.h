@@ -137,54 +137,59 @@ namespace swri
   }
 
   static inline
-  void param(const rclcpp::Node& nh,
+  void param(rclcpp::Node& nh,
              const std::string& name,
              int& variable,
              const int default_value)
   {
+    nh.declare_parameter(name);
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %d", name.c_str(), variable);
   }
 
   static inline
-  void param(const rclcpp::Node& nh,
+  void param(rclcpp::Node& nh,
              const std::string& name,
              double& variable,
              const double default_value)
   {
+    nh.declare_parameter(name);
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %lf", name.c_str(), variable);
   }
 
   static inline
-  void param(const rclcpp::Node& nh,
+  void param(rclcpp::Node& nh,
              const std::string& name,
              float& variable,
              const float default_value)
   {
     double dbl_value;
     double dbl_default = default_value;
+    nh.declare_parameter(name);
     nh.get_parameter_or(name, dbl_value, dbl_default);
     variable = dbl_value;
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %f", name.c_str(), variable);
   }
 
   static inline
-  void param(const rclcpp::Node& nh,
+  void param(rclcpp::Node& nh,
              const std::string& name,
              std::string& variable,
              const std::string default_value)
   {
+    nh.declare_parameter(name);
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = \"%s\"", name.c_str(), variable.c_str());
   }
 
   static inline
-  void param(const rclcpp::Node& nh,
+  void param(rclcpp::Node& nh,
              const std::string& name,
              bool& variable,
              const bool default_value)
   {
+    nh.declare_parameter(name);
     nh.get_parameter_or(name, variable, default_value);
     RCLCPP_INFO(nh.get_logger(), "Read parameter %s = %s", name.c_str(), variable ? "true" : "false");
   }
