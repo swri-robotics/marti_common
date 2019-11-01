@@ -38,12 +38,12 @@
 
 namespace swri
 {
-// This is an extended interface to the ros::Subscriber class.
+// This is an extended interface to the rclcpp::Subscriber class.
 //
-// This is an extended interface to the ros::Subscriber class that
+// This is an extended interface to the rclcpp::Subscriber class that
 // provides a little more default functionality and instrumentation.
 //
-// - Prints information when the subscription is created (to ROS_INFO)
+// - Prints information when the subscription is created (to RCLCPP_INFO)
 //   about the unmapped and mapped topic names.
 //
 // - Maintains some statistics about the messages (counts, latency, period)

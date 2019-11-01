@@ -29,93 +29,90 @@
 #ifndef SWRI_ROSCPP_TOPIC_SERVICE_SERVER_H_
 #define SWRI_ROSCPP_TOPIC_SERVICE_SERVER_H_
 
-#include <ros/node_handle.h>
+#include <rclcpp/rclcpp.hpp>
 
 namespace swri
 {
 class ImplRoot
 {
 public:
-  virtual ~ImplRoot()
-  {
-
-  }
+  virtual ~ImplRoot() = default;
 };
 
 template<class MReq, class MRes, class T>
 class TopicServiceServerImpl: public ImplRoot
 {
-  ros::Subscriber request_sub_;
-  ros::Publisher response_pub_;
+  std::shared_ptr<rclcpp::Subscription<MReq> > request_sub_;
+  std::shared_ptr<rclcpp::Publisher<MRes> > response_pub_;
 
   bool(T::*callback_)(const MReq &, MRes &);
   T* obj_;
 
 public:
-  void initialize(ros::NodeHandle &nh,
+  explicit TopicServiceServerImpl() :
+    ImplRoot(),
+    node_(nullptr)
+  {}
+
+  void initialize(rclcpp::Node &nh,
               const std::string &service,
               bool(T::*srv_func)(const MReq &, MRes &),
               T *obj)
   {
+    node_ = &nh;
     callback_ = srv_func;
     obj_ = obj;
 
-    ros::NodeHandle pnh("~");
-
-    std::string rservice = nh.resolveName(service);
-
-    response_pub_ = nh.advertise<MRes>(rservice + "/response", 10);
-    request_sub_ = nh.subscribe(rservice + "/request", 10, &TopicServiceServerImpl<MReq, MRes, T>::request_callback, this);
+    response_pub_ = nh.create_publisher<MRes>(service + "/response", 10);
+    request_sub_ = nh.create_subscription<MReq>(service + "/request",
+        10, std::bind(&TopicServiceServerImpl<MReq, MRes, T>::request_callback, this, std::placeholders::_1));
   }
 
 private:
 
-  void request_callback(const MReq& message)
+  void request_callback(const std::shared_ptr<MReq> message)
   {
-    ROS_DEBUG("Got request from %s with sequence %i", message.srv_header.sender.c_str(), message.srv_header.sequence);
+    RCLCPP_DEBUG(node_->get_logger(),
+        "Got request from %s with sequence %i", message->srv_header.sender.c_str(), message->srv_header.sequence);
 
     MRes response;
 
-    bool result = (obj_->*callback_)(message, response);
+    bool result = (obj_->*callback_)(*message, response);
     response.srv_header.result = result;
-    response.srv_header.sequence = message.srv_header.sequence;
-    response.srv_header.sender = message.srv_header.sender;
-    response_pub_.publish(response);
+    response.srv_header.sequence = message->srv_header.sequence;
+    response.srv_header.sender = message->srv_header.sender;
+    response_pub_->publish(response);
   }
+
+  rclcpp::Node* node_;
 };
 
 class TopicServiceServer
 {
  private:
 
-  boost::shared_ptr<ImplRoot> impl_;
+  std::shared_ptr<ImplRoot> impl_;
 
  public:
-  TopicServiceServer();
+  TopicServiceServer() = default;
 
   template<class MReq, class MRes, class T>
-  void initialize(ros::NodeHandle &nh,
+  void initialize(rclcpp::Node &nh,
                 const std::string &service,
-                bool(T::*srv_func)(const MReq &, MRes &),
+                bool(T::*srv_func)(const MReq&, MRes&),
                 T *obj);
 };  // class TopicServiceServer
 
-inline
-TopicServiceServer::TopicServiceServer()
-{
-
-}
-
 template<class MReq, class MRes, class T>
 inline
-void TopicServiceServer::initialize(ros::NodeHandle &nh,
+void TopicServiceServer::initialize(rclcpp::Node &nh,
                           const std::string &service,
-                          bool(T::*srv_func)(const MReq &, MRes &),
+                          bool(T::*srv_func)(const MReq&, MRes&),
                           T *obj)
 {
-  TopicServiceServerImpl<MReq, MRes, T>* impl = new TopicServiceServerImpl<MReq, MRes, T>();
+  auto* impl = new TopicServiceServerImpl<MReq, MRes, T>();
   impl->initialize(nh, service, srv_func, obj);
-  impl_ = boost::shared_ptr<ImplRoot>(impl);
+  impl_ = std::shared_ptr<ImplRoot>(impl);
 }
 
 }  // namespace swri

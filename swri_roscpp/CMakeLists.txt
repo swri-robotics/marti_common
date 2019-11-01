@@ -5,11 +5,12 @@ project(swri_roscpp)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
-
 find_package(diagnostic_updater REQUIRED)
 find_package(marti_common_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rosidl_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
@@ -20,62 +21,80 @@ include_directories(include)
 ### Build Test Node ###
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 ament_target_dependencies(subscriber_test
-  "diagnostic_updater"
-  "marti_common_msgs"
-  "nav_msgs"
-  "rclcpp"
-  "std_msgs"
-  "std_srvs"
+  diagnostic_updater
+  marti_common_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  std_srvs
 )
 
 add_executable(storing_subscriber_test src/nodes/storing_subscriber_test.cpp)
 ament_target_dependencies(storing_subscriber_test
-  "diagnostic_updater"
-  "marti_common_msgs"
-  "nav_msgs"
-  "rclcpp"
-  "std_msgs"
-  "std_srvs"
+  diagnostic_updater
+  marti_common_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  std_srvs
   )
 
 add_executable(service_server_test src/nodes/service_server_test.cpp)
 ament_target_dependencies(service_server_test
-  "diagnostic_updater"
-  "marti_common_msgs"
-  "nav_msgs"
-  "rclcpp"
-  "std_msgs"
-  "std_srvs"
+  diagnostic_updater
+  marti_common_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  std_srvs
   )
 
 add_executable(timer_test src/nodes/timer_test.cpp)
 ament_target_dependencies(timer_test
-  "diagnostic_updater"
-  "marti_common_msgs"
-  "nav_msgs"
-  "rclcpp"
-  "std_msgs"
-  "std_srvs"
+  diagnostic_updater
+  marti_common_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  std_srvs
   )
 
 add_executable(param_example src/nodes/param_example.cpp)
 ament_target_dependencies(param_example
-  "diagnostic_updater"
-  "marti_common_msgs"
-  "nav_msgs"
-  "rclcpp"
-  "std_msgs"
-  "std_srvs"
+  diagnostic_updater
+  marti_common_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  std_srvs
   )
 
 if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-#  find_package(rosidl_default_generators REQUIRED)
-#  rosidl_generate_interfaces(${PROJECT_NAME}
-#    msg/TestTopicServiceRequest.msg
-#    msg/TestTopicServiceResponse.msg
-#    DEPENDENCIES std_msgs
-#    )
+  find_package(Boost REQUIRED COMPONENTS system)
+
+  rosidl_generate_interfaces(${PROJECT_NAME}
+    msg/TestTopicServiceRequest.msg
+    msg/TestTopicServiceResponse.msg
+    DEPENDENCIES std_msgs
+  )
+
+  ament_add_gtest(test_params test/params.cpp)
+  ament_target_dependencies(test_params
+    rclcpp
+    swri_roscpp
+  )
+
+  ament_add_gtest(test_topic_service test/topic_service_test.cpp)
+  rosidl_target_interfaces(test_topic_service ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(test_topic_service
+    Boost::system
+  )
+  ament_target_dependencies(test_topic_service
+    rclcpp
+    marti_common_msgs
+    swri_roscpp
+  )
 #  add_rostest_gtest(test_params
 #                    test/params.test
 #                    test/params.cpp)
