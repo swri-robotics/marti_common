@@ -43,32 +43,58 @@ class OriginInitializer(rclpy.node.Node):
     def __init__(self):
         super().__init__('initialize_origin')
 
-        self.declare_parameter('local_xy_frame')
-        self.declare_parameter('local_xy_origin')
+        self.local_xy_frame_param = self.declare_parameter('local_xy_frame',
+                                                           'map',
+                                                           descriptor=rclpy.node.ParameterDescriptor(
+                                                               name='local_xy_frame',
+                                                               type=rclpy.parameter.ParameterType.PARAMETER_STRING
+                                                           ))
+        self.local_xy_origin_param = self.declare_parameter('local_xy_origin',
+                                                            'auto',
+                                                            descriptor=rclpy.node.ParameterDescriptor(
+                                                                name='local_xy_frame',
+                                                                type=rclpy.parameter.ParameterType.PARAMETER_STRING
+                                                            ))
 
-        for name, param in self._parameters.items():
-            print("%s: Value [%s]" % (name, param.value))
+        self.gpsfix_topic_param = self.declare_parameter('local_xy_gpsfix_topic',
+                                                         'gps',
+                                                         descriptor=rclpy.node.ParameterDescriptor(
+                                                             name='local_xy_gpsfix_topic',
+                                                             type=rclpy.parameter.ParameterType.PARAMETER_STRING
+                                                         ))
+        self.navsatfix_topic_param = self.declare_parameter('local_xy_navsatfix_topic',
+                                                            'fix',
+                                                            descriptor=rclpy.node.ParameterDescriptor(
+                                                                name='local_xy_navsatfix_topic',
+                                                                type=rclpy.parameter.ParameterType.PARAMETER_STRING
+                                                            ))
+        # self.declare_parameter('local_xy_custom_topic',
+        #                        descriptor=rclpy.node.ParameterDescriptor(
+        #                            name='local_xy_gpsfix_topic',
+        #                            type=rclpy.parameter.ParameterType.PARAMETER_STRING
+        #                        ))
+        self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
+                                                             descriptor=rclpy.node.ParameterDescriptor(
+                                                                 name='local_xy_gpsfix_topic',
+                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
+                                                             ))
 
-        local_xy_frame = self.get_parameter_or('local_xy_frame', 'map').value
-        origin_param = self.get_parameter_or('local_xy_origin', 'auto')
-        local_xy_origin = origin_param.value
+        # for name, param in self._parameters.items():
+        #     print("%s: Value [%s]" % (name, param.value))
 
-        self.get_logger().info("Origin: %s" % local_xy_origin)
+        self.get_logger().info("Origin: %s" % self.local_xy_origin_param.value)
 
-        manager = OriginManager(self, local_xy_frame)
-        if local_xy_origin == 'auto':
-            self.declare_parameter('local_xy_gpsfix_topic')
-            self.declare_parameter('local_xy_navsatfix_topic')
-            self.declare_parameter('local_xy_custom_topic')
+        self.manager = OriginManager(self, self.local_xy_frame_param.value)
+        if self.local_xy_origin_param.value == 'auto':
 
-            local_xy_gpsfix_topic = self.get_parameter_or('local_xy_gpsfix_topic', 'gps')
+            local_xy_gpsfix_topic = self.gpsfix_topic_param.value
             gps_sub = self.create_subscription(GPSFix,
-                                               local_xy_gpsfix_topic.value,
+                                               local_xy_gpsfix_topic,
                                                self.gps_callback, 2)
 
-            local_xy_navsatfix_topic = self.get_parameter_or('local_xy_navsatfix_topic', 'fix')
+            local_xy_navsatfix_topic = self.navsatfix_topic_param.value
             navsat_sub = self.create_subscription(NavSatFix,
-                                                  local_xy_navsatfix_topic.value,
+                                                  local_xy_navsatfix_topic,
                                                   self.navsat_callback, 2)
             self.subscribers = [gps_sub, navsat_sub]
             # try:
@@ -80,78 +106,73 @@ class OriginInitializer(rclpy.node.Node):
 
             # Add extra arguments to callback
         else:
-            self.declare_parameter('local_xy_origins')
             try:
-                origin_list = self.get_parameter('local_xy_origins').value
+                origin_list = self.local_xy_origins_param.value
             except rclpy.exceptions.ParameterException:
                 message = 'local_xy_origin is "{}", but local_xy_origins is not specified'
-                self.get_logger().fatal(message.format(local_xy_origin))
+                self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
                 exit(1)
             try:
-                manager.set_origin_from_list(local_xy_origin, origin_list)
+                self.manager.set_origin_from_list(self.local_xy_origin_param.value, origin_list)
             except (TypeError, KeyError) as e:
                 message = 'local_xy_origins is malformed or does not contain the local_xy_origin "{}"'
-                self.get_logger().fatal(message.format(local_xy_origin))
+                self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
                 self.get_logger().fatal(e)
                 exit(1)
-        manager.start()
+        self.manager.start()
 
-    def navsat_callback(self, msg, params):
-        (manager, subscribers) = params
+    def navsat_callback(self, msg):
         try:
             while self.subscribers:
-                self.subscribers.pop()
+                sub = self.subscribers.pop()
+                self.destroy_subscription(sub)
             self.get_logger().info('Got NavSat message. Setting origin and unsubscribing.')
-            manager.set_origin_from_navsat(msg)
+            self.manager.set_origin_from_navsat(msg)
         except InvalidFixException as e:
             self.get_logger().warn(e)
             return
 
-    def gps_callback(self, msg, params):
-        (manager, subscribers) = params
+    def gps_callback(self, msg):
         try:
             while self.subscribers:
-                self.subscribers.pop()
+                sub = self.subscribers.pop()
+                self.destroy_subscription(sub)
             self.get_logger().info('Got GPSFix message. Setting origin and unsubscribing.')
-            manager.set_origin_from_gps(msg)
+            self.manager.set_origin_from_gps(msg)
         except InvalidFixException as e:
             self.get_logger().warn(e)
             return
 
-    def custom_callback(self, params):
-        (manager, subscribers) = params
-        connection_header = self._connection_header['type'].split('/')
-        ros_pkg = connection_header[0] + '.msg'
-        msg_type = connection_header[1]
-        msg_class = getattr(import_module(ros_pkg), msg_type)
-        msg = msg_class().deserialize(self._buff)
-        stamp = None
-        if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
-            stamp = msg.header.stamp
-        if hasattr(msg, 'pose'):  # Messages like GeoPoseStamped
-            msg = msg.pose
-        if hasattr(msg, 'position'):  # Messages like GeoPose
-            msg = msg.position
-        pos = None
-        if hasattr(msg, 'latitude') and hasattr(msg, 'longitude') and hasattr(msg, 'altitude'):
-            pos = (msg.latitude, msg.longitude, msg.altitude)
-        elif hasattr(msg, 'lat') and hasattr(msg, 'lon') and hasattr(msg, 'height'):
-            pos = (msg.lat, msg.lon, msg.height)
+    # def custom_callback(self, params):
+    #     (manager, subscribers) = params
+    #     connection_header = self._connection_header['type'].split('/')
+    #     ros_pkg = connection_header[0] + '.msg'
+    #     msg_type = connection_header[1]
+    #     msg_class = getattr(import_module(ros_pkg), msg_type)
+    #     msg = msg_class().deserialize(self._buff)
+    #     stamp = None
+    #     if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
+    #         stamp = msg.header.stamp
+    #     if hasattr(msg, 'pose'):  # Messages like GeoPoseStamped
+    #         msg = msg.pose
+    #     if hasattr(msg, 'position'):  # Messages like GeoPose
+    #         msg = msg.position
+    #     pos = None
+    #     if hasattr(msg, 'latitude') and hasattr(msg, 'longitude') and hasattr(msg, 'altitude'):
+    #         pos = (msg.latitude, msg.longitude, msg.altitude)
+    #     elif hasattr(msg, 'lat') and hasattr(msg, 'lon') and hasattr(msg, 'height'):
+    #         pos = (msg.lat, msg.lon, msg.height)
+    #
+    #     if pos:
+    #         while self.subscribers:
+    #             self.subscribers.pop()
+    #         self.get_logger().info('Got {} message from topic "{}". Setting origin and unsubscribing.'
+    #                       .format(self._connection_header['type'], self._connection_header['topic']))
+    #         manager.set_origin_from_custom(pos, stamp)
 
-        if pos:
-            while self.subscribers:
-                self.subscribers.pop()
-            self.get_logger().info('Got {} message from topic "{}". Setting origin and unsubscribing.'
-                          .format(self._connection_header['type'], self._connection_header['topic']))
-            manager.set_origin_from_custom(pos, stamp)
 
-
-def main():
+if __name__ == "__main__":
     rclpy.init(args=sys.argv)
     node = OriginInitializer()
     # rospy.init_node('initialize_origin', anonymous=True)
     rclpy.spin(node)
-
-
-if __name__ == "__main__":
-    main()

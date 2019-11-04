@@ -33,6 +33,7 @@ from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from geometry_msgs.msg import PoseStamped
 from gps_msgs.msg import GPSStatus
 import rclpy.node
+import rclpy.qos
 from rclpy.timer import WallTimer
 from sensor_msgs.msg import NavSatStatus
 # from tf2_ros import TransformBroadcaster
@@ -126,7 +127,9 @@ class OriginManager(object):
         if local_xy_frame_identity is None:
             local_xy_frame_identity = local_xy_frame + "__identity"
         self.local_xy_frame_identity = local_xy_frame_identity
-        self.origin_pub = node.create_publisher(PoseStamped, '/local_xy_origin', 2)
+        qos = rclpy.node.QoSProfile(depth=1,
+                                    durability=rclpy.qos.QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
+        self.origin_pub = node.create_publisher(PoseStamped, '/local_xy_origin', qos_profile=qos)
         self.diagnostic_pub = node.create_publisher(DiagnosticArray, '/diagnostics', 2)
         # self.tf_broadcaster = TransformBroadcaster()
 
