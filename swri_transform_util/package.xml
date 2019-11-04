@@ -32,14 +32,13 @@
   <depend>tf2</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>tf2_ros</depend>
-  <!--
-  TODO pjr Used for the topic Shapeshifter, but maybe this is unnecessary in ROS2
-  <depend>topic_tools</depend>
-  -->
   <depend>yaml-cpp</depend>
 
   <exec_depend>sensor_msgs</exec_depend>
+  <!--
+  When we've got tf support for Python...
   <exec_depend>tf2_py</exec_depend>
+  -->
 
   <export>
     <build_type>ament_cmake</build_type>
