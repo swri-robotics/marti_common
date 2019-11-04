@@ -15,6 +15,7 @@
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <depend>ament_index_cpp</depend>
+  <depend>boost</depend>
   <depend>camera_calibration_parsers</depend>
   <depend>cv_bridge</depend>
   <depend>eigen</depend>

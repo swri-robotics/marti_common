@@ -47,8 +47,10 @@ set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
+  Boost::filesystem
+  Boost::random
+  Boost::system
   ${OpenCV_LIBRARIES}
-  ${Boost_LIBRARIES}
 )
 ament_target_dependencies(${PROJECT_NAME}
   camera_calibration_parsers

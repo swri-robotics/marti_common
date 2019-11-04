@@ -10,11 +10,8 @@ find_package(rclcpp REQUIRED)
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
 find_package(Boost COMPONENTS random) 
-if(${Boost_LIB_VERSION} MATCHES "1_46*")
-  add_definitions( -DBOOST_1_46 )
-endif(${Boost_LIB_VERSION} MATCHES "1_46*")
 
-include_directories(include ${Boost_INCLUDE_DIRS})
+include_directories(include)
   
 add_library(${PROJECT_NAME}
   src/math_util.cpp
@@ -23,9 +20,12 @@ add_library(${PROJECT_NAME}
   src/interpolation_1d.cpp)
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  Boost::boost
+  Boost::random
+)
 ament_target_dependencies(${PROJECT_NAME}
-  "rclcpp"
+  rclcpp
 )
 
 if(BUILD_TESTING)
