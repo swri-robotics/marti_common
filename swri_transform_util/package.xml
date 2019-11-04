@@ -13,6 +13,7 @@
   <url>https://github.com/swri-robotics/marti_common</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <depend>boost</depend>
@@ -38,6 +39,7 @@
   <depend>yaml-cpp</depend>
 
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>tf2_py</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

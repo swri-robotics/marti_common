@@ -4,6 +4,7 @@ project(swri_transform_util)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -122,8 +123,10 @@ install(TARGETS
 
 ### Install Python Nodes/Scripts ###
 install(PROGRAMS nodes/initialize_origin.py
-  DESTINATION bin
+  DESTINATION lib/${PROJECT_NAME}
 )
+
+ament_python_install_package(${PROJECT_NAME})
 
 ament_export_dependencies(ament_cmake)
 ament_export_include_directories(include

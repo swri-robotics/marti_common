@@ -85,25 +85,22 @@ if (BUILD_TESTING)
     swri_roscpp
   )
 
-  ament_add_gtest(test_topic_service test/topic_service_test.cpp)
-  rosidl_target_interfaces(test_topic_service ${PROJECT_NAME} "rosidl_typesupport_cpp")
-  target_link_libraries(test_topic_service
-    Boost::system
-  )
-  ament_target_dependencies(test_topic_service
-    rclcpp
-    marti_common_msgs
-    swri_roscpp
-  )
-#  add_rostest_gtest(test_params
-#                    test/params.test
-#                    test/params.cpp)
-#  target_link_libraries(test_params ${catkin_LIBRARIES})
-#
+#   ament_add_gtest(test_topic_service test/topic_service_test.cpp)
+#   rosidl_target_interfaces(test_topic_service ${PROJECT_NAME} "rosidl_typesupport_cpp")
+#   target_link_libraries(test_topic_service
+#     Boost::system
+#   )
+#   ament_target_dependencies(test_topic_service
+#     rclcpp
+#     marti_common_msgs
+#     swri_roscpp
+#   )
+
 #  ### Test the TopicService server and client ###
 #  # This is a little different from the way tests are normally declared because we
 #  # have a single binary that contains both server and client tests, but the tests
 #  # themselves are run in separate .test files.
+#  TODO pjr Figure out how to do launch tests in ROS2
 #  add_executable(test_topic_service
 #    test/topic_service_test.cpp)
 #  target_link_libraries(test_topic_service

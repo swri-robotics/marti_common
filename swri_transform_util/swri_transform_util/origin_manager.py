@@ -31,10 +31,11 @@
 
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from geometry_msgs.msg import PoseStamped
-from gps_common.msg import GPSStatus
-import rospy
+from gps_msgs.msg import GPSStatus
+import rclpy.node
+from rclpy.timer import WallTimer
 from sensor_msgs.msg import NavSatStatus
-import tf
+# from tf2_ros import TransformBroadcaster
 
 
 class InvalidFixException(Exception):
@@ -105,31 +106,29 @@ class OriginManager(object):
         manager.start()
     """
 
-    def __init__(self, local_xy_frame, local_xy_frame_identity=None):
+    def __init__(self, node, local_xy_frame, local_xy_frame_identity=None):
         """
         Construct an OriginManager, create publishers and TF Broadcaster.
 
         Args:
+            node (rclpy.node.Node): ROS node for subscribing
             local_xy_frame (str): TF frame ID of the local XY origin
             local_xy_frame_identity (str): TF frame ID of the identity frame published
                 to enable tf<->/wgs_84 conversions in systems with no other frames. If
                 this argument is `None`, `local_xy_frame` + "__identity" is used.
                 (default None).
         """
+        self.node = node
+        self.timer = None
         self.origin = None
         self.origin_source = None
         self.local_xy_frame = local_xy_frame
         if local_xy_frame_identity is None:
             local_xy_frame_identity = local_xy_frame + "__identity"
         self.local_xy_frame_identity = local_xy_frame_identity
-        self.origin_pub = rospy.Publisher('/local_xy_origin',
-                                          PoseStamped,
-                                          latch=True,
-                                          queue_size=2)
-        self.diagnostic_pub = rospy.Publisher('/diagnostics',
-                                              DiagnosticArray,
-                                              queue_size=2)
-        self.tf_broadcaster = tf.TransformBroadcaster()
+        self.origin_pub = node.create_publisher(PoseStamped, '/local_xy_origin', 2)
+        self.diagnostic_pub = node.create_publisher(DiagnosticArray, '/diagnostics', 2)
+        # self.tf_broadcaster = TransformBroadcaster()
 
     def set_origin(self, source, latitude, longitude, altitude, stamp=None):
         """
@@ -163,7 +162,7 @@ class OriginManager(object):
         self.origin_source = source
         self.origin = origin
         self.origin_pub.publish(self.origin)
-        rospy.loginfo("Origin from '{}' source set to {}, {}, {}".format(
+        self.node.get_logger().info("Origin from '{}' source set to {}, {}, {}".format(
             source, latitude, longitude, altitude))
 
     def set_origin_from_dict(self, origin_dict):
@@ -247,7 +246,7 @@ class OriginManager(object):
     def _publish_diagnostic(self):
         """Publish diagnostics."""
         diagnostic = DiagnosticArray()
-        diagnostic.header.stamp = rospy.Time.now()
+        diagnostic.header.stamp = self.node.get_clock().now()
         status = DiagnosticStatus()
         status.name = "LocalXY Origin"
         status.hardware_id = "origin_publisher"
@@ -290,11 +289,12 @@ class OriginManager(object):
         This allows the TransformManager to support /tf<->/wgs84 conversions
         without requiring additional nodes.
         """
-        self.tf_broadcaster.sendTransform((0, 0, 0),
-                                          (0, 0, 0, 1),
-                                          rospy.Time.now(),
-                                          self.local_xy_frame_identity,
-                                          self.local_xy_frame)
+        # TODO pjr Enable this when tf2 works in Python
+        # self.tf_broadcaster.sendTransform((0, 0, 0),
+        #                                   (0, 0, 0, 1),
+        #                                   self.node.get_clock().now(),
+        #                                   self.local_xy_frame_identity,
+        #                                   self.local_xy_frame)
 
     def spin_once(self, timer_event=None):
         """
@@ -308,11 +308,11 @@ class OriginManager(object):
         self._publish_identity_tf()
         self._publish_diagnostic()
 
-    def start(self, period=rospy.Duration(1.0)):
+    def start(self, period_ns=1000000000):
         """
         Start a rospy Timer thread to call spin_once() with the given duration.
 
         Args:
-            period (rospy.Duration): spin_once() is called at this rate.
+            period_ns (int): spin_once() is called at this rate.
         """
-        self.timer = rospy.Timer(period, self.spin_once)
+        self.timer = WallTimer(self.spin_once, None, period_ns)
