@@ -16,5 +16,5 @@ setup(
     author='P. J. Reed',
     author_email='preed@swri.org',
     keywords=['ROS'],
-    requires=['diagnostic_msgs', 'geometry_msgs', 'gps_common', 'rospy', 'sensor_msgs']
+    requires=['diagnostic_msgs', 'geometry_msgs', 'gps_msgs', 'rclpy', 'sensor_msgs']
 )

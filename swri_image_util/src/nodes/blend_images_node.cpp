@@ -58,18 +58,11 @@ namespace swri_image_util
     typedef message_filters::Synchronizer<ApproximateTimePolicy>
         ApproximateTimeSync;
 
-    // Called when the nodelet starts up. This does all of the initialization
-    virtual void onInit();
-
     // Callback for the two images we are blending together
     void imageCallback(
         const sensor_msgs::msg::Image::ConstSharedPtr& base_image,
         const sensor_msgs::msg::Image::ConstSharedPtr& top_image);
 
-    // Alpha blending level of the two images
-    double alpha_;
-    // Color to mask, if necessary
-    cv::Scalar mask_color_;
     // Publishes the blended image
     image_transport::Publisher image_pub_;
     // The subscribers for the base and top image
@@ -80,39 +73,42 @@ namespace swri_image_util
     std::shared_ptr<ApproximateTimeSync> image_sync_;
   };
 
+
+
   BlendImagesNode::BlendImagesNode(const rclcpp::NodeOptions& options) :
-      Node("blend_images", options),
-      alpha_(DEFAULT_ALPHA_LEVEL),
-      mask_color_(NO_MASK)
+      Node("blend_images", options)
   {
-    // User setting for the alpha value. The constructor should have
-    // already set this to the default value
-    this->get_parameter_or("alpha", alpha_, alpha_);
+    rcl_interfaces::msg::ParameterDescriptor alphaDesc;
+    alphaDesc.name = "alpha";
+    alphaDesc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    alphaDesc.floating_point_range.resize(1);
+    auto& alphaRange = alphaDesc.floating_point_range.at(0);
+    alphaRange.from_value = 0.0;
+    alphaRange.to_value = 1.0;
+    alphaRange.step = 0.01;
+    alphaDesc.description = "Alpha value for blending images; 1.0 is full base image, 0.0 is full top image.";
+    this->declare_parameter("alpha", DEFAULT_ALPHA_LEVEL, alphaDesc);
 
     // Values should be in the range [0,255]
-    double mask_r;
-    double mask_g;
-    double mask_b;
-    this->get_parameter_or("mask_r", mask_r, -1.0);
-    this->get_parameter_or("mask_g", mask_g, -1.0);
-    this->get_parameter_or("mask_b", mask_b, -1.0);
+    rcl_interfaces::msg::ParameterDescriptor rgbDesc;
+    rgbDesc.name = "mask_r";
+    rgbDesc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    rgbDesc.description = "Red value of color to mask; 0.0 to 255.0, or -1.0 to to mask a color.";
+    rgbDesc.floating_point_range.resize(1);
+    auto& rgbRange = rgbDesc.floating_point_range.at(0);
+    rgbRange.from_value = -1.0;
+    rgbRange.to_value = 255.0;
+    rgbRange.step = 1.0;
 
-    // Only create the mask if all components are valid
-    if ((mask_r >= 0) && (mask_g >= 0) && (mask_b >= 0) &&
-        (mask_r <= 255) && (mask_g <= 255) && (mask_b <= 255))
-    {
-      mask_color_ = cv::Scalar(mask_r, mask_g, mask_b);
-    }
-    else
-    {
-      RCLCPP_ERROR(this->get_logger(), "Mask color components must be in range [0,255]");
-      RCLCPP_ERROR(this->get_logger(), "  Components were (%f, %f, %f)", mask_r, mask_g, mask_b);
-    }
+    this->declare_parameter("mask_r", -1.0, rgbDesc);
+    rgbDesc.name = "mask_g";
+    rgbDesc.description = "Green value of color to mask; 0.0 to 255.0, or -1.0 to to mask a color.";
+    this->declare_parameter("mask_g", -1.0, rgbDesc);
+    rgbDesc.name = "mask_b";
+    rgbDesc.description = "Blue value of color to mask; 0.0 to 255.0, or -1.0 to to mask a color.";
+    this->declare_parameter("mask_b", -1.0, rgbDesc);
 
-    // Set up our publisher of the blended data and listen to the two input
-    // images
-    image_transport::ImageTransport it(this->shared_from_this());
-    image_pub_ = it.advertise("blended_image", 1);
+    image_pub_ = image_transport::create_publisher(this, "blended_image");
     base_image_sub_.subscribe(this, "base_image");
     top_image_sub_.subscribe(this, "top_image");
     image_sync_.reset(new ApproximateTimeSync(
@@ -147,24 +143,41 @@ namespace swri_image_util
         cv_base_image->image.cols,
         cv_base_image->image.type());
 
+    std::vector<rclcpp::Parameter> mask_colors =
+        this->get_parameters(std::vector<std::string>{"mask_r", "mask_g", "mask_b"});
+
+    cv::Scalar mask_color;
+    if (mask_colors[0].as_double() >= 0.0 &&
+        mask_colors[1].as_double() >= 0.0 &&
+        mask_colors[2].as_double() >= 0.0)
+    {
+      mask_color = cv::Scalar(mask_colors[0].as_double(),
+          mask_colors[1].as_double(),
+          mask_colors[2].as_double());
+    }
+    else
+    {
+      mask_color = NO_MASK;
+    }
+
     // Blend the images together
-    if (mask_color_ != NO_MASK)
+    if (mask_color != NO_MASK)
     {
       cv::Mat mask;
-      cv::inRange(cv_top_image->image, mask_color_, mask_color_, mask);
+      cv::inRange(cv_top_image->image, mask_color, mask_color, mask);
 
       blended = swri_opencv_util::overlayColor(
           cv_base_image->image,
           mask,
-          mask_color_,
-          alpha_);
+          mask_color,
+          this->get_parameter("alpha").as_double());
     }
     else
     {
       blended = swri_opencv_util::blend(
           cv_top_image->image,
           cv_base_image->image,
-          alpha_);
+          this->get_parameter("alpha").as_double());
     }
 
     // Convert the blended image to a ROS type and publish the result

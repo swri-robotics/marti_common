@@ -28,8 +28,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from importlib import import_module
-
 from gps_msgs.msg import GPSFix
 import rclpy
 import rclpy.exceptions
