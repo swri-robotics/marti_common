@@ -44,18 +44,24 @@ namespace swri_image_util
   {
   public:
     explicit DrawTextNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("draw_text", options),
-        text_("label"),
-        offset_x_(0),
-        offset_y_(0),
-        font_scale_(1.0),
-        font_thickness_(1)
+        rclcpp::Node("draw_text", options)
     {
-      this->get_parameter_or("text", text_, text_);
-      this->get_parameter_or("offset_x", offset_x_, offset_x_);
-      this->get_parameter_or("offset_y", offset_y_, offset_y_);
-      this->get_parameter_or("font_scale", font_scale_, font_scale_);
-      this->get_parameter_or("font_thickness", font_thickness_, font_thickness_);
+      rcl_interfaces::msg::ParameterDescriptor desc;
+      desc.name = "text";
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+      this->declare_parameter("text", "label", desc);
+
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
+      desc.name = "font_thickness";
+      this->declare_parameter("font_thickness", 1, desc);
+
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      desc.name = "offset_x";
+      this->declare_parameter("offset_x", 0.0, desc);
+      desc.name = "offset_y";
+      this->declare_parameter("offset_y", 0.0, desc);
+      desc.name = "font_scale";
+      this->declare_parameter("font_scale", 1.0, desc);
 
       auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
       {
@@ -63,27 +69,22 @@ namespace swri_image_util
 
         cv::putText(
             cv_image->image,
-            text_,
-            cv::Point(offset_x_, offset_y_),
+            this->get_parameter("text").as_string(),
+            cv::Point(this->get_parameter("offset_x").as_double(),
+                this->get_parameter("offset_y").as_double()),
             cv::FONT_HERSHEY_SIMPLEX,
-            font_scale_,
+            this->get_parameter("font_scale").as_double(),
             cv::Scalar(255, 255, 255),
-            font_thickness_);
+            this->get_parameter("font_thickness").as_int());
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("stamped_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = image_transport::create_publisher(this, "stamped_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
     }
 
   private:
-    std::string text_;
-    double offset_x_;
-    double offset_y_;
-    double font_scale_;
-    int font_thickness_;
 
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;

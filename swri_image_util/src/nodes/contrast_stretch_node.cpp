@@ -47,21 +47,32 @@ namespace swri_image_util
   {
   public:
     explicit ContrastStretchNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("contrast_stretch", options),
-        bins_(8),
-        max_min_(0.0),
-        min_max_(0.0),
-        over_exposure_threshold_(255.0),
-        over_exposure_dilation_(3)
+        rclcpp::Node("contrast_stretch", options)
     {
-      this->get_parameter_or("bins", bins_, bins_);
-      this->get_parameter_or("max_min", max_min_, max_min_);
-      this->get_parameter_or("min_max", min_max_, min_max_);
-      this->get_parameter_or("over_exposure_threshold", over_exposure_threshold_, over_exposure_threshold_);
-      this->get_parameter_or("over_exposure_dilation", over_exposure_dilation_, over_exposure_dilation_);
+      rcl_interfaces::msg::ParameterDescriptor desc;
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
+      desc.name = "bins";
+      this->declare_parameter("bins", 8, desc);
 
-      std::string mask;
-      this->get_parameter_or("mask", mask, std::string(""));
+      desc.name = "over_exposure_dilation";
+      this->declare_parameter("over_exposure_dilation", 3, desc);
+
+      desc.name = "max_min";
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      this->declare_parameter("max_min", 0.0, desc);
+
+      desc.name = "min_max";
+      this->declare_parameter("min_max", 0.0, desc);
+
+      desc.name = "over_exposure_threshold";
+      this->declare_parameter("over_exposure_threshold", 255.0, desc);
+
+      desc.name = "mask";
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+      desc.read_only = true;
+      this->declare_parameter("mask", std::string(""), desc);
+
+      std::string mask = this->get_parameter("mask").as_string();
       if (!mask.empty())
       {
         mask_ = cv::imread(mask, 0);
@@ -82,13 +93,16 @@ namespace swri_image_util
 
         cv::Mat mask;
 
-        if (over_exposure_threshold_ < 255 && over_exposure_threshold_ > 0)
+        double over_exposure_threshold = this->get_parameter("over_exposure_threshold").as_double();
+
+        if (over_exposure_threshold < 255 && over_exposure_threshold > 0)
         {
-          cv::Mat over_exposed = cv_image->image > over_exposure_threshold_;
+          int32_t over_exposure_dilation = this->get_parameter("over_exposure_dilation").as_int();
+          cv::Mat over_exposed = cv_image->image > over_exposure_threshold;
           cv::Mat element = cv::getStructuringElement(
               cv::MORPH_ELLIPSE,
-              cv::Size(2 * over_exposure_dilation_ + 1, 2 * over_exposure_dilation_ + 1),
-              cv::Point(over_exposure_dilation_, over_exposure_dilation_));
+              cv::Size(2 * over_exposure_dilation + 1, 2 * over_exposure_dilation + 1),
+              cv::Point(over_exposure_dilation, over_exposure_dilation));
           cv::dilate(over_exposed, over_exposed, element);
 
           mask = mask_.clone();
@@ -99,23 +113,21 @@ namespace swri_image_util
           mask = mask_;
         }
 
-        swri_image_util::ContrastStretch(bins_, cv_image->image, cv_image->image, mask, max_min_, min_max_);
+        swri_image_util::ContrastStretch(this->get_parameter("bins").as_int(),
+            cv_image->image,
+            cv_image->image,
+            mask,
+            this->get_parameter("max_min").as_double(),
+            this->get_parameter("min_max").as_double());
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("normalized_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = image_transport::create_publisher(this, "normalized_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
     }
 
   private:
-    int32_t bins_;
-    double max_min_;
-    double min_max_;
-    double over_exposure_threshold_;
-    int32_t over_exposure_dilation_;
-
     cv::Mat mask_;
 
     image_transport::Subscriber image_sub_;

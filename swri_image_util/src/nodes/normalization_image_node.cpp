@@ -42,6 +42,7 @@
 
 // RANGER Libraries
 #include <swri_image_util/image_normalization.h>
+#include <image_transport/image_transport.h>
 
 namespace swri_image_util
 {
@@ -50,16 +51,14 @@ namespace swri_image_util
   public:
     explicit NormalizationImageNode(const rclcpp::NodeOptions&) :
         rclcpp::Node("image_normalization_node"),
-        num_to_skip_(20),
-        max_num_to_average_(100),
         raw_count_(0),
         image_count_(0),
         image_written_(false)
     {
-      filename_ = ament_index_cpp::get_package_prefix("ranger_common") +
-                  "/normalization_image.png";
-
-      get_parameters();
+      this->declare_parameter("num_to_skip", 20);
+      this->declare_parameter("filename", ament_index_cpp::get_package_prefix("ranger_common") +
+                                          "/normalization_image.png");
+      this->declare_parameter("max_num_to_average", 100);
 
       subscribe_to_topics();
     }
@@ -69,21 +68,21 @@ namespace swri_image_util
       if (!image_written_ && image_array_.size() > 25)
       {
         generate_and_write_image();
-        fprintf(stderr, "\nNode killed before enough frames received to generate "
+        RCLCPP_ERROR(this->get_logger(), "\nNode killed before enough frames received to generate "
                         "normalized image, so a normalized image was generated with "
                         "available frames (%d vs. %d)\n",
                 image_count_,
-                max_num_to_average_);
+                this->get_parameter("max_num_to_average").as_int());
       }
       else if (!image_written_)
       {
-        fprintf(stderr, "\nNode killed before enough frames received to generate "
+        RCLCPP_ERROR(this->get_logger(), "\nNode killed before enough frames received to generate "
                         "normalized image: Too few frames in the buffer to generate a "
                         "normalization image\n");
       }
       else
       {
-        fprintf(stderr, "\nExiting normally\n");
+        RCLCPP_ERROR(this->get_logger(), "\nExiting normally\n");
       }
     }
 
@@ -92,60 +91,41 @@ namespace swri_image_util
       return image_written_;
     }
   private:
-    void get_parameters()
-    {
-      this->get_parameter_or("num_to_skip",
-                             num_to_skip_,
-                             200);
-
-      this->get_parameter_or("max_num_to_average",
-                             max_num_to_average_,
-                             100);
-
-      std::string temp_filename;
-      temp_filename = ament_index_cpp::get_package_prefix("ranger_common") +
-                      "/normalization_image.png";
-
-
-      this->get_parameter_or("filename",
-                             filename_,
-                             temp_filename);
-
-      RCLCPP_ERROR(this->get_logger(), "Planning to write normalization image to: %s",
-                   filename_.c_str());
-    }
-
-
     void subscribe_to_topics()
     {
-      auto callback = [this](sensor_msgs::msg::Image::UniquePtr msg) -> void
+      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& msg) -> void
       {
-        if (image_count_ >= max_num_to_average_)
+        int64_t max_num_to_average = this->get_parameter("max_num_to_average").as_int();
+        if (image_count_ >= max_num_to_average)
         {
           // ::sleep(1);
           return;
         }
 
-        if (raw_count_++ % num_to_skip_ == 0)
+        if (raw_count_++ % this->get_parameter("num_to_skip").as_int() == 0)
         {
           image_count_++;
           RCLCPP_ERROR(this->get_logger(), "Got image %d of %d",
                        image_count_,
-                       max_num_to_average_);
+                       max_num_to_average);
 
           cv_bridge::CvImagePtr im_ptr = cv_bridge::toCvCopy(*msg);
           cv::Mat image(im_ptr->image);
           image_array_.push_back(image);
-          if (image_count_ >= max_num_to_average_)
+          if (image_count_ >= max_num_to_average)
           {
             generate_and_write_image();
           }
         }
       };
-      image_sub_ = this->create_subscription<sensor_msgs::msg::Image>(
+      rmw_qos_profile_t qos = rmw_qos_profile_default;
+      qos.depth = 2;
+      image_sub_ = image_transport::create_subscription(
+          this,
           "image",
-          2,
-          callback);
+          callback,
+          "raw",
+          qos);
     }
 
     void generate_and_write_image()
@@ -153,9 +133,10 @@ namespace swri_image_util
       cv::Mat norm_im = swri_image_util::generate_normalization_image(image_array_);
       if (!norm_im.empty())
       {
+        std::string filename = this->get_parameter("filename").as_string();
         try
         {
-          cv::imwrite(filename_, norm_im);
+          cv::imwrite(filename, norm_im);
         }
         catch (const std::exception& e)
         {
@@ -164,7 +145,7 @@ namespace swri_image_util
           return;
         }
         RCLCPP_ERROR(this->get_logger(), "Successfully wrote normalization image to: %s",
-                     filename_.c_str());
+                     filename.c_str());
 
         image_written_ = true;
       }
@@ -174,11 +155,7 @@ namespace swri_image_util
       }
     }
 
-    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
-
-    int32_t num_to_skip_;
-    int32_t max_num_to_average_;
-    std::string filename_;
+    image_transport::Subscriber image_sub_;
 
     int32_t raw_count_;
     int32_t image_count_;

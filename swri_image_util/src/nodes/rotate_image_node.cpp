@@ -45,18 +45,18 @@ namespace swri_image_util
   public:
     explicit RotateImageNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("rotate_image", options),
-        angle_(0),
         operations_(0),
         flip_axis_(false)
     {
-      this->get_parameter_or("angle", angle_, angle_);
-
-      int32_t angle_90 = static_cast<int32_t>(swri_math_util::ToNearest(angle_, 90));
-      flip_axis_ = angle_90 > 0 ? 1 : 0;
-      operations_ = std::abs(angle_90 / 90);
+      this->declare_parameter("angle", 0.0);
 
       auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
       {
+        int32_t angle_90 = static_cast<int32_t>(
+            swri_math_util::ToNearest(this->get_parameter("angle").as_double(), 90));
+        flip_axis_ = angle_90 > 0;
+        operations_ = std::abs(angle_90 / 90);
+
         if (operations_ == 0)
         {
           image_pub_.publish(image);
@@ -74,13 +74,11 @@ namespace swri_image_util
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("rotated_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = image_transport::create_publisher(this, "rotated_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
     }
 
   private:
-    double angle_;
     int32_t operations_;
     bool flip_axis_;
 

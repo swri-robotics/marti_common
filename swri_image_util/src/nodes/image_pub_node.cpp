@@ -49,15 +49,14 @@ namespace swri_image_util
     explicit ImagePubNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("image_pub", options)
     {
-      std::string image_file;
-      this->get_parameter_or("image_file", image_file, image_file);
+      this->declare_parameter("image_file");
+      this->declare_parameter("mode", sensor_msgs::image_encodings::BGR8);
+      this->declare_parameter("rate", 1);
 
-      std::string mode;
-      const std::string bgr8(sensor_msgs::image_encodings::BGR8);
-      this->get_parameter_or("mode", mode, bgr8);
+      std::string image_file = this->get_parameter("image_file").as_string();
+      std::string mode = this->get_parameter("mode").as_string();
+      double rate = this->get_parameter("rate").as_double();
 
-      double rate = 1;
-      this->get_parameter_or("rate", rate, rate);
       rate = std::max(0.1, rate);
 
       cv_image.header.stamp = rclcpp::Clock().now();
@@ -74,8 +73,10 @@ namespace swri_image_util
 
       if (!cv_image.image.empty())
       {
-        image_transport::ImageTransport it(shared_from_this());
-        image_pub_ = it.advertise("image", 2, true);
+        rmw_qos_profile_t qos = rmw_qos_profile_default;
+        qos.depth = 2;
+        qos.durability = rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+        image_pub_ = image_transport::create_publisher(this, "image", qos);
         pub_timer_ = this->create_wall_timer(
             std::chrono::duration<float>(1.0 / rate),
             std::bind(&ImagePubNode::publish, this));

@@ -32,6 +32,7 @@
 // ROS Libraries
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
+#include <image_transport/image_transport.h>
 
 namespace swri_image_util
 {
@@ -41,36 +42,46 @@ namespace swri_image_util
     DummyImagePublisherNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("dummy_image_publisher", options)
     {
-      image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("image", 100);
+      rcl_interfaces::msg::ParameterDescriptor desc;
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+      desc.name = "encoding";
+      this->declare_parameter("encoding", "mono8", desc);
 
-      this->get_parameter_or("rate", rate_, 10.0);
-      this->get_parameter_or("width", width_, 640);
-      this->get_parameter_or("height", height_, 480);
-      this->get_parameter_or("encoding", encoding_, std::string("mono8"));
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
+      desc.name = "width";
+      this->declare_parameter("width", 640, desc);
+      desc.name = "height";
+      this->declare_parameter("height", 480, desc);
+
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      desc.read_only = true;
+      this->declare_parameter("rate", 10.0, desc);
 
       auto publisher = [this]() -> void
       {
+        int64_t width = this->get_parameter("width").as_int();
+        int64_t height = this->get_parameter("height").as_int();
+
         sensor_msgs::msg::Image::UniquePtr image = std::make_unique<sensor_msgs::msg::Image>();
         image->header.stamp = rclcpp::Clock().now();
-        image->encoding = encoding_;
-        image->width = width_;
-        image->height = height_;
-        image->step = width_;
-        image->data.resize(height_ * width_);
+        image->encoding = this->get_parameter("encoding").as_string();
+        image->width = width;
+        image->height = height;
+        image->step = width;
+        image->data.resize(height * width);
 
-        image_pub_->publish(std::move(image));
+        image_pub_.publish(std::move(image));
       };
 
-      timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / rate_), publisher);
+      rmw_qos_profile_t qos;
+      qos.depth = 100;
+      image_pub_ = image_transport::create_publisher(this, "image", qos);
+
+      timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / this->get_parameter("rate").as_double()), publisher);
     }
 
   private:
-    double rate_;
-    int32_t width_;
-    int32_t height_;
-    std::string encoding_;
-
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
+    image_transport::Publisher image_pub_;
 
     rclcpp::TimerBase::SharedPtr timer_;
   };

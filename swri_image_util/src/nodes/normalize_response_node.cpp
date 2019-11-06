@@ -46,12 +46,10 @@ class NormalizeResponseNodelet : public rclcpp::Node
   {
   public:
     explicit NormalizeResponseNodelet(const rclcpp::NodeOptions& options) :
-      rclcpp::Node("normalize_response", options),
-      filter_size_(9),
-      filter_cap_(31)
+      rclcpp::Node("normalize_response", options)
     {
-      this->get_parameter_or("filter_size", filter_size_, filter_size_);
-      this->get_parameter_or("filter_cap", filter_cap_, filter_cap_);
+      this->declare_parameter("filter_size", 9);
+      this->declare_parameter("filter_cap", 31);
 
       buffer_.create(1, 10000000, CV_8U);
 
@@ -60,7 +58,12 @@ class NormalizeResponseNodelet : public rclcpp::Node
 
         if (image->encoding == sensor_msgs::image_encodings::MONO8)
         {
-          swri_image_util::NormalizeResponse(cv_image->image, normalized_, filter_size_, filter_cap_, buffer_.ptr());
+          swri_image_util::NormalizeResponse(
+              cv_image->image,
+              normalized_,
+              this->get_parameter("filter_size").as_int(),
+              this->get_parameter("filter_cap").as_int(),
+              buffer_.ptr());
           cv_bridge::CvImage normalized_image;
           normalized_image.header = image->header;
           normalized_image.encoding = image->encoding;
@@ -73,15 +76,11 @@ class NormalizeResponseNodelet : public rclcpp::Node
         }
       };
 
-      image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("normalized_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = image_transport::create_publisher(this, "normalized_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
     }
 
   private:
-    int32_t filter_size_;
-    int32_t filter_cap_;
-    
     cv::Mat normalized_;
     cv::Mat buffer_;
 

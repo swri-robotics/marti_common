@@ -44,14 +44,14 @@ namespace swri_image_util
   {
   public:
     explicit ScaleImageNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("scale_image", options),
-        scale_(1.0)
+        rclcpp::Node("scale_image", options)
     {
-      this->get_parameter_or("scale", scale_, scale_);
+      this->declare_parameter("scale", 1.0);
 
       auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
       {
-        if (scale_ == 1.0)
+        double scale = this->get_parameter("scale").as_double();
+        if (std::fabs(scale - 1.0) < 0.001)
         {
           image_pub_.publish(image);
           return;
@@ -60,8 +60,8 @@ namespace swri_image_util
         cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
         cv::Size size(
-            swri_math_util::Round(image->width * scale_),
-            swri_math_util::Round(image->height * scale_));
+            swri_math_util::Round(image->width * scale),
+            swri_math_util::Round(image->height * scale));
         cv::Mat scaled;
         cv::resize(cv_image->image, scaled, size);
 
@@ -73,14 +73,11 @@ namespace swri_image_util
         image_pub_.publish(cv_scaled->toImageMsg());
       };
 
-      image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("scaled_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = image_transport::create_publisher(this, "scaled_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
     }
 
   private:
-    double scale_;
-
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };

@@ -45,20 +45,23 @@ namespace swri_image_util
         rclcpp::Node("warp_image", options),
         use_input_size_(false)
     {
-      std::vector<double> transform;
-      if (this->has_parameter("width") && this->has_parameter("height"))
-      {
-        use_input_size_ = false;
-        this->get_parameter("width", output_size_.width);
-        this->get_parameter("height", output_size_.height);
-      }
-      else
+      this->declare_parameter("width", 0);
+      this->declare_parameter("height", 0);
+      this->declare_parameter("transform", std::vector<int64_t>{});
+
+      if (this->get_parameter("width").as_int() == 0 || this->get_parameter("height").as_int() == 0)
       {
         use_input_size_ = true;
         RCLCPP_INFO(this->get_logger(),
                     "No ~width and ~height parameters given. Output images will be same size as input.");
       }
-      this->get_parameter_or("transform", transform, transform);
+      else
+      {
+        output_size_.height = this->get_parameter("height").as_int();
+        output_size_.width = this->get_parameter("width").as_int();
+      }
+
+      const std::vector<int64_t> transform = this->get_parameter("transform").as_integer_array();
       if (transform.size() != 9)
       {
         RCLCPP_FATAL(this->get_logger(),
@@ -89,9 +92,8 @@ namespace swri_image_util
         image_pub_.publish(cv_warped->toImageMsg());
       };
 
-      image_transport::ImageTransport it(shared_from_this());
-      image_pub_ = it.advertise("warped_image", 1);
-      image_sub_ = it.subscribe("image", 1, callback);
+      image_pub_ = image_transport::create_publisher(this, "warped_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
     }
 
   private:
