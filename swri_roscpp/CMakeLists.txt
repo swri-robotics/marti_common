@@ -59,16 +59,6 @@ ament_target_dependencies(timer_test
   std_srvs
   )
 
-add_executable(param_example src/nodes/param_example.cpp)
-ament_target_dependencies(param_example
-  diagnostic_updater
-  marti_common_msgs
-  nav_msgs
-  rclcpp
-  std_msgs
-  std_srvs
-  )
-
 if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(Boost REQUIRED COMPONENTS system)
@@ -77,12 +67,6 @@ if (BUILD_TESTING)
     msg/TestTopicServiceRequest.msg
     msg/TestTopicServiceResponse.msg
     DEPENDENCIES std_msgs
-  )
-
-  ament_add_gtest(test_params test/params.cpp)
-  ament_target_dependencies(test_params
-    rclcpp
-    swri_roscpp
   )
 
 #   ament_add_gtest(test_topic_service test/topic_service_test.cpp)
@@ -112,7 +96,7 @@ if (BUILD_TESTING)
 endif()
 
 ### Install Test Node and Headers ###
-install(TARGETS subscriber_test param_example
+install(TARGETS subscriber_test
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

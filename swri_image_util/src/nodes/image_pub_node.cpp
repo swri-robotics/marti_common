@@ -39,7 +39,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <swri_roscpp/parameters.h>
 
 namespace swri_image_util
 {

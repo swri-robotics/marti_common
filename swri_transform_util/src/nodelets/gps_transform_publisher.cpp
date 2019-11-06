@@ -35,7 +35,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
-#include <swri_roscpp/parameters.h>
 #include <swri_transform_util/frames.h>
 #include <swri_transform_util/transform_manager.h>
 #include <tf2/transform_datatypes.h>
@@ -56,9 +55,6 @@ namespace swri_transform_util
     tf2_ros::TransformBroadcaster tf_;
 
     swri_transform_util::TransformManager tf_manager_;
-
-    std::string veh_frame_id_;
-    std::string global_frame_id_;
   };
 
   GpsTransformPublisher::GpsTransformPublisher(const rclcpp::NodeOptions& options) :
@@ -66,8 +62,8 @@ namespace swri_transform_util
     tf_(*this),
     tf_manager_(shared_from_this())
   {
-    swri::param(*this, "child_frame_id", veh_frame_id_, std::string("base_link"));
-    swri::param(*this, "parent_frame_id", global_frame_id_, std::string("map"));
+    this->declare_parameter("child_frame_id", "base_link");
+    this->declare_parameter("parent_frame_id", "map");
 
     gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
         "gps",
@@ -92,7 +88,8 @@ namespace swri_transform_util
 
     // Get the position by converting lat/lon to LocalXY.
     swri_transform_util::Transform to_local_xy;
-    if (tf_manager_.GetTransform(global_frame_id_, swri_transform_util::_wgs84_frame, tf2::TimePointZero, to_local_xy))
+    std::string global_frame = this->get_parameter("parent_frame_id").as_string();
+    if (tf_manager_.GetTransform(global_frame, swri_transform_util::_wgs84_frame, tf2::TimePointZero, to_local_xy))
     {
       tf2::Vector3 position(gps_fix->longitude, gps_fix->latitude, gps_fix->altitude);
       position = to_local_xy * position;
@@ -100,8 +97,8 @@ namespace swri_transform_util
 
       geometry_msgs::msg::TransformStamped tf_stamped;
       tf_stamped.transform = tf2::toMsg(transform);
-      tf_stamped.child_frame_id = veh_frame_id_;
-      tf_stamped.header.frame_id = global_frame_id_;
+      tf_stamped.child_frame_id = this->get_parameter("child_frame_id").as_string();
+      tf_stamped.header.frame_id = global_frame;
       tf_stamped.header.stamp = gps_fix->header.stamp;
 
       tf_.sendTransform(tf_stamped);

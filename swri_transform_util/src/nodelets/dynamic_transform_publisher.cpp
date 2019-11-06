@@ -35,8 +35,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rcl_interfaces/msg/floating_point_range.hpp>
 #include <rcl_interfaces/msg/parameter_descriptor.hpp>
-//#include <swri_roscpp/dynamic_parameters.h>
-#include <swri_roscpp/parameters.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/transform_datatypes.h>
@@ -52,83 +50,78 @@ namespace swri_transform_util
   public:
     explicit DynamicTransformPublisher(const rclcpp::NodeOptions& options) :
         rclcpp::Node("dynamic_transform_publisher", options),
-        tf_broadcaster_(*this),
-        rate_(50),
-        stamp_offset_(1.0)
+        tf_broadcaster_(*this)
     {
-      swri::param(*this, "rate", rate_, rate_);
-      swri::param(*this, "stamp_offset", stamp_offset_, stamp_offset_);
-      swri::param(*this, "child_frame", child_frame_, "child");
-      swri::param(*this, "parent_frame", parent_frame_, "parent");
+      rcl_interfaces::msg::ParameterDescriptor desc;
+      desc.name = "stamp_offset";
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      this->declare_parameter("stamp_offset", 1.0, desc);
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+      desc.name = "child_frame";
+      this->declare_parameter("child_frame", std::string(""), desc);
+      desc.name = "parent_frame";
+      this->declare_parameter("parent_frame", std::string(""), desc);
+      desc.name = "rate";
+      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      desc.read_only = true;
+      this->declare_parameter("rate", 50.0, desc);
 
-      rcl_interfaces::msg::ParameterDescriptor y_desc;
+
+      rcl_interfaces::msg::ParameterDescriptor coord_desc;
       rcl_interfaces::msg::FloatingPointRange coord_range;
       coord_range.from_value = -10000.0;
       coord_range.to_value = 10000.0;
-      y_desc.floating_point_range.push_back(coord_range);
-      x_ = declare_parameter("x", 0.0, y_desc);
-      y_ = declare_parameter("y", 0.0, y_desc);
-      y_ = declare_parameter("z", 0.0, y_desc);
+      coord_desc.floating_point_range.push_back(coord_range);
+      coord_desc.name = "x";
+      coord_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      declare_parameter("x", 0.0, coord_desc);
+      coord_desc.name = "y";
+      declare_parameter("y", 0.0, coord_desc);
+      coord_desc.name = "z";
+      declare_parameter("z", 0.0, coord_desc);
 
       rcl_interfaces::msg::ParameterDescriptor rotation_desc;
       rcl_interfaces::msg::FloatingPointRange rotation_range;
-      coord_range.from_value = -3.1415;
-      coord_range.to_value = 3.1415;
-      rotation_desc.floating_point_range.push_back(coord_range);
-      roll_ = declare_parameter("roll", 0.0, rotation_desc);
-      pitch_ = declare_parameter("pitch", 0.0, rotation_desc);
-      yaw_ = declare_parameter("yaw", 0.0, rotation_desc);
+      rotation_range.from_value = -3.1415;
+      rotation_range.to_value = 3.1415;
+      rotation_desc.floating_point_range.push_back(rotation_range);
+      rotation_desc.name = "roll";
+      rotation_desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+      declare_parameter("roll", 0.0, rotation_desc);
+      rotation_desc.name = "pitch";
+      declare_parameter("pitch", 0.0, rotation_desc);
+      rotation_desc.name = "yaw";
+      declare_parameter("yaw", 0.0, rotation_desc);
 
-      //params_.initialize(priv);
-
-      /*params_.get("x", x_, 0.0, "X offset (m)", -10000.0, 10000.0);
-      params_.get("y", y_, 0.0, "Y offset (m)", -10000.0, 10000.0);
-      params_.get("z", z_, 0.0, "Z offset (m)", -10000.0, 10000.0);
-      params_.get("roll", roll_, 0.0, "Roll offset (rad)", -3.1415, 3.1415);
-      params_.get("pitch", pitch_, 0.0, "Pitch offset (rad)", -3.1415, 3.1415);
-      params_.get("yaw", yaw_, 0.0, "Yaw offset (rad)", -3.1415, 3.1415);
-
-      params_.finalize();*/
-
-      rate_ = std::max(1.0, rate_);
       pub_timer_ = this->create_wall_timer(
-          std::chrono::duration<float>(1.0 / rate_), std::bind(&DynamicTransformPublisher::Publish, this));
+          std::chrono::duration<float>(1.0 / this->get_parameter("rate").as_double()),
+              std::bind(&DynamicTransformPublisher::Publish, this));
     }
 
   private:
     void Publish()
     {
-      //params_.mutex().lock();
-      tf2::Vector3 origin(x_, y_, z_);
+      std::vector<rclcpp::Parameter> params =
+          get_parameters(std::vector<std::string>{"x", "y", "z", "roll", "pitch", "yaw"});
+      tf2::Vector3 origin(params.at(0).as_double(), params.at(1).as_double(), params.at(2).as_double());
       tf2::Quaternion rotation;
-      rotation.setRPY(roll_, pitch_, yaw_);
-      //params_.mutex().unlock();
+      rotation.setRPY(params.at(3).as_double(), params.at(4).as_double(), params.at(5).as_double());
 
       tf2::Transform transform(rotation, origin);
 
       geometry_msgs::msg::TransformStamped stamped_transform;
       stamped_transform.transform = tf2::toMsg(transform);
-      stamped_transform.header.stamp = rclcpp::Clock().now() + rclcpp::Duration(stamp_offset_);
-      stamped_transform.child_frame_id = child_frame_;
-      stamped_transform.header.frame_id = parent_frame_;
+      stamped_transform.header.stamp = rclcpp::Clock().now() +
+          rclcpp::Duration(this->get_parameter("stamp_offset").as_double());
+      stamped_transform.child_frame_id = this->get_parameter("child_frame").as_string();
+      stamped_transform.header.frame_id = this->get_parameter("parent_frame").as_string();
 
       tf_broadcaster_.sendTransform(stamped_transform);
     }
 
-    double x_, y_, z_;
-    double roll_, pitch_, yaw_;
-    //swri::DoubleParam x_, y_, z_;
-
-    // swri::DynamicParameters params_;
-
     rclcpp::TimerBase::SharedPtr pub_timer_;
 
     tf2_ros::TransformBroadcaster tf_broadcaster_;
-
-    double rate_;
-    double stamp_offset_;
-    std::string child_frame_;
-    std::string parent_frame_;
   };
 
 }  // namespace swri_transform_util

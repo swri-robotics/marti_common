@@ -9,6 +9,7 @@ find_package(diagnostic_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
+find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(swri_math_util REQUIRED)
@@ -78,6 +79,8 @@ target_compile_definitions(${PROJECT_NAME}_nodes
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::GpsTransformPublisher")
 target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
+ament_target_dependencies(${PROJECT_NAME}_nodes
+  rcl_interfaces)
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})

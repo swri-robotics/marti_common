@@ -24,6 +24,7 @@
   <depend>gps_msgs</depend>
   <depend>libgeos++-dev</depend>
   <depend>proj</depend>
+  <depend>rcl_interfaces</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>rclpy</depend>

@@ -32,7 +32,6 @@
 
 #include <swri_geometry_util/geometry_util.h>
 #include <swri_route_util/util.h>
-#include <swri_roscpp/parameters.h>
 
 namespace smu = swri_math_util;
 namespace stu = swri_transform_util;
@@ -63,13 +62,9 @@ void SpeedForCurvatureParameters::loadFromRosParam()
 {
   // 20.0 seems to be a good value from looking through 17 recorded routes we
   // have with and without Omnistar corrections.
-  swri::param(*node_, "curvature_filter_size", curvature_filter_size_, 20.0);
-
-
-  swri::param(*node_, "lateral_acceleration_mode",
-              use_speed_from_accel_constant_, use_speed_from_accel_constant_);
-  swri::param(*node_, "max_lateral_acceleration",
-              max_lateral_accel_mss_, max_lateral_accel_mss_);
+  curvature_filter_size_ = node_->declare_parameter("curvature_filter_size", 20.0);
+  use_speed_from_accel_constant_ = node_->declare_parameter("lateral_acceleration_mode", true);
+  max_lateral_accel_mss_ = node_->declare_parameter("max_lateral_acceleration", 0.2);
 
   if (!speed_curve_.readFromParameter("curvature_vs_speed")) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to load speed/curve parameter. Forcing lateral acceleration mode.");
@@ -278,17 +273,17 @@ SpeedForObstaclesParameters::SpeedForObstaclesParameters(const rclcpp::Node::Sha
 
 void SpeedForObstaclesParameters::loadFromRosParam()
 {
-  swri::param(*node_, "origin_to_front_m", origin_to_front_m_, 2.0);
-  swri::param(*node_, "origin_to_rear_m", origin_to_rear_m_, 1.0);
-  swri::param(*node_, "origin_to_left_m", origin_to_left_m_, 1.0);
-  swri::param(*node_, "origin_to_right_m", origin_to_right_m_, 1.0);
+  origin_to_front_m_ = node_->declare_parameter("origin_to_front_m", 0);
+  origin_to_rear_m_ = node_->declare_parameter("origin_to_rear_m", 0);
+  origin_to_left_m_ = node_->declare_parameter("origin_to_left_m", 0);
+  origin_to_right_m_ = node_->declare_parameter("origin_to_right_m", 0);
 
-  swri::param(*node_, "max_distance_m", max_distance_m_, 10.0);
-  swri::param(*node_, "min_distance_m", min_distance_m_, 1.0);
-  swri::param(*node_, "max_speed", max_speed_, 10.0);
-  swri::param(*node_, "min_speed", min_speed_, 1.0);
+  max_distance_m_ = node_->declare_parameter("max_distance_m", 0);
+  min_distance_m_ = node_->declare_parameter("min_distance_m", 0);
+  max_speed_ = node_->declare_parameter("max_speed", 0);
+  min_speed_ = node_->declare_parameter("min_speed", 0);
 
-  swri::param(*node_, "stop_buffer_m", stop_buffer_m_, 5.0);
+  stop_buffer_m_ = node_->declare_parameter("stop_buffer_m", 0);
 }
 
 void generateObstacleData(

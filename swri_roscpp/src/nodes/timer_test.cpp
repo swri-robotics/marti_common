@@ -29,7 +29,6 @@
 #include <chrono>
 #include <rclcpp/rclcpp.hpp>
 #include <swri_roscpp/timer.h>
-#include <swri_roscpp/parameters.h>
 
 #include <diagnostic_updater/diagnostic_updater.hpp>
 #include <diagnostic_msgs/msg/diagnostic_status.hpp>
@@ -46,13 +45,12 @@ class TimerTest : public rclcpp::Node
   swri::Timer diag_timer_;
 
   std::shared_ptr<du::Updater> diagnostic_updater_;
-
-  int fibonacci_index_;
   
  public:
   TimerTest(const std::string& name) :
     rclcpp::Node(name)
   {
+    this->declare_parameter("fibonacci_index", 30);
     diagnostic_updater_ = std::make_shared<du::Updater>(this);
     // Setup a one-shot timer to initialize the node after a brief
     // delay so that /rosout is always fully initialized.
@@ -68,8 +66,6 @@ class TimerTest : public rclcpp::Node
                                 &TimerTest::handleUpdateTimer,
                                 this);
 
-    swri::param(*this, "fibonacci_index", fibonacci_index_, 30);
-    
     diagnostic_updater_->setHardwareID("none");
     diagnostic_updater_->add(
       "swri::Timer test", this,
@@ -83,9 +79,10 @@ class TimerTest : public rclcpp::Node
   void handleUpdateTimer()
   {
     // Do some work to give us a measurable time.
-    size_t number = super_slow_fibonacci(fibonacci_index_);
+    int64_t fibonacci_index = this->get_parameter("fibonacci_index").as_int();
+    size_t number = super_slow_fibonacci(fibonacci_index);
     RCLCPP_INFO(this->get_logger(), "The %d-th number of the fibonacci sequence is %lu",
-             fibonacci_index_, number);
+             fibonacci_index, number);
   }
 
   int super_slow_fibonacci(int x)
