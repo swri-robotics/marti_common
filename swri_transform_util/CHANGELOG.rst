@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* ROS2 Dashing conversion (`#549 <https://github.com/pjreed/marti_common/issues/549>`_)
+* Contributors: P. J. Reed
+
 2.10.0 (2019-09-04)
 -------------------
 * Support in initialize_origin.py specifying custom ROS topic in parameter (`#544 <https://github.com/swri-robotics/marti_common/issues/544>`_)

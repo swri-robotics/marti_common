@@ -3,6 +3,11 @@ Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Forthcoming
+-----------
+* ROS2 Dashing conversion (`#549 <https://github.com/pjreed/marti_common/issues/549>`_)
+* Contributors: P. J. Reed
+
 2.10.0 (2019-09-04)
 -------------------
 * Prevent swri:Subscriber latency calculations if current time is zero (`#548 <https://github.com/swri-robotics/marti_common/issues/548>`_)
