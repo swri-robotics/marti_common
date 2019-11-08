@@ -21,7 +21,6 @@ Removed packages:
     This package only existed in order to bridge nodes between ROS Hydro and ROS Indigo; use `yaml-cpp` directly now
 
 Package migration notes:
-
 1. `swri_image_util`  
     `replace_colors_node` has not been ported yet due to extensive changes in how ROS parameters work
 2. `swri_roscpp`
@@ -29,6 +28,10 @@ Package migration notes:
     2. Topic services have not been ported yet
 3. `swri_transform_util`  
     `initialize_origin.py` does not publish a tf frame due to tf2 Python bindings not being fully functional in ROS 2 Dashing
+4. Launch files
+    Launch files have not yet been migrated to ROS 2
+
+Also note that many features have not been tested yet.  Please open an issue if you try to use something and it doesn't work.
 
 Installation (ROS Dashing)
 ------------
