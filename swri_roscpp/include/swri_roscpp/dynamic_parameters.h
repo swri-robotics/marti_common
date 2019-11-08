@@ -375,7 +375,7 @@ namespace swri
         }
         else if (param->second.type == DynamicValue::String)
         {
-          type = "string";
+          type = "str";
           dynamic_reconfigure::StrParameter desc;
           desc.name = param->first;
           desc.value = "";
@@ -717,7 +717,7 @@ namespace swri
       const std::string description = "None.")
     {
       DynamicValue value;
-      value.type = DynamicValue::Bool;
+      value.type = DynamicValue::String;
       value.description = description;
       value.default_string = default_value;
       value.str = boost::shared_ptr<std::string>(new std::string());
@@ -737,7 +737,7 @@ namespace swri
       const std::string description = "None.")
     {
       DynamicValue value;
-      value.type = DynamicValue::Bool;
+      value.type = DynamicValue::String;
       value.description = description;
       value.default_string = default_value;
       value.str = boost::shared_ptr<std::string>(new std::string());
