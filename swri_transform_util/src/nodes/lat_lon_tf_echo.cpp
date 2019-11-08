@@ -29,11 +29,13 @@
 
 #include <boost/smart_ptr.hpp>
 
-#include <ros/ros.h>
-#include <tf/transform_listener.h>
-#include <geographic_msgs/GeoPose.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <gps_common/GPSFix.h>
+#include <rclcpp/rclcpp.hpp>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/utils.h>
+#include <geographic_msgs/msg/geo_pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <gps_msgs/msg/gps_fix.hpp>
 
 #include <swri_math_util/constants.h>
 #include <swri_transform_util/local_xy_util.h>
@@ -68,134 +70,139 @@
  *        All other fields in the message are ignored.
  */
 
-class LatLonTFEchoNode
+class LatLonTFEchoNode : public rclcpp::Node
 {
-  public:
-    LatLonTFEchoNode(ros::NodeHandle nh,
-        std::string frame_id,
-        std::string fixed_frame) :
-        nh_(nh),
-        frame_id_(frame_id),
-        fixed_frame_(fixed_frame)
+public:
+  LatLonTFEchoNode(
+      std::string frame_id,
+      std::string fixed_frame) :
+      rclcpp::Node("lat_lon_tf_echo"),
+      buffer_(this->get_clock()),
+      tf_listener_(buffer_),
+      frame_id_(frame_id),
+      fixed_frame_(fixed_frame)
+  {
+    auto gps_callback = [this](const gps_msgs::msg::GPSFix::UniquePtr msg) -> void
     {
-      origin_sub_ = nh_.subscribe(
-          "/local_xy_origin",
-          1,
-          &LatLonTFEchoNode::XYOriginCallback,
-          this);
-      timer_ = nh_.createTimer(ros::Duration(1),
-          boost::bind(&LatLonTFEchoNode::TimerCallback, this));
-    }
+      xy_wgs84_util_.reset(
+          new swri_transform_util::LocalXyWgs84Util(
+              msg->latitude,
+              msg->longitude,
+              msg->track,
+              msg->altitude));
+      Unsubscribe();
+    };
+    gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
+        "/local_xy_origin",
+        1,
+        gps_callback);
 
-  private:
-    ros::NodeHandle nh_;
-    tf::TransformListener tf_listener;
-    ros::Timer timer_;
-    boost::shared_ptr<swri_transform_util::LocalXyWgs84Util> xy_wgs84_util_;
-    ros::Subscriber origin_sub_;
-    std::string frame_id_;
-    std::string fixed_frame_;
-
-    void XYOriginCallback(const topic_tools::ShapeShifter::ConstPtr msg)
+    auto geopose_callback = [this](const geographic_msgs::msg::GeoPose::UniquePtr msg) -> void
     {
-      try
-      {
-        const gps_common::GPSFixConstPtr origin = msg->instantiate<gps_common::GPSFix>();
-        xy_wgs84_util_.reset(
-            new swri_transform_util::LocalXyWgs84Util(
-                origin->latitude,
-                origin->longitude,
-                origin->track,
-                origin->altitude));
-        origin_sub_.shutdown();
-        return;
-      }
-      catch (...) {}
+      xy_wgs84_util_.reset(
+          new swri_transform_util::LocalXyWgs84Util(
+              msg->position.latitude,
+              msg->position.longitude,
+              tf2::getYaw(msg->orientation),
+              msg->position.altitude));
+      Unsubscribe();
+    };
+    geopose_sub_ = this->create_subscription<geographic_msgs::msg::GeoPose>(
+        "/local_xy_origin",
+        1,
+        geopose_callback);
 
-      try
-      {
-        const geometry_msgs::PoseStampedConstPtr origin = msg->instantiate<geometry_msgs::PoseStamped>();
-        xy_wgs84_util_.reset(
-            new swri_transform_util::LocalXyWgs84Util(
-                origin->pose.position.y,    // Latitude
-                origin->pose.position.x,    // Longitude
-                0.0,                        // Heading
-                origin->pose.position.z));  // Altitude
-        origin_sub_.shutdown();
-        return;
-      }
-      catch(...) {}
-
-      try
-      {
-        const geographic_msgs::GeoPoseConstPtr origin = msg->instantiate<geographic_msgs::GeoPose>();
-        xy_wgs84_util_.reset(
-            new swri_transform_util::LocalXyWgs84Util(
-                origin->position.latitude,
-                origin->position.longitude,
-                tf::getYaw(origin->orientation),
-                origin->position.altitude));
-        origin_sub_.shutdown();
-        return;
-      }
-      catch(...) {}
-
-      ROS_ERROR_THROTTLE(1.0, "Unsupported message type received for local_xy_origin.");
-    }
-
-    void TimerCallback()
+    auto posestamped_callback = [this](const geometry_msgs::msg::PoseStamped::UniquePtr msg) -> void
     {
-      if (!xy_wgs84_util_ || !xy_wgs84_util_->Initialized())
-      {
-        printf("Still waiting for /local_xy_origin\n");
-        return;
-      }
-      if (!tf_listener.waitForTransform(fixed_frame_, frame_id_, ros::Time(0), ros::Duration(1.0)))
-      {
-        printf("Still waiting for transform from %s to %s\n",
-            frame_id_.c_str(),
-            fixed_frame_.c_str());
-        return;
-      }
-      tf::StampedTransform transform;
-      try
-      {
-        tf_listener.lookupTransform(fixed_frame_, frame_id_, ros::Time(0), transform);
-      }
-      catch (const tf::TransformException& ex)
-      {
-        ROS_ERROR("%s", ex.what());
-        return;
-      }
-      double lat, lon;
-      xy_wgs84_util_->ToWgs84(
-          transform.getOrigin().x(), transform.getOrigin().y(),
-          lat, lon);
-      tf::Quaternion q = transform.getRotation();
-      q.setY(0);
-      q.setX(0);
-      q.normalize();
-      double heading = -q.getAngle() * swri_math_util::_rad_2_deg + 90;
-      while (heading < 0)
-        heading += 360;
-      printf("Latitude: %f°, Longitude: %f°, Heading: %f°\n", lat, lon, heading);
+      xy_wgs84_util_.reset(
+          new swri_transform_util::LocalXyWgs84Util(
+              msg->pose.position.y,    // Latitude
+              msg->pose.position.x,    // Longitude
+              0.0,                        // Heading
+              msg->pose.position.z));  // Altitude
+      Unsubscribe();
+    };
+    posestamped_sub_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
+        "/local_xy_origin",
+        1,
+        posestamped_callback
+    );
+
+    timer_ = this->create_wall_timer(std::chrono::seconds(1),
+                                     std::bind(&LatLonTFEchoNode::TimerCallback, this));
+  }
+
+private:
+  tf2_ros::Buffer buffer_;
+  tf2_ros::TransformListener tf_listener_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  std::shared_ptr<swri_transform_util::LocalXyWgs84Util> xy_wgs84_util_;
+  rclcpp::Subscription<gps_msgs::msg::GPSFix>::SharedPtr gps_sub_;
+  rclcpp::Subscription<geographic_msgs::msg::GeoPose>::SharedPtr geopose_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr posestamped_sub_;
+  std::string frame_id_;
+  std::string fixed_frame_;
+
+  void Unsubscribe()
+  {
+    gps_sub_.reset();
+    geopose_sub_.reset();
+    posestamped_sub_.reset();
+  }
+
+  void TimerCallback()
+  {
+    if (!xy_wgs84_util_ || !xy_wgs84_util_->Initialized())
+    {
+      printf("Still waiting for /local_xy_origin\n");
+      return;
     }
+    geometry_msgs::msg::TransformStamped transform_msg;
+    try
+    {
+      transform_msg =
+          buffer_.lookupTransform(fixed_frame_,
+                                  frame_id_,
+                                  tf2::TimePointZero,
+                                  std::chrono::seconds(1));
+    }
+    catch (const tf2::TransformException& ex)
+    {
+      RCLCPP_ERROR(this->get_logger(), "%s", ex.what());
+      return;
+    }
+    double lat, lon;
+    tf2::Stamped<tf2::Transform> transform;
+    tf2::fromMsg(transform_msg, transform);
+    xy_wgs84_util_->ToWgs84(
+        transform.getOrigin().x(), transform.getOrigin().y(),
+        lat, lon);
+    tf2::Quaternion q = transform.getRotation();
+    q.setY(0);
+    q.setX(0);
+    q.normalize();
+    double heading = -q.getAngle() * swri_math_util::_rad_2_deg + 90;
+    while (heading < 0)
+    {
+      heading += 360;
+    }
+    printf("Latitude: %f°, Longitude: %f°, Heading: %f°\n", lat, lon, heading);
+  }
 };
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "lat_lon_tf_echo");
+  rclcpp::init(argc, argv);
   if (argc < 3)
   {
-    ROS_FATAL("No Frame Id specified");
     printf("Usage: lat_lon_tf_echo <fixed_frame_id> <target_frame_id>\n");
-    ros::shutdown();
     return 1;
   }
   std::string fixed_frame(argv[1]);
   std::string frame_id(argv[2]);
-  LatLonTFEchoNode node(ros::NodeHandle(), frame_id, fixed_frame);
-  ros::spin();
+  std::shared_ptr<LatLonTFEchoNode> node = std::make_shared<LatLonTFEchoNode>(
+      frame_id, fixed_frame);
+  rclcpp::spin(node);
 
   return (0);
 }

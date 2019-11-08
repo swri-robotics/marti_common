@@ -31,7 +31,8 @@
 #define GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 
 #include <opencv2/core/core.hpp>
-#include <tf/transform_datatypes.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2/LinearMath/Vector3.h>
 
 namespace swri_geometry_util
 {
@@ -45,29 +46,29 @@ namespace swri_geometry_util
    * @returns The distance of the point from the plane.
    */
   double DistanceFromPlane(
-      const tf::Vector3& plane_normal,
-      const tf::Vector3& plane_point,
-      const tf::Vector3& point);
+      const tf2::Vector3& plane_normal,
+      const tf2::Vector3& plane_point,
+      const tf2::Vector3& point);
       
-  tf::Vector3 ProjectPointToPlane(
-      const tf::Vector3& plane_normal,
-      const tf::Vector3& plane_point,
-      const tf::Vector3& point);
+  tf2::Vector3 ProjectPointToPlane(
+      const tf2::Vector3& plane_normal,
+      const tf2::Vector3& plane_point,
+      const tf2::Vector3& point);
 
   double DistanceFromLineSegment(
-      const tf::Vector3& line_start,
-      const tf::Vector3& line_end,
-      const tf::Vector3& point);
+      const tf2::Vector3& line_start,
+      const tf2::Vector3& line_end,
+      const tf2::Vector3& point);
 
   double DistanceFromLineSegment(
       const cv::Vec2d& line_start,
       const cv::Vec2d& line_end,
       const cv::Vec2d& point);
 
-  tf::Vector3 ProjectToLineSegment(
-      const tf::Vector3& line_start,
-      const tf::Vector3& line_end,
-      const tf::Vector3& point);
+  tf2::Vector3 ProjectToLineSegment(
+      const tf2::Vector3& line_start,
+      const tf2::Vector3& line_end,
+      const tf2::Vector3& point);
 
   cv::Vec2d ProjectToLineSegment(
       const cv::Vec2d& line_start,
@@ -118,11 +119,11 @@ namespace swri_geometry_util
    * @returns True unless a1 == a2, b1 == b2, or lines are parallel.
    */
   bool ClosestPointToLines(
-      const tf::Vector3& a1,
-      const tf::Vector3& a2,
-      const tf::Vector3& b1,
-      const tf::Vector3& b2,
-      tf::Vector3& point);
+      const tf2::Vector3& a1,
+      const tf2::Vector3& a2,
+      const tf2::Vector3& b1,
+      const tf2::Vector3& b2,
+      tf2::Vector3& point);
 }
 
 #endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_

@@ -34,9 +34,11 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <swri_transform_util/transform_util.h>
-#include <topic_tools/shape_shifter.h>
+#include <gps_msgs/msg/gps_fix.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geographic_msgs/msg/geo_pose.hpp>
 
 namespace swri_transform_util
 {
@@ -114,7 +116,8 @@ namespace swri_transform_util
         double reference_latitude,
         double reference_longitude,
         double reference_angle = 0,
-        double reference_altitude = 0);
+        double reference_altitude = 0,
+        rclcpp::Node::SharedPtr node = nullptr);
 
     /**
      * Zero-argument constructor.
@@ -123,7 +126,7 @@ namespace swri_transform_util
      * constructor is only used to create placeholder objects in containers
      * that require a zero-argument constructor.
      */
-    LocalXyWgs84Util();
+    explicit LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
 
     /**
      * Return whether the object has been initialized
@@ -214,6 +217,8 @@ namespace swri_transform_util
         double& longitude) const;
 
   protected:
+    rclcpp::Node::SharedPtr node_;
+
     double reference_latitude_;   //< Reference latitude in radians.
     double reference_longitude_;  //< Reference longitude in radians.
     double reference_angle_;      //< Reference angle in radians ENU.
@@ -226,14 +231,20 @@ namespace swri_transform_util
 
     std::string frame_;
 
-    ros::Subscriber origin_sub_;
+    rclcpp::Subscription<gps_msgs::msg::GPSFix>::SharedPtr gps_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
+    rclcpp::Subscription<geographic_msgs::msg::GeoPose>::SharedPtr point_sub_;
     bool initialized_;
 
     void Initialize();
 
-    void HandleOrigin(const topic_tools::ShapeShifter::ConstPtr origin);
+    void HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id);
+
+    void HandleGpsFix(gps_msgs::msg::GPSFix::UniquePtr fix);
+    void HandleGeoPose(geographic_msgs::msg::GeoPose::UniquePtr point);
+    void HandlePoseStamped(geometry_msgs::msg::PoseStamped::UniquePtr pose);
   };
-  typedef boost::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
+  typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_

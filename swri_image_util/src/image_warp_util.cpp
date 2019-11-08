@@ -32,6 +32,10 @@
 
 #include <algorithm>
 
+#include <rclcpp/logging.hpp>
+
+#include <chrono>
+
 namespace swri_image_util
 {
   cv::Mat WarpImage(const cv::Mat& image, double roll, double pitch)
@@ -145,23 +149,25 @@ namespace swri_image_util
   cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
       double& nominal_pitch,
       double& nominal_roll,
-      bool show_image_diff)
+      bool show_image_diff,
+      rclcpp::Logger logger)
   {
     if (kp1_matched_.empty() || kp2_matched_.empty())
     {
       return cv::Mat();
     }
 
-    ros::WallTime T1 = ros::WallTime::now();
+    std::chrono::system_clock::time_point T1 = std::chrono::system_clock::now();
     cv::Mat T_rigid = EstimateNominalAngle(kp1_matched_,
                                            kp2_matched_,
                                            cv::Size(im1_.cols, im1_.rows),
                                            nominal_pitch,
                                            nominal_roll);
 
-    ros::WallTime T2 = ros::WallTime::now();
+    std::chrono::system_clock::time_point T2 = std::chrono::system_clock::now();
 
-    ROS_ERROR("Estimate Nominal Angle time = %g", (T2 - T1).toSec());
+    RCLCPP_ERROR(logger, "Estimate Nominal Angle time = %g",
+        std::chrono::duration_cast<std::chrono::duration<float> >(T2 - T1).count());
     cv::Mat R = GetR(nominal_pitch, nominal_roll);
 
     if (show_image_diff)
@@ -296,11 +302,11 @@ namespace swri_image_util
     return T_rigid_final;
   }
 
-  bool PitchAndRollEstimator::ComputeGeometricMatches()
+  bool PitchAndRollEstimator::ComputeGeometricMatches(rclcpp::Logger logger)
   {
     if (im1_.empty() || im2_.empty())
     {
-      ROS_ERROR("No images defined");
+      RCLCPP_ERROR(logger, "No images defined");
       return false;
     }
 
@@ -330,12 +336,12 @@ namespace swri_image_util
     }
     catch (const std::exception& e)
     {
-      ROS_ERROR("Caught an exception when computing fundamental inliers:"
+      RCLCPP_ERROR(logger, "Caught an exception when computing fundamental inliers:"
                 " %s", e.what());
       return false;
     }
 
-    ROS_INFO("Found %d fundamental inliers.", fund_inliers1.rows);
+    RCLCPP_INFO(logger, "Found %d fundamental inliers.", fund_inliers1.rows);
 
     cv::Mat inliers1;
     cv::Mat inliers2;
@@ -347,7 +353,7 @@ namespace swri_image_util
 
     if (affine.empty())
     {
-      ROS_ERROR("Failed to compute 2D affine transform.");
+      RCLCPP_ERROR(logger, "Failed to compute 2D affine transform.");
       return false;
     }
 
@@ -392,11 +398,12 @@ namespace swri_image_util
       double pitch,
       double roll,
       const cv::Mat& pts_in,
-      cv::Mat& pts_out)
+      cv::Mat& pts_out,
+      rclcpp::Logger logger)
   {
     if (im1_.empty() || im2_.empty())
     {
-      ROS_ERROR("Object not initialized. Pitch and roll not computed.  Perhaps"
+      RCLCPP_ERROR(logger, "Object not initialized. Pitch and roll not computed.  Perhaps"
                 "call static implementation instead");
       return;
     }

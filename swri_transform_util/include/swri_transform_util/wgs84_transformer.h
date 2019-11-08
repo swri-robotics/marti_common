@@ -36,8 +36,9 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <tf/transform_datatypes.h>
-#include <tf/transform_listener.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2_ros/buffer.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include <swri_transform_util/local_xy_util.h>
 #include <swri_transform_util/transformer.h>
@@ -50,7 +51,7 @@ namespace swri_transform_util
   class Wgs84Transformer : public Transformer
   {
     public:
-      Wgs84Transformer();
+      explicit Wgs84Transformer(LocalXyWgs84UtilPtr local_xy_util);
 
       /**
        * Get a map of the transforms supported by this Transformer
@@ -58,7 +59,7 @@ namespace swri_transform_util
        *   A source->destination entry does not imply that the inverse
        *   transform is supported as well.
        */
-      virtual std::map<std::string, std::vector<std::string> > Supports() const;
+      std::map<std::string, std::vector<std::string> > Supports() const override;
 
       /**
        * Get a Transform from a non-UTM frame to UTM or vice-versa
@@ -75,14 +76,14 @@ namespace swri_transform_util
        * @return True if the transform was found, false if no transform between
        *    the specified frames is available for the specified time.
        */
-      virtual bool GetTransform(
+      bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
-        const ros::Time& time,
-        Transform& transform);
+        const tf2::TimePoint& time,
+        Transform& transform) override;
 
     protected:
-      virtual bool Initialize();
+      bool Initialize() override;
 
       std::string local_xy_frame_;
   };
@@ -93,7 +94,7 @@ namespace swri_transform_util
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
    */
-  class TfToWgs84Transform : public TransformImpl
+  class TfToWgs84Transform : public TransformImpl, public StampedTransformStampInterface
   {
   public:
     /**
@@ -106,8 +107,8 @@ namespace swri_transform_util
      *    local XY origin frame to WGS84 coordinates
      */
     TfToWgs84Transform(
-      const tf::StampedTransform& transform,
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
+      const geometry_msgs::msg::TransformStamped& transform,
+      std::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     /**
      * Transform a 3D vector to latitude/longitude
@@ -120,7 +121,7 @@ namespace swri_transform_util
      * @param[out] v_out Output vector. x is the longitude in degrees, y is the
      *    latitude in degrees, and z is the altitude in meters.
      */
-    virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+    void Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const override;
 
     /**
      * Get the orientation of the transform.
@@ -132,12 +133,12 @@ namespace swri_transform_util
      *
      * @return The orientation of the transform
      */
-    virtual tf::Quaternion GetOrientation() const;
-    virtual TransformImplPtr Inverse() const;
+    tf2::Quaternion GetOrientation() const override;
+
+    TransformImplPtr Inverse() const override;
 
   protected:
-    tf::StampedTransform transform_;
-    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+    std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
 
   /**
@@ -146,7 +147,7 @@ namespace swri_transform_util
    * This class should not be used directly. It is used internally by
    * swri_transform_util::Transform
    */
-  class Wgs84ToTfTransform : public TransformImpl
+  class Wgs84ToTfTransform : public TransformImpl, public StampedTransformStampInterface
   {
   public:
       /**
@@ -159,8 +160,8 @@ namespace swri_transform_util
        *    coordinates to the local XY origin frame
        */
     Wgs84ToTfTransform(
-      const tf::StampedTransform& transform,
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util);
+      const geometry_msgs::msg::TransformStamped& transform,
+      std::shared_ptr<LocalXyWgs84Util> local_xy_util);
 
     /**
      * Transform a WGS84 triple to a 3D vector
@@ -173,7 +174,7 @@ namespace swri_transform_util
      *    latitude in degrees, and z is the altitude in meters.
      * @param[out] v_out Output vector in the 'transform' child frame.
      */
-    virtual void Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const;
+    void Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const override;
 
     /**
      * Get the orientation of the transform.
@@ -185,11 +186,10 @@ namespace swri_transform_util
      *
      * @return The orientation of the transform
      */
-    virtual tf::Quaternion GetOrientation() const;
-    virtual TransformImplPtr Inverse() const;
+    tf2::Quaternion GetOrientation() const override;
+    TransformImplPtr Inverse() const override;
   protected:
-    tf::StampedTransform transform_;
-    boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+    std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
 }
 

@@ -30,6 +30,7 @@
 #include <swri_console_util/progress_bar.h>
 
 #include <ctime>
+#include <iomanip>
 #include <sstream>
 
 namespace swri_console_util
@@ -37,7 +38,7 @@ namespace swri_console_util
   ProgressBar::ProgressBar() :
       paused_(false),
       percent_complete_(0),
-      start_time_(ros::WallTime::now()),
+      start_time_(clock_.now()),
       paused_time_(0)
   {
     SetupTerminal();
@@ -48,7 +49,7 @@ namespace swri_console_util
     RestoreTerminal();
   }
 
-  void ProgressBar::SetStartTime(const ros::WallTime& start_time)
+  void ProgressBar::SetStartTime(const rclcpp::Time& start_time)
   {
     start_time_ = start_time;
   }
@@ -60,27 +61,27 @@ namespace swri_console_util
 
   void ProgressBar::PrintTime()
   {
-    ros::WallTime current_time = ros::WallTime::now();
-    ros::WallDuration elapsed = (current_time - start_time_) - paused_time_;
+    rclcpp::Time current_time = clock_.now();
+    rclcpp::Duration elapsed = (current_time - start_time_) - paused_time_;
 
     if (percent_complete_ > 0)
     {
-      ros::WallDuration time_left =
+      rclcpp::Duration time_left =
         (elapsed * (1.0 / percent_complete_)) - elapsed;
 
       if (paused_)
       {
         printf("\r [PAUSED]  %.2f%% Complete,   Elapsed: %s   Estimated Remaining: %s  \r",
             percent_complete_ * 100.0,
-            GetTimeString(elapsed.toSec()).c_str(),
-            GetTimeString(time_left.toSec()).c_str());
+            GetTimeString(elapsed.seconds()).c_str(),
+            GetTimeString(time_left.seconds()).c_str());
       }
       else
       {
         printf("\r [RUNNING] %.2f%% Complete,   Elapsed: %s   Estimated Remaining: %s  \r",
             percent_complete_ * 100.0,
-            GetTimeString(elapsed.toSec()).c_str(),
-            GetTimeString(time_left.toSec()).c_str());
+            GetTimeString(elapsed.seconds()).c_str(),
+            GetTimeString(time_left.seconds()).c_str());
       }
     }
     else
@@ -89,13 +90,13 @@ namespace swri_console_util
       {
         printf("\r [PAUSED]  %.2f%% Complete,   Elapsed: %s                                   \r",
             percent_complete_ * 100.0,
-            GetTimeString(elapsed.toSec()).c_str());
+            GetTimeString(elapsed.seconds()).c_str());
       }
       else
       {
         printf("\r [RUNNING] %.2f%% Complete,   Elapsed: %s                                   \r",
             percent_complete_ * 100.0,
-            GetTimeString(elapsed.toSec()).c_str());
+            GetTimeString(elapsed.seconds()).c_str());
       }
     }
 
@@ -104,11 +105,11 @@ namespace swri_console_util
 
   void ProgressBar::CheckForPause()
   {
-    ros::WallTime start_pause = ros::WallTime::now();
+    rclcpp::Time start_pause = clock_.now();
     do
     {
       bool charsleftorpaused = true;
-      while (charsleftorpaused && ros::ok())
+      while (charsleftorpaused && rclcpp::ok())
       {
         switch (ReadCharFromStdin())
         {
@@ -119,14 +120,17 @@ namespace swri_console_util
             {
               PrintTime();
             }
+            charsleftorpaused = paused_;
+            break;
           case EOF:
             charsleftorpaused = paused_;
+            break;
         }
       }
     }
-    while (paused_ && ros::ok());
+    while (paused_ && rclcpp::ok());
 
-    paused_time_ += (ros::WallTime::now() - start_pause);
+    paused_time_ = paused_time_ + (clock_.now() - start_pause);
 
     PrintTime();
   }

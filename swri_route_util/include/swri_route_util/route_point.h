@@ -32,9 +32,13 @@
 #include <string>
 #include <map>
 
-#include <tf/tf.h>
+#include <tf2/LinearMath/Vector3.h>
+#include <tf2/LinearMath/Quaternion.h>
 
-#include <marti_nav_msgs/RoutePosition.h>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <marti_nav_msgs/msg/route_position.hpp>
 
 namespace swri_route_util
 {
@@ -50,32 +54,32 @@ class RoutePoint
   RoutePoint();
 
   // Access to the route point's position as tf datatypes.
-  void setPosition(const tf::Vector3 &position);
-  const tf::Vector3& position() const;
-  tf::Vector3& position();
+  void setPosition(const tf2::Vector3 &position);
+  const tf2::Vector3& position() const;
+  tf2::Vector3& position();
 
   // Access to the route point's position as message datatypes.
-  void setPosition(const geometry_msgs::Point &position);
-  const geometry_msgs::Point positionMsg() const;
+  void setPosition(const geometry_msgs::msg::Point &position);
+  const geometry_msgs::msg::Point positionMsg() const;
 
   // Access to the route point's orientation as tf datatypes.
-  void setOrientation(const tf::Quaternion &orientation);
-  const tf::Quaternion& orientation() const;
-  tf::Quaternion& orientation();
+  void setOrientation(const tf2::Quaternion &orientation);
+  const tf2::Quaternion& orientation() const;
+  tf2::Quaternion& orientation();
 
   // Access to the route point's orientation as message datatypes.
-  void setOrientation(const geometry_msgs::Quaternion &orientation);
-  const geometry_msgs::Quaternion orientationMsg() const;
+  void setOrientation(const geometry_msgs::msg::Quaternion &orientation);
+  const geometry_msgs::msg::Quaternion orientationMsg() const;
 
   // Access to the route point's pose (position and orientation) as
   // tf datatypes.
-  void setPose(const tf::Pose &pose);
-  tf::Pose pose() const;
+  //void setPose(const tf2::Pose &pose);
+  //tf2::Pose pose() const;
 
   // Access to the route point's pose (position and orientation) as
   // message datatypes.
-  void setPose(const geometry_msgs::Pose &pose);
-  geometry_msgs::Pose poseMsg() const;
+  void setPose(const geometry_msgs::msg::Pose &pose);
+  geometry_msgs::msg::Pose poseMsg() const;
 
   // Access to the route point's id.  Ids should be unique when used,
   // but are typically not set for interpolated points.
@@ -96,7 +100,7 @@ class RoutePoint
   void setStopPointDelay(double delay);
 
   // Return a marti_nav_msgs::RoutePosition message that corresponds to this point.
-  marti_nav_msgs::RoutePosition routePosition() const;
+  marti_nav_msgs::msg::RoutePosition routePosition() const;
 
   // The following methods provide general purpose access to route
   // point properties.  They will also correctly map to properties
@@ -131,8 +135,8 @@ class RoutePoint
   void deleteProperty(const std::string &name);
   
  private:
-  tf::Vector3 position_;
-  tf::Quaternion orientation_;
+  tf2::Vector3 position_;
+  tf2::Quaternion orientation_;
 
   std::string id_;
 

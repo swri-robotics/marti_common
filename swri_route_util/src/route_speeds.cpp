@@ -31,7 +31,6 @@
 #include <unordered_map>
 
 #include <swri_geometry_util/geometry_util.h>
-#include <swri_roscpp/swri_roscpp.h>
 #include <swri_route_util/util.h>
 
 namespace smu = swri_math_util;
@@ -42,46 +41,44 @@ namespace mnm = marti_nav_msgs;
 namespace swri_route_util
 {
 // Convenience function to add a key/value pair to a KeyValueArray message.
-static void addItem(mcm::KeyValueArray &m, const std::string &key, const std::string &value)
+static void addItem(mcm::msg::KeyValueArray &m, const std::string &key, const std::string &value)
 {
   m.items.emplace_back();
   m.items.back().key = key;
   m.items.back().value = value;
 }
 
-SpeedForCurvatureParameters::SpeedForCurvatureParameters()
+SpeedForCurvatureParameters::SpeedForCurvatureParameters(const rclcpp::Node::SharedPtr& node)
   :
+  node_(node),
   use_speed_from_accel_constant_(true),
   max_lateral_accel_mss_(0.2),
+  speed_curve_(*node_),
   curvature_filter_size_(20.0)
 {
 }
 
-void SpeedForCurvatureParameters::loadFromRosParam(const ros::NodeHandle &pnh)
+void SpeedForCurvatureParameters::loadFromRosParam()
 {
   // 20.0 seems to be a good value from looking through 17 recorded routes we
   // have with and without Omnistar corrections.
-  swri::param(pnh, "curvature_filter_size", curvature_filter_size_, 20.0);
+  curvature_filter_size_ = node_->declare_parameter("curvature_filter_size", 20.0);
+  use_speed_from_accel_constant_ = node_->declare_parameter("lateral_acceleration_mode", true);
+  max_lateral_accel_mss_ = node_->declare_parameter("max_lateral_acceleration", 0.2);
 
-
-  swri::param(pnh, "lateral_acceleration_mode",
-              use_speed_from_accel_constant_, use_speed_from_accel_constant_);
-  swri::param(pnh, "max_lateral_acceleration",
-              max_lateral_accel_mss_, max_lateral_accel_mss_);
-
-  if (!speed_curve_.readFromParameter(pnh, "curvature_vs_speed", true)) {
-    ROS_ERROR("Failed to load speed/curve parameter. Forcing lateral acceleration mode.");
+  if (!speed_curve_.readFromParameter("curvature_vs_speed")) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to load speed/curve parameter. Forcing lateral acceleration mode.");
     use_speed_from_accel_constant_ = true;
   } else {
-    ROS_INFO("Loaded speed vs curvature curve (%s)", speed_curve_.interpolationTypeString().c_str());
+    RCLCPP_INFO(node_->get_logger(), "Loaded speed vs curvature curve (%s)", speed_curve_.interpolationTypeString().c_str());
     for (size_t i = 0; i < speed_curve_.numPoints(); i++) {
       std::pair<double, double> pt = speed_curve_.getPoint(i);
-      ROS_INFO("  %zu -- %f [1/m] vs %f [m/s]", i, pt.first, pt.second);
+      RCLCPP_INFO(node_->get_logger(), "  %zu -- %f [1/m] vs %f [m/s]", i, pt.first, pt.second);
     }
   }
 }
 
-void SpeedForCurvatureParameters::loadFromConfig(const mcm::KeyValueArray &config)
+void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &config)
 {
   std::unordered_map<std::string, std::string> config_map;
   for (size_t i = 0; i < config.items.size(); ++i) {
@@ -90,21 +87,21 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::KeyValueArray &confi
 
   if (config_map.count("curvature_filter_size")) {
     curvature_filter_size_ = boost::lexical_cast<double>(config_map.at("curvature_filter_size"));
-    ROS_INFO("Setting curvature_filter_size to %lf", curvature_filter_size_);
+    RCLCPP_INFO(node_->get_logger(), "Setting curvature_filter_size to %lf", curvature_filter_size_);
     config_map.erase("curvature_filter_size");
   }
 
   if (config_map.count("lateral_acceleration_mode")) {
     use_speed_from_accel_constant_ =
       boost::lexical_cast<int>(config_map.at("lateral_acceleration_mode"));
-    ROS_INFO("Setting lateral acceleration mode to %s",
+    RCLCPP_INFO(node_->get_logger(), "Setting lateral acceleration mode to %s",
              use_speed_from_accel_constant_ ? "true" : "false");
     config_map.erase("lateral_acceleration_mode");
   }
 
   if (config_map.count("max_lateral_acceleration")) {
     max_lateral_accel_mss_ = boost::lexical_cast<double>(config_map.at("max_lateral_acceleration"));
-    ROS_INFO("Setting max_lateral_acceleration to %lf", max_lateral_accel_mss_);
+    RCLCPP_INFO(node_->get_logger(), "Setting max_lateral_acceleration to %lf", max_lateral_accel_mss_);
     config_map.erase("max_lateral_acceleration");
   }
 
@@ -112,12 +109,12 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::KeyValueArray &confi
     std::string interp_type = config_map.at("curvature_vs_speed/interpolation_type");
     if (interp_type == "zero_order_hold") {
       speed_curve_.setInterpolationType(smu::Interpolation1D::ZERO_ORDER_HOLD);
-      ROS_INFO("Setting interpolation type to %s", interp_type.c_str());
+      RCLCPP_INFO(node_->get_logger(), "Setting interpolation type to %s", interp_type.c_str());
     } else if (interp_type == "linear") {
       speed_curve_.setInterpolationType(smu::Interpolation1D::LINEAR);
-      ROS_INFO("Setting interpolation type to %s", interp_type.c_str());
+      RCLCPP_INFO(node_->get_logger(), "Setting interpolation type to %s", interp_type.c_str());
     } else {
-      ROS_ERROR("Ignoring invalid interpolation type '%s'.", interp_type.c_str());
+      RCLCPP_ERROR(node_->get_logger(), "Ignoring invalid interpolation type '%s'.", interp_type.c_str());
     }
     config_map.erase("curvature_vs_speed/interpolation_type");
   }
@@ -148,24 +145,24 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::KeyValueArray &confi
   // Note that from the way x,y are constructed, they are guaranteed to have
   // the same length.
   if (x.size()) {
-    ROS_INFO("Setting curvature_vs_speed curve: ");
+    RCLCPP_INFO(node_->get_logger(), "Setting curvature_vs_speed curve: ");
     speed_curve_.clear();
     for (size_t i = 0; i < x.size(); i++) {
       speed_curve_.appendPoint(x[i], y[i]);
-      ROS_INFO("  %zu -- %lf, %lf", i, x[i], y[i]);
+      RCLCPP_INFO(node_->get_logger(), "  %zu -- %lf, %lf", i, x[i], y[i]);
     }
   }
 
   // Print warnings to help find ignored paramters
   for (auto const &it : config_map) {
-    ROS_WARN("Ignoring unknown configuration value '%s'", it.first.c_str());
+    RCLCPP_WARN(node_->get_logger(), "Ignoring unknown configuration value '%s'", it.first.c_str());
   }
 }
 
-void SpeedForCurvatureParameters::readToConfig(mcm::KeyValueArray &config) const
+void SpeedForCurvatureParameters::readToConfig(mcm::msg::KeyValueArray &config) const
 {
-  mcm::KeyValueArrayPtr msg = boost::make_shared<mcm::KeyValueArray>();
-  config.header.stamp = ros::Time::now();
+  mcm::msg::KeyValueArray::SharedPtr msg = std::make_shared<mcm::msg::KeyValueArray>();
+  config.header.stamp = rclcpp::Clock().now();
 
   addItem(config, "curvature_filter_size",
           boost::lexical_cast<std::string>(curvature_filter_size_));
@@ -192,16 +189,16 @@ static double estimateCurvature(const Route &route,
                                 double filter_size)
 {
   // Sample the route at the specified point
-  mnm::RoutePosition pos1;
+  mnm::msg::RoutePosition pos1;
   pos1.id = route.points[index].id();
   pos1.distance = 0.0;
 
   // Sample the route one filter size backwards.
-  mnm::RoutePosition pos0 = pos1;
+  mnm::msg::RoutePosition pos0 = pos1;
   pos0.distance -= filter_size;
 
   // Sample the route one filter size forwards.
-  mnm::RoutePosition pos2 = pos1;
+  mnm::msg::RoutePosition pos2 = pos1;
   pos2.distance += filter_size;
 
   // Get the actual route samples
@@ -213,9 +210,9 @@ static double estimateCurvature(const Route &route,
   interpolateRoutePosition(pt2, route, pos2, true);
 
   // Approximate the incoming tangent vector
-  const tf::Vector3 T0 = (pt1.position() - pt0.position()).normalized();
+  const tf2::Vector3 T0 = (pt1.position() - pt0.position()).normalized();
   // Approximate the outgoing tangent vector
-  const tf::Vector3 T1 = (pt2.position() - pt1.position()).normalized();
+  const tf2::Vector3 T1 = (pt2.position() - pt1.position()).normalized();
   // k ~ ||dT / ds||
   return ((T1-T0)/filter_size).length();
 }
@@ -241,11 +238,11 @@ static double maxSpeedForCurvature(double curvature,
 }
 
 void speedsForCurvature(
-  mnm::RouteSpeedArray &speeds,
+  mnm::msg::RouteSpeedArray &speeds,
   const Route &route,
   const SpeedForCurvatureParameters &parameters)
 {
-  speeds.header.stamp = ros::Time::now();
+  speeds.header.stamp = rclcpp::Clock().now();
 
   // We're going to generate a speed for every route point for now.
   speeds.speeds.resize(route.points.size());
@@ -259,8 +256,9 @@ void speedsForCurvature(
   }
 }
 
-SpeedForObstaclesParameters::SpeedForObstaclesParameters()
+SpeedForObstaclesParameters::SpeedForObstaclesParameters(const rclcpp::Node::SharedPtr& node)
   :
+  node_(node),
   origin_to_front_m_(2.0),
   origin_to_rear_m_(1.0),
   origin_to_left_m_(1.0),
@@ -273,31 +271,31 @@ SpeedForObstaclesParameters::SpeedForObstaclesParameters()
 {
 }
 
-void SpeedForObstaclesParameters::loadFromRosParam(const ros::NodeHandle &pnh)
+void SpeedForObstaclesParameters::loadFromRosParam()
 {
-  swri::param(pnh, "origin_to_front_m", origin_to_front_m_, 2.0);
-  swri::param(pnh, "origin_to_rear_m", origin_to_rear_m_, 1.0);
-  swri::param(pnh, "origin_to_left_m", origin_to_left_m_, 1.0);
-  swri::param(pnh, "origin_to_right_m", origin_to_right_m_, 1.0);
+  origin_to_front_m_ = node_->declare_parameter("origin_to_front_m", 0);
+  origin_to_rear_m_ = node_->declare_parameter("origin_to_rear_m", 0);
+  origin_to_left_m_ = node_->declare_parameter("origin_to_left_m", 0);
+  origin_to_right_m_ = node_->declare_parameter("origin_to_right_m", 0);
 
-  swri::param(pnh, "max_distance_m", max_distance_m_, 10.0);
-  swri::param(pnh, "min_distance_m", min_distance_m_, 1.0);
-  swri::param(pnh, "max_speed", max_speed_, 10.0);
-  swri::param(pnh, "min_speed", min_speed_, 1.0);
+  max_distance_m_ = node_->declare_parameter("max_distance_m", 0);
+  min_distance_m_ = node_->declare_parameter("min_distance_m", 0);
+  max_speed_ = node_->declare_parameter("max_speed", 0);
+  min_speed_ = node_->declare_parameter("min_speed", 0);
 
-  swri::param(pnh, "stop_buffer_m", stop_buffer_m_, 5.0);
+  stop_buffer_m_ = node_->declare_parameter("stop_buffer_m", 0);
 }
 
 void generateObstacleData(
   std::vector<ObstacleData> &obstacle_data,
   const stu::Transform g_route_from_obs,
-  const mnm::ObstacleArray &obstacles_msg)
+  const mnm::msg::ObstacleArray &obstacles_msg)
 {
   obstacle_data.resize(obstacles_msg.obstacles.size());
   for (size_t i = 0; i < obstacle_data.size(); i++) {
-    const mnm::Obstacle &obs_msg = obstacles_msg.obstacles[i];
+    const mnm::msg::Obstacle &obs_msg = obstacles_msg.obstacles[i];
 
-    geometry_msgs::Pose pose = obs_msg.pose;
+    geometry_msgs::msg::Pose pose = obs_msg.pose;
     if (pose.orientation.x == 0.0 &&
         pose.orientation.y == 0.0 &&
         pose.orientation.z == 0.0 &&
@@ -305,8 +303,8 @@ void generateObstacleData(
       pose.orientation.w = 1.0;
     }
 
-    tf::Transform g_obs_from_local;
-    tf::poseMsgToTF(pose, g_obs_from_local);
+    tf2::Transform g_obs_from_local;
+    tf2::fromMsg(pose, g_obs_from_local);
 
     obstacle_data[i].center = g_route_from_obs*g_obs_from_local.getOrigin();
     obstacle_data[i].center.setZ(0.0);
@@ -314,8 +312,8 @@ void generateObstacleData(
     double max_radius = 0.0;
     obstacle_data[i].polygon.resize(obs_msg.polygon.size());
     for (size_t j = 0; j < obs_msg.polygon.size(); j++) {
-      tf::Vector3 pt;
-      tf::pointMsgToTF(obs_msg.polygon[j], pt);
+      tf2::Vector3 pt;
+      tf2::fromMsg(obs_msg.polygon[j], pt);
 
       max_radius = std::max(max_radius, pt.length());
       obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
@@ -326,17 +324,18 @@ void generateObstacleData(
 }
 
 void speedsForObstacles(
-  mnm::RouteSpeedArray &speeds,
+  mnm::msg::RouteSpeedArray &speeds,
   std::vector<DistanceReport> &reports,
   const Route &route,
-  const mnm::RoutePosition &route_position,
+  const mnm::msg::RoutePosition &route_position,
   const std::vector<ObstacleData> &obstacles,
-  const SpeedForObstaclesParameters &p)
+  const SpeedForObstaclesParameters &p,
+  rclcpp::Logger logger)
 {
-  tf::Vector3 local_fl(p.origin_to_left_m_, p.origin_to_left_m_, 0.0);
-  tf::Vector3 local_fr(p.origin_to_left_m_, -p.origin_to_right_m_, 0.0);
-  tf::Vector3 local_br(-p.origin_to_right_m_, -p.origin_to_right_m_, 0.0);
-  tf::Vector3 local_bl(-p.origin_to_right_m_, p.origin_to_left_m_, 0.0);
+  tf2::Vector3 local_fl(p.origin_to_left_m_, p.origin_to_left_m_, 0.0);
+  tf2::Vector3 local_fr(p.origin_to_left_m_, -p.origin_to_right_m_, 0.0);
+  tf2::Vector3 local_br(-p.origin_to_right_m_, -p.origin_to_right_m_, 0.0);
+  tf2::Vector3 local_bl(-p.origin_to_right_m_, p.origin_to_left_m_, 0.0);
   double car_r = 0.0;
   car_r = std::max(car_r, local_fl.length());
   car_r = std::max(car_r, local_fr.length());
@@ -362,26 +361,26 @@ void speedsForObstacles(
     double veh_r = car_r;
     if (point.hasProperty("vehicle_width_override"))
     {
-      ROS_DEBUG("Speeds for obstacle found vehicle_width_override property");
+      RCLCPP_DEBUG(logger, "Speeds for obstacle found vehicle_width_override property");
       double width = point.getTypedProperty<double>("vehicle_width_override");
 
       // Pick the smaller of the radii
       if (veh_r >= width/2.0)
       {
         veh_r = width/2.0;
-        ROS_WARN_THROTTLE(1.0, "Vehicle width being overriden to %0.2f", (float)veh_r);
+        RCLCPP_WARN(logger, "Vehicle width being overridden to %0.2f", (float)veh_r);
       }
     }
 
     for (const auto& obstacle: obstacles) {
-      const tf::Vector3 v = obstacle.center - point.position();
+      const tf2::Vector3 v = obstacle.center - point.position();
       const double d = v.length() - veh_r - obstacle.radius;
       if (d > p.max_distance_m_) {
         // The obstacle is too far away from this point to be a concern
         continue;
       }
 
-      tf::Vector3 closest_point = obstacle.center;
+      tf2::Vector3 closest_point = obstacle.center;
 
       double distance = std::numeric_limits<double>::max();
       for (size_t i = 1; i < obstacle.polygon.size(); i++) {

@@ -1,4 +1,4 @@
-<package format="2">
+<package format="3">
   <name>swri_prefix_tools</name>
   <version>2.10.0</version>
   <description>
@@ -12,9 +12,13 @@
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
   
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
   <exec_depend>python-psutil</exec_depend>
   
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
 
 

@@ -29,7 +29,7 @@
 #ifndef SWRI_ROSCPP_SERVICE_SERVER_STATISTICS_H_
 #define SWRI_ROSCPP_SERVICE_SERVER_STATISTICS_H_
 
-#include <ros/time.h>
+#include <chrono>
 
 namespace swri
 {
@@ -41,11 +41,11 @@ class ServiceServerStatistics
   int failed_;
   bool last_failed_;
 
-  ros::WallDuration total_time_;
-  ros::WallDuration min_time_;
-  ros::WallDuration max_time_;
+  std::chrono::nanoseconds total_time_;
+  std::chrono::nanoseconds min_time_;
+  std::chrono::nanoseconds max_time_;
 
-  void merge(bool success, const ros::WallDuration &runtime);
+  void merge(bool success, const std::chrono::nanoseconds &runtime);
   friend class ServiceServerImpl;
 
  public:
@@ -57,9 +57,9 @@ class ServiceServerStatistics
   int failed() const { return failed_; }
   bool lastFailed() const { return last_failed_; }
 
-  ros::WallDuration meanTime() const;
-  ros::WallDuration minTime() const { return min_time_; }
-  ros::WallDuration maxTime() const { return max_time_; }
+  std::chrono::nanoseconds meanTime() const;
+  std::chrono::nanoseconds minTime() const { return min_time_; }
+  std::chrono::nanoseconds maxTime() const { return max_time_; }
 };  // struct ServiceServerStatistics
 
 
@@ -70,24 +70,24 @@ void ServiceServerStatistics::reset()
   succeeded_ = 0;
   failed_ = 0;
   last_failed_ = false;
-  total_time_ = ros::WallDuration(0);
-  min_time_ = ros::WallDuration(0);
-  max_time_ = ros::WallDuration(0);
+  total_time_ = std::chrono::nanoseconds(0);
+  min_time_ = std::chrono::nanoseconds(0);
+  max_time_ = std::chrono::nanoseconds(0);
 }
 
 inline
-ros::WallDuration ServiceServerStatistics::meanTime() const
+std::chrono::nanoseconds ServiceServerStatistics::meanTime() const
 {
   if (servings_ == 0) {
-    return ros::WallDuration(0);
+    return std::chrono::nanoseconds(0);
   } else {
-    return ros::WallDuration(total_time_.toSec() / servings_);
+    return std::chrono::nanoseconds(total_time_.count() / 1000000000 / servings_);
   }
 }
 
 inline
 void ServiceServerStatistics::merge(
-  bool success, const ros::WallDuration &runtime)
+  bool success, const std::chrono::nanoseconds &runtime)
 {
   servings_++;
   if (success) {

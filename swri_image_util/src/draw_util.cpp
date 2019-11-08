@@ -35,8 +35,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
-#include <ros/ros.h>
-
 #include <swri_opencv_util/show.h>
 
 namespace swri_image_util

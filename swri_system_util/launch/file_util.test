@@ -1,7 +1,0 @@
-<launch>
-  <param name="path1" value="$(find swri_system_util)" />
-  <param name="path2" value="$(find swri_system_util)/src" />
-  <param name="path3" value="$(find swri_system_util)/include/swri_system_util" />
-  
-  <test test-name="test_file_util" pkg="swri_system_util" type="test_file_util" />
-</launch>

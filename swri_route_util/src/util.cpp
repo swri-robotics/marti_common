@@ -58,7 +58,9 @@ void projectToXY(Route &route)
   }
 }
 
-void fillOrientations(Route &route, const tf::Vector3 &up)
+void fillOrientations(Route &route,
+    const tf2::Vector3 &up,
+    rclcpp::Logger logger)
 {
   // We can't estimate any orientations for 0 or 1 points.
   if (route.points.size() < 2) {
@@ -72,7 +74,7 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     // the vector from the previous point to the next point in the route. This
     // assumes that the points are evenly spaced, but it is a reasonable
     // estimate even if they are not.
-    tf::Vector3 v_forward;
+    tf2::Vector3 v_forward;
     if (i == 0) {
       // For the first point, we use the forward difference
       v_forward = route.points[i+1].position() - route.points[i+0].position();
@@ -86,7 +88,7 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     v_forward.normalize();
 
     // Y = Z x X
-    tf::Vector3 v_left = up.cross(v_forward);
+    tf2::Vector3 v_left = up.cross(v_forward);
     // Since Z and X are not necessarily orthogonal, we need to normalize this
     // to get a unit vector.  This is where we'll have problems if our
     // v_forward happens to be really closely aligned with the up
@@ -105,21 +107,21 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
     // forward unit vector, so we can find our actual up vector, which
     // should be in the plane spanned by v_forward and the user
     // provided up direction.
-    tf::Vector3 v_up = v_forward.cross(v_left);
+    tf2::Vector3 v_up = v_forward.cross(v_left);
     // We shouldn't need to normalize v_up, but it's good practice
     // since I don't know if the Matrix3x3 handles errors well.
     v_up.normalize();
 
     // Don't understand why Matrix3x3 doesn't have a constructor for 3
     // vectors.
-    tf::Matrix3x3 rotation(
+    tf2::Matrix3x3 rotation(
       v_forward.x(), v_left.x(), v_up.x(),
       v_forward.y(), v_left.y(), v_up.y(),
       v_forward.z(), v_left.z(), v_up.z());
 
     // Finally we can extract the orientation as a quaternion from the
     // matrix.
-    tf::Quaternion orientation;
+    tf2::Quaternion orientation;
     rotation.getRotation(orientation);
     route.points[i].setOrientation(orientation);
 
@@ -161,14 +163,14 @@ void fillOrientations(Route &route, const tf::Vector3 &up)
 
     if (!repaired_orientation)
     {
-      ROS_ERROR_THROTTLE(1.0, "fillOrientations was unable to repair an invalid "
-                        "orientation. The route may be malformed.");
+      RCLCPP_ERROR(logger, "fillOrientations was unable to repair an invalid "
+                   "orientation. The route may be malformed.");
     }
     else
     {
-      ROS_WARN_THROTTLE(1.0, "fillOrientations found and repaired an invalid "
-                        "orientation. Note that the source route may contain "
-                        "repeated points.");
+      RCLCPP_WARN(logger, "fillOrientations found and repaired an invalid "
+                  "orientation. Note that the source route may contain "
+                  "repeated points.");
     }
   }
 }
@@ -183,13 +185,13 @@ static
 void nearestDistanceToLineSegment(
   double &min_distance_from_line,
   double &min_distance_on_line,
-  const tf::Vector3 &p0,
-  const tf::Vector3 &p1,
-  const tf::Vector3 &p,
+  const tf2::Vector3 &p0,
+  const tf2::Vector3 &p1,
+  const tf2::Vector3 &p,
   bool extrapolate_start,
   bool extrapolate_end)
 {
-  tf::Vector3 v = p1 - p0;
+  tf2::Vector3 v = p1 - p0;
   const double v_len_sq = v.dot(v);
 
   // s will be the normalized distance along v that is closest to the
@@ -211,15 +213,15 @@ void nearestDistanceToLineSegment(
     s = 1.0;
   }
 
-  tf::Vector3 x_nearest = p0 + s*v;
+  tf2::Vector3 x_nearest = p0 + s*v;
 
   min_distance_from_line = x_nearest.distance(p);
   min_distance_on_line = s*std::sqrt(v_len_sq);
 }
 
-bool projectOntoRoute(mnm::RoutePosition &position,
+bool projectOntoRoute(mnm::msg::RoutePosition &position,
                       const Route &route,
-                      const tf::Vector3 &point,
+                      const tf2::Vector3 &point,
                       bool extrapolate_before_start,
                       bool extrapolate_past_end)
 {
@@ -305,11 +307,11 @@ bool projectOntoRoute(mnm::RoutePosition &position,
 }
 
 bool projectOntoRouteWindow(
-  mnm::RoutePosition &position,
+  mnm::msg::RoutePosition &position,
   const Route &route,
-  const tf::Vector3 &point,
-  const mnm::RoutePosition &window_start,
-  const mnm::RoutePosition &window_end)
+  const tf2::Vector3 &point,
+  const mnm::msg::RoutePosition &window_start,
+  const mnm::msg::RoutePosition &window_end)
 {
   if (route.points.size() < 2) {
     // We can't do anything with this.
@@ -317,11 +319,11 @@ bool projectOntoRouteWindow(
   }
 
   // First we normalize the window boundaries.
-  mnm::RoutePosition start;
+  mnm::msg::RoutePosition start;
   if (!normalizeRoutePosition(start, route, window_start)) {
     return false;
   }
-  mnm::RoutePosition end;
+  mnm::msg::RoutePosition end;
   if (!normalizeRoutePosition(end, route, window_end)) {
     return false;
   }
@@ -384,7 +386,7 @@ bool projectOntoRouteWindow(
       distance_on_line = end.distance;
     }
 
-    mnm::RoutePosition denormal_position;
+    mnm::msg::RoutePosition denormal_position;
     denormal_position.id = start.id;
     denormal_position.distance = distance_on_line;
     if (!normalizeRoutePosition(position, route, denormal_position)) {
@@ -443,7 +445,7 @@ bool projectOntoRouteWindow(
     }
   }
 
-  mnm::RoutePosition denormal_position;
+  mnm::msg::RoutePosition denormal_position;
   denormal_position.id = route.points[min_segment_index].id();
   denormal_position.distance = min_distance_on_line;
   if (!normalizeRoutePosition(position, route, denormal_position)) {
@@ -489,9 +491,9 @@ void interpolateRouteSegment(
   // Interpolate other known properties here.
 }
 
-bool normalizeRoutePosition(mnm::RoutePosition &normalized_position,
+bool normalizeRoutePosition(mnm::msg::RoutePosition &normalized_position,
                             const Route &route,
-                            const mnm::RoutePosition &position)
+                            const mnm::msg::RoutePosition &position)
 {
   size_t index;
   if (!route.findPointId(index, position.id)) {
@@ -541,10 +543,10 @@ bool normalizeRoutePosition(mnm::RoutePosition &normalized_position,
 
 bool interpolateRoutePosition(RoutePoint &dst,
                               const Route &route,
-                              const mnm::RoutePosition &position,
+                              const mnm::msg::RoutePosition &position,
                               bool allow_extrapolation)
 {
-  mnm::RoutePosition norm_position;
+  mnm::msg::RoutePosition norm_position;
   if (!normalizeRoutePosition(norm_position, route, position)) {
     return false;
   }
@@ -603,8 +605,8 @@ bool interpolateRoutePosition(RoutePoint &dst,
 
 bool routeDistance(
   double &distance,
-  const mnm::RoutePosition &start,
-  const mnm::RoutePosition &end,
+  const mnm::msg::RoutePosition &start,
+  const mnm::msg::RoutePosition &end,
   const Route &route)
 {
   size_t start_index;
@@ -641,8 +643,8 @@ bool routeDistance(
 
 bool routeDistances(
   std::vector<double> &distances,
-  const mnm::RoutePosition &start,
-  const std::vector<mnm::RoutePosition> &ends,
+  const mnm::msg::RoutePosition &start,
+  const std::vector<mnm::msg::RoutePosition> &ends,
   const Route &route)
 {
   size_t start_index;
@@ -682,14 +684,14 @@ bool routeDistances(
     // Calculate the lengths before the start point.
     for (size_t rev_i = 1; rev_i <= roi_start_index; ++rev_i) {
       const size_t i = roi_start_index - rev_i;
-      const tf::Vector3 pt1 = route.points[min_index+i].position();
-      const tf::Vector3 pt2 = route.points[min_index+i+1].position();
+      const tf2::Vector3 pt1 = route.points[min_index+i].position();
+      const tf2::Vector3 pt2 = route.points[min_index+i+1].position();
       arc_lengths[i] = arc_lengths[i+1] - stu::GreatCircleDistance(pt1, pt2);
     }
     // Calculate the lengths after the start point.
     for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
-      const tf::Vector3 pt1 = route.points[min_index+i].position();
-      const tf::Vector3 pt2 = route.points[min_index+i-1].position();
+      const tf2::Vector3 pt1 = route.points[min_index+i].position();
+      const tf2::Vector3 pt2 = route.points[min_index+i-1].position();
       arc_lengths[i] = arc_lengths[i-1] + stu::GreatCircleDistance(pt1, pt2);
     }
   } else {
@@ -697,14 +699,14 @@ bool routeDistances(
     // Calculate the lengths before the start point.
     for (size_t rev_i = 1; rev_i <= roi_start_index; ++rev_i) {
       const size_t i = roi_start_index - rev_i;
-      const tf::Vector3 pt1 = route.points[min_index+i].position();
-      const tf::Vector3 pt2 = route.points[min_index+i+1].position();
+      const tf2::Vector3 pt1 = route.points[min_index+i].position();
+      const tf2::Vector3 pt2 = route.points[min_index+i+1].position();
       arc_lengths[i] = arc_lengths[i+1] - (pt2-pt1).length();
     }
     // Calculate the lengths after the start point.
     for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
-      const tf::Vector3 pt1 = route.points[min_index+i].position();
-      const tf::Vector3 pt2 = route.points[min_index+i-1].position();
+      const tf2::Vector3 pt1 = route.points[min_index+i].position();
+      const tf2::Vector3 pt2 = route.points[min_index+i-1].position();
       arc_lengths[i] = arc_lengths[i-1] + (pt2-pt1).length();
     }
   }
@@ -727,20 +729,20 @@ bool routeDistances(
 bool extractSubroute(
   Route &sub_route,
   const Route &route,
-  const marti_nav_msgs::RoutePosition &start,
-  const marti_nav_msgs::RoutePosition &end)
+  const marti_nav_msgs::msg::RoutePosition &start,
+  const marti_nav_msgs::msg::RoutePosition &end)
 {
   sub_route.header = route.header;
   sub_route.properties_ = route.properties_;
   sub_route.guid_ = route.guid_;
   sub_route.name_ = route.name_;
 
-  mnm::RoutePosition norm_start;
+  mnm::msg::RoutePosition norm_start;
   if (!normalizeRoutePosition(norm_start, route, start)) {
     return false;
   }
 
-  mnm::RoutePosition norm_end;
+  mnm::msg::RoutePosition norm_end;
   if (!normalizeRoutePosition(norm_end, route, end)) {
     return false;
   }

@@ -27,81 +27,84 @@
 //
 // *****************************************************************************
 
+#include <functional>
 #include <string>
 
-#include <gps_common/GPSFix.h>
-#include <nodelet/nodelet.h>
-#include <ros/ros.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <gps_msgs/msg/gps_fix.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
-#include <swri_roscpp/parameters.h>
 #include <swri_transform_util/frames.h>
 #include <swri_transform_util/transform_manager.h>
-#include <tf/transform_broadcaster.h>
-#include <tf/transform_datatypes.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2_ros/transform_broadcaster.h>
 
 namespace swri_transform_util
 {
-class GpsTransformPublisher : public nodelet::Nodelet
-{
- private:
-  ros::Subscriber gps_sub_;
-
-  tf::TransformBroadcaster tf_;
-
-  swri_transform_util::TransformManager tf_manager_;
-
-  std::string veh_frame_id_;
-  std::string global_frame_id_;
-
- public:
-  void onInit();
-
-
-  void HandleGps(const gps_common::GPSFixPtr& gps_fix);
-};
-
-void GpsTransformPublisher::onInit()
-{
-  ros::NodeHandle priv = getPrivateNodeHandle();
-  swri::param(priv,"child_frame_id", veh_frame_id_, std::string("base_link"));
-  swri::param(priv,"parent_frame_id", global_frame_id_, std::string("map"));
-
-  gps_sub_ = getNodeHandle().subscribe("gps", 100, &GpsTransformPublisher::HandleGps, this);
-
-  tf_manager_.Initialize();
-}
-
-void GpsTransformPublisher::HandleGps(const gps_common::GPSFixPtr& gps_fix)
-{
-  tf::Transform transform;
-
-  // Get the orientation from the GPS track.
-  // NOTE: This will be unreliable when the vehicle is stopped or moving at low
-  //       speed.
-  double yaw = (90.0 - gps_fix->track) * swri_math_util::_deg_2_rad;
-  yaw = swri_math_util::WrapRadians(yaw, swri_math_util::_pi);
-  tf::Quaternion orientation;
-  orientation.setRPY(0, 0, yaw);
-  transform.setRotation(orientation);
-
-  // Get the position by converting lat/lon to LocalXY.
-  swri_transform_util::Transform to_local_xy;
-  if (tf_manager_.GetTransform(global_frame_id_, swri_transform_util::_wgs84_frame, ros::Time(0), to_local_xy))
+  class GpsTransformPublisher : public rclcpp::Node
   {
-    tf::Vector3 position(gps_fix->longitude, gps_fix->latitude, gps_fix->altitude);
-    position = to_local_xy * position;
-    transform.setOrigin(position);
+  public:
+    explicit GpsTransformPublisher(const rclcpp::NodeOptions& options);
 
-    tf_.sendTransform(tf::StampedTransform(
-        transform,
-        gps_fix->header.stamp,
-        global_frame_id_,
-        veh_frame_id_));
+    void HandleGps(const gps_msgs::msg::GPSFix::UniquePtr gps_fix);
+
+  private:
+    rclcpp::Subscription<gps_msgs::msg::GPSFix>::SharedPtr gps_sub_;
+
+    tf2_ros::TransformBroadcaster tf_;
+
+    swri_transform_util::TransformManager tf_manager_;
+  };
+
+  GpsTransformPublisher::GpsTransformPublisher(const rclcpp::NodeOptions& options) :
+    rclcpp::Node("gps_transform_publisher", options),
+    tf_(*this),
+    tf_manager_(shared_from_this())
+  {
+    this->declare_parameter("child_frame_id", "base_link");
+    this->declare_parameter("parent_frame_id", "map");
+
+    gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
+        "gps",
+        100,
+        std::bind(&GpsTransformPublisher::HandleGps, this, std::placeholders::_1));
+
+    tf_manager_.Initialize();
   }
-}
+
+  void GpsTransformPublisher::HandleGps(const gps_msgs::msg::GPSFix::UniquePtr gps_fix)
+  {
+    tf2::Transform transform;
+
+    // Get the orientation from the GPS track.
+    // NOTE: This will be unreliable when the vehicle is stopped or moving at low
+    //       speed.
+    double yaw = (90.0 - gps_fix->track) * swri_math_util::_deg_2_rad;
+    yaw = swri_math_util::WrapRadians(yaw, swri_math_util::_pi);
+    tf2::Quaternion orientation;
+    orientation.setRPY(0, 0, yaw);
+    transform.setRotation(orientation);
+
+    // Get the position by converting lat/lon to LocalXY.
+    swri_transform_util::Transform to_local_xy;
+    std::string global_frame = this->get_parameter("parent_frame_id").as_string();
+    if (tf_manager_.GetTransform(global_frame, swri_transform_util::_wgs84_frame, tf2::TimePointZero, to_local_xy))
+    {
+      tf2::Vector3 position(gps_fix->longitude, gps_fix->latitude, gps_fix->altitude);
+      position = to_local_xy * position;
+      transform.setOrigin(position);
+
+      geometry_msgs::msg::TransformStamped tf_stamped;
+      tf_stamped.transform = tf2::toMsg(transform);
+      tf_stamped.child_frame_id = this->get_parameter("child_frame_id").as_string();
+      tf_stamped.header.frame_id = global_frame;
+      tf_stamped.header.stamp = gps_fix->header.stamp;
+
+      tf_.sendTransform(tf_stamped);
+    }
+  }
 }  // namespace swri_transform_util
 
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_transform_util, GpsTransformPublisher)
-
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_transform_util::GpsTransformPublisher)

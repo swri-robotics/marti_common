@@ -31,20 +31,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ros/ros.h>
+#include <ament_index_cpp/get_package_prefix.hpp>
 
 #include <swri_system_util/file_util.h>
 
 TEST(FileUtilTests, Uncomplete)
 {
-  std::string path1;
-  ASSERT_TRUE(ros::param::get("path1", path1));
-
-  std::string path2;
-  ASSERT_TRUE(ros::param::get("path2", path2));
-
-  std::string path3;
-  ASSERT_TRUE(ros::param::get("path3", path3));
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
+  std::string path2 = path1 + "/src";
+  std::string path3 = path1 + "/include/swri_system_util";
 
   EXPECT_EQ(boost::filesystem::path("./"), swri_system_util::NaiveUncomplete(path1, path1));
   EXPECT_EQ(boost::filesystem::path("src"), swri_system_util::NaiveUncomplete(path2, path1));
@@ -59,9 +54,6 @@ TEST(FileUtilTests, Uncomplete)
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
-
-  ros::init(argc, argv, "test_file_util");
-  ros::NodeHandle nh;
 
   return RUN_ALL_TESTS();
 }

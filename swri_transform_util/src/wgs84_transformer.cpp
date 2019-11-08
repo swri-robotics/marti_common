@@ -29,6 +29,9 @@
 
 #include <swri_transform_util/wgs84_transformer.h>
 
+#include <tf2/utils.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <boost/make_shared.hpp>
 
 #include <swri_math_util/trig_util.h>
@@ -36,8 +39,9 @@
 
 namespace swri_transform_util
 {
-  Wgs84Transformer::Wgs84Transformer()
+  Wgs84Transformer::Wgs84Transformer(LocalXyWgs84UtilPtr local_xy_util)
   {
+    local_xy_util_ = local_xy_util;
   }
 
   std::map<std::string, std::vector<std::string> > Wgs84Transformer::Supports() const
@@ -53,7 +57,7 @@ namespace swri_transform_util
   bool Wgs84Transformer::GetTransform(
     const std::string& target_frame,
     const std::string& source_frame,
-    const ros::Time& time,
+    const tf2::TimePoint& time,
     Transform& transform)
   {
     if (!initialized_)
@@ -63,40 +67,40 @@ namespace swri_transform_util
 
     if (!initialized_)
     {
-      ROS_WARN_THROTTLE(2.0, "Wgs84Transformer not initialized");
+      RCLCPP_WARN(logger_, "Wgs84Transformer not initialized");
       return false;
     }
 
     if (FrameIdsEqual(target_frame, _wgs84_frame))
     {
-      tf::StampedTransform tf_transform;
+      geometry_msgs::msg::TransformStamped tf_transform;
       if (!Transformer::GetTransform(local_xy_frame_, source_frame , time, tf_transform))
       {
-        ROS_WARN_THROTTLE(2.0, "Failed to get transform between %s and %s",
+        RCLCPP_WARN(logger_, "Failed to get transform between %s and %s",
             source_frame.c_str(), local_xy_frame_.c_str());
         return false;
       }
 
-      transform = boost::make_shared<TfToWgs84Transform>(tf_transform, local_xy_util_);
+      transform = std::make_shared<TfToWgs84Transform>(tf_transform, local_xy_util_);
 
       return true;
     }
     else if (FrameIdsEqual(source_frame, _wgs84_frame))
     {
-      tf::StampedTransform tf_transform;
+      geometry_msgs::msg::TransformStamped tf_transform;
       if (!Transformer::GetTransform(target_frame, local_xy_frame_, time, tf_transform))
       {
-        ROS_WARN_THROTTLE(2.0, "Failed to get transform between %s and %s",
+        RCLCPP_WARN(logger_, "Failed to get transform between %s and %s",
             local_xy_frame_.c_str(), target_frame.c_str());
         return false;
       }
 
-      transform = boost::make_shared<Wgs84ToTfTransform>(tf_transform, local_xy_util_);
+      transform = std::make_shared<Wgs84ToTfTransform>(tf_transform, local_xy_util_);
 
       return true;
     }
 
-    ROS_WARN_THROTTLE(2.0, "Failed to get WGS84 transform.");
+    RCLCPP_WARN(logger_, "Failed to get WGS84 transform.");
     return false;
   }
 
@@ -104,13 +108,13 @@ namespace swri_transform_util
   {
     if (!local_xy_util_)
     {
-      local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
+      RCLCPP_ERROR(logger_, "Wgs84Transformer::Initialize: local_yx_util was unset!");
     }
 
     if (local_xy_util_->Initialized())
     {
       std::string local_xy_frame = local_xy_util_->Frame();
-      if (tf_listener_->frameExists(local_xy_frame))
+      if (tf_buffer_->_frameExists(local_xy_frame))
       {
         local_xy_frame_ = local_xy_frame;
         initialized_ = true;
@@ -121,18 +125,18 @@ namespace swri_transform_util
   }
   
   TfToWgs84Transform::TfToWgs84Transform(
-    const tf::StampedTransform& transform,
-    boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
-    transform_(transform),
+    const geometry_msgs::msg::TransformStamped& transform,
+    std::shared_ptr<LocalXyWgs84Util> local_xy_util) :
     local_xy_util_(local_xy_util)
   {
-    stamp_ = transform.stamp_;
+    transform_ = transform;
   }
 
-  void TfToWgs84Transform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
+  void TfToWgs84Transform::Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const
   {
     // Transform into the LocalXY coordinate frame using the TF transform.
-    tf::Vector3 local_xy = transform_ * v_in;
+    tf2::Stamped<tf2::Transform> tf = GetStampedTransform();
+    tf2::Vector3 local_xy = tf * v_in;
 
     // Convert to WGS84 latitude and longitude.
     double latitude, longitude;
@@ -140,37 +144,40 @@ namespace swri_transform_util
     v_out.setValue(longitude, latitude, local_xy.z());
   }
   
-  tf::Quaternion TfToWgs84Transform::GetOrientation() const
+  tf2::Quaternion TfToWgs84Transform::GetOrientation() const
   {
-    tf::Quaternion reference_angle = tf::createQuaternionFromYaw(
-      swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+    tf2::Stamped<tf2::Transform> tf;
+    tf2::fromMsg(transform_, tf);
+    tf2::Quaternion reference_angle;
+    reference_angle.setRPY(0, 0, swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
  
-    return transform_.getRotation() * reference_angle;
+    return tf.getRotation() * reference_angle;
   }
 
   TransformImplPtr TfToWgs84Transform::Inverse() const
   {
-    tf::StampedTransform inverse_transform = transform_;
-    inverse_transform.setData(transform_.inverse());
-    inverse_transform.frame_id_ = transform_.child_frame_id_;
-    inverse_transform.child_frame_id_ = transform_.frame_id_;
-    TransformImplPtr inverse = boost::make_shared<Wgs84ToTfTransform>(
-        inverse_transform,
+    tf2::Stamped<tf2::Transform> inverse_transform = GetStampedTransform();
+    inverse_transform.setData(inverse_transform.inverse());
+
+    geometry_msgs::msg::TransformStamped inverse_tf_msg;
+    inverse_tf_msg.transform = tf2::toMsg(inverse_transform);
+    inverse_tf_msg.header.frame_id = transform_.child_frame_id;
+    inverse_tf_msg.child_frame_id = transform_.header.frame_id;
+    TransformImplPtr inverse = std::make_shared<Wgs84ToTfTransform>(
+        inverse_tf_msg,
         local_xy_util_);
-    inverse->stamp_ = stamp_;
     return inverse;
   }
   
   Wgs84ToTfTransform::Wgs84ToTfTransform(
-    const tf::StampedTransform& transform,
-    boost::shared_ptr<LocalXyWgs84Util> local_xy_util) :
-    transform_(transform),
+    const geometry_msgs::msg::TransformStamped& transform,
+    std::shared_ptr<LocalXyWgs84Util> local_xy_util) :
     local_xy_util_(local_xy_util)
   {
-    stamp_ = transform.stamp_;
+    transform_ = transform;
   }
 
-  void Wgs84ToTfTransform::Transform(const tf::Vector3& v_in, tf::Vector3& v_out) const
+  void Wgs84ToTfTransform::Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const
   {
     // Convert to LocalXY coordinate frame.
     double x, y;
@@ -178,27 +185,31 @@ namespace swri_transform_util
     v_out.setValue(x, y, v_in.z());
 
     // Transform from the LocalXY coordinate frame using the TF transform.
-    v_out = transform_ * v_out;
+    v_out = GetStampedTransform() * v_out;
   }
   
-  tf::Quaternion Wgs84ToTfTransform::GetOrientation() const
+  tf2::Quaternion Wgs84ToTfTransform::GetOrientation() const
   {
-    tf::Quaternion reference_angle = tf::createQuaternionFromYaw(
-      swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+    tf2::Quaternion reference_angle;
+    reference_angle.setRPY(0, 0, swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
+
+    tf2::Stamped<tf2::Transform> tf = GetStampedTransform();
       
-    return transform_.getRotation() * reference_angle.inverse();
+    return GetStampedTransform().getRotation() * reference_angle.inverse();
   }
 
   TransformImplPtr Wgs84ToTfTransform::Inverse() const
   {
-    tf::StampedTransform inverse_transform = transform_;
-    inverse_transform.setData(transform_.inverse());
-    inverse_transform.frame_id_ = transform_.child_frame_id_;
-    inverse_transform.child_frame_id_ = transform_.frame_id_;
-    TransformImplPtr inverse = boost::make_shared<TfToWgs84Transform>(
-        inverse_transform,
+    tf2::Stamped<tf2::Transform> inverse_transform;
+    tf2::fromMsg(transform_, inverse_transform);
+    inverse_transform.setData(inverse_transform.inverse());
+
+    geometry_msgs::msg::TransformStamped inverse_tf_msg;
+    inverse_tf_msg.header.frame_id = transform_.child_frame_id;
+    inverse_tf_msg.child_frame_id = transform_.header.frame_id;
+    TransformImplPtr inverse = std::make_shared<TfToWgs84Transform>(
+        inverse_tf_msg,
         local_xy_util_);
-    inverse->stamp_ = stamp_;
     return inverse;
   }
 }

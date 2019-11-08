@@ -32,26 +32,26 @@
 namespace swri_geometry_util
 {
   double DistanceFromPlane(
-      const tf::Vector3& plane_normal,
-      const tf::Vector3& plane_point,
-      const tf::Vector3& point)
+      const tf2::Vector3& plane_normal,
+      const tf2::Vector3& plane_point,
+      const tf2::Vector3& point)
   {
     return plane_normal.normalized().dot(point - plane_point);
   }
   
-  tf::Vector3 ProjectPointToPlane(
-      const tf::Vector3& plane_normal,
-      const tf::Vector3& plane_point,
-      const tf::Vector3& point)
+  tf2::Vector3 ProjectPointToPlane(
+      const tf2::Vector3& plane_normal,
+      const tf2::Vector3& plane_point,
+      const tf2::Vector3& point)
   {
     double d = DistanceFromPlane(plane_normal, plane_point, point);
     return point - plane_normal * d;
   }
 
   double DistanceFromLineSegment(
-      const tf::Vector3& line_start,
-      const tf::Vector3& line_end,
-      const tf::Vector3& point)
+      const tf2::Vector3& line_start,
+      const tf2::Vector3& line_end,
+      const tf2::Vector3& point)
   {    
     return point.distance(ProjectToLineSegment(line_start, line_end, point));
   }
@@ -67,13 +67,13 @@ namespace swri_geometry_util
           (point[1] - proj[1]) * (point[1] - proj[1]));
   }
 
-  tf::Vector3 ProjectToLineSegment(
-      const tf::Vector3& line_start,
-      const tf::Vector3& line_end,
-      const tf::Vector3& point)
+  tf2::Vector3 ProjectToLineSegment(
+      const tf2::Vector3& line_start,
+      const tf2::Vector3& line_end,
+      const tf2::Vector3& point)
   {
-    tf::Vector3 v = line_end - line_start;
-    tf::Vector3 r = point - line_start;
+    tf2::Vector3 v = line_end - line_start;
+    tf2::Vector3 r = point - line_start;
     
     double t = r.dot(v);
     if (t <= 0)
@@ -165,20 +165,20 @@ namespace swri_geometry_util
   }
 
   bool ClosestPointToLines(
-      const tf::Vector3& a1,
-      const tf::Vector3& a2,
-      const tf::Vector3& b1,
-      const tf::Vector3& b2,
-      tf::Vector3& point)
+      const tf2::Vector3& a1,
+      const tf2::Vector3& a2,
+      const tf2::Vector3& b1,
+      const tf2::Vector3& b2,
+      tf2::Vector3& point)
   {
-    tf::Vector3 u = a1 - a2;
-    tf::Vector3 v = b1 - b2;
+    tf2::Vector3 u = a1 - a2;
+    tf2::Vector3 v = b1 - b2;
     if (u.length() == 0 || v.length() == 0)
     {
       return false;
     }
-    tf::Vector3 w = u.cross(v);
-    tf::Vector3 s = b1 - a1;
+    tf2::Vector3 w = u.cross(v);
+    tf2::Vector3 s = b1 - a1;
     if (s.length() == 0)
     {
       point = a1;
@@ -189,8 +189,8 @@ namespace swri_geometry_util
     {
       return false;
     }
-    tf::Vector3 x = a1 + u * (s.cross(v).dot(w) / f);
-    tf::Vector3 y = b1 + v * (s.cross(u).dot(w) / f);
+    tf2::Vector3 x = a1 + u * (s.cross(v).dot(w) / f);
+    tf2::Vector3 y = b1 + v * (s.cross(u).dot(w) / f);
     point = (x + y) / 2;
     return true;
   }

@@ -31,8 +31,6 @@
 
 #include <cmath>
 
-#include <ros/ros.h>
-
 #include <swri_math_util/constants.h>
 
 namespace swri_transform_util

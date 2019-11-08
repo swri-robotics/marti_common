@@ -1,52 +1,80 @@
+// *****************************************************************************
+//
+// Copyright (c) 2019, Southwest Research Institute® (SwRI®)
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Southwest Research Institute® (SwRI®) nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// *****************************************************************************
 #include <boost/bind.hpp>
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <swri_roscpp/subscriber.h>
 #include <boost/bind.hpp>
 
-#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/diagnostic_updater.hpp>
 
-#include <std_msgs/Float32.h>
-#include <nav_msgs/Odometry.h>
+#include <std_msgs/msg/float32.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 namespace du = diagnostic_updater;
 
 // Alias type for easier access to DiagnosticStatus enumerations.
-typedef diagnostic_msgs::DiagnosticStatus DS;
+typedef diagnostic_msgs::msg::DiagnosticStatus DS;
 
-class SubscriberTest
+class SubscriberTest : public rclcpp::Node
 {
-  ros::NodeHandle nh_;
-  ros::WallTimer init_timer_;
-  ros::Timer diag_timer_;
+  rclcpp::TimerBase::SharedPtr init_timer_;
+  rclcpp::TimerBase::SharedPtr diag_timer_;
 
   du::Updater diagnostic_updater_;
   
   swri::Subscriber sub_;
   
  public:
-  SubscriberTest()
+  SubscriberTest(const std::string& name) :
+    rclcpp::Node(name),
+    diagnostic_updater_(this)
   {
     // Setup a one-shot timer to initialize the node after a brief
     // delay so that /rosout is always fully initialized.
-    ROS_INFO("Starting initialization timer...");
-    init_timer_ = nh_.createWallTimer(ros::WallDuration(1.0),
-                                      &SubscriberTest::initialize,
-                                      this,
-                                      true);
+    RCLCPP_INFO(this->get_logger(), "Starting initialization timer...");
+    init_timer_ = this->create_wall_timer(std::chrono::seconds(1),
+                                      std::bind(&SubscriberTest::initialize,
+                                      this));
   }
 
-  void initialize(const ros::WallTimerEvent &ignored)
+  void initialize()
   {
     // Example to subscribe to a class method.
-    sub_ = swri::Subscriber(nh_, "odom", 100, &SubscriberTest::handleMessage, this);
+    sub_ = swri::Subscriber(*this, "odom", 100, &SubscriberTest::handleMessage, this);
 
     // Example to subscribe using a boost function.  I am unable to
     // figure out how to get the compiler to infer the type, so I have
     // to declare the function first and then pass that.
-    boost::function<void(const boost::shared_ptr< nav_msgs::Odometry const> &)> callback = boost::bind(&SubscriberTest::handleMessage, this, _1);
-    sub_ = swri::Subscriber(nh_, "odom", 100, callback);
+    std::function<void(const std::shared_ptr< nav_msgs::msg::Odometry const> &)> callback = boost::bind(&SubscriberTest::handleMessage, this, _1);
+    sub_ = swri::Subscriber(*this, "odom", 100, callback);
 
-    sub_.setTimeout(ros::Duration(1.0));
+    sub_.setTimeout(rclcpp::Duration(1.0));
 
     diagnostic_updater_.setHardwareID("none");
     diagnostic_updater_.add(
@@ -57,19 +85,19 @@ class SubscriberTest
       "swri::Subscriber test (auto diagnostics)", this,
       &SubscriberTest::autoDiagnostics);
     
-    diag_timer_ = nh_.createTimer(ros::Duration(1.0),
-                                  &SubscriberTest::handleDiagnosticsTimer,
-                                  this);
+    diag_timer_ = this->create_wall_timer(std::chrono::seconds(1),
+                                  std::bind(&SubscriberTest::handleDiagnosticsTimer,
+                                  this));
   }
 
-  void handleMessage(const nav_msgs::OdometryConstPtr &msg)
+  void handleMessage(const nav_msgs::msg::Odometry::ConstSharedPtr &msg)
   {
-    ROS_INFO_THROTTLE(1.0, "Receiving messages.");
+    RCLCPP_INFO_ONCE(this->get_logger(), "Receiving messages.");
   }
 
-  void handleDiagnosticsTimer(const ros::TimerEvent &ignored)
+  void handleDiagnosticsTimer()
   {
-    diagnostic_updater_.update();
+    diagnostic_updater_.force_update();
   }
 
   void manualDiagnostics(du::DiagnosticStatusWrapper& status) // NOLINT
@@ -91,13 +119,7 @@ class SubscriberTest
       status.mergeSummary(DS::WARN, "Timeouts have occurred.");
     }
 
-    if (sub_.mappedTopic() == sub_.unmappedTopic()) {
-      status.addf("Topic Name", "%s", sub_.mappedTopic().c_str());
-    } else {
-      status.addf("Topic Name", "%s -> %s",
-                  sub_.unmappedTopic().c_str(),
-                  sub_.mappedTopic().c_str());
-    }
+    status.addf("Topic Name", "%s", sub_.unmappedTopic().c_str());
     status.addf("Number of publishers", "%d", sub_.numPublishers());
     
     status.addf("Mean Latency [us]", "%f", sub_.meanLatencyMicroseconds());
@@ -137,10 +159,11 @@ class SubscriberTest
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "subscriber_test");
+  rclcpp::init(argc, argv);
 
-  SubscriberTest node;
-  ros::spin();
+  std::shared_ptr<SubscriberTest> node = std::make_shared<SubscriberTest>("subscriber_test");
+  
+  rclcpp::spin(node);
   
   return 0;  
 }

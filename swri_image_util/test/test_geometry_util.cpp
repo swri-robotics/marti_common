@@ -35,7 +35,7 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <tf/transform_datatypes.h>
+#include <tf2/transform_datatypes.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_image_util/geometry_util.h>
@@ -299,8 +299,8 @@ TEST(GeometryUtilTests, TestGetEllipsePoints1)
   ellipse.at<float>(1,0) = 0;
   ellipse.at<float>(1,1) = 1;
 
-  std::vector<tf::Vector3> points = swri_image_util::GetEllipsePoints(
-      ellipse, tf::Vector3(0, 0, 0), 1, 8);
+  std::vector<tf2::Vector3> points = swri_image_util::GetEllipsePoints(
+      ellipse, tf2::Vector3(0, 0, 0), 1, 8);
 
   ASSERT_EQ(8, points.size());
 

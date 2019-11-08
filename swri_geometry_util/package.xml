@@ -1,4 +1,4 @@
-<package format="2">
+<package format="3">
   <name>swri_geometry_util</name>
   <version>2.10.0</version>
   <description>
@@ -7,19 +7,26 @@
 
   </description>
   <author>Marc Alban</author>
-  <maintainer email="malban@swri.org">Marc Alban</maintainer>
+  <maintainer email="preed@swri.org">P. J. Reed</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
+  <!--
+  TODO pjr Is there a ROS2 equivalent for this?  Do we still need it?
   <depend>cmake_modules</depend>
+  -->
   <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>libgeos++-dev</depend>
-  <depend>roscpp</depend>
-  <depend>tf</depend>
+  <depend>rclcpp</depend>
+  <depend>tf2</depend>
 
-  <test_depend>rostest</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

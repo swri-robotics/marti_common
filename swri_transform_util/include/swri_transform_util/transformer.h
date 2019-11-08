@@ -36,8 +36,11 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <tf/transform_datatypes.h>
-#include <tf/transform_listener.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <tf2/transform_datatypes.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <swri_transform_util/transform.h>
 #include <swri_transform_util/local_xy_util.h>
@@ -54,7 +57,7 @@ namespace swri_transform_util
   {
     public:
       Transformer();
-      virtual ~Transformer();
+      virtual ~Transformer() = default;
 
       /**
        * Initialize the Transformer from a tf::TransformListener.
@@ -64,8 +67,8 @@ namespace swri_transform_util
        *    node use the same tf::TransformListener to reduce redundant
        *    computation.
        */
-      void Initialize(const boost::shared_ptr<tf::TransformListener> tf, 
-                      const boost::shared_ptr<LocalXyWgs84Util> xy_util = boost::shared_ptr<LocalXyWgs84Util>());
+      void Initialize(std::shared_ptr<tf2_ros::Buffer> tf,
+                      std::shared_ptr<LocalXyWgs84Util> xy_util);
 
       /**
        * Get a map of the transforms supported by this Transformer
@@ -85,7 +88,7 @@ namespace swri_transform_util
        * @param[in] target_frame Destination frame for transform
        * @param[in] source_frame Source frame for transform
        * @param[in] time Time that the transform is valid for. To get the most
-       *    recent transform, use ros::Time(0)
+       *    recent transform, use tf2::TimePoint(0)
        * @param[out] transform Output container for the transform
        * @return True if the transform was found, false if no transform between
        *    the specified frames is available for the specified time.
@@ -93,21 +96,22 @@ namespace swri_transform_util
       virtual bool GetTransform(
         const std::string& target_frame,
         const std::string& source_frame,
-        const ros::Time& time,
+        const tf2::TimePoint& time,
         Transform& transform) = 0;
 
     protected:
       bool initialized_;
-      boost::shared_ptr<tf::TransformListener> tf_listener_;
-      boost::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+      std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+      std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+      rclcpp::Logger logger_;
 
       virtual bool Initialize();
 
       virtual bool GetTransform(
           const std::string& target_frame,
           const std::string& source_frame,
-          const ros::Time& time,
-          tf::StampedTransform& transform) const;
+          const tf2::TimePoint& time,
+          geometry_msgs::msg::TransformStamped& transform) const;
   };
 }
 

@@ -1,26 +1,19 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(swri_route_util)
 
-set(BUILD_DEPS 
-  marti_common_msgs
-  marti_nav_msgs
-  roscpp
-  swri_geometry_util
-  swri_math_util
-  swri_transform_util
-  visualization_msgs
-  )
+set(CMAKE_CXX_STANDARD 14)
 
-set(RUNTIME_DEPS ${BUILD_DEPS})
+find_package(ament_cmake REQUIRED)
+find_package(marti_common_msgs REQUIRED)
+find_package(marti_nav_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(swri_geometry_util REQUIRED)
+find_package(swri_math_util REQUIRED)
+find_package(swri_roscpp REQUIRED)
+find_package(swri_transform_util REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
-
-### Catkin ###
-find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
-catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME})
-
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include)
 
 ### Build Library ###
 add_library(${PROJECT_NAME} 
@@ -29,19 +22,33 @@ add_library(${PROJECT_NAME}
   src/route_speeds.cpp
   src/util.cpp
   src/visualization.cpp
-  )
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++0x")
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+)
+ament_target_dependencies(${PROJECT_NAME}
+  ament_cmake
+  marti_common_msgs
+  marti_nav_msgs
+  rclcpp
+  swri_geometry_util
+  swri_math_util
+  swri_roscpp
+  swri_transform_util
+  visualization_msgs
+)
 
 ### Install Libraries and Executables ###
 install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 ### Install Header Files ###
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+install(DIRECTORY include/
+  DESTINATION include
 )
 
+ament_export_dependencies(ament_cmake)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+
+ament_package()

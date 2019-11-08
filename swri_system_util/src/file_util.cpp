@@ -36,27 +36,19 @@
 namespace swri_system_util
 {
   boost::filesystem::path NaiveUncomplete(
-    boost::filesystem::path const path,
-    boost::filesystem::path const base)
+    const boost::filesystem::path& path,
+    const boost::filesystem::path& base)
   {
     // This implementation was derived from:
     //   https://svn.boost.org/trac/boost/ticket/1976#comment:2
 
     // Cache system-dependent dot, double-dot and slash strings
 
-    #if BOOST_FILESYSTEM_VERSION == 3
     const boost::filesystem::path _dot = boost::filesystem::path(".").native();
     const boost::filesystem::path _dot_sep = boost::filesystem::path("./").native();
     const boost::filesystem::path _dots = boost::filesystem::path("..").native();
     const boost::filesystem::path _dots_sep = boost::filesystem::path("../").native();
     const boost::filesystem::path _sep = boost::filesystem::path("/").native();
-    #else
-    const boost::filesystem::path _dot = std::string(1, boost::filesystem::dot<boost::filesystem::path>::value);
-    const boost::filesystem::path _sep = std::string(1, boost::filesystem::slash<boost::filesystem::path>::value);
-    const boost::filesystem::path _dot_sep = _dot.string() + _sep.string();
-    const boost::filesystem::path _dots = std::string(2, boost::filesystem::dot<boost::filesystem::path>::value);
-    const boost::filesystem::path _dots_sep = _dots.string() + _sep.string();
-    #endif  // BOOST_FILESYSTE_VERSION == 3
 
     if (path == base) return _dot_sep;
 
@@ -144,11 +136,7 @@ namespace swri_system_util
       {
         boost::smatch what;
         // Skip if no match
-        #if BOOST_FILESYSTEM_VERSION == 3
         if( !boost::regex_match( i->path().filename().string(), what, my_filter ) ) continue;
-        #else
-        if( !boost::regex_match( i->leaf(), what, my_filter ) ) continue;
-        #endif  // BOOST_FILESYSTE_VERSION == 3
 
         // File matches, store it
         all_matching_files.push_back( i->path().string() );
