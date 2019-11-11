@@ -77,7 +77,7 @@ class Subscriber
              uint32_t queue_size,
              void(T::*fp)(const std::shared_ptr< M const > &),
              T *obj,
-             const rmw_qos_profile_t& transport_hints = rmw_qos_profile_default);
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
 
   // Using a boost function callback.
   template<class M>
@@ -85,7 +85,7 @@ class Subscriber
              const std::string &topic,
              uint32_t queue_size,
              const std::function<void(const std::shared_ptr<M const> &)> &callback,
-             const rmw_qos_profile_t& transport_hints = rmw_qos_profile_default);
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
 
   // This is an alternate interface that stores a received message in
   // a variable without calling a user-defined callback function.
@@ -96,7 +96,7 @@ class Subscriber
   Subscriber(rclcpp::Node &nh,
              const std::string &topic,
              std::shared_ptr< M const > *dest,
-             const rmw_qos_profile_t& transport_hints = rmw_qos_profile_default);
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
   
   Subscriber& operator=(const Subscriber &other);
 
@@ -208,7 +208,7 @@ Subscriber::Subscriber(rclcpp::Node &nh,
                        uint32_t queue_size,
                        void(T::*fp)(const std::shared_ptr< M const > &),
                        T *obj,
-                       const rmw_qos_profile_t& transport_hints)
+                       const rclcpp::QoS& transport_hints)
 {
   impl_ = std::shared_ptr<SubscriberImpl>(
     new TypedSubscriberImpl<M,T>(
@@ -221,7 +221,7 @@ Subscriber::Subscriber(rclcpp::Node &nh,
                        const std::string &topic,
                        uint32_t queue_size,
                        const std::function<void(const std::shared_ptr<M const> &)> &callback,
-                       const rmw_qos_profile_t& transport_hints)
+                       const rclcpp::QoS& transport_hints)
 {
   impl_ = std::shared_ptr<SubscriberImpl>(
     new BindSubscriberImpl<M>(
@@ -233,7 +233,7 @@ inline
 Subscriber::Subscriber(rclcpp::Node &nh,
                        const std::string &topic,
                        std::shared_ptr< M const > *dest,
-                       const rmw_qos_profile_t& transport_hints)
+                       const rclcpp::QoS& transport_hints)
 {
   impl_ = std::shared_ptr<SubscriberImpl>(
     new StorageSubscriberImpl<M>(
