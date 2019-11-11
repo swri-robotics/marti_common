@@ -308,7 +308,7 @@ namespace swri
         uint32_t queue_size,
         void(T::*fp)(const std::shared_ptr< M const > &),
         T *obj,
-        const rmw_qos_profile_t& transport_hints)
+        const rclcpp::QoS& transport_hints)
     {
       unmapped_topic_ = topic;
       // mapped_topic_ = nh->ResolveName(topic);
@@ -321,13 +321,14 @@ namespace swri
       obj_ = obj;
       //transport_hints.depth = queue_size;
 
-      rmw_qos_profile_t hints = transport_hints;
-      hints.depth = queue_size;
+      rclcpp::QoS hints = transport_hints;
+      hints.keep_last(queue_size);
 
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
+                                         hints,
                                          std::bind(&TypedSubscriberImpl::handleMessage<M>,
-                                                   this, std::placeholders::_1),
-                                         hints);
+                                                   this, std::placeholders::_1)
+                                         );
     }
 
     // Handler for messages with headers
@@ -361,7 +362,7 @@ namespace swri
         const std::string &topic,
         uint32_t queue_size,
         const std::function<void(const std::shared_ptr< const M > )> &callback,
-        const rmw_qos_profile_t& transport_hints)
+        const rclcpp::QoS& transport_hints)
     {
       unmapped_topic_ = topic;
       //mapped_topic_ = nh->ResolveName(topic);
@@ -371,12 +372,13 @@ namespace swri
 
       callback_ = callback;
 
-      rmw_qos_profile_t hints = transport_hints;
-      hints.depth = queue_size;
+      rclcpp::QoS hints = transport_hints;
+      hints.keep_last(queue_size);
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
-                                      std::bind(&BindSubscriberImpl::handleMessage<M>,
-                                                this, std::placeholders::_1),
-                                      hints);
+                                         hints,
+                                         std::bind(&BindSubscriberImpl::handleMessage<M>,
+                                                   this, std::placeholders::_1)
+                                        );
     }
 
     // Handler for messages with headers
@@ -408,7 +410,7 @@ namespace swri
         rclcpp::Node& nh,
         const std::string &topic,
         std::shared_ptr< const M > *dest,
-        const rmw_qos_profile_t& transport_hints)
+        const rclcpp::QoS& transport_hints)
     {
       unmapped_topic_ = topic;
       //mapped_topic_ = nh->ResolveName(topic);
@@ -418,9 +420,10 @@ namespace swri
 
       dest_ = dest;
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
+                                         transport_hints,
                                          std::bind(&StorageSubscriberImpl::handleMessage<M>,
-                                                   this, std::placeholders::_1),
-                                         transport_hints);
+                                                   this, std::placeholders::_1)
+                                         );
     }
 
     // Handler for messages with headers
