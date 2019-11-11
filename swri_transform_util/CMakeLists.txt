@@ -20,7 +20,7 @@ find_package(tf2_ros REQUIRED)
 
 find_package(yaml-cpp REQUIRED)
 find_package(OpenCV REQUIRED core highgui imgproc video)
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED thread)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROJ proj)
@@ -53,6 +53,7 @@ set_property(TARGET ${PROJECT_NAME}
 link_directories(${OpenCV_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
+  Boost::thread
   ${OpenCV_LIBS}
   ${PROJ_LIBRARIES}
   ${YAML_CPP_LIBRARIES}
