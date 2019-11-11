@@ -86,9 +86,10 @@ ament_target_dependencies(${PROJECT_NAME}_nodes
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
-if(BUILD_TESTING)
-  find_package(ament_cmake_gtest REQUIRED)
-
+# TODO pjr Convert unit tests
+# if(BUILD_TESTING)
+#   find_package(ament_cmake_gtest REQUIRED)
+# 
 #  add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
 #  target_link_libraries(test_local_xy_util ${PROJECT_NAME})
 #
@@ -110,7 +111,7 @@ if(BUILD_TESTING)
 #  add_rostest(test/initialize_origin_auto_gps.test)
 #  add_rostest(test/initialize_origin_auto_navsat.test)
 #  add_rostest(test/initialize_origin_manual.test)
-endif()
+# endif()
 
 install(DIRECTORY include/
   DESTINATION include
