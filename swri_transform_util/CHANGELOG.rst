@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Comment out ament_cmake_gtest (`#555 <https://github.com/pjreed/marti_common/issues/555>`_)
+* Contributors: P. J. Reed
+
 3.0.1 (2019-11-11)
 ------------------
 * Add missing dependency on Boost::thread to swri_transform_util (`#554 <https://github.com/pjreed/marti_common/issues/554>`_)
