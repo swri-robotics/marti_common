@@ -2,6 +2,10 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Replace deprecated functions in swri_roscpp
+* Contributors: P. J. Reed
 
 3.0.2 (2019-11-11)
 ------------------

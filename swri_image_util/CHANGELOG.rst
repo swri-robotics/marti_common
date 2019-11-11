@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix dependencies for swri_image_util (`#556 <https://github.com/pjreed/marti_common/issues/556>`_)
+* Contributors: P. J. Reed
+
 3.0.2 (2019-11-11)
 ------------------
 
