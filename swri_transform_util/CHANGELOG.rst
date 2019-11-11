@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add missing dependency on Boost::thread to swri_transform_util (`#554 <https://github.com/pjreed/marti_common/issues/554>`_)
+* Contributors: P. J. Reed
+
 3.0.0 (2019-11-08)
 ------------------
 * ROS2 Dashing conversion (`#549 <https://github.com/pjreed/marti_common/issues/549>`_)

@@ -2,6 +2,9 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.0 (2019-11-08)
 ------------------
 * ROS2 Dashing conversion (`#549 <https://github.com/pjreed/marti_common/issues/549>`_)
