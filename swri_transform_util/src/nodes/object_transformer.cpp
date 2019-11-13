@@ -9,11 +9,10 @@
 //
 // *****************************************************************************
 
-#include <ros/ros.h>
-#include <nodelet/nodelet.h>
+#include <rclcpp/rclcpp.hpp>
 
-#include <marti_nav_msgs/Obstacle.h>
-#include <marti_nav_msgs/ObstacleArray.h>
+#include <marti_nav_msgs/msg/obstacle.hpp>
+#include <marti_nav_msgs/msg/obstacle_array.hpp>
 
 #include <swri_roscpp/publisher.h>
 #include <swri_roscpp/subscriber.h>
@@ -22,51 +21,42 @@
 
 namespace swri_transform_util
 {
-  class ObstacleTransformer : public nodelet::Nodelet
+class ObstacleTransformer : public rclcpp::Node
   {
   public:
-    virtual void onInit()
+    explicit ObstacleTransformer(const rclcpp::NodeOptions& options) :
+      rclcpp::Node("obstacle_transformer", options),
+      tf_manager_(shared_from_this())
     {
-      ros::NodeHandle node = getMTNodeHandle();
+      this->declare_parameter("output_frame", "/wgs84");
 
-      init_timer_ = node.createTimer(
-          ros::Duration(1.0), &ObstacleTransformer::Initialize, this, true);
-    }
+      output_frame_ = this->get_parameter("output_frame").as_string();
 
-  private:
-    void Initialize(const ros::TimerEvent& unused)
-    {
-      ros::NodeHandle priv = getMTPrivateNodeHandle();
-      ros::NodeHandle node = getMTNodeHandle();
-
-      tf_manager_.Initialize();
-
-      swri::param(priv, "output_frame", output_frame_, "/wgs84");
-
-      object_array_sub_ = swri::Subscriber(node,
+      object_array_sub_ = swri::Subscriber(*this,
                                            "object_array",
                                            1,
                                            &ObstacleTransformer::handleObstacleArray,
                                            this);
 
-      viz_pub_ = swri::advertise<marti_nav_msgs::ObstacleArray>(node, "viz_array", 1);
+      viz_pub_ = swri::advertise<marti_nav_msgs::msg::ObstacleArray>(*this, "viz_array", 1);
     }
 
-    void handleObstacleArray(const marti_nav_msgs::ObstacleArrayConstPtr& obj)
+  private:
+    void handleObstacleArray(const marti_nav_msgs::msg::ObstacleArray::ConstSharedPtr& obj)
     {
-      if (viz_pub_.getNumSubscribers() == 0)
+      if (viz_pub_->get_subscription_count() == 0 && viz_pub_->get_intra_process_subscription_count() == 0)
       {
         return;
       }
 
-      marti_nav_msgs::ObstacleArrayPtr obstacles = boost::make_shared<marti_nav_msgs::ObstacleArray>();
+      marti_nav_msgs::msg::ObstacleArray::UniquePtr obstacles = std::make_unique<marti_nav_msgs::msg::ObstacleArray>();
       *obstacles = *obj;
       obstacles->header.frame_id = output_frame_;
 
       swri_transform_util::Transform transform;
       if (!tf_manager_.GetTransform(output_frame_, obj->header.frame_id, transform))
       {
-        NODELET_WARN("Failed to get transform.");
+        RCLCPP_WARN(this->get_logger(), "Failed to get transform.");
         return;
       }
 
@@ -74,7 +64,7 @@ namespace swri_transform_util
       {
         for (auto& point: ob.polygon)
         {
-           tf::Vector3 p(point.x, point.y, 0.0);
+           tf2::Vector3 p(point.x, point.y, 0.0);
            
            p = transform*p;
            point.x = p.x();
@@ -82,15 +72,11 @@ namespace swri_transform_util
         }
       }
 
-      viz_pub_.publish(obstacles);
+      viz_pub_->publish(std::move(obstacles));
     }
-
     
-
-    ros::Timer init_timer_;
-
     swri::Subscriber object_array_sub_;
-    ros::Publisher viz_pub_;
+    rclcpp::Publisher<marti_nav_msgs::msg::ObstacleArray>::SharedPtr viz_pub_;
 
     std::string output_frame_;
 
@@ -98,6 +84,5 @@ namespace swri_transform_util
   };
 }
 
-// Register nodelet plugin
-#include <swri_nodelet/class_list_macros.h>
-SWRI_NODELET_EXPORT_CLASS(swri_transform_util, ObstacleTransformer)
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(swri_transform_util::ObstacleTransformer)

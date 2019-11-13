@@ -82,6 +82,7 @@ target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::GpsTransformPublisher")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::ObstacleTransformer")
 target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
 ament_target_dependencies(${PROJECT_NAME}_nodes
   rcl_interfaces)
