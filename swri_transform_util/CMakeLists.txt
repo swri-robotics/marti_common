@@ -76,7 +76,7 @@ ament_target_dependencies(${PROJECT_NAME}
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/dynamic_transform_publisher.cpp
   src/nodes/gps_transform_publisher.cpp
-  src/nodes/object_transformer.cpp
+  src/nodes/obstacle_transformer.cpp
   )
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
