@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add a nodelet that transforms ObstacleArrays
+* Install gps_transform_publisher node (`#551 <https://github.com/pjreed/marti_common/issues/551>`_)
+* Contributors: Matthew, P. J. Reed
+
 2.10.0 (2019-09-04)
 -------------------
 * Support in initialize_origin.py specifying custom ROS topic in parameter (`#544 <https://github.com/swri-robotics/marti_common/issues/544>`_)
