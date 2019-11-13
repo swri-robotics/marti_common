@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.11.0 (2019-11-13)
+-------------------
 * Add a nodelet that transforms ObstacleArrays
 * Install gps_transform_publisher node (`#551 <https://github.com/pjreed/marti_common/issues/551>`_)
 * Contributors: Matthew, P. J. Reed

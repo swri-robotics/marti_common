@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.11.0 (2019-11-13)
+-------------------
 * Fix incorrect type for strings in dynamic params (`#553 <https://github.com/pjreed/marti_common/issues/553>`_)
 * Contributors: jgassaway
 
