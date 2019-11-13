@@ -73,8 +73,8 @@ ament_target_dependencies(${PROJECT_NAME}
 )
 
 add_library(${PROJECT_NAME}_nodes SHARED
-  src/nodelets/dynamic_transform_publisher.cpp
-  src/nodelets/gps_transform_publisher.cpp)
+  src/nodes/dynamic_transform_publisher.cpp
+  src/nodes/gps_transform_publisher.cpp)
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
