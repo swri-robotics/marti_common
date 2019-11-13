@@ -9,6 +9,7 @@ find_package(diagnostic_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
+find_package(marti_nav_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -74,7 +75,9 @@ ament_target_dependencies(${PROJECT_NAME}
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/dynamic_transform_publisher.cpp
-  src/nodes/gps_transform_publisher.cpp)
+  src/nodes/gps_transform_publisher.cpp
+  src/nodes/object_transformer.cpp
+  )
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")

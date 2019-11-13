@@ -15,5 +15,10 @@
     </description>
   </class>
 
+  <class name="swri_transform_util/obstacle_array_transformer" type="swri_transform_util::ObstacleTransformer" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to transform marti_nav_msgs::ObstacleArrays
+    </description>
+  </class>
 
 </library>
