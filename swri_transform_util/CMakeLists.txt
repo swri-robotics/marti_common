@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   geographic_msgs
   geometry_msgs
   gps_common
+  marti_nav_msgs
   nodelet
   roscpp
   rospy
@@ -40,6 +41,7 @@ catkin_package(
     geographic_msgs
     geometry_msgs
     gps_common
+    marti_nav_msgs
     nodelet
     roscpp
     rospy
@@ -74,8 +76,10 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PROJ_
 
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/dynamic_publisher.cpp
-  src/nodelets/gps_transform_publisher.cpp)
+  src/nodelets/gps_transform_publisher.cpp
+  src/nodelets/object_transformer.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES} ${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME}_nodelets PROPERTIES COMPILE_FLAGS "-std=c++11 -D__STDC_FORMAT_MACROS")
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
