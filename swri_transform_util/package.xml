@@ -23,10 +23,11 @@
   <depend>geometry_msgs</depend>
   <depend>gps_msgs</depend>
   <depend>libgeos++-dev</depend>
+  <depend>marti_nav_msgs</depend>
   <depend>proj</depend>
-  <depend>rcl_interfaces</depend>
-  <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
+  <depend>rclcpp</depend>
+  <depend>rcl_interfaces</depend>
   <depend>rclpy</depend>
   <depend>swri_math_util</depend>
   <depend>swri_roscpp</depend>
