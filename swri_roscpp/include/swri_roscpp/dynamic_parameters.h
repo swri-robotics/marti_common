@@ -59,6 +59,7 @@ namespace swri
     Type type;
     std::string name;
     std::string description;
+    std::vector<std::pair<std::string, int>> enums;
 
     //pointer to the parameter to update on change
     boost::shared_ptr<float> flt;
@@ -124,6 +125,9 @@ namespace swri
     ros::NodeHandle nh_;
 
     std::map<std::string, DynamicValue> values_;
+
+    // stores the order that the parameters were added in
+    std::vector<std::string> ordered_params_;
 
     boost::function<void(DynamicParameters&)> on_change_;
 
@@ -301,7 +305,7 @@ namespace swri
     }
 
     // Publishes the configuration parameters that have been added
-    void finalize()
+    void finalize(bool alphabetical_order = true)
     {
       boost::mutex::scoped_lock lock(*mutex_);
 
@@ -318,8 +322,20 @@ namespace swri
       gs.state = true;
       gs.id = 0;
       gs.parent = 0;
-      for (std::map<std::string, DynamicValue>::iterator param = values_.begin(); param != values_.end(); param++)
+
+      // sort by alphabetical if we want it
+      if (alphabetical_order)
       {
+        ordered_params_.clear();
+        for (const auto& val: values_)
+        {
+          ordered_params_.push_back(val.first);
+        }
+      }
+      for (int i = 0; i < ordered_params_.size(); i++)
+      {
+        auto param = values_.find(ordered_params_[i]);
+
         std::string type;
         if (param->second.type == DynamicValue::Bool)
         {
@@ -392,6 +408,35 @@ namespace swri
         desc.level = 0;
         desc.description = param->second.description;
         desc.edit_method = "";
+
+        // If this is an enum, lets make the edit method string
+        for (int i = 0; i < param->second.enums.size(); i++)
+        {
+          if (i == 0)
+          {
+            // todo properly escape the description
+            desc.edit_method += "{'enum_description': '" + desc.description + "'";
+            desc.edit_method += ", 'enum': [";
+          }
+
+          // add the enum
+          desc.edit_method += "{'srcline': 0, 'description': 'Unknown', ";
+          desc.edit_method += "'srcfile': 'dynamic_parameters.h', ";
+          desc.edit_method += "'cconsttype': 'const int', ";
+          desc.edit_method += "'value': " + std::to_string(param->second.enums[i].second) + ", ";
+          desc.edit_method += "'ctype': 'int', 'type': 'int', ";
+          desc.edit_method += "'name': '" + param->second.enums[i].first + "'";
+
+          if (i == param->second.enums.size() - 1)
+          {
+            desc.edit_method += "}]}";
+          }
+          else
+          {
+            desc.edit_method += "}, ";
+          }
+        }
+
         group.parameters.push_back(desc);
       }
       rdesc.max.groups.push_back(gs);
@@ -405,6 +450,20 @@ namespace swri
 
       set_service_ = nh_.advertiseService("set_parameters",
             &DynamicParameters::setConfigCallback, this);
+
+      ordered_params_.clear();// to save memory
+    }
+
+    void addEnums(const std::string& param, const std::vector<std::pair<std::string, int>>& enums)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(param);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to add enum to nonexistant param %s", param.c_str());
+        return;
+      }
+
+      iter->second.enums.insert(iter->second.enums.end(), enums.begin(), enums.end());
     }
 
     void setCallback(boost::function<void(DynamicParameters&)> fun)
@@ -531,6 +590,7 @@ namespace swri
       value.Default.d = default_value;
       value.flt = boost::shared_ptr<float>(new float);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -555,6 +615,7 @@ namespace swri
       value.Default.d = default_value;
       value.flt = boost::shared_ptr<float>(new float);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.flt;
       variable.mutex = mutex_;
@@ -582,6 +643,7 @@ namespace swri
       value.Default.d = default_value;
       value.dbl = boost::shared_ptr<double>(new double);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -606,6 +668,7 @@ namespace swri
       value.Default.d = default_value;
       value.dbl = boost::shared_ptr<double>(new double);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.dbl;
       variable.mutex = mutex_;
@@ -632,6 +695,7 @@ namespace swri
       value.Default.i = default_value;
       value.integer = boost::shared_ptr<int>(new int);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -656,6 +720,7 @@ namespace swri
       value.Default.i = default_value;
       value.integer = boost::shared_ptr<int>(new int);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.integer;
       variable.mutex = mutex_;
@@ -679,6 +744,7 @@ namespace swri
       value.Default.b = default_value;
       value.boolean = boost::shared_ptr<bool>(new bool);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -699,6 +765,7 @@ namespace swri
       value.Default.b = default_value;
       value.boolean = boost::shared_ptr<bool>(new bool);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.boolean;
       variable.mutex = mutex_;
@@ -722,6 +789,7 @@ namespace swri
       value.default_string = default_value;
       value.str = boost::shared_ptr<std::string>(new std::string());
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       std::string resolved_name = nh_.resolveName(name);
       //_used_params.insert(resolved_name);
@@ -742,7 +810,8 @@ namespace swri
       value.default_string = default_value;
       value.str = boost::shared_ptr<std::string>(new std::string());
       values_[name] = value;
- 
+      ordered_params_.push_back(name);
+
       variable.data = value.str;
       variable.mutex = mutex_;
 
