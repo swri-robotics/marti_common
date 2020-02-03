@@ -287,6 +287,24 @@ namespace swri
       update_pub_.publish(config);
     }
 
+    std::string escapeString(const std::string& str)
+    {
+      std::string out;
+      for (int i = 0; i < str.length(); i++)
+      {
+        char c = str[i];
+        if (c == '\'')
+        {
+          out += "\\'";
+        }
+        else
+        {
+          out += c;
+        }
+      }
+      return out;
+    }
+
   public:
 
     DynamicParameters() : mutex_(new boost::mutex)
@@ -414,8 +432,7 @@ namespace swri
         {
           if (i == 0)
           {
-            // todo properly escape the description
-            desc.edit_method += "{'enum_description': '" + desc.description + "'";
+            desc.edit_method += "{'enum_description': '" + escapeString(desc.description) + "'";
             desc.edit_method += ", 'enum': [";
           }
 
