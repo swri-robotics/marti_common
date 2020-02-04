@@ -59,7 +59,7 @@ namespace swri
     Type type;
     std::string name;
     std::string description;
-    std::vector<std::pair<std::string, int>> enums;
+    std::vector<std::pair<std::string, int> > enums;
 
     //pointer to the parameter to update on change
     boost::shared_ptr<float> flt;
@@ -345,14 +345,15 @@ namespace swri
       if (alphabetical_order)
       {
         ordered_params_.clear();
-        for (const auto& val: values_)
+
+        for (std::map<std::string, DynamicValue>::iterator it = values_.begin(); it != values_.end(); it++ )
         {
-          ordered_params_.push_back(val.first);
+          ordered_params_.push_back(it->first);
         }
       }
       for (int i = 0; i < ordered_params_.size(); i++)
       {
-        auto param = values_.find(ordered_params_[i]);
+        std::map<std::string, DynamicValue>::iterator param = values_.find(ordered_params_[i]);
 
         std::string type;
         if (param->second.type == DynamicValue::Bool)
@@ -428,9 +429,9 @@ namespace swri
         desc.edit_method = "";
 
         // If this is an enum, lets make the edit method string
-        for (int i = 0; i < param->second.enums.size(); i++)
+        for (int j = 0; j < param->second.enums.size(); j++)
         {
-          if (i == 0)
+          if (j == 0)
           {
             desc.edit_method += "{'enum_description': '" + escapeString(desc.description) + "'";
             desc.edit_method += ", 'enum': [";
@@ -440,11 +441,11 @@ namespace swri
           desc.edit_method += "{'srcline': 0, 'description': 'Unknown', ";
           desc.edit_method += "'srcfile': 'dynamic_parameters.h', ";
           desc.edit_method += "'cconsttype': 'const int', ";
-          desc.edit_method += "'value': " + std::to_string(param->second.enums[i].second) + ", ";
+          desc.edit_method += "'value': " + std::to_string(param->second.enums[j].second) + ", ";
           desc.edit_method += "'ctype': 'int', 'type': 'int', ";
-          desc.edit_method += "'name': '" + param->second.enums[i].first + "'";
+          desc.edit_method += "'name': '" + param->second.enums[j].first + "'";
 
-          if (i == param->second.enums.size() - 1)
+          if (j == param->second.enums.size() - 1)
           {
             desc.edit_method += "}]}";
           }
@@ -471,7 +472,7 @@ namespace swri
       ordered_params_.clear();// to save memory
     }
 
-    void addEnums(const std::string& param, const std::vector<std::pair<std::string, int>>& enums)
+    void addEnums(const std::string& param, const std::vector<std::pair<std::string, int> >& enums)
     {
       std::map<std::string, DynamicValue>::iterator iter = values_.find(param);
       if (iter == values_.end())
