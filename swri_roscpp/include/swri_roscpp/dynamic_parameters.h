@@ -32,6 +32,7 @@
 
 #include <map>
 #include <string>
+#include <sstream>
 
 #include <boost/thread/mutex.hpp>
 
@@ -437,11 +438,15 @@ namespace swri
             desc.edit_method += ", 'enum': [";
           }
 
+          std::ostringstream ss;
+          ss << param->second.enums[j].second;
+          std::string enum_value = ss.str();
+
           // add the enum
           desc.edit_method += "{'srcline': 0, 'description': 'Unknown', ";
           desc.edit_method += "'srcfile': 'dynamic_parameters.h', ";
           desc.edit_method += "'cconsttype': 'const int', ";
-          desc.edit_method += "'value': " + std::to_string(param->second.enums[j].second) + ", ";
+          desc.edit_method += "'value': " + enum_value + ", ";
           desc.edit_method += "'ctype': 'int', 'type': 'int', ";
           desc.edit_method += "'name': '" + param->second.enums[j].first + "'";
 
