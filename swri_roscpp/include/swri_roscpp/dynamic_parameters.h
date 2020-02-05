@@ -494,6 +494,12 @@ namespace swri
       on_change_ = fun;
     }
 
+    void update()
+    {
+      dynamic_reconfigure::Config config;
+      updateCurrent(config);
+    }
+
     //for use in the on change callback
     double getDouble(const std::string& name)
     {
