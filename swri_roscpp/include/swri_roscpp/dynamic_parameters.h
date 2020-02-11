@@ -143,7 +143,7 @@ namespace swri
       boost::mutex::scoped_lock lock(*mutex_);
       
       // update the parameters
-      for (int i = 0; i < req.config.doubles.size(); i++)
+      for (size_t i = 0; i < req.config.doubles.size(); i++)
       {
         dynamic_reconfigure::DoubleParameter param = req.config.doubles[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -170,7 +170,7 @@ namespace swri
         }
       }
 
-      for (int i = 0; i < req.config.ints.size(); i++)
+      for (size_t i = 0; i < req.config.ints.size(); i++)
       {
         dynamic_reconfigure::IntParameter param = req.config.ints[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -189,7 +189,7 @@ namespace swri
         *iter->second.integer = param.value;
       }
 
-      for (int i = 0; i < req.config.bools.size(); i++)
+      for (size_t i = 0; i < req.config.bools.size(); i++)
       {
         dynamic_reconfigure::BoolParameter param = req.config.bools[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -208,7 +208,7 @@ namespace swri
         *iter->second.boolean = param.value;
       }
 
-      for (int i = 0; i < req.config.strs.size(); i++)
+      for (size_t i = 0; i < req.config.strs.size(); i++)
       {
         dynamic_reconfigure::StrParameter param = req.config.strs[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -291,7 +291,7 @@ namespace swri
     std::string escapeString(const std::string& str)
     {
       std::string out;
-      for (int i = 0; i < str.length(); i++)
+      for (size_t i = 0; i < str.length(); i++)
       {
         char c = str[i];
         if (c == '\'')
@@ -352,7 +352,7 @@ namespace swri
           ordered_params_.push_back(it->first);
         }
       }
-      for (int i = 0; i < ordered_params_.size(); i++)
+      for (size_t i = 0; i < ordered_params_.size(); i++)
       {
         std::map<std::string, DynamicValue>::iterator param = values_.find(ordered_params_[i]);
 
@@ -430,7 +430,7 @@ namespace swri
         desc.edit_method = "";
 
         // If this is an enum, lets make the edit method string
-        for (int j = 0; j < param->second.enums.size(); j++)
+        for (size_t j = 0; j < param->second.enums.size(); j++)
         {
           if (j == 0)
           {
