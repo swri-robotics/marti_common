@@ -153,7 +153,9 @@ namespace swri_transform_util
       geometry_msgs::msg::TransformStamped tf_transform;
       if (GetTransform(tgt_frame, src_frame, time, tf_transform))
       {
-        tf2::fromMsg(tf_transform, transform);
+        tf2::Stamped<tf2::Transform> tf_out;
+        tf2::fromMsg(tf_transform, tf_out);
+        transform = Transform(tf_out);
         return true;
       }
 

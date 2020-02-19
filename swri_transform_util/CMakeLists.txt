@@ -137,7 +137,11 @@ install(PROGRAMS nodes/initialize_origin.py
 
 ament_python_install_package(${PROJECT_NAME})
 
-ament_export_dependencies(ament_cmake)
+ament_export_dependencies(
+  ament_cmake
+  geographic_msgs
+  gps_msgs
+)
 ament_export_include_directories(include
   ${YAML_CPP_INCLUDE_DIR}
 )
