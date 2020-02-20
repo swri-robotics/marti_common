@@ -138,6 +138,7 @@ namespace swri_transform_util
     if (!local_xy_util_)
     {
       RCLCPP_ERROR(logger_, "UtmTransformer::Initialize: No LocalXyWgs84Util has been set!");
+      return false;
     }
 
     if (local_xy_util_->Initialized())
