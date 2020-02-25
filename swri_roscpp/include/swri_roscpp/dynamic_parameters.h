@@ -123,7 +123,7 @@ namespace swri
     ros::Publisher descr_pub_;
     ros::Publisher update_pub_;
     ros::ServiceServer set_service_;
-    ros::NodeHandle nh_;
+    boost::shared_ptr<ros::NodeHandle> nh_;
 
     std::map<std::string, DynamicValue> values_;
 
@@ -317,10 +317,10 @@ namespace swri
     void initialize(ros::NodeHandle& pnh)
     {
       boost::mutex::scoped_lock lock(*mutex_);
-      nh_ = pnh;
+      nh_ = boost::shared_ptr<ros::NodeHandle>(new ros::NodeHandle(pnh));
 
-      descr_pub_ = nh_.advertise<dynamic_reconfigure::ConfigDescription>("parameter_descriptions", 1, true);
-      update_pub_ = nh_.advertise<dynamic_reconfigure::Config>("parameter_updates", 1, true);
+      descr_pub_ = nh_->advertise<dynamic_reconfigure::ConfigDescription>("parameter_descriptions", 1, true);
+      update_pub_ = nh_->advertise<dynamic_reconfigure::Config>("parameter_updates", 1, true);
     }
 
     // Publishes the configuration parameters that have been added
@@ -471,7 +471,7 @@ namespace swri
       dynamic_reconfigure::Config config;
       updateCurrent(config);
 
-      set_service_ = nh_.advertiseService("set_parameters",
+      set_service_ = nh_->advertiseService("set_parameters",
             &DynamicParameters::setConfigCallback, this);
 
       ordered_params_.clear();// to save memory
@@ -621,9 +621,9 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.flt, default_value);
+      nh_->param(name, *value.flt, default_value);
       variable = *value.flt;
       ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), variable);
     }
@@ -649,9 +649,9 @@ namespace swri
       variable.data = value.flt;
       variable.mutex = mutex_;
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.flt, default_value);
+      nh_->param(name, *value.flt, default_value);
       ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), *variable);
     }
 
@@ -674,9 +674,9 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.dbl, default_value);
+      nh_->param(name, *value.dbl, default_value);
       variable = *value.dbl;
       ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), variable);
     }
@@ -702,9 +702,9 @@ namespace swri
       variable.data = value.dbl;
       variable.mutex = mutex_;
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.dbl, default_value);
+      nh_->param(name, *value.dbl, default_value);
       ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), *variable);
     }
 
@@ -726,9 +726,9 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.integer, default_value);
+      nh_->param(name, *value.integer, default_value);
       variable = *value.integer;
       ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), variable);
     }
@@ -754,9 +754,9 @@ namespace swri
       variable.data = value.integer;
       variable.mutex = mutex_;
  
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.integer, default_value);
+      nh_->param(name, *value.integer, default_value);
       ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), *variable);
     }
 
@@ -775,9 +775,9 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.boolean, default_value);
+      nh_->param(name, *value.boolean, default_value);
       variable = *value.boolean;
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable ? "true" : "false");
     }
@@ -799,9 +799,9 @@ namespace swri
       variable.data = value.boolean;
       variable.mutex = mutex_;
  
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.boolean, default_value);
+      nh_->param(name, *value.boolean, default_value);
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), *variable ? "true" : "false");
     }
 
@@ -820,9 +820,9 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.str, default_value);
+      nh_->param(name, *value.str, default_value);
       variable = *value.str;
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable.c_str());
     }
@@ -844,9 +844,9 @@ namespace swri
       variable.data = value.str;
       variable.mutex = mutex_;
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.str, default_value);
+      nh_->param(name, *value.str, default_value);
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), (*variable).c_str());
     }
   };
