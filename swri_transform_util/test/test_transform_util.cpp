@@ -29,7 +29,7 @@
 
 #include <cstdlib>
 
-#include <boost/array.hpp>
+#include <array.hpp>
 
 #include <gtest/gtest.h>
 
@@ -174,7 +174,7 @@ TEST(TransformUtilTests, TestUpperLeftLowerRight)
   tf::Matrix3x3 ul(1, 2, 3, 4, 5, 6, 7, 8, 9);
   tf::Matrix3x3 lr(10, 11, 12, 13, 14, 15, 16, 17, 18);
 
-  boost::array<double, 36> array;
+  std::array<double, 36> array;
 
   swri_transform_util::SetUpperLeft(ul, array);
   swri_transform_util::SetLowerRight(lr, array);
