@@ -31,7 +31,7 @@
 #define TRANSFORM_UTIL_TRANSFORM_UTIL_H_
 
 #include <string>
-#include <boost/array.hpp>
+#include <array>
 
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Transform.h>
@@ -179,7 +179,7 @@ namespace swri_transform_util
    *
    * @returns The upper-left 3x3 sub-matrix.
    */
-  tf2::Matrix3x3 GetUpperLeft(const boost::array<double, 36>& matrix);
+  tf2::Matrix3x3 GetUpperLeft(const std::array<double, 36>& matrix);
 
   /**
    * Gets the lower-right 3x3 sub-matrix of a 6x6 matrix.
@@ -188,7 +188,7 @@ namespace swri_transform_util
    *
    * @returns The lower-right 3x3 sub-matrix.
    */
-  tf2::Matrix3x3 GetLowerRight(const boost::array<double, 36>& matrix);
+  tf2::Matrix3x3 GetLowerRight(const std::array<double, 36>& matrix);
 
   /**
    * Converts the 3x3 covariance matrices from Imu messages to a Matrix3x3
@@ -197,7 +197,7 @@ namespace swri_transform_util
    *
    * @retval     Returns the input matrix as a Matrix3x3 object
    */
-  tf2::Matrix3x3 Get3x3Cov(const boost::array<double, 9>& matrix);
+  tf2::Matrix3x3 Get3x3Cov(const std::array<double, 9>& matrix);
 
   /**
    * Converts the Matrix3x3 matrix into a 9 element covariance matrix from Imu
@@ -208,7 +208,7 @@ namespace swri_transform_util
    *
    */
   void Set3x3Cov(const tf2::Matrix3x3& matrix_in,
-                          boost::array<double, 9>& matrix_out);
+                          std::array<double, 9>& matrix_out);
   /**
    * Sets the upper-left quadrant of a 6x6 matrix with the specified 3x3
    * sub-matrix
@@ -218,7 +218,7 @@ namespace swri_transform_util
    */
   void SetUpperLeft(
       const tf2::Matrix3x3& sub_matrix,
-      boost::array<double, 36>& matrix);
+      std::array<double, 36>& matrix);
 
   /**
    * Sets the lower-right quadrant of a 6x6 matrix with the specified 3x3
@@ -229,7 +229,7 @@ namespace swri_transform_util
    */
   void SetLowerRight(
       const tf2::Matrix3x3& sub_matrix,
-      boost::array<double, 36>& matrix);
+      std::array<double, 36>& matrix);
 
   /**
    * Calculate the subtending angle of an arc (aligned with the

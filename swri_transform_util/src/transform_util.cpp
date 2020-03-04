@@ -291,7 +291,7 @@ namespace swri_transform_util
     return true;
   }
 
-  tf2::Matrix3x3 GetUpperLeft(const boost::array<double, 36>& matrix)
+  tf2::Matrix3x3 GetUpperLeft(const std::array<double, 36>& matrix)
   {
     tf2::Matrix3x3 sub_matrix;
 
@@ -308,7 +308,7 @@ namespace swri_transform_util
     return sub_matrix;
   }
 
-  tf2::Matrix3x3 GetLowerRight(const boost::array<double, 36>& matrix)
+  tf2::Matrix3x3 GetLowerRight(const std::array<double, 36>& matrix)
   {
     tf2::Matrix3x3 sub_matrix;
 
@@ -325,7 +325,7 @@ namespace swri_transform_util
     return sub_matrix;
   }
 
-  tf2::Matrix3x3 Get3x3Cov(const boost::array<double, 9>& matrix)
+  tf2::Matrix3x3 Get3x3Cov(const std::array<double, 9>& matrix)
   {
     tf2::Matrix3x3 matrix_out;
 
@@ -344,7 +344,7 @@ namespace swri_transform_util
 
   void Set3x3Cov(
       const tf2::Matrix3x3& matrix_in,
-      boost::array<double, 9>& matrix_out)
+      std::array<double, 9>& matrix_out)
   {
     matrix_out[0] = matrix_in[0][0];
     matrix_out[1] = matrix_in[0][1];
@@ -359,7 +359,7 @@ namespace swri_transform_util
 
   void SetUpperLeft(
       const tf2::Matrix3x3& sub_matrix,
-      boost::array<double, 36>& matrix)
+      std::array<double, 36>& matrix)
   {
     matrix[0] = sub_matrix[0][0];
     matrix[1] = sub_matrix[0][1];
@@ -374,7 +374,7 @@ namespace swri_transform_util
 
   void SetLowerRight(
       const tf2::Matrix3x3& sub_matrix,
-      boost::array<double, 36>& matrix)
+      std::array<double, 36>& matrix)
   {
     matrix[21] = sub_matrix[0][0];
     matrix[22] = sub_matrix[0][1];
