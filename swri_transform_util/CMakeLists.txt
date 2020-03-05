@@ -16,8 +16,16 @@ find_package(rclcpp_components REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+
+# tf2_geometry_msgs 0.12.1 broke API compatibility, so check which version
+# we need to use
+find_package(tf2_geometry_msgs REQUIRED)
+if("${tf2_geometry_msgs_VERSION}" VERSION_GREATER "0.12.0")
+  set(USE_NEW_TF2_TOMSG 1)
+else()
+  set(USE_NEW_TF2_TOMSG 0)
+endif()
 
 find_package(yaml-cpp REQUIRED)
 find_package(OpenCV REQUIRED core highgui imgproc video)
@@ -51,6 +59,11 @@ add_library(${PROJECT_NAME}
   src/wgs84_transformer.cpp)
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_compile_definitions(${PROJECT_NAME}
+  PRIVATE
+    USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
+)
+
 link_directories(${OpenCV_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
@@ -64,7 +77,6 @@ ament_target_dependencies(${PROJECT_NAME}
   geographic_msgs
   geometry_msgs
   gps_msgs
-  nodelet
   rclcpp
   swri_math_util
   swri_roscpp
@@ -85,7 +97,9 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::Gps
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::ObstacleTransformer")
 target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
 ament_target_dependencies(${PROJECT_NAME}_nodes
-  rcl_interfaces)
+  marti_nav_msgs
+  rcl_interfaces
+)
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})

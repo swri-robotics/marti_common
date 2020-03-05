@@ -63,11 +63,11 @@ if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(Boost REQUIRED COMPONENTS system)
 
-  rosidl_generate_interfaces(${PROJECT_NAME}
-    msg/TestTopicServiceRequest.msg
-    msg/TestTopicServiceResponse.msg
-    DEPENDENCIES std_msgs
-  )
+#  rosidl_generate_interfaces(${PROJECT_NAME}
+#    msg/TestTopicServiceRequest.msg
+#    msg/TestTopicServiceResponse.msg
+#    DEPENDENCIES std_msgs
+#  )
 
 #   ament_add_gtest(test_topic_service test/topic_service_test.cpp)
 #   rosidl_target_interfaces(test_topic_service ${PROJECT_NAME} "rosidl_typesupport_cpp")
