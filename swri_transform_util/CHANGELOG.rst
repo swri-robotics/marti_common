@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.4 (2020-03-05)
+------------------
 * ROS 2 Eloquent compatibility (`#568 <https://github.com/swri-robotics/marti_common/issues/568>`_)
 * Replace boost::array with std::array (`#567 <https://github.com/swri-robotics/marti_common/issues/567>`_)
 * Fix a crash that happened due to an initialization error (`#566 <https://github.com/swri-robotics/marti_common/issues/566>`_)
