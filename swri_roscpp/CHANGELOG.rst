@@ -2,6 +2,11 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* ROS 2 Eloquent compatibility (`#568 <https://github.com/swri-robotics/marti_common/issues/568>`_)
+* Contributors: P. J. Reed
+
 3.0.3 (2019-11-11)
 ------------------
 * Replace deprecated functions in swri_roscpp

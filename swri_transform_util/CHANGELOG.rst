@@ -2,6 +2,16 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* ROS 2 Eloquent compatibility (`#568 <https://github.com/swri-robotics/marti_common/issues/568>`_)
+* Replace boost::array with std::array (`#567 <https://github.com/swri-robotics/marti_common/issues/567>`_)
+* Fix a crash that happened due to an initialization error (`#566 <https://github.com/swri-robotics/marti_common/issues/566>`_)
+* Fix TransformManager so it works in ROS2 (`#565 <https://github.com/swri-robotics/marti_common/issues/565>`_)
+* Port ObstacleTransformer node to ROS2 (`#559 <https://github.com/swri-robotics/marti_common/issues/559>`_)
+* Remove "nodelets" directory (`#558 <https://github.com/swri-robotics/marti_common/issues/558>`_)
+* Contributors: P. J. Reed
+
 3.0.3 (2019-11-11)
 ------------------
 
