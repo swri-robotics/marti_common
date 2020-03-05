@@ -160,8 +160,12 @@ namespace swri_transform_util
     tf2::Stamped<tf2::Transform> inverse_transform = GetStampedTransform();
     inverse_transform.setData(inverse_transform.inverse());
 
-    geometry_msgs::msg::TransformStamped inverse_tf_msg;
-    inverse_tf_msg.transform = tf2::toMsg(inverse_transform);
+#if USE_NEW_TF2_TOMSG == 1
+    auto inverse_tf_msg = tf2::toMsg(inverse_transform);
+#else
+    auto inverse_tf_msg =
+      tf2::toMsg<tf2::Stamped<tf2::Transform>, geometry_msgs::msg::TransformStamped>(inverse_transform);
+#endif
     inverse_tf_msg.header.frame_id = transform_.child_frame_id;
     inverse_tf_msg.child_frame_id = transform_.header.frame_id;
     TransformImplPtr inverse = std::make_shared<Wgs84ToTfTransform>(
