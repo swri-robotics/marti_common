@@ -13,6 +13,7 @@ find_package(marti_nav_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
@@ -78,6 +79,7 @@ ament_target_dependencies(${PROJECT_NAME}
   geometry_msgs
   gps_msgs
   rclcpp
+  sensor_msgs
   swri_math_util
   swri_roscpp
   tf2

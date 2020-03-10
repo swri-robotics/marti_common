@@ -106,6 +106,11 @@ struct ObstacleData
 
 struct DistanceReport
 {
+  DistanceReport();
+
+  DistanceReport(bool near, bool collision, size_t routeIndex, const tf2::Vector3& vehiclePoint,
+                 const tf2::Vector3& obstaclePoint, double distance);
+
   // True if the bounding circles touch but the actual polygons do not.
   bool near;
   // True if the actual polygons touch.

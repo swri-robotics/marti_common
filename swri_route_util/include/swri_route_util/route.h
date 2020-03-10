@@ -58,13 +58,13 @@ class Route
 {
  public:
   // Create a new empty route.
-  Route();
+  Route() = default;
 
   // Create a route from an existing marti_nav_msgs::Route message.
   // Warning: If a route or a specific route point contains properties
   // with duplicate keys, only one will be kept; the others are
   // silently discarded.  Don't use non-unique property keys.
-  Route(const marti_nav_msgs::msg::Route &msg);
+  explicit Route(const marti_nav_msgs::msg::Route &msg);
 
   // Create a marti_nav_msgs::Route from the route, in place version.
   void toMsg(marti_nav_msgs::msg::Route &msg) const;
@@ -167,8 +167,8 @@ class Route
 
 // Typedef shared pointers to make migrating from the message types to
 // this interface more convenient.
-typedef boost::shared_ptr<Route> RoutePtr;
-typedef boost::shared_ptr<Route const> RouteConstPtr;
+typedef std::shared_ptr<Route> RoutePtr;
+typedef std::shared_ptr<Route const> RouteConstPtr;
 
 template<typename T>
 inline

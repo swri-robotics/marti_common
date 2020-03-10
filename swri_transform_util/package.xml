@@ -29,6 +29,7 @@
   <depend>rclcpp</depend>
   <depend>rcl_interfaces</depend>
   <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
   <depend>swri_math_util</depend>
   <depend>swri_roscpp</depend>
   <depend>tf2</depend>
@@ -36,7 +37,6 @@
   <depend>tf2_ros</depend>
   <depend>yaml-cpp</depend>
 
-  <exec_depend>sensor_msgs</exec_depend>
   <!--
   When we've got tf support for Python...
   <exec_depend>tf2_py</exec_depend>

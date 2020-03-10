@@ -39,7 +39,7 @@ class RoutePoint;
 
 // Transform a route.  The route will be transformed in place using
 // the supplied transform.  Known property types that are affected by
-// the transform are expceted to be transformed properly.  The
+// the transform are expected to be transformed properly.  The
 // frame_id of the transformed route will be set to the required
 // target_frame argument, because forgetting to up the frame_id has
 // caused difficult bugs several times.

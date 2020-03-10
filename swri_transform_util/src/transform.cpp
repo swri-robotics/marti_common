@@ -87,8 +87,6 @@ namespace swri_transform_util
   
   tf2::Quaternion Transform::operator*(const tf2::Quaternion& q) const
   {
-    tf2::Quaternion transformed = q;
-
     return q * GetOrientation();
   }
 
