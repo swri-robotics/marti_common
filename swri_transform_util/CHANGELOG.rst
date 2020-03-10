@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Also add NavSatFix support to swri_transform_util::LocalXyUtil (`#569 <https://github.com/swri-robotics/marti_common/issues/569>`_)
+* Contributors: P. J. Reed
+
 3.0.4 (2020-03-05)
 ------------------
 * ROS 2 Eloquent compatibility (`#568 <https://github.com/swri-robotics/marti_common/issues/568>`_)
