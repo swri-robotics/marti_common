@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.5 (2020-03-10)
+------------------
 * Fix linking bugs (`#569 <https://github.com/swri-robotics/marti_common/issues/569>`_)
 * Contributors: P. J. Reed
 
