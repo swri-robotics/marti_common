@@ -112,6 +112,10 @@ namespace swri_transform_util
         "/local_xy_origin",
         1,
         std::bind(&LocalXyWgs84Util::HandleGpsFix, this, std::placeholders::_1));
+    navsatfix_sub_ = node_->create_subscription<sensor_msgs::msg::NavSatFix>(
+        "/local_xy_origin",
+        1,
+        std::bind(&LocalXyWgs84Util::HandleNavSatFix, this, std::placeholders::_1));
     point_sub_ = node_->create_subscription<geographic_msgs::msg::GeoPose>(
         "/local_xy_origin",
         1,
@@ -162,6 +166,15 @@ namespace swri_transform_util
         frame_);
   }
 
+  void LocalXyWgs84Util::HandleNavSatFix(sensor_msgs::msg::NavSatFix::UniquePtr fix)
+  {
+    HandleOrigin(fix->latitude,
+        fix->longitude,
+        fix->altitude,
+        0,
+        fix->header.frame_id);
+  }
+
   void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
   {
     HandleOrigin(pose->pose.position.y,
@@ -201,6 +214,7 @@ namespace swri_transform_util
 
       Initialize();
       gps_sub_.reset();
+      navsatfix_sub_.reset();
       pose_sub_.reset();
       point_sub_.reset();
       return;

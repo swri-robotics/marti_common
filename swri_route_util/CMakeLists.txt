@@ -23,6 +23,7 @@ add_library(${PROJECT_NAME}
   src/util.cpp
   src/visualization.cpp
 )
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 ament_target_dependencies(${PROJECT_NAME}
   ament_cmake
   marti_common_msgs

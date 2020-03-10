@@ -34,10 +34,6 @@ namespace mnm = marti_nav_msgs;
 
 namespace swri_route_util
 {
-  Route::Route()
-  {
-  }
-
 // Helper function used by the Route(mnm::Route) constructor.
   static
   void pointFromMsg(RoutePoint& dst, const marti_nav_msgs::msg::RoutePoint& src)
@@ -169,8 +165,8 @@ namespace swri_route_util
   std::vector<std::string> Route::getPropertyNames() const
   {
     std::vector<std::string> names;
-    names.push_back("name");
-    names.push_back("guid");
+    names.emplace_back("name");
+    names.emplace_back("guid");
 
     for (auto const& it : properties_)
     {

@@ -464,9 +464,18 @@ void speedsForObstacles(
       speeds.speeds.back().id = point.id();
       speeds.speeds.back().distance = 0.0;
       speeds.speeds.back().speed = 0.0;
-
-      continue;
     }
   }
 }
+
+  DistanceReport::DistanceReport(bool near, bool collision, size_t routeIndex, const tf2::Vector3& vehiclePoint,
+                                 const tf2::Vector3& obstaclePoint, double distance) : near(near), collision(collision),
+                                                                                       route_index(routeIndex),
+                                                                                       vehicle_point(vehiclePoint),
+                                                                                       obstacle_point(obstaclePoint),
+                                                                                       distance(distance)
+  {}
+
+  DistanceReport::DistanceReport()
+  {}
 }  // namespace swri_route_util
