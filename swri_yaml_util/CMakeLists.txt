@@ -27,7 +27,8 @@ configure_file(version.h.in ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DEST
 
 find_package(Boost REQUIRED)
 
-include_directories(include
+include_directories(include)
+include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}
@@ -37,6 +38,7 @@ include_directories(include
 add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
+target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-deprecated-declarations")
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${YamlCpp_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
