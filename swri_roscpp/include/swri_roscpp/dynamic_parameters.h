@@ -36,6 +36,8 @@
 
 #include <boost/thread/mutex.hpp>
 
+#include <yaml-cpp/yaml.h>
+
 #include <ros/console.h>
 #include <ros/node_handle.h>
 
@@ -288,24 +290,6 @@ namespace swri
       update_pub_.publish(config);
     }
 
-    std::string escapeString(const std::string& str)
-    {
-      std::string out;
-      for (size_t i = 0; i < str.length(); i++)
-      {
-        char c = str[i];
-        if (c == '\'')
-        {
-          out += "\\'";
-        }
-        else
-        {
-          out += c;
-        }
-      }
-      return out;
-    }
-
   public:
 
     DynamicParameters() : mutex_(new boost::mutex)
@@ -427,37 +411,35 @@ namespace swri
         desc.type = type;
         desc.level = 0;
         desc.description = param->second.description;
-        desc.edit_method = "";
 
-        // If this is an enum, lets make the edit method string
-        for (size_t j = 0; j < param->second.enums.size(); j++)
+        // If this is an enum, let's make the edit method string
+        if (!param->second.enums.empty())
         {
-          if (j == 0)
-          {
-            desc.edit_method += "{'enum_description': '" + escapeString(desc.description) + "'";
-            desc.edit_method += ", 'enum': [";
-          }
+          YAML::Emitter emitter;
 
-          std::ostringstream ss;
-          ss << param->second.enums[j].second;
-          std::string enum_value = ss.str();
+          emitter << YAML::Flow << YAML::SingleQuoted;
+          emitter << YAML::BeginMap;
+          emitter << YAML::Key << "enum_description";
+          emitter << YAML::Value << desc.description;
+          emitter << YAML::Key << "enum";
+          emitter << YAML::Value << YAML::BeginSeq;
 
-          // add the enum
-          desc.edit_method += "{'srcline': 0, 'description': 'Unknown', ";
-          desc.edit_method += "'srcfile': 'dynamic_parameters.h', ";
-          desc.edit_method += "'cconsttype': 'const int', ";
-          desc.edit_method += "'value': " + enum_value + ", ";
-          desc.edit_method += "'ctype': 'int', 'type': 'int', ";
-          desc.edit_method += "'name': '" + param->second.enums[j].first + "'";
+          for (const auto& j : param->second.enums)
+          {
+            emitter << YAML::BeginMap;
+            emitter << YAML::Key << "srcline" << YAML::Value << 0;
+            emitter << YAML::Key << "description" << YAML::Value << "Unknown";
+            emitter << YAML::Key << "srcfile" << YAML::Value << "dynamic_parameters.h";
+            emitter << YAML::Key << "cconsttype" << YAML::Value << "const int";
+            emitter << YAML::Key << "value" << YAML::Value << j.second;
+            emitter << YAML::Key << "ctype" << YAML::Value << "int";
+            emitter << YAML::Key << "type" << YAML::Value << "int";
+            emitter << YAML::Key << "name" << YAML::Value << j.first;
+            emitter << YAML::EndMap;
+          }
+          emitter << YAML::EndSeq << YAML::EndMap;
 
-          if (j == param->second.enums.size() - 1)
-          {
-            desc.edit_method += "}]}";
-          }
-          else
-          {
-            desc.edit_method += "}, ";
-          }
+          desc.edit_method = emitter.c_str();
         }
 
         group.parameters.push_back(desc);
