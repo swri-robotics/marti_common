@@ -31,6 +31,8 @@
 
 #include <swri_roscpp/dynamic_parameters.h>
 
+#include <boost/function.hpp>
+
 class DynamicParametersTestNode
 {
 public:
@@ -93,7 +95,7 @@ private:
     params_.addEnums("test_int", enums);
     params_.finalize();
 
-    params_.setCallback(std::bind(&DynamicParametersTestNode::handleReconfigure, this, std::placeholders::_1));
+    params_.setCallback(boost::bind(&DynamicParametersTestNode::handleReconfigure, this, boost::placeholders::_1));
   }
 
   void handleReconfigure(swri::DynamicParameters& params)
