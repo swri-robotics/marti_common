@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="swri_roscpp"
+        type="dynamic_parameters_test_node"
+        name="dynamic_parameters_test"/>
+  <test pkg="swri_roscpp"
+        type="test_dynamic_parameters"
+        test-name="test_dynamic_parameters"/>
+</launch>

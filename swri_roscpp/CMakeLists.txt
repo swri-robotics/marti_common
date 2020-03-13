@@ -22,10 +22,16 @@ set(RUNTIME_DEPS
   std_srvs
 )
 
+find_package(PkgConfig)
+pkg_check_modules(YamlCpp yaml-cpp)
+
 ### Catkin ###
 find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
-include_directories(include
-  ${catkin_INCLUDE_DIRS})
+include_directories(include)
+include_directories(SYSTEM
+  ${catkin_INCLUDE_DIRS}
+  ${YamlCpp_INCLUDE_DIR}
+)
 
 if (CATKIN_ENABLE_TESTING)
   find_package(message_generation REQUIRED)
@@ -39,9 +45,14 @@ endif()
 
 catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
   INCLUDE_DIRS include
+  LIBRARIES ${YamlCpp_LIBRARIES}
   CFG_EXTRAS swri_roscpp-extras.cmake)
 
 ### Build Test Node ###
+add_executable(dynamic_parameters_test_node src/nodes/dynamic_parameters_test_node.cpp)
+target_link_libraries(dynamic_parameters_test_node ${catkin_LIBRARIES} ${YamlCpp_LIBRARIES})
+set_target_properties(dynamic_parameters_test_node PROPERTIES COMPILE_FLAGS "-std=c++11")
+
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 target_link_libraries(subscriber_test ${catkin_LIBRARIES})
 
@@ -66,6 +77,12 @@ if (CATKIN_ENABLE_TESTING)
                     test/params.test
                     test/params.cpp)
   target_link_libraries(test_params ${catkin_LIBRARIES})
+
+  add_rostest_gtest(test_dynamic_parameters
+    test/test_dynamic_parameters.test
+    test/test_dynamic_parameters.cpp)
+  target_link_libraries(test_dynamic_parameters ${catkin_LIBRARIES} ${YamlCpp_LIBRARIES})
+  set_target_properties(test_dynamic_parameters PROPERTIES COMPILE_FLAGS "-std=c++11")
 
   ### Test the TopicService server and client ###
   # This is a little different from the way tests are normally declared because we

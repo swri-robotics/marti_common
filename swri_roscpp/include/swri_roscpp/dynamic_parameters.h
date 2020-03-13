@@ -32,8 +32,11 @@
 
 #include <map>
 #include <string>
+#include <sstream>
 
 #include <boost/thread/mutex.hpp>
+
+#include <yaml-cpp/yaml.h>
 
 #include <ros/console.h>
 #include <ros/node_handle.h>
@@ -59,6 +62,7 @@ namespace swri
     Type type;
     std::string name;
     std::string description;
+    std::vector<std::pair<std::string, int> > enums;
 
     //pointer to the parameter to update on change
     boost::shared_ptr<float> flt;
@@ -121,9 +125,12 @@ namespace swri
     ros::Publisher descr_pub_;
     ros::Publisher update_pub_;
     ros::ServiceServer set_service_;
-    ros::NodeHandle nh_;
+    boost::shared_ptr<ros::NodeHandle> nh_;
 
     std::map<std::string, DynamicValue> values_;
+
+    // stores the order that the parameters were added in
+    std::vector<std::string> ordered_params_;
 
     boost::function<void(DynamicParameters&)> on_change_;
 
@@ -138,7 +145,7 @@ namespace swri
       boost::mutex::scoped_lock lock(*mutex_);
       
       // update the parameters
-      for (int i = 0; i < req.config.doubles.size(); i++)
+      for (size_t i = 0; i < req.config.doubles.size(); i++)
       {
         dynamic_reconfigure::DoubleParameter param = req.config.doubles[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -165,7 +172,7 @@ namespace swri
         }
       }
 
-      for (int i = 0; i < req.config.ints.size(); i++)
+      for (size_t i = 0; i < req.config.ints.size(); i++)
       {
         dynamic_reconfigure::IntParameter param = req.config.ints[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -184,7 +191,7 @@ namespace swri
         *iter->second.integer = param.value;
       }
 
-      for (int i = 0; i < req.config.bools.size(); i++)
+      for (size_t i = 0; i < req.config.bools.size(); i++)
       {
         dynamic_reconfigure::BoolParameter param = req.config.bools[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -203,7 +210,7 @@ namespace swri
         *iter->second.boolean = param.value;
       }
 
-      for (int i = 0; i < req.config.strs.size(); i++)
+      for (size_t i = 0; i < req.config.strs.size(); i++)
       {
         dynamic_reconfigure::StrParameter param = req.config.strs[i];
         std::map<std::string, DynamicValue>::iterator iter = values_.find(param.name);
@@ -294,14 +301,14 @@ namespace swri
     void initialize(ros::NodeHandle& pnh)
     {
       boost::mutex::scoped_lock lock(*mutex_);
-      nh_ = pnh;
+      nh_ = boost::shared_ptr<ros::NodeHandle>(new ros::NodeHandle(pnh));
 
-      descr_pub_ = nh_.advertise<dynamic_reconfigure::ConfigDescription>("parameter_descriptions", 1, true);
-      update_pub_ = nh_.advertise<dynamic_reconfigure::Config>("parameter_updates", 1, true);
+      descr_pub_ = nh_->advertise<dynamic_reconfigure::ConfigDescription>("parameter_descriptions", 1, true);
+      update_pub_ = nh_->advertise<dynamic_reconfigure::Config>("parameter_updates", 1, true);
     }
 
     // Publishes the configuration parameters that have been added
-    void finalize()
+    void finalize(bool alphabetical_order = true)
     {
       boost::mutex::scoped_lock lock(*mutex_);
 
@@ -318,8 +325,21 @@ namespace swri
       gs.state = true;
       gs.id = 0;
       gs.parent = 0;
-      for (std::map<std::string, DynamicValue>::iterator param = values_.begin(); param != values_.end(); param++)
+
+      // sort by alphabetical if we want it
+      if (alphabetical_order)
       {
+        ordered_params_.clear();
+
+        for (std::map<std::string, DynamicValue>::iterator it = values_.begin(); it != values_.end(); it++ )
+        {
+          ordered_params_.push_back(it->first);
+        }
+      }
+      for (size_t i = 0; i < ordered_params_.size(); i++)
+      {
+        std::map<std::string, DynamicValue>::iterator param = values_.find(ordered_params_[i]);
+
         std::string type;
         if (param->second.type == DynamicValue::Bool)
         {
@@ -391,7 +411,37 @@ namespace swri
         desc.type = type;
         desc.level = 0;
         desc.description = param->second.description;
-        desc.edit_method = "";
+
+        // If this is an enum, let's make the edit method string
+        if (!param->second.enums.empty())
+        {
+          YAML::Emitter emitter;
+
+          emitter << YAML::Flow << YAML::SingleQuoted;
+          emitter << YAML::BeginMap;
+          emitter << YAML::Key << "enum_description";
+          emitter << YAML::Value << desc.description;
+          emitter << YAML::Key << "enum";
+          emitter << YAML::Value << YAML::BeginSeq;
+
+          for (size_t j = 0; j < param->second.enums.size(); j++)
+          {
+            emitter << YAML::BeginMap;
+            emitter << YAML::Key << "srcline" << YAML::Value << 0;
+            emitter << YAML::Key << "description" << YAML::Value << "Unknown";
+            emitter << YAML::Key << "srcfile" << YAML::Value << "dynamic_parameters.h";
+            emitter << YAML::Key << "cconsttype" << YAML::Value << "const int";
+            emitter << YAML::Key << "value" << YAML::Value << param->second.enums[j].second;
+            emitter << YAML::Key << "ctype" << YAML::Value << "int";
+            emitter << YAML::Key << "type" << YAML::Value << "int";
+            emitter << YAML::Key << "name" << YAML::Value << param->second.enums[j].first;
+            emitter << YAML::EndMap;
+          }
+          emitter << YAML::EndSeq << YAML::EndMap;
+
+          desc.edit_method = emitter.c_str();
+        }
+
         group.parameters.push_back(desc);
       }
       rdesc.max.groups.push_back(gs);
@@ -403,13 +453,33 @@ namespace swri
       dynamic_reconfigure::Config config;
       updateCurrent(config);
 
-      set_service_ = nh_.advertiseService("set_parameters",
+      set_service_ = nh_->advertiseService("set_parameters",
             &DynamicParameters::setConfigCallback, this);
+
+      ordered_params_.clear();// to save memory
+    }
+
+    void addEnums(const std::string& param, const std::vector<std::pair<std::string, int> >& enums)
+    {
+      std::map<std::string, DynamicValue>::iterator iter = values_.find(param);
+      if (iter == values_.end())
+      {
+        ROS_ERROR("Tried to add enum to nonexistant param %s", param.c_str());
+        return;
+      }
+
+      iter->second.enums.insert(iter->second.enums.end(), enums.begin(), enums.end());
     }
 
     void setCallback(boost::function<void(DynamicParameters&)> fun)
     {
       on_change_ = fun;
+    }
+
+    void update()
+    {
+      dynamic_reconfigure::Config config;
+      updateCurrent(config);
     }
 
     //for use in the on change callback
@@ -531,10 +601,11 @@ namespace swri
       value.Default.d = default_value;
       value.flt = boost::shared_ptr<float>(new float);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.flt, default_value);
+      nh_->param(name, *value.flt, default_value);
       variable = *value.flt;
       ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), variable);
     }
@@ -555,13 +626,14 @@ namespace swri
       value.Default.d = default_value;
       value.flt = boost::shared_ptr<float>(new float);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.flt;
       variable.mutex = mutex_;
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.flt, default_value);
+      nh_->param(name, *value.flt, default_value);
       ROS_INFO("Read dynamic parameter %s = %f", name.c_str(), *variable);
     }
 
@@ -582,10 +654,11 @@ namespace swri
       value.Default.d = default_value;
       value.dbl = boost::shared_ptr<double>(new double);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.dbl, default_value);
+      nh_->param(name, *value.dbl, default_value);
       variable = *value.dbl;
       ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), variable);
     }
@@ -606,13 +679,14 @@ namespace swri
       value.Default.d = default_value;
       value.dbl = boost::shared_ptr<double>(new double);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.dbl;
       variable.mutex = mutex_;
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.dbl, default_value);
+      nh_->param(name, *value.dbl, default_value);
       ROS_INFO("Read dynamic parameter %s = %lf", name.c_str(), *variable);
     }
 
@@ -632,10 +706,11 @@ namespace swri
       value.Default.i = default_value;
       value.integer = boost::shared_ptr<int>(new int);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.integer, default_value);
+      nh_->param(name, *value.integer, default_value);
       variable = *value.integer;
       ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), variable);
     }
@@ -656,13 +731,14 @@ namespace swri
       value.Default.i = default_value;
       value.integer = boost::shared_ptr<int>(new int);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.integer;
       variable.mutex = mutex_;
  
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.integer, default_value);
+      nh_->param(name, *value.integer, default_value);
       ROS_INFO("Read dynamic parameter %s = %i", name.c_str(), *variable);
     }
 
@@ -679,10 +755,11 @@ namespace swri
       value.Default.b = default_value;
       value.boolean = boost::shared_ptr<bool>(new bool);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.boolean, default_value);
+      nh_->param(name, *value.boolean, default_value);
       variable = *value.boolean;
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable ? "true" : "false");
     }
@@ -699,13 +776,14 @@ namespace swri
       value.Default.b = default_value;
       value.boolean = boost::shared_ptr<bool>(new bool);
       values_[name] = value;
+      ordered_params_.push_back(name);
 
       variable.data = value.boolean;
       variable.mutex = mutex_;
  
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.boolean, default_value);
+      nh_->param(name, *value.boolean, default_value);
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), *variable ? "true" : "false");
     }
 
@@ -722,10 +800,11 @@ namespace swri
       value.default_string = default_value;
       value.str = boost::shared_ptr<std::string>(new std::string());
       values_[name] = value;
+      ordered_params_.push_back(name);
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.str, default_value);
+      nh_->param(name, *value.str, default_value);
       variable = *value.str;
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), variable.c_str());
     }
@@ -742,13 +821,14 @@ namespace swri
       value.default_string = default_value;
       value.str = boost::shared_ptr<std::string>(new std::string());
       values_[name] = value;
- 
+      ordered_params_.push_back(name);
+
       variable.data = value.str;
       variable.mutex = mutex_;
 
-      std::string resolved_name = nh_.resolveName(name);
+      std::string resolved_name = nh_->resolveName(name);
       //_used_params.insert(resolved_name);
-      nh_.param(name, *value.str, default_value);
+      nh_->param(name, *value.str, default_value);
       ROS_INFO("Read dynamic parameter %s = %s", name.c_str(), (*variable).c_str());
     }
   };
