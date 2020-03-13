@@ -424,17 +424,17 @@ namespace swri
           emitter << YAML::Key << "enum";
           emitter << YAML::Value << YAML::BeginSeq;
 
-          for (const auto& j : param->second.enums)
+          for (size_t j = 0; j < param->second.enums.size(); j++)
           {
             emitter << YAML::BeginMap;
             emitter << YAML::Key << "srcline" << YAML::Value << 0;
             emitter << YAML::Key << "description" << YAML::Value << "Unknown";
             emitter << YAML::Key << "srcfile" << YAML::Value << "dynamic_parameters.h";
             emitter << YAML::Key << "cconsttype" << YAML::Value << "const int";
-            emitter << YAML::Key << "value" << YAML::Value << j.second;
+            emitter << YAML::Key << "value" << YAML::Value << param->second.enums[j].second;
             emitter << YAML::Key << "ctype" << YAML::Value << "int";
             emitter << YAML::Key << "type" << YAML::Value << "int";
-            emitter << YAML::Key << "name" << YAML::Value << j.first;
+            emitter << YAML::Key << "name" << YAML::Value << param->second.enums[j].first;
             emitter << YAML::EndMap;
           }
           emitter << YAML::EndSeq << YAML::EndMap;
