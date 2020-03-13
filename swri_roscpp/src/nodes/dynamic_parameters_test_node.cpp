@@ -96,7 +96,7 @@ private:
     params_.addEnums("test_int", enums);
     params_.finalize();
 
-    params_.setCallback(boost::bind(&DynamicParametersTestNode::handleReconfigure, this, boost::placeholders::_1));
+    params_.setCallback(boost::bind(&DynamicParametersTestNode::handleReconfigure, this, _1));
   }
 
   void handleReconfigure(swri::DynamicParameters& params)
