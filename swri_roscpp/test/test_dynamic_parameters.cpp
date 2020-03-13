@@ -37,6 +37,10 @@
 
 #include <yaml-cpp/yaml.h>
 
+/**
+ * Convenience function for checking that several values in a reconfigure
+ * response are what we expect
+ */
 void checkValues(const dynamic_reconfigure::ReconfigureResponse& srv_resp, int int_value, double double_value, std::string string_value, bool bool_value)
 {
   bool got_int = false;
@@ -94,6 +98,13 @@ void checkValues(const dynamic_reconfigure::ReconfigureResponse& srv_resp, int i
   ASSERT_TRUE(got_float);
 }
 
+/**
+ * This test will:
+ * 1) Verify that the test node's service is advertised
+ * 2) Check that the default values for its parameters are all 0 / empty
+ * 3) Set all of their values through the service
+ * 4) Verify that the values are set as expected
+ */
 TEST(DynamicParameters, testGetAndSetParams)
 {
   ros::NodeHandle nh;
@@ -102,14 +113,10 @@ TEST(DynamicParameters, testGetAndSetParams)
 
   ros::ServiceClient client =
       nh.serviceClient<dynamic_reconfigure::Reconfigure>("/dynamic_parameters_test/set_parameters");
-  bool result = client.waitForExistence(ros::Duration(1.0));
+  bool result = client.waitForExistence(ros::Duration(5.0));
   ASSERT_TRUE(result);
   result = client.call(srv_req, srv_resp);
   ASSERT_TRUE(result);
-
-  for (auto& group : srv_resp.config.groups)
-  {
-  }
 
   checkValues(srv_resp, 0, 0.0, "", false);
 
@@ -126,6 +133,9 @@ TEST(DynamicParameters, testGetAndSetParams)
   checkValues(srv_resp, 2, 1.0, "test", true);
 }
 
+/**
+ * Test that the parameter descriptions are being published as expected.
+ */
 TEST(DynamicParameters, testParamDescriptions)
 {
   ros::NodeHandle nh("~");
@@ -142,7 +152,7 @@ TEST(DynamicParameters, testParamDescriptions)
 
   ros::Rate rate(10);
   ros::Time start = ros::Time::now();
-  while (!got_description && ros::Time::now() - start < ros::Duration(1))
+  while (!got_description && ros::Time::now() - start < ros::Duration(5))
   {
     ros::spinOnce();
     rate.sleep();

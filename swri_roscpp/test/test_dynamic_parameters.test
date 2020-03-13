@@ -5,6 +5,5 @@
         name="dynamic_parameters_test"/>
   <test pkg="swri_roscpp"
         type="test_dynamic_parameters"
-        test-name="test_dynamic_parameters"
-        launch-prefix="bash -c 'sleep 1.0; $0 $@'"/>
+        test-name="test_dynamic_parameters"/>
 </launch>
