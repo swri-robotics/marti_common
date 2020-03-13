@@ -13,6 +13,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
+  <depend>boost</depend>
   <depend>diagnostic_updater</depend>
   <depend>dynamic_reconfigure</depend>
   <depend>marti_common_msgs</depend>

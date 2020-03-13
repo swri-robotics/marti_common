@@ -32,6 +32,7 @@
 #include <swri_roscpp/dynamic_parameters.h>
 
 #include <boost/function.hpp>
+#include <boost/bind/placeholders.hpp>
 
 class DynamicParametersTestNode
 {
