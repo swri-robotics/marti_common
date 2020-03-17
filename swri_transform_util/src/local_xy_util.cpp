@@ -102,28 +102,52 @@ namespace swri_transform_util
     initialized_(false)
   {
     RCLCPP_INFO(node->get_logger(), "Subscribing to /local_xy_origin");
+    rcl_interfaces::msg::ParameterDescriptor desc;
+    desc.name = "origin_type";
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+    desc.read_only = true;
+    node->declare_parameter("origin_type", "all", desc);
+
     ResetInitialization();
   }
 
   void LocalXyWgs84Util::ResetInitialization()
   {
-    //ros::NodeHandle node;
-    gps_sub_ = node_->create_subscription<gps_msgs::msg::GPSFix>(
-        "/local_xy_origin",
-        1,
-        std::bind(&LocalXyWgs84Util::HandleGpsFix, this, std::placeholders::_1));
-    navsatfix_sub_ = node_->create_subscription<sensor_msgs::msg::NavSatFix>(
-        "/local_xy_origin",
-        1,
-        std::bind(&LocalXyWgs84Util::HandleNavSatFix, this, std::placeholders::_1));
-    point_sub_ = node_->create_subscription<geographic_msgs::msg::GeoPose>(
-        "/local_xy_origin",
-        1,
-        std::bind(&LocalXyWgs84Util::HandleGeoPose, this, std::placeholders::_1));
-    pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
-        "/local_xy_origin",
-        1,
-        std::bind(&LocalXyWgs84Util::HandlePoseStamped, this, std::placeholders::_1));
+    std::string type;
+    node_->get_parameter("origin_type", type);
+    RCLCPP_INFO(node_->get_logger(), "origin_type: %s", type.c_str());
+    gps_sub_.reset();
+    navsatfix_sub_.reset();
+    point_sub_.reset();
+    pose_sub_.reset();
+    if (type == "all" || type == "gpsfix")
+    {
+      gps_sub_ = node_->create_subscription<gps_msgs::msg::GPSFix>(
+          "/local_xy_origin",
+          1,
+          std::bind(&LocalXyWgs84Util::HandleGpsFix, this, std::placeholders::_1));
+    }
+    if (type == "all" || type == "navsatfix")
+    {
+      navsatfix_sub_ = node_->create_subscription<sensor_msgs::msg::NavSatFix>(
+          "/local_xy_origin",
+          1,
+          std::bind(&LocalXyWgs84Util::HandleNavSatFix, this, std::placeholders::_1));
+    }
+    if (type == "all" || type == "geopose")
+    {
+      point_sub_ = node_->create_subscription<geographic_msgs::msg::GeoPose>(
+          "/local_xy_origin",
+          1,
+          std::bind(&LocalXyWgs84Util::HandleGeoPose, this, std::placeholders::_1));
+    }
+    if (type == "all" || type == "posestamped")
+    {
+      pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
+          "/local_xy_origin",
+          1,
+          std::bind(&LocalXyWgs84Util::HandlePoseStamped, this, std::placeholders::_1));
+    }
     initialized_ = false;
   }
 
