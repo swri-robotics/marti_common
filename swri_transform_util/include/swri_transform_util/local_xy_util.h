@@ -34,10 +34,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <swri_transform_util/transform_util.h>
-#include <gps_msgs/msg/gps_fix.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geographic_msgs/msg/geo_pose.hpp>
-#include <sensor_msgs/msg/nav_sat_fix.hpp>
 
 namespace swri_transform_util
 {
@@ -230,19 +227,13 @@ namespace swri_transform_util
 
     std::string frame_;
 
-    rclcpp::Subscription<gps_msgs::msg::GPSFix>::SharedPtr gps_sub_;
-    rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr navsatfix_sub_;
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
-    rclcpp::Subscription<geographic_msgs::msg::GeoPose>::SharedPtr point_sub_;
     bool initialized_;
 
     void Initialize();
 
     void HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id);
 
-    void HandleGpsFix(gps_msgs::msg::GPSFix::UniquePtr fix);
-    void HandleGeoPose(geographic_msgs::msg::GeoPose::UniquePtr point);
-    void HandleNavSatFix(sensor_msgs::msg::NavSatFix::UniquePtr fix);
     void HandlePoseStamped(geometry_msgs::msg::PoseStamped::UniquePtr pose);
   };
   typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;

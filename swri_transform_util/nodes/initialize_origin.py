@@ -66,19 +66,11 @@ class OriginInitializer(rclpy.node.Node):
                                                                 name='local_xy_navsatfix_topic',
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
-        # self.declare_parameter('local_xy_custom_topic',
-        #                        descriptor=rclpy.node.ParameterDescriptor(
-        #                            name='local_xy_gpsfix_topic',
-        #                            type=rclpy.parameter.ParameterType.PARAMETER_STRING
-        #                        ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
                                                              descriptor=rclpy.node.ParameterDescriptor(
                                                                  name='local_xy_gpsfix_topic',
                                                                  type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                              ))
-
-        # for name, param in self._parameters.items():
-        #     print("%s: Value [%s]" % (name, param.value))
 
         self.get_logger().info("Origin: %s" % self.local_xy_origin_param.value)
 
@@ -95,14 +87,6 @@ class OriginInitializer(rclpy.node.Node):
                                                   local_xy_navsatfix_topic,
                                                   self.navsat_callback, 2)
             self.subscribers = [gps_sub, navsat_sub]
-            # try:
-            #     local_xy_custom_topic = self.get_parameter('local_xy_custom_topic')
-            #     custom_sub = self.create_subscription(rclpy.local_xy_custom_topic, rospy.AnyMsg, queue_size=2)
-            #     subscribers.append(custom_sub)
-            # except rclpy.exceptions.ParameterException:
-            #     pass
-
-            # Add extra arguments to callback
         else:
             try:
                 origin_list = self.local_xy_origins_param.value
@@ -141,36 +125,8 @@ class OriginInitializer(rclpy.node.Node):
             self.get_logger().warn(e)
             return
 
-    # def custom_callback(self, params):
-    #     (manager, subscribers) = params
-    #     connection_header = self._connection_header['type'].split('/')
-    #     ros_pkg = connection_header[0] + '.msg'
-    #     msg_type = connection_header[1]
-    #     msg_class = getattr(import_module(ros_pkg), msg_type)
-    #     msg = msg_class().deserialize(self._buff)
-    #     stamp = None
-    #     if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
-    #         stamp = msg.header.stamp
-    #     if hasattr(msg, 'pose'):  # Messages like GeoPoseStamped
-    #         msg = msg.pose
-    #     if hasattr(msg, 'position'):  # Messages like GeoPose
-    #         msg = msg.position
-    #     pos = None
-    #     if hasattr(msg, 'latitude') and hasattr(msg, 'longitude') and hasattr(msg, 'altitude'):
-    #         pos = (msg.latitude, msg.longitude, msg.altitude)
-    #     elif hasattr(msg, 'lat') and hasattr(msg, 'lon') and hasattr(msg, 'height'):
-    #         pos = (msg.lat, msg.lon, msg.height)
-    #
-    #     if pos:
-    #         while self.subscribers:
-    #             self.subscribers.pop()
-    #         self.get_logger().info('Got {} message from topic "{}". Setting origin and unsubscribing.'
-    #                       .format(self._connection_header['type'], self._connection_header['topic']))
-    #         manager.set_origin_from_custom(pos, stamp)
-
 
 if __name__ == "__main__":
     rclpy.init(args=sys.argv)
     node = OriginInitializer()
-    # rospy.init_node('initialize_origin', anonymous=True)
     rclpy.spin(node)
