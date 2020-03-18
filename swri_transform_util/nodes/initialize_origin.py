@@ -105,22 +105,24 @@ class OriginInitializer(rclpy.node.Node):
 
     def navsat_callback(self, msg):
         try:
+            self.get_logger().info('Got NavSat message.')
+            self.manager.set_origin_from_navsat(msg)
+            self.get_logger().info('Successfully set origin; unsubscribing.')
             while self.subscribers:
                 sub = self.subscribers.pop()
                 self.destroy_subscription(sub)
-            self.get_logger().info('Got NavSat message. Setting origin and unsubscribing.')
-            self.manager.set_origin_from_navsat(msg)
         except InvalidFixException as e:
             self.get_logger().warn("%s" % str(e))
             return
 
     def gps_callback(self, msg):
         try:
+            self.get_logger().info('Got GPSFix message.')
+            self.manager.set_origin_from_gps(msg)
+            self.get_logger().info('Successfully set origin; unsubscribing.')
             while self.subscribers:
                 sub = self.subscribers.pop()
                 self.destroy_subscription(sub)
-            self.get_logger().info('Got GPSFix message. Setting origin and unsubscribing.')
-            self.manager.set_origin_from_gps(msg)
         except InvalidFixException as e:
             self.get_logger().warn("%s" % str(e))
             return
