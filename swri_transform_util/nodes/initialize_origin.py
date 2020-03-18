@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from gps_msgs.msg import GPSFix
+import yaml
 import rclpy
 import rclpy.exceptions
 import rclpy.node
@@ -89,7 +90,7 @@ class OriginInitializer(rclpy.node.Node):
             self.subscribers = [gps_sub, navsat_sub]
         else:
             try:
-                origin_list = self.local_xy_origins_param.value
+                origin_list = yaml.safe_load(self.local_xy_origins_param.value)
             except rclpy.exceptions.ParameterException:
                 message = 'local_xy_origin is "{}", but local_xy_origins is not specified'
                 self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
