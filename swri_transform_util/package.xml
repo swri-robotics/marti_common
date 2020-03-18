@@ -37,6 +37,8 @@
   <depend>tf2_ros</depend>
   <depend>yaml-cpp</depend>
 
+  <exec_depend>launch_xml</exec_depend>
+
   <!--
   When we've got tf support for Python...
   <exec_depend>tf2_py</exec_depend>
