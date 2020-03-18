@@ -47,9 +47,8 @@ namespace swri_transform_util
     transformers.push_back(std::make_shared<Wgs84Transformer>(nullptr));
     transformers.push_back(std::make_shared<UtmTransformer>(nullptr));
 
-    for (size_t i = 0; i < transformers.size(); i++)
+    for (const auto& transformer : transformers)
     {
-      std::shared_ptr<Transformer> transformer = transformers[i];
       std::map<std::string, std::vector<std::string> > supports = transformer->Supports();
 
       std::map<std::string, std::vector<std::string> >::iterator iter;
@@ -69,9 +68,9 @@ namespace swri_transform_util
     }
   }
 
-  void TransformManager::Initialize()
+  void TransformManager::Initialize(std::shared_ptr<tf2_ros::Buffer> tf_buffer)
   {
-    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
+    tf_buffer_ = tf_buffer;
 
     local_xy_util_ = std::make_shared<LocalXyWgs84Util>(node_);
 
@@ -266,7 +265,7 @@ namespace swri_transform_util
       return true;
     }
 
-    SourceTargetMap::const_iterator source_iter = transformers_.find(source);
+    auto source_iter = transformers_.find(source);
     if (source_iter == transformers_.end())
     {
       RCLCPP_WARN(
@@ -278,7 +277,7 @@ namespace swri_transform_util
       return false;
     }
 
-    TransformerMap::const_iterator target_iter = source_iter->second.find(target);
+    auto target_iter = source_iter->second.find(target);
     if (target_iter == source_iter->second.end())
     {
       RCLCPP_WARN(
@@ -299,7 +298,10 @@ namespace swri_transform_util
       const tf2::TimePoint& time,
       geometry_msgs::msg::TransformStamped& transform) const
   {
-    return GetTransform(target_frame, source_frame, time, std::chrono::milliseconds(100), transform);
+    return GetTransform(target_frame,
+        source_frame,
+        time,
+        std::chrono::milliseconds(100), transform);
   }
 
   bool TransformManager::GetTransform(

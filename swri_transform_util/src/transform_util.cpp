@@ -405,9 +405,9 @@ namespace swri_transform_util
 
   std::string NormalizeFrameId(const std::string& frame_id)
   {
-    if (!frame_id.empty() && frame_id[0] != '/')
+    if (!frame_id.empty() && frame_id[0] == '/')
     {
-      return "/" + frame_id;
+      return frame_id.substr(1);
     }
     return frame_id;
   }

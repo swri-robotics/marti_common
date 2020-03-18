@@ -70,14 +70,14 @@ namespace swri_transform_util
     explicit TransformManager(rclcpp::Node::SharedPtr node);
 
     /**
-     * Initialize the TransformManager with a tf::TransformListener
+     * Initialize the TransformManager with a tf2_ros::Buffer
      *
      * The TransformManager must be initialized before it can be used.
      *
-     * @param tf A shared pointer to a tf::TransformListener that the
+     * @param tf_buffer A shared pointer to a tf2_ros::Buffer that the
      *    Transformer wraps.
      */
-    void Initialize();
+    void Initialize(std::shared_ptr<tf2_ros::Buffer> tf_buffer);
 
     /**
      * Get the Transform between two frames at a specified time
