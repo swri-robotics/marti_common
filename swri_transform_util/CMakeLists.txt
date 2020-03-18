@@ -137,6 +137,10 @@ install(DIRECTORY include/
   DESTINATION include
 )
 
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 install(TARGETS
   ${PROJECT_NAME}
   ${PROJECT_NAME}_nodes

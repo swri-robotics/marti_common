@@ -30,13 +30,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, TransformStamped
 from gps_msgs.msg import GPSStatus
 import rclpy.node
 import rclpy.qos
-from rclpy.timer import WallTimer
 from sensor_msgs.msg import NavSatStatus
-# from tf2_ros import TransformBroadcaster
+from tf2_ros import TransformBroadcaster
 
 
 class InvalidFixException(Exception):
@@ -131,7 +130,7 @@ class OriginManager(object):
                                     durability=rclpy.qos.QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
         self.origin_pub = node.create_publisher(PoseStamped, '/local_xy_origin', qos_profile=qos)
         self.diagnostic_pub = node.create_publisher(DiagnosticArray, '/diagnostics', 2)
-        # self.tf_broadcaster = TransformBroadcaster()
+        self.tf_broadcaster = TransformBroadcaster(self.node)
 
     def set_origin(self, source, latitude, longitude, altitude, stamp=None):
         """
@@ -140,6 +139,7 @@ class OriginManager(object):
         All other set_ methods wrap this method.
 
         Args:
+            source (string): The source of the origin.
             latitude (float): The latitude of the origin in degrees.
             longitude (float): The longitude of the origin in degrees.
             altitude (float): The altitude of the origin in meters.
@@ -164,9 +164,13 @@ class OriginManager(object):
         origin.pose.orientation.w = 1.0
         self.origin_source = source
         self.origin = origin
-        self.origin_pub.publish(self.origin)
         self.node.get_logger().info("Origin from '{}' source set to {}, {}, {}".format(
             source, latitude, longitude, altitude))
+        self._publish_origin()
+
+    def _publish_origin(self):
+        if self.origin is not None:
+            self.origin_pub.publish(self.origin)
 
     def set_origin_from_dict(self, origin_dict):
         """
@@ -180,8 +184,8 @@ class OriginManager(object):
             KeyError: If `origin_dict` does not contain all of the required keys.
         """
         self.set_origin("manual", origin_dict["latitude"],
-                                  origin_dict["longitude"],
-                                  origin_dict["altitude"])
+                        origin_dict["longitude"],
+                        origin_dict["altitude"])
 
     def set_origin_from_list(self, origin_name, origin_list):
         """
@@ -241,7 +245,6 @@ class OriginManager(object):
 
         Args:
             pos: Tuple with the local origin
-            source: Message type
             stamp: Msg header stamp if available
         """
         self.set_origin("custom", pos[0], pos[1], pos[2], stamp)
@@ -249,7 +252,7 @@ class OriginManager(object):
     def _publish_diagnostic(self):
         """Publish diagnostics."""
         diagnostic = DiagnosticArray()
-        diagnostic.header.stamp = self.node.get_clock().now()
+        diagnostic.header.stamp = self.node.get_clock().now().to_msg()
         status = DiagnosticStatus()
         status.name = "LocalXY Origin"
         status.hardware_id = "origin_publisher"
@@ -292,30 +295,31 @@ class OriginManager(object):
         This allows the TransformManager to support /tf<->/wgs84 conversions
         without requiring additional nodes.
         """
-        # TODO pjr Enable this when tf2 works in Python
-        # self.tf_broadcaster.sendTransform((0, 0, 0),
-        #                                   (0, 0, 0, 1),
-        #                                   self.node.get_clock().now(),
-        #                                   self.local_xy_frame_identity,
-        #                                   self.local_xy_frame)
+        t = TransformStamped()
+        t.header.stamp = self.node.get_clock().now().to_msg()
+        t.header.frame_id = self.local_xy_frame_identity
+        t.child_frame_id = self.local_xy_frame
+        t.transform.translation.x = 0.0
+        t.transform.translation.y = 0.0
+        t.transform.translation.z = 0.0
+        t.transform.rotation.x = 0.0
+        t.transform.rotation.y = 0.0
+        t.transform.rotation.z = 0.0
+        t.transform.rotation.w = 1.0
+        self.tf_broadcaster.sendTransform(t)
 
-    def spin_once(self, timer_event=None):
+    def publish_messages(self):
         """
         Publish identity transform and diagnostics.
 
         This method can be called as a rospy timer callback.
-
-        Args:
-            timer_event (rospy.TimerEvent): This event is unused. (default None)
         """
-        self._publish_identity_tf()
         self._publish_diagnostic()
+        self._publish_identity_tf()
+        self._publish_origin()
 
-    def start(self, period_ns=1000000000):
+    def start(self):
         """
-        Start a rospy Timer thread to call spin_once() with the given duration.
-
-        Args:
-            period_ns (int): spin_once() is called at this rate.
+        Creates a timer that periodically publishes our messages.
         """
-        self.timer = WallTimer(self.spin_once, None, period_ns)
+        self.timer = self.node.create_timer(1.0, self.publish_messages)

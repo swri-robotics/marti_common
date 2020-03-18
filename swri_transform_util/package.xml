@@ -37,10 +37,9 @@
   <depend>tf2_ros</depend>
   <depend>yaml-cpp</depend>
 
-  <!--
-  When we've got tf support for Python...
-  <exec_depend>tf2_py</exec_depend>
-  -->
+  <!-- XML-based launching and tf2_py are only supported in Eloquent -->
+  <exec_depend condition="$ROS_DISTRO != dashing">launch_xml</exec_depend>
+  <exec_depend condition="$ROS_DISTRO != dashing">tf2_py</exec_depend>
 
   <!--
   After the unit tests are converted...

@@ -54,6 +54,9 @@ namespace swri_transform_util
 
     tf2_ros::TransformBroadcaster tf_;
 
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+    std::shared_ptr<tf2_ros::Buffer> tf_buf_;
+
     swri_transform_util::TransformManager tf_manager_;
   };
 
@@ -65,12 +68,14 @@ namespace swri_transform_util
     this->declare_parameter("child_frame_id", "base_link");
     this->declare_parameter("parent_frame_id", "map");
 
+    tf_buf_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_);
+    tf_manager_.Initialize(tf_buf_);
+
     gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
         "gps",
         100,
         std::bind(&GpsTransformPublisher::HandleGps, this, std::placeholders::_1));
-
-    tf_manager_.Initialize();
   }
 
   void GpsTransformPublisher::HandleGps(const gps_msgs::msg::GPSFix::UniquePtr gps_fix)
