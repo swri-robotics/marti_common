@@ -34,7 +34,6 @@ from geometry_msgs.msg import PoseStamped, TransformStamped
 from gps_msgs.msg import GPSStatus
 import rclpy.node
 import rclpy.qos
-from rclpy.timer import Timer
 from sensor_msgs.msg import NavSatStatus
 from tf2_ros import TransformBroadcaster
 
@@ -309,7 +308,7 @@ class OriginManager(object):
         t.transform.rotation.w = 1.0
         self.tf_broadcaster.sendTransform(t)
 
-    def spin(self):
+    def publish_messages(self):
         """
         Publish identity transform and diagnostics.
 
@@ -321,9 +320,6 @@ class OriginManager(object):
 
     def start(self):
         """
-        Start a rospy Timer thread to call spin_once() with the given duration.
-
-        Args:
-            period_ns (int): spin_once() is called at this rate.
+        Creates a timer that periodically publishes our messages.
         """
-        self.timer = self.node.create_timer(1.0, self.spin)
+        self.timer = self.node.create_timer(1.0, self.publish_messages)
