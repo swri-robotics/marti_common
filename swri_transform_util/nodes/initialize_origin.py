@@ -99,7 +99,7 @@ class OriginInitializer(rclpy.node.Node):
             except (TypeError, KeyError) as e:
                 message = 'local_xy_origins is malformed or does not contain the local_xy_origin "{}"'
                 self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
-                self.get_logger().fatal(e)
+                self.get_logger().fatal("%s" % str(e))
                 exit(1)
         self.manager.start()
 
@@ -111,7 +111,7 @@ class OriginInitializer(rclpy.node.Node):
             self.get_logger().info('Got NavSat message. Setting origin and unsubscribing.')
             self.manager.set_origin_from_navsat(msg)
         except InvalidFixException as e:
-            self.get_logger().warn("%s", str(e))
+            self.get_logger().warn("%s" % str(e))
             return
 
     def gps_callback(self, msg):
@@ -122,7 +122,7 @@ class OriginInitializer(rclpy.node.Node):
             self.get_logger().info('Got GPSFix message. Setting origin and unsubscribing.')
             self.manager.set_origin_from_gps(msg)
         except InvalidFixException as e:
-            self.get_logger().warn("%s", str(e))
+            self.get_logger().warn("%s" % str(e))
             return
 
 
