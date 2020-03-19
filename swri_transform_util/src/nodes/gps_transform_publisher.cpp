@@ -69,7 +69,8 @@ namespace swri_transform_util
     this->declare_parameter("parent_frame_id", "map");
 
     tf_buf_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
-    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_);
+    tf_buf_->setUsingDedicatedThread(true);
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_, shared_from_this(), false);
     tf_manager_.Initialize(tf_buf_);
 
     gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
