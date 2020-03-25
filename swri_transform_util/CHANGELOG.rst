@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Suppress auto_ptr warnings (`#570 <https://github.com/swri-robotics/marti_common/issues/570>`_)
+* Contributors: P. J. Reed
+
 2.11.0 (2019-11-13)
 -------------------
 * Add a nodelet that transforms ObstacleArrays

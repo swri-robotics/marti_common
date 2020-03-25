@@ -2,6 +2,12 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add Enum Support to DynamicParameters (`#564 <https://github.com/swri-robotics/marti_common/issues/564>`_)
+* Use safe_execute_process to generate messages instead and prevent it from running every build (`#563 <https://github.com/swri-robotics/marti_common/issues/563>`_)
+* Contributors: Matthew Bries
+
 2.11.0 (2019-11-13)
 -------------------
 * Fix incorrect type for strings in dynamic params (`#553 <https://github.com/pjreed/marti_common/issues/553>`_)
