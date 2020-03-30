@@ -158,7 +158,7 @@ namespace swri_transform_util
           int zone, char band, double easting, double northing,
           double& latitude, double& longitude) const;
 
-#if (BOOST_VERSION / 100 % 1000) >= 65
+#if (BOOST_VERSION / 100 % 1000) >= 65 && (BOOST_VERSION / 100 % 1000) < 69
         friend class boost::serialization::singleton<swri_transform_util::UtmUtil::UtmData>;
 #else
         friend class boost::serialization::detail::singleton_wrapper<swri_transform_util::UtmUtil::UtmData>;
