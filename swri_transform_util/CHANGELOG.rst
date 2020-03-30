@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.0 (2020-03-30)
+------------------
 * Fix swri_transform_util::TransformManager initialization issues
 * Implement initialize_origin.py in ROS Eloquent
 * Contributors: P. J. Reed
