@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix swri_transform_util::TransformManager initialization issues
+* Implement initialize_origin.py in ROS Eloquent
+* Contributors: P. J. Reed
+
 3.0.5 (2020-03-10)
 ------------------
 * Also add NavSatFix support to swri_transform_util::LocalXyUtil (`#569 <https://github.com/swri-robotics/marti_common/issues/569>`_)

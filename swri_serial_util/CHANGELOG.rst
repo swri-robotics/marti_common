@@ -2,6 +2,9 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.0.5 (2020-03-10)
 ------------------
 
