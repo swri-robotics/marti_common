@@ -40,7 +40,7 @@
 #include <swri_math_util/constants.h>
 #include <swri_image_util/geometry_util.h>
 
-TEST(GeometryUtilTests, Intersects)
+TEST(ImageUtilTests, Intersects)
 {
   swri_image_util::BoundingBox b1(-2, -2, 4, 4);
   swri_image_util::BoundingBox b2(-1, -1, 2, 2);
@@ -74,7 +74,7 @@ TEST(GeometryUtilTests, Intersects)
   EXPECT_TRUE(swri_image_util::Intersects(b5, b4));
 }
 
-TEST(GeometryUtilTests, GetOverlappingArea1)
+TEST(ImageUtilTests, GetOverlappingArea1)
 {
   cv::Rect rect(-5, -5, 10, 10);
   cv::Rect rect2(-10, -5, 20, 10);
@@ -124,7 +124,7 @@ TEST(GeometryUtilTests, GetOverlappingArea1)
   EXPECT_FLOAT_EQ(75, swri_image_util::GetOverlappingArea(rect2, shift_5_xy));
 }
 
-TEST(GeometryUtilTests, GetOverlappingArea2)
+TEST(ImageUtilTests, GetOverlappingArea2)
 {
   cv::Rect rect(-5, -5, 10, 10);
   cv::Rect rect2(-10, -5, 20, 10);
@@ -163,7 +163,7 @@ TEST(GeometryUtilTests, GetOverlappingArea2)
   EXPECT_FLOAT_EQ(136.3961, swri_image_util::GetOverlappingArea(rect2, rotate45));
 }
 
-TEST(GeometryUtilTests, TestProjectEllipse1)
+TEST(ImageUtilTests, TestProjectEllipse1)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
   ellipsoid1.at<float>(0,0) = 1;
@@ -190,7 +190,7 @@ TEST(GeometryUtilTests, TestProjectEllipse1)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
-TEST(GeometryUtilTests, TestProjectEllipse2)
+TEST(ImageUtilTests, TestProjectEllipse2)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
   ellipsoid1.at<float>(0,0) = 10;
@@ -217,7 +217,7 @@ TEST(GeometryUtilTests, TestProjectEllipse2)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
-TEST(GeometryUtilTests, TestProjectEllipse3)
+TEST(ImageUtilTests, TestProjectEllipse3)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
   ellipsoid1.at<float>(0,0) = 10;
@@ -247,7 +247,7 @@ TEST(GeometryUtilTests, TestProjectEllipse3)
 
 // TODO(malban): Test projecting an ellipsoid that is not axis aligned.
 
-TEST(GeometryUtilTests, TestProjectEllipseInvalid1)
+TEST(ImageUtilTests, TestProjectEllipseInvalid1)
 {
   cv::Mat ellipsoid2(3, 3, CV_32FC1);
   ellipsoid2.at<float>(0,0) = 1;
@@ -265,7 +265,7 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid1)
   EXPECT_TRUE(projected2.empty());
 }
 
-TEST(GeometryUtilTests, TestProjectEllipseInvalid2)
+TEST(ImageUtilTests, TestProjectEllipseInvalid2)
 {
   cv::Mat ellipsoid2(2, 2, CV_32FC1);
   ellipsoid2.at<float>(0,0) = 1;
@@ -278,7 +278,7 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid2)
   EXPECT_TRUE(projected2.empty());
 }
 
-TEST(GeometryUtilTests, TestProjectEllipseInvalid3)
+TEST(ImageUtilTests, TestProjectEllipseInvalid3)
 {
   cv::Mat ellipsoid2(2, 2, CV_32SC1);
   ellipsoid2.at<int32_t>(0,0) = 1;
@@ -291,7 +291,7 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid3)
   EXPECT_TRUE(projected2.empty());
 }
 
-TEST(GeometryUtilTests, TestGetEllipsePoints1)
+TEST(ImageUtilTests, TestGetEllipsePoints1)
 {
   cv::Mat ellipse(2, 2, CV_32FC1);
   ellipse.at<float>(0,0) = 1;
