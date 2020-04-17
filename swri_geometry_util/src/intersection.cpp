@@ -178,7 +178,7 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& b)
   {
     // Create GEOS polygon from vertices in vector a.
-    geos::geom::CoordinateSequence* a_coords = new geos::geom::CoordinateArraySequence();
+    geos::geom::CoordinateArraySequence* a_coords = new geos::geom::CoordinateArraySequence();
     for (size_t i = 0; i < a.size(); i++)
     {
       a_coords->add(geos::geom::Coordinate(a[i][0], a[i][1]));
@@ -190,7 +190,7 @@ namespace swri_geometry_util
     a_polygon->normalize();
 
     // Create GEOS polygon from vertices in vector b.
-    geos::geom::CoordinateSequence* b_coords = new geos::geom::CoordinateArraySequence();
+    geos::geom::CoordinateArraySequence* b_coords = new geos::geom::CoordinateArraySequence();
     for (size_t i = 0; i < b.size(); i++)
     {
       b_coords->add(geos::geom::Coordinate(b[i][0], b[i][1]));
@@ -221,7 +221,7 @@ namespace swri_geometry_util
 
     double area = 0;
     // Create GEOS polygon from vertices in vector a.
-    geos::geom::CoordinateSequence* a_coords = new geos::geom::CoordinateArraySequence();
+    geos::geom::CoordinateArraySequence* a_coords = new geos::geom::CoordinateArraySequence();
     for (size_t i = 0; i < a.size(); i++)
     {
       a_coords->add(geos::geom::Coordinate(a[i][0], a[i][1]));
@@ -233,7 +233,7 @@ namespace swri_geometry_util
     a_polygon->normalize();
 
     // Create GEOS polygon from vertices in vector b.
-    geos::geom::CoordinateSequence* b_coords = new geos::geom::CoordinateArraySequence();
+    geos::geom::CoordinateArraySequence* b_coords = new geos::geom::CoordinateArraySequence();
     for (size_t i = 0; i < b.size(); i++)
     {
       b_coords->add(geos::geom::Coordinate(b[i][0], b[i][1]));
