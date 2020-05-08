@@ -325,6 +325,43 @@ void generateObstacleData(
   }
 }
 
+void generateObstacleData(
+  std::vector<ObstacleData> &obstacle_data,
+  const stu::Transform g_route_from_obs,
+  const mnm::TrackedObjectArray &obstacles_msg)
+{
+  obstacle_data.resize(obstacles_msg.objects.size());
+  for (size_t i = 0; i < obstacle_data.size(); i++) {
+    const mnm::TrackedObject &obs_msg = obstacles_msg.objects[i];
+
+    geometry_msgs::Pose pose = obs_msg.pose.pose;
+    if (pose.orientation.x == 0.0 &&
+        pose.orientation.y == 0.0 &&
+        pose.orientation.z == 0.0 &&
+        pose.orientation.w == 0.0) {
+      pose.orientation.w = 1.0;
+    }
+
+    tf::Transform g_obs_from_local;
+    tf::poseMsgToTF(pose, g_obs_from_local);
+
+    obstacle_data[i].center = g_route_from_obs*g_obs_from_local.getOrigin();
+    obstacle_data[i].center.setZ(0.0);
+
+    double max_radius = 0.0;
+    obstacle_data[i].polygon.resize(obs_msg.polygon.size());
+    for (size_t j = 0; j < obs_msg.polygon.size(); j++) {
+      tf::Vector3 pt;
+      tf::pointMsgToTF(obs_msg.polygon[j], pt);
+
+      max_radius = std::max(max_radius, pt.length());
+      obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
+      obstacle_data[i].polygon[j].setZ(0.0);
+    }
+    obstacle_data[i].radius = max_radius;
+  }
+}
+
 void speedsForObstacles(
   mnm::RouteSpeedArray &speeds,
   std::vector<DistanceReport> &reports,
