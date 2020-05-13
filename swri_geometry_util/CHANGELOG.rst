@@ -2,8 +2,8 @@
 Changelog for package swri_geometry_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2020-05-13)
+------------------
 * Fix build with GEOS 3.8 (`#576 <https://github.com/swri-robotics/marti_common/issues/576>`_) (`#577 <https://github.com/swri-robotics/marti_common/issues/577>`_)
   Co-authored-by: Ben Wolsieffer <benwolsieffer@gmail.com>
 * Contributors: P. J. Reed
