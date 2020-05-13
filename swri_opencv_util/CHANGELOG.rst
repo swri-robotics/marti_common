@@ -2,6 +2,11 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix build with Boost >=1.69 (`#574 <https://github.com/swri-robotics/marti_common/issues/574>`_)
+* Contributors: Ben Wolsieffer
+
 2.12.0 (2020-03-25)
 -------------------
 

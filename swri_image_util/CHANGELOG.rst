@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rename swri_image_util test (`#575 <https://github.com/swri-robotics/marti_common/issues/575>`_)
+* Contributors: P. J. Reed
+
 2.12.0 (2020-03-25)
 -------------------
 

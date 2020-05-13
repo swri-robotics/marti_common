@@ -2,6 +2,9 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.12.0 (2020-03-25)
 -------------------
 * Suppress auto_ptr warnings (`#570 <https://github.com/swri-robotics/marti_common/issues/570>`_)

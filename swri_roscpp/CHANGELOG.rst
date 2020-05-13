@@ -2,6 +2,9 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.12.0 (2020-03-25)
 -------------------
 * Add Enum Support to DynamicParameters (`#564 <https://github.com/swri-robotics/marti_common/issues/564>`_)
