@@ -33,6 +33,7 @@
 #include <marti_common_msgs/msg/key_value_array.hpp>
 #include <marti_nav_msgs/msg/obstacle_array.hpp>
 #include <marti_nav_msgs/msg/route_speed_array.hpp>
+#include <marti_nav_msgs/msg/tracked_object_array.hpp>
 #include <swri_math_util/interpolation_1d.h>
 #include <swri_route_util/route.h>
 #include <swri_transform_util/transform.h>
@@ -124,9 +125,14 @@ struct DistanceReport
 // Convert an obstacle array message into a ObstacleData by applying a
 // transform and calculating the radius of each obstacle.
 void generateObstacleData(
-  std::vector<ObstacleData> &obstacle_data,
-  swri_transform_util::Transform g_route_from_obs,
-  marti_nav_msgs::msg::ObstacleArray &obstacles_msg);
+  std::vector<ObstacleData>& obstacle_data,
+  swri_transform_util::Transform& g_route_from_obs,
+  marti_nav_msgs::msg::ObstacleArray& obstacles_msg);
+
+void generateObstacleData(
+  std::vector<ObstacleData>& obstacle_data,
+  const swri_transform_util::Transform& g_route_from_obs,
+  const marti_nav_msgs::msg::TrackedObjectArray& obstacles_msg);
 
 void speedsForObstacles(
     marti_nav_msgs::msg::RouteSpeedArray &speeds,
