@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add overload of generateObstacleData for tracked objects (Dashing) (`#579 <https://github.com/swri-robotics/marti_common/issues/579>`_)
+* Contributors: Matthew Bries
+
 3.1.0 (2020-03-30)
 ------------------
 
