@@ -341,7 +341,7 @@ void generateObstacleData(
     }
 
     tf2::Transform g_obs_from_local;
-    tf2::convert(pose, g_obs_from_local);
+    tf2::fromMsg(pose, g_obs_from_local);
 
     obstacle_data[i].center = g_route_from_obs*g_obs_from_local.getOrigin();
     obstacle_data[i].center.setZ(0.0);
@@ -350,7 +350,7 @@ void generateObstacleData(
     obstacle_data[i].polygon.resize(obs_msg.polygon.size());
     for (size_t j = 0; j < obs_msg.polygon.size(); j++) {
       tf2::Vector3 pt;
-      tf2::convert(obs_msg.polygon[j], pt);
+      tf2::fromMsg(obs_msg.polygon[j], pt);
 
       max_radius = std::max(max_radius, pt.length());
       obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
