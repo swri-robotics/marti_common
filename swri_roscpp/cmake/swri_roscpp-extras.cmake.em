@@ -20,6 +20,8 @@ macro(add_topic_service_files)
     set(ARG_DIRECTORY "topic_srv")
   endif()
 
+  set(TMP_TOPIC_SRV_DIR ${ARG_DIRECTORY})
+
   find_package(catkin REQUIRED COMPONENTS marti_common_msgs)
 
   foreach (_file ${ARG_FILES})
@@ -31,16 +33,16 @@ macro(add_topic_service_files)
     file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg)
     file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}/)
 
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/topic_srv/${_file})
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TMP_TOPIC_SRV_DIR}/${_file})
 
     set(headerName ${_file})
     string(REPLACE ".srv" ".h" headerName ${headerName})
     safe_execute_process(
       COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${swri_roscpp_BIN}service_splitter.py ${_file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ReqOut} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg/${current_ResOut} ${PROJECT_NAME} ${_file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}/${headerName}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/topic_srv"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TMP_TOPIC_SRV_DIR}"
     )
 
-    add_message_files(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg FILES
+    add_message_files(BASE_DIR ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/msg FILES
       ${current_ReqOut} 
       ${current_ResOut}
     )
