@@ -2,6 +2,9 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.13.0 (2020-05-13)
 -------------------
 * Add overload of generateObstacleData for tracked objects (`#578 <https://github.com/swri-robotics/marti_common/issues/578>`_)
