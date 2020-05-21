@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.13.1 (2020-05-21)
+-------------------
 * Fix the directory argument and correctly call add_message_files to avoid weird extra installed files (`#580 <https://github.com/swri-robotics/marti_common/issues/580>`_)
 * Contributors: Matthew Bries
 
