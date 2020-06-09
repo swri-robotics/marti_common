@@ -40,7 +40,7 @@ namespace swri_image_util
     cv::Mat& modified_image)
   {
     cv::Mat input_rgb;
-    cv::cvtColor(original_image, input_rgb, CV_GRAY2BGR);
+    cv::cvtColor(original_image, input_rgb, cv::COLOR_GRAY2BGR);
     cv::LUT(input_rgb, lut, modified_image);
   }
 }

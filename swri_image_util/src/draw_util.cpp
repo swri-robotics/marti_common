@@ -141,7 +141,7 @@ namespace swri_image_util
 
     if (image1.type() == CV_8U)
     {
-      cvtColor(image1, draw_image1, CV_GRAY2BGR);
+      cvtColor(image1, draw_image1, cv::COLOR_GRAY2BGR);
     }
     else
     {
@@ -150,7 +150,7 @@ namespace swri_image_util
 
     if (image2.type() == CV_8U)
     {
-      cvtColor(image2, draw_image2, CV_GRAY2BGR);
+      cvtColor(image2, draw_image2, cv::COLOR_GRAY2BGR);
     }
     else
     {
@@ -187,9 +187,9 @@ namespace swri_image_util
       cv::Point2f dcenter2(
         std::min(center2.x + draw_image1.cols * 16.0, (image_out.cols - 1) * 16.0), 
         center2.y);
-      circle(draw_image1, center1, 48, match_color, 1, CV_AA, 4);
-      circle(draw_image2, center2, 48, match_color, 1, CV_AA, 4);
-      line(image_out, center1, dcenter2, match_color, 1, CV_AA, 4);
+      circle(draw_image1, center1, 48, match_color, 1, cv::LINE_AA, 4);
+      circle(draw_image2, center2, 48, match_color, 1, cv::LINE_AA, 4);
+      line(image_out, center1, dcenter2, match_color, 1, cv::LINE_AA, 4);
     }
   }
 
@@ -226,7 +226,7 @@ namespace swri_image_util
     cv::Mat draw_image;
     if (image.type() == CV_8U)
     {
-      cvtColor(image, draw_image, CV_GRAY2BGR);
+      cvtColor(image, draw_image, cv::COLOR_GRAY2BGR);
     }
     else
     {
@@ -241,8 +241,8 @@ namespace swri_image_util
       cv::Point2f center2(cvRound(
         points2.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
-      circle(draw_image, center1, 48, color1, 1, CV_AA, 4);
-      line(draw_image, center1, center2, color2, 1, CV_AA, 4);
+      circle(draw_image, center1, 48, color1, 1, cv::LINE_AA, 4);
+      line(draw_image, center1, center2, color2, 1, cv::LINE_AA, 4);
     }
 
     swri_opencv_util::ShowScaled(title, draw_image);

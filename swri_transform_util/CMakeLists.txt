@@ -74,6 +74,7 @@ add_library(${PROJECT_NAME}
   src/wgs84_transformer.cpp)
 link_directories(${OpenCV_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PROJ_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 
 add_library(${PROJECT_NAME}_nodelets
   src/nodelets/dynamic_publisher.cpp

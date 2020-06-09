@@ -74,12 +74,12 @@ namespace swri_image_util
         cv_image.header.stamp = ros::Time::now();
         if (mode == sensor_msgs::image_encodings::BGR8)
         {
-          cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_COLOR);
+          cv_image.image = cv::imread(image_file, cv::IMREAD_COLOR);
           cv_image.encoding = sensor_msgs::image_encodings::BGR8;
         }
         else
         {
-          cv_image.image = cv::imread(image_file, CV_LOAD_IMAGE_GRAYSCALE);
+          cv_image.image = cv::imread(image_file, cv::IMREAD_GRAYSCALE);
           cv_image.encoding = sensor_msgs::image_encodings::MONO8;
         }
 
