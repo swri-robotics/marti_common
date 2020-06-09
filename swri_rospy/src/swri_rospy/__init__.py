@@ -1,6 +1,6 @@
 import rospy
 from rospy.impl.tcpros_base import DEFAULT_BUFF_SIZE
-from Queue import Queue, Empty as EmptyQueueException
+from queue import Queue, Empty as EmptyQueueException
 from threading import Condition
 
 # The global callback queue
