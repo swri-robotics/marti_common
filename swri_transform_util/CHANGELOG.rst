@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.1 (2020-06-10)
+------------------
 * ROS Foxy support (`#582 <https://github.com/swri-robotics/marti_common/issues/582>`_)
 * Contributors: P. J. Reed
 
