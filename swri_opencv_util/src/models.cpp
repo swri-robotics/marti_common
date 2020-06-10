@@ -517,7 +517,7 @@ namespace swri_opencv_util
 
     // (x0 - p) . n
     cv::multiply(x0_p__, temp1__, temp2__);
-    cv::reduce(temp2__.reshape(1), x0_p_dot_n__, 1, CV_REDUCE_SUM);
+    cv::reduce(temp2__.reshape(1), x0_p_dot_n__, 1, cv::REDUCE_SUM);
 
     // ((x0 - p) . n)n
     cv::multiply(n_x, x0_p_dot_n__, n_x);
@@ -531,7 +531,7 @@ namespace swri_opencv_util
     cv::multiply(n_x, n_x, n_x);
     cv::multiply(n_y, n_y, n_y);
     cv::multiply(n_z, n_z, n_z);
-    cv::reduce(temp1__.reshape(1), norms, 1, CV_REDUCE_SUM);
+    cv::reduce(temp1__.reshape(1), norms, 1, cv::REDUCE_SUM);
     cv::sqrt(norms, norms);
   }
 
@@ -654,7 +654,7 @@ namespace swri_opencv_util
 
     // (x0 - p) . n
     cv::multiply(x0_p__, temp1__, temp2__);
-    cv::reduce(temp2__.reshape(1), x0_p_dot_n__, 1, CV_REDUCE_SUM);
+    cv::reduce(temp2__.reshape(1), x0_p_dot_n__, 1, cv::REDUCE_SUM);
 
     // ((x0 - p) . n)n
     cv::multiply(n_x, x0_p_dot_n__, n_x);
@@ -668,7 +668,7 @@ namespace swri_opencv_util
     cv::multiply(n_x, n_x, n_x);
     cv::multiply(n_y, n_y, n_y);
     cv::multiply(n_z, n_z, n_z);
-    cv::reduce(temp1__.reshape(1), temp3__, 1, CV_REDUCE_SUM);
+    cv::reduce(temp1__.reshape(1), temp3__, 1, cv::REDUCE_SUM);
     cv::sqrt(temp3__, temp3__);
 
 
@@ -686,7 +686,7 @@ namespace swri_opencv_util
 
     // (x0 - p) . n
     cv::multiply(x0_p__, temp1__, temp2__);
-    cv::reduce(temp2__.reshape(1), x0_p_dot_n__, 1, CV_REDUCE_SUM);
+    cv::reduce(temp2__.reshape(1), x0_p_dot_n__, 1, cv::REDUCE_SUM);
 
     // ((x0 - p) . n)n
     cv::multiply(n_x, x0_p_dot_n__, n_x);
@@ -700,7 +700,7 @@ namespace swri_opencv_util
     cv::multiply(n_x, n_x, n_x);
     cv::multiply(n_y, n_y, n_y);
     cv::multiply(n_z, n_z, n_z);
-    cv::reduce(temp1__.reshape(1), norms, 1, CV_REDUCE_SUM);
+    cv::reduce(temp1__.reshape(1), norms, 1, cv::REDUCE_SUM);
     cv::sqrt(norms, norms);
 
     // Use the minimum distance to either line.

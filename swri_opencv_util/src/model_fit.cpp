@@ -320,7 +320,7 @@ namespace swri_opencv_util
       return model;
     }
     cv::Mat centroid;
-    cv::reduce(points.reshape(3), centroid, 0, CV_REDUCE_AVG);
+    cv::reduce(points.reshape(3), centroid, 0, cv::REDUCE_AVG);
 
     cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2));
 
@@ -419,7 +419,7 @@ namespace swri_opencv_util
       return model;
     }
     cv::Mat centroid;
-    cv::reduce(points.reshape(3), centroid, 0, CV_REDUCE_AVG);
+    cv::reduce(points.reshape(3), centroid, 0, cv::REDUCE_AVG);
 
     cv::Scalar c(centroid.at<float>(0, 0), centroid.at<float>(0, 1), centroid.at<float>(0, 2));
 

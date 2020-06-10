@@ -66,6 +66,7 @@ target_compile_definitions(${PROJECT_NAME}
 )
 
 link_directories(${OpenCV_LIBRARY_DIRS})
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::thread
