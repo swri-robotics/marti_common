@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* ROS Foxy support (`#582 <https://github.com/swri-robotics/marti_common/issues/582>`_)
+* Contributors: P. J. Reed
+
 3.2.0 (2020-05-13)
 ------------------
 * Add overload of generateObstacleData for tracked objects (Dashing) (`#579 <https://github.com/swri-robotics/marti_common/issues/579>`_)
