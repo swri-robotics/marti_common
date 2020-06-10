@@ -62,7 +62,6 @@ target_include_directories(${PROJECT_NAME}
   INTERFACE
   ${OpenCV_INCLUDE_DIRS}
   ${PROJ_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIR}
 )
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -70,15 +69,13 @@ target_compile_definitions(${PROJECT_NAME}
   PRIVATE
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
 )
-
-link_directories(${OpenCV_LIBRARY_DIRS})
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::thread
   ${OpenCV_LIBS}
   ${PROJ_LIBRARIES}
-  ${YAML_CPP_LIBRARIES}
+  yaml-cpp
 )
 ament_target_dependencies(${PROJECT_NAME}
   diagnostic_msgs
@@ -98,7 +95,18 @@ add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/dynamic_transform_publisher.cpp
   src/nodes/gps_transform_publisher.cpp
   src/nodes/obstacle_transformer.cpp
-  )
+)
+target_include_directories(${PROJECT_NAME}_nodes
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+target_include_directories(${PROJECT_NAME}_nodes
+  SYSTEM
+  INTERFACE
+  ${OpenCV_INCLUDE_DIRS}
+  ${PROJ_INCLUDE_DIRS}
+)
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
@@ -111,6 +119,17 @@ ament_target_dependencies(${PROJECT_NAME}_nodes
 )
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
+target_include_directories(lat_lon_tf_echo
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+target_include_directories(lat_lon_tf_echo
+  SYSTEM
+  INTERFACE
+  ${OpenCV_INCLUDE_DIRS}
+  ${PROJ_INCLUDE_DIRS}
+)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
 # TODO pjr Convert unit tests
@@ -169,13 +188,10 @@ ament_export_dependencies(
   geographic_msgs
   gps_msgs
 )
-ament_export_include_directories(include
-  ${YAML_CPP_INCLUDE_DIR}
-)
+ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
   ${OpenCV_LIBS}
   ${PROJ_LIBRARIES}
-  ${YAML_CPP_LIBRARIES}
 )
 
 ament_package()
