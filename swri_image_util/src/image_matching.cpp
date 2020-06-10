@@ -70,7 +70,7 @@ namespace swri_image_util
       points1,
       points2,
       status,
-      CV_FM_RANSAC,
+      cv::FM_RANSAC,
       max_distance,
       confidence);
 

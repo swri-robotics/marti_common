@@ -11,8 +11,6 @@ find_package(swri_math_util REQUIRED)
 find_package(OpenCV REQUIRED core imgproc highgui)
 
 find_package(Boost REQUIRED COMPONENTS serialization thread) 
-
-include_directories(include)
   
 add_library(${PROJECT_NAME}
   src/blend.cpp
@@ -20,12 +18,18 @@ add_library(${PROJECT_NAME}
   src/model_fit.cpp
   src/show.cpp
   src/convert.cpp)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::serialization
   Boost::thread
   ${OpenCV_LIBS}
 )
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 ament_target_dependencies(${PROJECT_NAME}

@@ -27,6 +27,7 @@
 //
 // *****************************************************************************
 
+#include <algorithm>
 #include <cv_bridge/cv_bridge.h>
 #include <image_transport/image_transport.h>
 #include <image_transport/publisher.h>
@@ -69,7 +70,10 @@ namespace swri_image_util
         // Don't shut down, because that would bring down all other nodelets as well
         return;
       }
-      m_ = cv::Mat(transform, true).reshape(0, 3);
+      std::vector<int32_t> cv_transform;
+      std::transform(transform.begin(), transform.end(), std::back_inserter(cv_transform),
+        [](int64_t value) -> int32_t { return static_cast<int32_t>(value); });
+      cv::Mat tempMat = cv::Mat(cv_transform, true).reshape(0, 3);
       std::stringstream matstring;
       matstring << m_;
       RCLCPP_INFO(this->get_logger(), "Transformation matrix: %s", matstring.str().c_str());
