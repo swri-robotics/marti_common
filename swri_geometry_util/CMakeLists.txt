@@ -16,18 +16,7 @@ find_package(GEOS REQUIRED)
 
 find_package(OpenCV REQUIRED core)
 
-find_package(Eigen3)
-if(NOT EIGEN3_FOUND)
-  # Fallback to pkg-config
-  find_package(PkgConfig)
-  pkg_check_modules(EIGEN3 REQUIRED eigen3)
-else()
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
-endif()
-add_definitions(${EIGEN3_DEFINITIONS})
-
-
-include_directories(include ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
+find_package(Eigen3 REQUIRED)
 
 add_library(${PROJECT_NAME}
   src/cubic_spline.cpp
@@ -35,9 +24,17 @@ add_library(${PROJECT_NAME}
   src/intersection.cpp
   src/polygon.cpp
 )
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${OpenCV_INCLUDE_DIRS}
+  ${GEOS_INCLUDE_DIRS}
+)
 target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBRARIES}
   ${GEOS_LIBRARIES}
+  Eigen3::Eigen
 )
 ament_target_dependencies(${PROJECT_NAME}
   "cv_bridge"

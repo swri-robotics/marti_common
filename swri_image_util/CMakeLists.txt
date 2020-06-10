@@ -29,11 +29,6 @@ find_package(Boost REQUIRED COMPONENTS filesystem system random)
 find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN3_DEFINITIONS})
 
-include_directories(include
-  ${OpenCV_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
-)
-
 add_library(${PROJECT_NAME}
   src/draw_util.cpp
   src/geometry_util.cpp
@@ -43,6 +38,11 @@ add_library(${PROJECT_NAME}
   src/replace_colors.cpp
   src/rolling_normalization.cpp
 )
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME}
@@ -50,6 +50,7 @@ target_link_libraries(${PROJECT_NAME}
   Boost::filesystem
   Boost::random
   Boost::system
+  Eigen3::Eigen
   ${OpenCV_LIBRARIES}
 )
 ament_target_dependencies(${PROJECT_NAME}

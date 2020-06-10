@@ -42,12 +42,6 @@ if(NOT "${PROJ_FOUND}")
   )
 endif()
 
-include_directories(include
-  ${OpenCV_INCLUDE_DIRS}
-  ${PROJ_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIR}
-)
-
 add_library(${PROJECT_NAME}
   src/georeference.cpp
   src/local_xy_util.cpp
@@ -58,6 +52,18 @@ add_library(${PROJECT_NAME}
   src/transform_util.cpp
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+target_include_directories(${PROJECT_NAME}
+  SYSTEM
+  INTERFACE
+  ${OpenCV_INCLUDE_DIRS}
+  ${PROJ_INCLUDE_DIRS}
+  ${YAML_CPP_INCLUDE_DIR}
+)
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_definitions(${PROJECT_NAME}

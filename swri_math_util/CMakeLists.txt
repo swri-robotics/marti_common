@@ -11,8 +11,6 @@ find_package(rclcpp REQUIRED)
 # 1.46 and 1.47
 find_package(Boost COMPONENTS random) 
 
-include_directories(include)
-  
 add_library(${PROJECT_NAME}
   src/math_util.cpp
   src/trig_util.cpp
@@ -20,6 +18,11 @@ add_library(${PROJECT_NAME}
   src/interpolation_1d.cpp)
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::random

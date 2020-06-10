@@ -14,12 +14,15 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
-include_directories(include)
-
 # TODO pjr What to do about swri_roscpp-extras.cmake?
 
 ### Build Test Node ###
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
+target_include_directories(subscriber_test
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 ament_target_dependencies(subscriber_test
   diagnostic_updater
   marti_common_msgs
@@ -30,6 +33,11 @@ ament_target_dependencies(subscriber_test
 )
 
 add_executable(storing_subscriber_test src/nodes/storing_subscriber_test.cpp)
+target_include_directories(storing_subscriber_test
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 ament_target_dependencies(storing_subscriber_test
   diagnostic_updater
   marti_common_msgs
@@ -40,6 +48,11 @@ ament_target_dependencies(storing_subscriber_test
   )
 
 add_executable(service_server_test src/nodes/service_server_test.cpp)
+target_include_directories(service_server_test
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 ament_target_dependencies(service_server_test
   diagnostic_updater
   marti_common_msgs
@@ -50,6 +63,11 @@ ament_target_dependencies(service_server_test
   )
 
 add_executable(timer_test src/nodes/timer_test.cpp)
+target_include_directories(timer_test
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 ament_target_dependencies(timer_test
   diagnostic_updater
   marti_common_msgs

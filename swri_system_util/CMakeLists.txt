@@ -6,10 +6,13 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem regex)
 
-include_directories(include)
-  
 add_library(${PROJECT_NAME}
   src/file_util.cpp
+)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(${PROJECT_NAME}
   Boost::filesystem
@@ -22,7 +25,8 @@ if(BUILD_TESTING)
 
   include_directories(${ament_index_cpp_INCLUDE_DIRS})
   ament_add_gtest(test_file_util test/test_file_util.cpp)
-  target_link_libraries(test_file_util ${PROJECT_NAME} ${ament_index_cpp_LIBRARIES})
+  ament_target_dependencies(test_file_util ament_index_cpp)
+  target_link_libraries(test_file_util ${PROJECT_NAME})
 endif()
 
 install(DIRECTORY include/

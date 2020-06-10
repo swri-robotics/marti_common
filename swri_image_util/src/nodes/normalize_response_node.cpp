@@ -33,7 +33,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <rclcpp/rclcpp.hpp>
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <swri_image_util/image_normalization.h>

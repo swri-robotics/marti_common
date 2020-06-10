@@ -7,11 +7,14 @@ find_package(ament_cmake REQUIRED)
 
 find_package(rclcpp REQUIRED)
 
-include_directories(include)
-
 add_library(${PROJECT_NAME} src/progress_bar.cpp)
 ament_target_dependencies(${PROJECT_NAME}
   "rclcpp"
+)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 install(DIRECTORY include/
@@ -24,9 +27,10 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
 )
 
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(rclcpp)
-ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
-ament_export_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
+ament_export_dependencies(ament_cmake
+  rclcpp
+)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

@@ -6,10 +6,13 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED)
 
-include_directories(include)
-  
 add_library(${PROJECT_NAME} 
   src/serial_port.cpp
+)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)

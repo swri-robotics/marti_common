@@ -13,8 +13,6 @@ find_package(swri_roscpp REQUIRED)
 find_package(swri_transform_util REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
-include_directories(include)
-
 ### Build Library ###
 add_library(${PROJECT_NAME} 
   src/route.cpp
@@ -22,6 +20,11 @@ add_library(${PROJECT_NAME}
   src/route_speeds.cpp
   src/util.cpp
   src/visualization.cpp
+)
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 ament_target_dependencies(${PROJECT_NAME}
