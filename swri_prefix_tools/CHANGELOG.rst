@@ -2,8 +2,8 @@
 Changelog for package swri_prefix_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.13.2 (2020-06-10)
+-------------------
 * Support ROS Noetic (`#581 <https://github.com/swri-robotics/marti_common/issues/581>`_)
 * Contributors: P. J. Reed
 
