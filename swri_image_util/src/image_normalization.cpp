@@ -391,7 +391,7 @@ namespace swri_image_util
               if (image.type() == CV_8UC3)
                 return image;
               cv::Mat Image8Bit = scale_2_8bit(image), Image8BitColor;
-              cvtColor(Image8Bit, Image8BitColor, CV_GRAY2BGR);
+              cvtColor(Image8Bit, Image8BitColor, cv::COLOR_GRAY2BGR);
               return Image8BitColor;
        }
 }

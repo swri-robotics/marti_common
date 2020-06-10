@@ -53,14 +53,14 @@ namespace swri_opencv_util
 
       if (windows_.empty())
       {
-        cvStartWindowThread();
+        cv::startWindowThread();
       }
 
       if (windows_.count(name) == 0)
       {
         windows_[name] = name;
 
-        cvNamedWindow(name.c_str(), CV_WINDOW_NORMAL);
+        cv::namedWindow(name.c_str(), cv::WINDOW_NORMAL);
       }
     }
 
@@ -112,7 +112,7 @@ namespace swri_opencv_util
         if (!mask.empty())
         {
           cv::Mat color;
-          cv::cvtColor(scaled, color, CV_GRAY2BGR);
+          cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGR);
           color.setTo(cv::Scalar(0.0,0.0,255.0), mask == 0);
           scaled = color;
         }

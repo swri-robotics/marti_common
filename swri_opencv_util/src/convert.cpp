@@ -62,7 +62,7 @@ namespace swri_opencv_util
         mat.convertTo(scaled, CV_8U, a, b);
 
         cv::Mat color;
-        cv::cvtColor(scaled, color, CV_GRAY2BGRA);
+        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
         SetAlpha(color, 255);
         color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         scaled = color;
@@ -74,7 +74,7 @@ namespace swri_opencv_util
         mat.convertTo(scaled, CV_8U, a, b);
  
         cv::Mat color;
-        cv::cvtColor(scaled, color, CV_GRAY2BGRA);
+        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
         SetAlpha(color, 255);
         color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         scaled = color;
@@ -89,11 +89,11 @@ namespace swri_opencv_util
         
         if (is_rgb)
         {
-          cv::cvtColor(scaled, color, CV_RGB2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
         }
         else
         {
-          cv::cvtColor(scaled, color, CV_BGR2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
         }
         
         SetAlpha(color, 255);
@@ -110,11 +110,11 @@ namespace swri_opencv_util
         
         if (is_rgb)
         {
-          cv::cvtColor(scaled, color, CV_RGB2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
         }
         else
         {
-          cv::cvtColor(scaled, color, CV_BGR2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
         }
         
         SetAlpha(color, 255);
@@ -131,7 +131,7 @@ namespace swri_opencv_util
 
         if (is_rgb)
         {
-          cv::cvtColor(scaled, color, CV_RGBA2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_RGBA2BGRA);
         }
         else
         {
@@ -156,11 +156,11 @@ namespace swri_opencv_util
         cv::Mat color;
         if (is_rgb)
         {
-          cv::cvtColor(scaled, color, CV_RGB2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
         }
         else
         {
-          cv::cvtColor(scaled, color, CV_BGR2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
         }
         
         SetAlpha(color, 255);
@@ -174,7 +174,7 @@ namespace swri_opencv_util
         cv::Mat color;
         if (is_rgb)
         {
-          cv::cvtColor(scaled, color, CV_RGBA2BGRA);
+          cv::cvtColor(scaled, color, cv::COLOR_RGBA2BGRA);
         }
         else
         {
@@ -190,7 +190,7 @@ namespace swri_opencv_util
         mat.convertTo(scaled, CV_8U, a, b);
 
         cv::Mat color;
-        cv::cvtColor(scaled, color, CV_GRAY2BGRA);
+        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
         SetAlpha(color, 255);
         color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         scaled = color;

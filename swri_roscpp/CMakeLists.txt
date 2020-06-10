@@ -88,11 +88,13 @@ if (CATKIN_ENABLE_TESTING)
   # This is a little different from the way tests are normally declared because we
   # have a single binary that contains both server and client tests, but the tests
   # themselves are run in separate .test files.
+  find_package(Threads REQUIRED)
   add_executable(test_topic_service
     test/topic_service_test.cpp)
   target_link_libraries(test_topic_service
     ${catkin_LIBRARIES}
-    ${GTEST_LIBRARIES})
+    ${GTEST_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT})
   add_dependencies(test_topic_service ${${PROJECT_NAME}_EXPORTED_TARGETS})
   add_rostest(test/topic_service_client_test.test DEPENDENCIES test_topic_service)
   add_rostest(test/topic_service_server_test.test DEPENDENCIES test_topic_service)

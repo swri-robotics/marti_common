@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 import rospy
 import rostest
@@ -25,7 +25,7 @@ class TestNodeletExists(unittest.TestCase):
         while self.msg is None:
             sleep(0.1)
         sub.unregister()
-        self.assertEquals(self.msg.data, 1337)
+        self.assertEqual(self.msg.data, 1337)
         
 if __name__ == '__main__':
     rospy.init_node(NAME)

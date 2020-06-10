@@ -1,4 +1,4 @@
-<package format="2">
+<package format="3">
   <name>swri_prefix_tools</name>
   <version>2.13.1</version>
   <description>
@@ -13,7 +13,8 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
-  <exec_depend>python-psutil</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-psutil</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-psutil</exec_depend>
   
 </package>
 
