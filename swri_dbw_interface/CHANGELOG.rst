@@ -2,6 +2,11 @@
 Changelog for package swri_dbw_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use setuptools instead of distutils
+* Contributors: P. J. Reed
+
 2.13.2 (2020-06-10)
 -------------------
 

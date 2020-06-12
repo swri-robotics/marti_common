@@ -2,6 +2,11 @@
 Changelog for package swri_console_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Bump minimum cmake version
+* Contributors: P. J. Reed
+
 2.13.2 (2020-06-10)
 -------------------
 
