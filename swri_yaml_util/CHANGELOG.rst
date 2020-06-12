@@ -2,8 +2,8 @@
 Changelog for package swri_yaml_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.13.3 (2020-06-12)
+-------------------
 * Use setuptools instead of distutils
 * Contributors: P. J. Reed
 

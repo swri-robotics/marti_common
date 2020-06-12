@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.13.3 (2020-06-12)
+-------------------
 * Use setuptools instead of distutils (`#583 <https://github.com/swri-robotics/marti_common/issues/583>`_)
 * Bump minimum cmake version
 * Contributors: Shane Loretz, P. J. Reed
