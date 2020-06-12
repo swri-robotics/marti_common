@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(swri_transform_util)
 
 find_package(catkin REQUIRED COMPONENTS

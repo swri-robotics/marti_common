@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package format="2">
+<package format="3">
   <name>swri_rospy</name>
   <version>2.13.2</version>
   <description>
-  This package provides added functionaliy on top of rospy, including a
+  This package provides added functionality on top of rospy, including a
   single-threaded callback queue.
   </description>
   <maintainer email="preed@swri.edu">P. J. Reed</maintainer>
   <license>BSD</license>
+
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</buildtool_depend>
+
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>std_srvs</exec_depend>
