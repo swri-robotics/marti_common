@@ -6,25 +6,22 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED COMPONENTS filesystem regex)
 
-if(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
-  add_definitions( -DBOOST_FILESYSTEM_VERSION=2 )
-  message(STATUS "  Using Boost Filesystem Version 2")
-else(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
-  add_definitions( -DBOOST_FILESYSTEM_VERSION=3 )
-  message(STATUS "  Using Boost Filesystem Version 3")
-endif(${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 48)
-
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp
+  DEPENDS Boost
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
+include_directories(include ${catkin_INCLUDE_DIRS})
   
 add_library(${PROJECT_NAME}
   src/file_util.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  Boost::filesystem
+  Boost::regex
+)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
