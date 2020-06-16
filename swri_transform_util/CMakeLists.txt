@@ -75,7 +75,7 @@ target_link_libraries(${PROJECT_NAME}
   opencv_calib3d
   opencv_core
   opencv_highgui
-  opencv_imageproc
+  opencv_imgproc
   opencv_video
   ${PROJ_LIBRARIES}
   yaml-cpp
