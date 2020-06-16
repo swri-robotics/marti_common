@@ -1,5 +1,6 @@
 marti\_common
-[![Travis CI Build Status](https://travis-ci.org/swri-robotics/marti_common.svg?branch=dashing-devel)](https://travis-ci.org/swri-robotics/marti_common)
+![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg)
+![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=dashing-devel)
 [![ROS2 Build Farm Build Status](http://build.ros2.org/buildStatus/icon?job=Ddev__marti_common__ubuntu_bionic_amd64)](http://build.ros2.org/job/Ddev__marti_common__ubuntu_bionic_amd64/)
 =============
 
@@ -35,14 +36,14 @@ Package migration notes:
 
 Also note that many features have not been tested yet.  Please open an issue if you try to use something and it doesn't work.
 
-Installation (ROS Dashing)
+Installation (ROS Dashing, Eloquent, Foxy)
 ------------
 
-If you have installed ROS 2 Dashing, you can install any of the packages in this repository with apt-get:
+If you have installed ROS 2, you can install any of the packages in this repository with apt-get:
 
-    sudo apt-get install ros-dashing-<package>
+    sudo apt-get install ros-${ROS_DISTRO}-<package>
 
-Building From Source (ROS Dashing)
+Building From Source (ROS Dashing, Eloquent, Foxy)
 ------------
 
 These directions assume you have already set up rosdep. See the [rosdep documentation](http://wiki.ros.org/rosdep) on the ROS wiki for help setting up rosdep.
