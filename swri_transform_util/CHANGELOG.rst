@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Clean up Boost usage (`#584 <https://github.com/swri-robotics/marti_common/issues/584>`_)
+* Contributors: P. J. Reed
+
 2.13.3 (2020-06-12)
 -------------------
 * Use setuptools instead of distutils (`#583 <https://github.com/swri-robotics/marti_common/issues/583>`_)

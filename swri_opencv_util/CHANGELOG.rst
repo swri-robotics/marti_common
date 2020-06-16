@@ -2,6 +2,11 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Clean up Boost usage (`#584 <https://github.com/swri-robotics/marti_common/issues/584>`_)
+* Contributors: P. J. Reed
+
 2.13.3 (2020-06-12)
 -------------------
 * Bump minimum cmake version
