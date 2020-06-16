@@ -49,7 +49,7 @@ add_library(${PROJECT_NAME}
   src/intersection.cpp
   src/polygon.cpp
 )
-target_compile_definitions(${PROJECT_NAME} PUBLIC "-DWE_ACKNOWLEDGE_THAT_THE_GEOS_CPLUSPLUS_API_IS_UNSTABLE")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DUSE_UNSTABLE_GEOS_CPP_API")
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${GEOS_LIBRARIES}
