@@ -73,7 +73,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${PROJ_LIBRARIES}
-  Boost::headers
+  Boost::boost
   opencv_calib3d
   opencv_core
   opencv_highgui

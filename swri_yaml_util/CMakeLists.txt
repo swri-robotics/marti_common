@@ -42,7 +42,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-deprecated-declarations")
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${YamlCpp_LIBRARIES}
-  Boost::headers
+  Boost::boost
 )
 
 install(DIRECTORY include/${PROJECT_NAME}/
