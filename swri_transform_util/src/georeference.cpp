@@ -34,6 +34,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include <opencv2/calib3d.hpp>
+
 // ROS libraries
 #include <ros/ros.h>
 #include <swri_yaml_util/yaml_util.h>
@@ -258,8 +260,8 @@ namespace swri_transform_util
       dst.at<cv::Vec2f>(0, i)[1] = coordinates_.at<cv::Vec2d>(0, i)[1] - y_offset_;
     }
 
-    transform_ = cv::estimateRigidTransform(src, dst, true);
-    inverse_transform_ = cv::estimateRigidTransform(dst, src, true);
+    transform_ = cv::estimateAffine2D(src, dst);
+    inverse_transform_ = cv::estimateAffine2D(dst, src);
   }
 
   void GeoReference::GetCoordinate(

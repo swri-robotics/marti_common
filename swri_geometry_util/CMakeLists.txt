@@ -36,7 +36,12 @@ catkin_package(
     OpenCV
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${GEOS_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
+include_directories(include)
+include_directories(SYSTEM
+  ${catkin_INCLUDE_DIRS}
+  ${GEOS_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+)
 
 add_library(${PROJECT_NAME}
   src/cubic_spline.cpp
@@ -44,7 +49,11 @@ add_library(${PROJECT_NAME}
   src/intersection.cpp
   src/polygon.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${GEOS_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  ${GEOS_LIBRARIES}
+  opencv_core
+)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)

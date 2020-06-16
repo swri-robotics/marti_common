@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_python_setup()
 
-find_package(OpenCV  REQUIRED core highgui imgproc video)
+find_package(OpenCV  REQUIRED calib3d core highgui imgproc video)
 find_package(Boost REQUIRED)
 
 find_package(PkgConfig REQUIRED)
@@ -57,7 +57,6 @@ catkin_package(
 include_directories(include)
 include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS} 
-  ${OpenCV_INCLUDE_DIRS}
   ${PROJ_INCLUDE_DIRS}
 )
 
@@ -71,12 +70,15 @@ add_library(${PROJECT_NAME}
   src/transform_util.cpp
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
-link_directories(${OpenCV_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBS}
   ${PROJ_LIBRARIES}
   Boost::headers
+  opencv_calib3d
+  opencv_core
+  opencv_highgui
+  opencv_imgproc
+  opencv_video
 )
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 
