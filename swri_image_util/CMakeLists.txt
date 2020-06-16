@@ -22,7 +22,7 @@ find_package(swri_opencv_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core)
 
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
 
@@ -51,7 +51,7 @@ target_link_libraries(${PROJECT_NAME}
   Boost::random
   Boost::system
   Eigen3::Eigen
-  ${OpenCV_LIBRARIES}
+  opencv_core
 )
 ament_target_dependencies(${PROJECT_NAME}
   camera_calibration_parsers

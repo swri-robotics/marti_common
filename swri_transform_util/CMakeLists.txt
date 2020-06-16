@@ -29,7 +29,7 @@ else()
 endif()
 
 find_package(yaml-cpp REQUIRED)
-find_package(OpenCV REQUIRED core highgui imgproc video)
+find_package(OpenCV REQUIRED calib3d core highgui imgproc video)
 find_package(Boost REQUIRED thread)
 
 find_package(PkgConfig REQUIRED)
@@ -60,7 +60,6 @@ target_include_directories(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
   SYSTEM
   INTERFACE
-  ${OpenCV_INCLUDE_DIRS}
   ${PROJ_INCLUDE_DIRS}
 )
 set_property(TARGET ${PROJECT_NAME}
@@ -73,7 +72,11 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PR
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::thread
-  ${OpenCV_LIBS}
+  opencv_calib3d
+  opencv_core
+  opencv_highgui
+  opencv_imageproc
+  opencv_video
   ${PROJ_LIBRARIES}
   yaml-cpp
 )
@@ -104,7 +107,6 @@ target_include_directories(${PROJECT_NAME}_nodes
 target_include_directories(${PROJECT_NAME}_nodes
   SYSTEM
   INTERFACE
-  ${OpenCV_INCLUDE_DIRS}
   ${PROJ_INCLUDE_DIRS}
 )
 target_compile_definitions(${PROJECT_NAME}_nodes
@@ -127,7 +129,6 @@ target_include_directories(lat_lon_tf_echo
 target_include_directories(lat_lon_tf_echo
   SYSTEM
   INTERFACE
-  ${OpenCV_INCLUDE_DIRS}
   ${PROJ_INCLUDE_DIRS}
 )
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
@@ -190,7 +191,6 @@ ament_export_dependencies(
 )
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
-  ${OpenCV_LIBS}
   ${PROJ_LIBRARIES}
 )
 

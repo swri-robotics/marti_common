@@ -24,17 +24,17 @@ add_library(${PROJECT_NAME}
   src/intersection.cpp
   src/polygon.cpp
 )
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DUSE_UNSTABLE_GEOS_CPP_API")
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
-  ${OpenCV_INCLUDE_DIRS}
   ${GEOS_INCLUDE_DIRS}
 )
 target_link_libraries(${PROJECT_NAME}
-  ${OpenCV_LIBRARIES}
   ${GEOS_LIBRARIES}
   Eigen3::Eigen
+  opencv_core
 )
 ament_target_dependencies(${PROJECT_NAME}
   "cv_bridge"
