@@ -1,17 +1,17 @@
-marti\_common [![Build Status](https://travis-ci.org/swri-robotics/marti_common.svg?branch=master)](https://travis-ci.org/swri-robotics/marti_common)
+marti\_common ![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg) ![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=dashing-devel)
 =============
 
 
 This repository provides various utility packages created at [Southwest Reseach Institute](http://www.swri.org)'s [Intelligent Vehicle Systems](http://www.swri.org/4org/d10/isd/ivs/default.htm) section for working with [Robot Operating System(ROS)](http://www.ros.org).
 
-Installation (ROS Indigo, Kinetic, Lunar, Melodic)
+Installation (ROS Kinetic, Melodic, Noetic)
 -------------
 
-If you have installed ROS Indigo, Kinetic, Lunar, or Melodic, you can install any of the packages in this repository with apt-get:
+You can install any of the packages in this repository with apt-get:
 
     sudo apt-get install ros-${ROS_DISTRO}-<package>
 
-Building From Source (ROS Indigo, Kinetic, Lunar, Melodic)
+Building From Source (ROS Kinetic, Melodic, Noetic)
 ------------
 
 These directions assume you have already set up a catkin workspace and rosdep. See [this tutorial](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) on the ROS Wiki for help setting up a catkin workspace and the [rosdep documentation](http://wiki.ros.org/rosdep) on the ROS wiki for help setting up rosdep.
