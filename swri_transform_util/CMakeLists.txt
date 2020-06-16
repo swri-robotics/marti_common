@@ -51,13 +51,12 @@ catkin_package(
     swri_yaml_util
     tf
     topic_tools
-  DEPENDS PROJ
+  DEPENDS Boost PROJ
 )
 
 include_directories(include)
 include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS} 
-  ${Boost_INCLUDE_DIRS} 
   ${OpenCV_INCLUDE_DIRS}
   ${PROJ_INCLUDE_DIRS}
 )
@@ -73,7 +72,12 @@ add_library(${PROJECT_NAME}
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
 link_directories(${OpenCV_LIBRARY_DIRS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PROJ_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+  ${PROJ_LIBRARIES}
+  Boost::headers
+)
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 
 add_library(${PROJECT_NAME}_nodelets

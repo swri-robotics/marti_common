@@ -16,16 +16,20 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp
+  DEPENDS Boost
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS})
   
 add_library(${PROJECT_NAME}
   src/math_util.cpp
   src/trig_util.cpp
   src/random.cpp
   src/interpolation_1d.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  Boost::random
+)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)

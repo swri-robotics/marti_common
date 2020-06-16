@@ -3,6 +3,8 @@ project(swri_yaml_util)
 
 find_package(catkin REQUIRED)
 
+find_package(Boost REQUIRED)
+
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
 message(STATUS "YAML-CPP VERSION: " ${YamlCpp_VERSION})
@@ -13,6 +15,7 @@ file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 catkin_package(
   INCLUDE_DIRS include ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   LIBRARIES ${PROJECT_NAME} ${YamlCpp_LIBRARIES}
+  DEPENDS Boost
 )
 
 if( ${YamlCpp_VERSION} MATCHES "0.[23].*")
@@ -25,12 +28,9 @@ endif()
 
 configure_file(version.h.in ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}/version.h)
 
-find_package(Boost REQUIRED)
-
 include_directories(include)
 include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   ${YamlCpp_INCLUDE_DIR}
 )
@@ -39,7 +39,11 @@ add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
 target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-deprecated-declarations")
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${YamlCpp_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  ${YamlCpp_LIBRARIES}
+  Boost::headers
+)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
