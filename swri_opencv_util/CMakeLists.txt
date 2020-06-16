@@ -27,7 +27,9 @@ target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::serialization
   Boost::thread
-  ${OpenCV_LIBS}
+  opencv_core
+  opencv_imgproc
+  opencv_highgui
 )
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 set_property(TARGET ${PROJECT_NAME}
