@@ -25,7 +25,7 @@ find_package(OpenCV REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Boost REQUIRED COMPONENTS filesystem system random)
+find_package(Boost REQUIRED)
 
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
@@ -77,9 +77,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  Boost::filesystem
-  Boost::random
-  Boost::system
+  Boost::boost
 )
 
 add_library(${PROJECT_NAME}_nodelets

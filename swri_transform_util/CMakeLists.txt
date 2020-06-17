@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_python_setup()
 
 find_package(OpenCV  REQUIRED calib3d core highgui imgproc video)
-find_package(Boost REQUIRED COMPONENTS serialization thread)
+find_package(Boost REQUIRED COMPONENTS filesystem serialization thread)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROJ proj)
@@ -73,6 +73,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${PROJ_LIBRARIES}
+  Boost::filesystem
   Boost::serialization
   Boost::thread
   opencv_calib3d

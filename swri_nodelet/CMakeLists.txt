@@ -9,11 +9,14 @@ set(BUILD_DEPS
 
 set(RUNTIME_DEPS ${BUILD_DEPS})
 
+find_package(Boost REQUIRED)
+
 find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
 catkin_package(
   CATKIN_DEPENDS ${RUNTIME_DEPS}
   INCLUDE_DIRS include
   CFG_EXTRAS swri_nodelet-extras.cmake
+  DEPENDS Boost
 )
 
 # nodelet.cpp.in must be copied before include(...) or clean builds will fail
@@ -28,7 +31,10 @@ include_directories(include
 )
 
 add_library(swri_nodelet_test src/test_nodelet.cpp)
-target_link_libraries(swri_nodelet_test ${catkin_LIBRARIES})
+target_link_libraries(swri_nodelet_test
+  ${catkin_LIBRARIES}
+  Boost::boost
+)
 
 swri_nodelet_add_node(test_node swri_nodelet TestNodelet)
 target_link_libraries(test_node swri_nodelet_test)

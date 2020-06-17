@@ -13,10 +13,12 @@ set(BUILD_DEPS
 
 set(RUNTIME_DEPS ${BUILD_DEPS})
 
+find_package(Boost REQUIRED)
 
 ### Catkin ###
 find_package(catkin REQUIRED COMPONENTS ${BUILD_DEPS})
 catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
+  DEPENDS Boost
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME})
 
@@ -31,7 +33,10 @@ add_library(${PROJECT_NAME}
   src/visualization.cpp
   )
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++0x")
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  Boost::boost
+)
 
 ### Install Libraries and Executables ###
 install(TARGETS ${PROJECT_NAME}

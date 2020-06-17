@@ -13,6 +13,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>boost</depend>
   <depend>marti_common_msgs</depend>
   <depend>marti_nav_msgs</depend>
   <depend>roscpp</depend>
