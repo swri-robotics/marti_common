@@ -2,6 +2,11 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix more Boost::thread issues (`#587 <https://github.com/swri-robotics/marti_common/issues/587>`_)
+* Contributors: P. J. Reed
+
 2.13.4 (2020-06-16)
 -------------------
 * Clean up Boost usage (`#584 <https://github.com/swri-robotics/marti_common/issues/584>`_)
