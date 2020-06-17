@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update catkin dependencies (`#588 <https://github.com/swri-robotics/marti_common/issues/588>`_)
+* Contributors: P. J. Reed
+
 2.13.5 (2020-06-17)
 -------------------
 
