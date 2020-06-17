@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.13.5 (2020-06-17)
+-------------------
 * Fix more Boost::thread issues (`#587 <https://github.com/swri-robotics/marti_common/issues/587>`_)
 * Contributors: P. J. Reed
 
