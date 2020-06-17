@@ -12,6 +12,9 @@
   <url>https://github.com/swri-robotics/marti_common</url>
   
   <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>libboost-random</depend>
+  <depend>libboost-thread</depend>
   
   <depend>roscpp</depend>
 

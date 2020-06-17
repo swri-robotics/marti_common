@@ -13,6 +13,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>boost</depend>
   <depend>nodelet</depend>
   <exec_depend>rosbash</exec_depend>
   <test_depend>rosbash</test_depend>

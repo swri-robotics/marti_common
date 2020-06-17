@@ -25,7 +25,12 @@ find_package(OpenCV REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Boost REQUIRED COMPONENTS filesystem system random)
+find_package(Boost REQUIRED)
+# Workaround for header-only Boost issue in older versions of cmake:
+# https://gitlab.kitware.com/cmake/cmake/-/issues/18643
+add_library(${PROJECT_NAME}_boost INTERFACE IMPORTED)
+set_property(TARGET ${PROJECT_NAME}_boost PROPERTY
+  INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
 
 find_package(Eigen3)
 if(NOT EIGEN3_FOUND)
@@ -77,9 +82,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  Boost::filesystem
-  Boost::random
-  Boost::system
+  ${PROJECT_NAME}_boost
 )
 
 add_library(${PROJECT_NAME}_nodelets
