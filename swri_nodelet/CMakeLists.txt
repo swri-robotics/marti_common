@@ -37,7 +37,9 @@ target_link_libraries(swri_nodelet_test
 )
 
 swri_nodelet_add_node(test_node swri_nodelet TestNodelet)
-target_link_libraries(test_node swri_nodelet_test)
+target_link_libraries(test_node
+  swri_nodelet_test
+)
 
 if(CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
