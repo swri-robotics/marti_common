@@ -5,12 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
-# The Boost Random library headers and namespaces changed between version
-# 1.46 and 1.47
-find_package(Boost COMPONENTS random) 
-if(${Boost_LIB_VERSION} MATCHES "1_46*")
-  add_definitions( -DBOOST_1_46 )
-endif(${Boost_LIB_VERSION} MATCHES "1_46*")
+find_package(Boost COMPONENTS random thread)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -29,6 +24,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   Boost::random
+  Boost::thread
 )
 
 if(CATKIN_ENABLE_TESTING)

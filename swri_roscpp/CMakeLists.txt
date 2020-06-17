@@ -22,6 +22,8 @@ set(RUNTIME_DEPS
   std_srvs
 )
 
+find_package(Boost REQUIRED COMPONENTS thread)
+
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
 
@@ -44,13 +46,18 @@ if (CATKIN_ENABLE_TESTING)
 endif()
 
 catkin_package(CATKIN_DEPENDS ${RUNTIME_DEPS}
+  DEPENDS Boost
   INCLUDE_DIRS include
   LIBRARIES ${YamlCpp_LIBRARIES}
   CFG_EXTRAS swri_roscpp-extras.cmake)
 
 ### Build Test Node ###
 add_executable(dynamic_parameters_test_node src/nodes/dynamic_parameters_test_node.cpp)
-target_link_libraries(dynamic_parameters_test_node ${catkin_LIBRARIES} ${YamlCpp_LIBRARIES})
+target_link_libraries(dynamic_parameters_test_node
+  ${catkin_LIBRARIES}
+  ${YamlCpp_LIBRARIES}
+  Boost::thread
+)
 set_target_properties(dynamic_parameters_test_node PROPERTIES COMPILE_FLAGS "-std=c++11")
 
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
@@ -63,7 +70,10 @@ add_executable(storing_subscriber_test src/nodes/storing_subscriber_test.cpp)
 target_link_libraries(storing_subscriber_test ${catkin_LIBRARIES})
 
 add_executable(service_server_test src/nodes/service_server_test.cpp)
-target_link_libraries(service_server_test ${catkin_LIBRARIES})
+target_link_libraries(service_server_test
+  ${catkin_LIBRARIES}
+  Boost::thread
+)
 
 add_executable(timer_test src/nodes/timer_test.cpp)
 target_link_libraries(timer_test ${catkin_LIBRARIES})
@@ -88,13 +98,13 @@ if (CATKIN_ENABLE_TESTING)
   # This is a little different from the way tests are normally declared because we
   # have a single binary that contains both server and client tests, but the tests
   # themselves are run in separate .test files.
-  find_package(Threads REQUIRED)
   add_executable(test_topic_service
     test/topic_service_test.cpp)
   target_link_libraries(test_topic_service
     ${catkin_LIBRARIES}
     ${GTEST_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT})
+    Boost::thread
+  )
   add_dependencies(test_topic_service ${${PROJECT_NAME}_EXPORTED_TARGETS})
   add_rostest(test/topic_service_client_test.test DEPENDENCIES test_topic_service)
   add_rostest(test/topic_service_server_test.test DEPENDENCIES test_topic_service)
