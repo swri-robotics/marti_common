@@ -62,13 +62,23 @@ class ObstacleTransformer : public rclcpp::Node
 
       for (auto& ob: obstacles->obstacles)
       {
+        tf2::Transform local_transform;
+        tf2::fromMsg(ob.pose, local_transform);
+        ob.pose.position.x = 0;
+        ob.pose.position.y = 0;
+        ob.pose.position.z = 0;
+        ob.pose.orientation.x = 0.0;
+        ob.pose.orientation.y = 0.0;
+        ob.pose.orientation.z = 0.0;
+        ob.pose.orientation.w = 1.0;
         for (auto& point: ob.polygon)
         {
-           tf2::Vector3 p(point.x, point.y, 0.0);
+          tf2::Vector3 p(point.x, point.y, 0.0);
+          p = local_transform*p;
            
-           p = transform*p;
-           point.x = p.x();
-           point.y = p.y();
+          p = transform*p;
+          point.x = p.x();
+          point.y = p.y();
         }
       }
 
@@ -78,6 +88,7 @@ class ObstacleTransformer : public rclcpp::Node
     swri::Subscriber object_array_sub_;
     rclcpp::Publisher<marti_nav_msgs::msg::ObstacleArray>::SharedPtr viz_pub_;
 
+    // parameters
     std::string output_frame_;
 
     swri_transform_util::TransformManager tf_manager_;
