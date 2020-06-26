@@ -2,6 +2,9 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.13.6 (2020-06-17)
 -------------------
 * Update catkin dependencies (`#588 <https://github.com/swri-robotics/marti_common/issues/588>`_)
