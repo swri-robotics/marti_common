@@ -13,7 +13,7 @@
   
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>boost</build>
+  <depend>boost</depend>
   <depend>roscpp</depend>
 
   <test_depend>rostest</test_depend>
