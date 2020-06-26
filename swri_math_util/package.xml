@@ -13,6 +13,8 @@
   
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>boost</build_depend>
+
   <depend>libboost-random</depend>
   <depend>libboost-thread</depend>
   

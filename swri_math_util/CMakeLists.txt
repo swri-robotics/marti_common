@@ -5,7 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
-find_package(Boost COMPONENTS random thread)
+find_package(Boost REQUIRED COMPONENTS random thread)
 
 catkin_package(
   INCLUDE_DIRS include
