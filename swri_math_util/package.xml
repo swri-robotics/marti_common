@@ -13,11 +13,7 @@
   
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>boost</build_depend>
-
-  <depend>libboost-random</depend>
-  <depend>libboost-thread</depend>
-  
+  <depend>boost</build>
   <depend>roscpp</depend>
 
   <test_depend>rostest</test_depend>
