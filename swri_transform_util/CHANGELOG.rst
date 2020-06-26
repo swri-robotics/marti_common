@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.13.7 (2020-06-26)
+-------------------
 * Improve object transformer to take into account the pose of the object (`#589 <https://github.com/swri-robotics/marti_common/issues/589>`_)
 * Contributors: Matthew Bries
 
