@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-set(swri_roscpp_SHARE ${swri_roscpp_PREFIX}/@CATKIN_PACKAGE_SHARE_DESTINATION@)
-
-#@[if DEVELSPACE]@
-# bin and template dir variables in develspace
 set(swri_roscpp_BIN "${swri_roscpp_DIR}/../../../bin/")
-#@[else]@
-# bin and template dir variables in installspace
-#set(swri_roscpp_BIN "${swri_roscpp_DIR}/../../../@(CATKIN_PACKAGE_BIN_DESTINATION)/")
-#@[end if]@
 
 macro(generate_topic_service_files)
   set(options NOINSTALL)
