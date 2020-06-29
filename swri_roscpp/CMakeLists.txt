@@ -106,7 +106,7 @@ if (BUILD_TESTING)
 endif()
 
 ### Install Test Node and Headers ###
-install(TARGETS subscriber_test topic_service_test_server
+install(TARGETS subscriber_test
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
