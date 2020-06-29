@@ -138,4 +138,4 @@ ament_export_dependencies(std_msgs)
 ament_export_dependencies(std_srvs)
 ament_export_include_directories(include)
 
-ament_package()
+ament_package(CONFIG_EXTRAS cmake/swri_roscpp-extras.cmake )
