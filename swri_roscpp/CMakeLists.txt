@@ -96,7 +96,6 @@ if (BUILD_TESTING)
   ament_target_dependencies(topic_service_test_server
     rclcpp
     marti_common_msgs
-    swri_roscpp
   )
   target_include_directories(topic_service_test_server
     PUBLIC
