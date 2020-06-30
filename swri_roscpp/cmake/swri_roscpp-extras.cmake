@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.0.2)
 
 set(swri_roscpp_BIN "${swri_roscpp_DIR}/../../../bin/")
 
-macro(generate_topic_service_files)
+macro(generate_topic_service_files generated_files_list)
   set(options NOINSTALL)
   set(oneValueArgs DIRECTORY)
-  set(multiValueArgs FILES DEPENDENCIES)
+  set(multiValueArgs FILES)
   cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if(ARG_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "generate_topic_service_files() called with unused arguments: ${ARG_UNPARSED_ARGUMENTS}")
@@ -49,10 +49,5 @@ macro(generate_topic_service_files)
 
   endforeach()
 
-  # Actually build our newly generated messages
-  rosidl_generate_interfaces(${PROJECT_NAME}
-    ${TMP_MSG_FILES}
-    DEPENDENCIES marti_common_msgs ${ARG_DEPENDENCIES}
-    ADD_LINTER_TESTS
-  )
+  set(${generated_files_list} ${TMP_MSG_FILES})
 endmacro()

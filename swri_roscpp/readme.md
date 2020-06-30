@@ -10,14 +10,16 @@ The usage is very similar to that of standard ROS services and can even make use
 
 ### Generating Topics from a Service
 
-In order to generate the backing topics for a Topic Service from a service message add a `generate_topic_service_files` block to your project's CMakeList.txt and use it almost the same way you would an `rosidl_generate_interfaces` block.
+In order to generate the backing topics for a Topic Service from a service message add a `generate_topic_service_files` block to your project's CMakeList.txt and use it almost the same way you would an `rosidl_generate_interfaces` block. This generates the individual topic service messages and returns a list of these to the variable named by the first argument. Make sure to add these to your rosidl_generate_interfaces call along with the marti_common_msgs dependency.
 
-Make sure to add this `swri_roscpp` as a dependency to your message project.
+Make sure to add `swri_roscpp` as a dependency to your message project.
 
 For example:
 
 ```cmake
-generate_topic_service_files(DIRECTORY topic_srv FILES
+generate_topic_service_files(generated_message_list
+ DIRECTORY topic_srv
+ FILES
   ClearActiveRoute.srv
   DeleteRoute.srv
   GetRoute.srv
@@ -26,8 +28,14 @@ generate_topic_service_files(DIRECTORY topic_srv FILES
   SetActiveRoute.srv
   SetRoute.srv
   SetNextCheckpoint.srv
-DEPENDENCIES
-  marti_common_msgs
+)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+   your_other_messages_here.msg
+   ${generated_message_list}
+  DEPENDENCIES 
+   ${MSG_DEPS}
+   marti_common_msgs
 )
 ```
 
