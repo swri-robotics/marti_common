@@ -83,7 +83,8 @@ class Wgs84Transformer(object):
 
         r = wgs84_points * math.pi / 180.0
 
-        d = (r - [self._reference_latitude, self._reference_longitude]) * [self._rho_lat, self._rho_lon]
+        d = (r - [self._reference_latitude, self._reference_longitude]) * [self._rho_lat,
+                                                                           self._rho_lon]
 
         points = d.dot([[-self._sin_heading, self._cos_heading], [self._cos_heading, self._sin_heading]])
 
