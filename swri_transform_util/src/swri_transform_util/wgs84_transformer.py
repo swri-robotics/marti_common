@@ -97,7 +97,7 @@ class Wgs84Transformer(object):
         """
         points = np.array(local_points)
 
-        dlon = (points * [self._cos_heading, self._sin_heading]).sum(axis=1)
+        dlon = (points.dot([self._cos_heading, self._sin_heading]))
         dlat = (points[:,1] - (dlon * self._sin_heading)) / self._cos_heading
         d = np.column_stack([dlat, dlon])
 
