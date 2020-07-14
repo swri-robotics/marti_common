@@ -85,8 +85,7 @@ class Wgs84Transformer(object):
 
         d = (r - [self._reference_latitude, self._reference_longitude]) * [self._rho_lat, self._rho_lon]
 
-        points = np.column_stack([(d * [-self._sin_heading, self._cos_heading]).sum(axis=1),
-                                  (d * [self._cos_heading, self._sin_heading]).sum(axis=1)])
+        points = d.dot([[-self._sin_heading, self._cos_heading], [self._cos_heading, self._sin_heading]])
 
         return points
 
