@@ -52,10 +52,11 @@ class Wgs84Transformer(object):
         Constructor for the Wgs84Transformer class
         :param geometry_msgs.Pose local_origin: An initialized local origin
         """
-        self._reference_heading = -1.0 * euler_from_quaternion(quaternion=(local_origin.pose.orientation.x,
-                                                                           local_origin.pose.orientation.y,
-                                                                           local_origin.pose.orientation.z,
-                                                                           local_origin.pose.orientation.w))[2]  # get yaw from quaternion
+        self._reference_heading = -1.0 * euler_from_quaternion(
+            quaternion=(local_origin.pose.orientation.x,
+                        local_origin.pose.orientation.y,
+                        local_origin.pose.orientation.z,
+                        local_origin.pose.orientation.w))[2]  # get yaw from quaternion
         self._cos_heading = math.cos(self._reference_heading)
         self._sin_heading = math.sin(self._reference_heading)
         self._reference_latitude = local_origin.pose.position.y * math.pi / 180
