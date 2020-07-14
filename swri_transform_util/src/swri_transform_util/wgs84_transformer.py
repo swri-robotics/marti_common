@@ -40,7 +40,7 @@ EARTH_EQUATOR_RADIUS = 6378137.0
 
 class Wgs84Transformer(object):
     """
-    A simple class for transforming from the WGS84 frame to a local_xy frame 
+    A simple class for transforming from the WGS84 frame to a local_xy frame
     and vice versa.
 
     Transforms to and from WGS84 and the local map frame using a local origin
