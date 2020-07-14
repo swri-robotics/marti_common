@@ -99,7 +99,7 @@ class Wgs84Transformer(object):
 
         d = points.dot([[self._sin_heading * self._cos_heading, self._cos_heading],
                         [self._sin_heading**2, self._sin_heading]])
-        d[:,0] = (points[:,1] - d[:,0]) / self._cos_heading
+        d[:, 0] = (points[:, 1] - d[:, 0]) / self._cos_heading
 
         r = d / [self._rho_lat, self._rho_lon] + [self._reference_latitude, self._reference_longitude]
 
