@@ -78,7 +78,7 @@ class Wgs84Transformer(object):
         """
         Transforms point(s) in the WGS84 coordinate frame to the local_xy frame.
         :param list wgs84_points: pair-wise list of (latitude, longitude) coordinates
-        :return: A pair-wise list of (x, y) coordinates in the local_xy frame
+        :return: The transformed pair-wise list of (x, y) coordinates in the local_xy frame
         """
         wgs84_points = np.array(wgs84_points)
 
@@ -96,7 +96,8 @@ class Wgs84Transformer(object):
         """
         Transforms point(s) in the local_xy frame to the WGS84 coordinate frame
         :param list local_points: pair-wise list of (x, y) coordinates
-        :return: A pair-wise list of (latitude, longitude) coordinates in the WGS84 frame
+        :return: The transformed pair-wise list of (latitude, longitude) coordinates
+        in the WGS84 frame
         """
         points = np.array(local_points)
 
