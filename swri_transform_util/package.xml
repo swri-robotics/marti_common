@@ -41,6 +41,8 @@
   <exec_depend condition="$ROS_DISTRO != dashing">launch_xml</exec_depend>
   <exec_depend condition="$ROS_DISTRO != dashing">tf2_py</exec_depend>
 
+  <exec_depend>python3-numpy</exec_depend>
+
   <!--
   After the unit tests are converted...
   <test_depend>ament_cmake_gtest</test_depend>
