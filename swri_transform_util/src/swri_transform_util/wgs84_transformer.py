@@ -101,7 +101,8 @@ class Wgs84Transformer(object):
                         [self._sin_heading**2, self._sin_heading]])
         d[:, 0] = (points[:, 1] - d[:, 0]) / self._cos_heading
 
-        r = d / [self._rho_lat, self._rho_lon] + [self._reference_latitude, self._reference_longitude]
+        r = d / [self._rho_lat, self._rho_lon] + [self._reference_latitude,
+                                                  self._reference_longitude]
 
         wgs84_points = r * 180.0 / math.pi
 
