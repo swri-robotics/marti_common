@@ -2,6 +2,9 @@
 Changelog for package swri_system_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.13.7 (2020-06-26)
 -------------------
 * Fix swri_math_util boost dependencies again (`#590 <https://github.com/swri-robotics/marti_common/issues/590>`_)
