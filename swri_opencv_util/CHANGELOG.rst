@@ -2,6 +2,11 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add GitHub Actions for CI (ROS2) (`#586 <https://github.com/swri-robotics/marti_common/issues/586>`_)
+* Contributors: P. J. Reed
+
 3.2.1 (2020-06-10)
 ------------------
 * ROS Foxy support (`#582 <https://github.com/swri-robotics/marti_common/issues/582>`_)

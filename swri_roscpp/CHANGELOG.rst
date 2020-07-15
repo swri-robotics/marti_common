@@ -2,6 +2,11 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Implement topic services in ROS 2 (`#2893 <https://github.com/swri-robotics/marti_common/issues/2893>`_)
+* Contributors: Matthew Bries
+
 3.2.1 (2020-06-10)
 ------------------
 * ROS Foxy support (`#582 <https://github.com/swri-robotics/marti_common/issues/582>`_)

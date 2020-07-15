@@ -2,6 +2,13 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add python wgs84 transformer ros2 (`#596 <https://github.com/swri-robotics/marti_common/issues/596>`_)
+* Improve object transformer to take into account the pose of the object (`#589 <https://github.com/swri-robotics/marti_common/issues/589>`_) (`#591 <https://github.com/swri-robotics/marti_common/issues/591>`_)
+* Add GitHub Actions for CI (ROS2) (`#586 <https://github.com/swri-robotics/marti_common/issues/586>`_)
+* Contributors: P. J. Reed, Alex Youngs, Matthew Bries
+
 3.2.1 (2020-06-10)
 ------------------
 * ROS Foxy support (`#582 <https://github.com/swri-robotics/marti_common/issues/582>`_)
