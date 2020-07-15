@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.14.0 (2020-07-15)
+-------------------
 * Added python support for wgs84 transforms (`#595 <https://github.com/swri-robotics/marti_common/issues/595>`_)
 * Contributors: Alex Youngs
 
