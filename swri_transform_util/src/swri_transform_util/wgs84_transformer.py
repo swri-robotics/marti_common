@@ -63,7 +63,7 @@ class Wgs84Transformer(object):
         Constructor for the Wgs84Transformer class
         :param geometry_msgs.Pose local_origin: An initialized local origin
         """
-        self._reference_heading = -1.0 * yaw_from_quaternion(
+        self._reference_heading = yaw_from_quaternion(
             quaternion=(local_origin.pose.orientation.x,
                         local_origin.pose.orientation.y,
                         local_origin.pose.orientation.z,
@@ -98,8 +98,8 @@ class Wgs84Transformer(object):
         d = (r - [self._reference_latitude, self._reference_longitude]) * [self._rho_lat,
                                                                            self._rho_lon]
 
-        points = d.dot([[-self._sin_heading, self._cos_heading],
-                        [self._cos_heading, self._sin_heading]])
+        points = d.dot([[self._sin_heading, self._cos_heading],
+                        [self._cos_heading, -self._sin_heading]])
 
         return points
 
@@ -111,9 +111,8 @@ class Wgs84Transformer(object):
         """
         points = np.array(local_points)
 
-        d = points.dot([[self._sin_heading * self._cos_heading, self._cos_heading],
-                        [self._sin_heading**2, self._sin_heading]])
-        d[:, 0] = (points[:, 1] - d[:, 0]) / self._cos_heading
+        d = points.dot([[self._sin_heading, self._cos_heading],
+                        [self._cos_heading, -self._sin_heading]])
 
         r = d / [self._rho_lat, self._rho_lon] + [self._reference_latitude,
                                                   self._reference_longitude]
