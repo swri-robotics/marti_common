@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix 90 deg transform (`#598 <https://github.com/swri-robotics/marti_common/issues/598>`_)
+* Contributors: Alex Youngs
+
 2.14.0 (2020-07-15)
 -------------------
 * Added python support for wgs84 transforms (`#595 <https://github.com/swri-robotics/marti_common/issues/595>`_)
