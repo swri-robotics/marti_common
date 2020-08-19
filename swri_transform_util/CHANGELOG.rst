@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.3.1 (2020-08-19)
+------------------
 * Fix bad conversion when 90 degree yaw specified (`#599 <https://github.com/swri-robotics/marti_common/issues/599>`_)
 * Contributors: Alex Youngs
 
