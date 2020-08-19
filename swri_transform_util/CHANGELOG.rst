@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix bad conversion when 90 degree yaw specified (`#599 <https://github.com/swri-robotics/marti_common/issues/599>`_)
+* Contributors: Alex Youngs
+
 3.3.0 (2020-07-15)
 ------------------
 * Add python wgs84 transformer ros2 (`#596 <https://github.com/swri-robotics/marti_common/issues/596>`_)
