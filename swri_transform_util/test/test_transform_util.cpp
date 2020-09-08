@@ -38,6 +38,7 @@
 #include <swri_math_util/constants.h>
 #include <swri_math_util/math_util.h>
 #include <swri_transform_util/transform_util.h>
+#include <vector>
 
 TEST(TransformUtilTests, GetRelativeTransform)
 {
@@ -250,14 +251,14 @@ TEST(TransformUtilTests, ValidIsRotation)
 
 TEST(TransformUtilTests, InvalidIsRotation)
 {
-  tf::Matrix3x3 invalid_rotations[] = {
+  std::vector<tf::Matrix3x3> invalid_rotations = {
   tf::Matrix3x3( 2,  0,  0,   0,  1,  0,   0,  0,  1),
   tf::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
   tf::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
 
-  for (int i = 0; i < 24; i++)
+  for (auto& rot : invalid_rotations)
   {
-    EXPECT_FALSE(swri_transform_util::IsRotation(invalid_rotations[i]));
+    EXPECT_FALSE(swri_transform_util::IsRotation(rot));
   }
 }
 
