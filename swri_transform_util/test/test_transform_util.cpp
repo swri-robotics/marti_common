@@ -251,14 +251,14 @@ TEST(TransformUtilTests, ValidIsRotation)
 
 TEST(TransformUtilTests, InvalidIsRotation)
 {
-  std::vector<tf::Matrix3x3> invalid_rotations = {
+  tf::Matrix3x3 invalid_rotations[] = {
   tf::Matrix3x3( 2,  0,  0,   0,  1,  0,   0,  0,  1),
   tf::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
   tf::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
 
-  for (auto& rot : invalid_rotations)
+  for (int i = 0; i < 3; ++i)
   {
-    EXPECT_FALSE(swri_transform_util::IsRotation(rot));
+    EXPECT_FALSE(swri_transform_util::IsRotation(invalid_rotations[i]));
   }
 }
 
