@@ -20,6 +20,7 @@
   <depend>boost</depend>
   <depend>cv_bridge</depend>
   <depend>diagnostic_msgs</depend>
+  <depend version_gte="0.6.14">genpy</depend>
   <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>gps_common</depend>

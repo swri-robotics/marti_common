@@ -152,6 +152,9 @@ class OriginManager(object):
         origin.header.frame_id = self.local_xy_frame
         if stamp is not None:
             origin.header.stamp = stamp
+        else:
+            origin.header.stamp = rospy.Time.now()
+
         origin.pose.position.y = latitude
         origin.pose.position.x = longitude
         origin.pose.position.z = altitude
