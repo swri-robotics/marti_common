@@ -31,8 +31,8 @@
 
 #include <swri_roscpp/publisher.h>
 #include <swri_roscpp/subscriber.h>
-#include <swri_roscpp/latched_subscriber.h>
-#include <swri_roscpp/parameters.h>
+//#include <swri_roscpp/latched_subscriber.h>
+//#include <swri_roscpp/parameters.h>
 #include <swri_roscpp/service_server.h>
 #include <swri_roscpp/timer.h>
 
