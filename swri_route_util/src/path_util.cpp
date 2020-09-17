@@ -81,6 +81,9 @@ void fillOrientations(marti_nav_msgs::Path &path)
 
     pt.yaw = yaw;
   }
+
+  // fill in the last yaw
+  path.points.back().yaw = path.points[path.points.size() - 2].yaw;
 }
 
 
@@ -139,12 +142,11 @@ bool findLocalNearestDistanceForward(
   return true;
 }
 
-// Does not support negative distances
 static void normalizePathPosition(const marti_nav_msgs::Path& path,
   PathPosition& position)
 {
   // handle being past the end of the route
-  if (position.index >= path.points.size() - 1)
+  if (position.index > path.points.size() - 1)
   {
     position.distance = 0.0;
     position.index = path.points.size() - 1;
@@ -153,6 +155,29 @@ static void normalizePathPosition(const marti_nav_msgs::Path& path,
 
   double distance = position.distance;
   size_t index = position.index;
+  while (distance < 0.0)
+  {
+    if (index == 0)
+    {
+      distance = 0.0;// cant be before start
+      break;
+    }
+
+    auto& s = path.points[index];
+    auto& e = path.points[index-1];
+    double len = std::sqrt(std::pow(s.x - e.x, 2.0) +
+                           std::pow(s.y - e.y, 2.0));
+    if (-distance >= len)
+    {
+      distance += len;
+      index--;
+    }
+    else
+    {
+      break;
+    }
+  }
+
   while (distance > 0.0)
   {
     if (index+1 == path.points.size())
@@ -179,15 +204,77 @@ static void normalizePathPosition(const marti_nav_msgs::Path& path,
   position.distance = distance;
 }
 
-void getPathPose(const marti_nav_msgs::Path& path,
-                 const PathPosition position,
-                 tf::Transform& tf)
+static double interpolateAngle(double from, double to, double t)
+{
+  from = std::fmod(from + M_PI*2.0, M_PI*2.0);
+  to = std::fmod(to + M_PI*2.0, M_PI*2.0);
+  double diff = std::abs(from - to);
+  if (diff < M_PI)
+  {
+    return from*(1.0-t) + to*t;
+  }
+  else if (from > to)
+  {
+    from -= M_PI*2.0;
+    return from*(1.0-t) + to*t;
+  }
+  else
+  {
+    to -= M_PI*2.0;
+    return from*(1.0-t) + to*t;
+  }
+}
+
+void getPathPosition(const marti_nav_msgs::Path& path,
+                     const PathPosition position,
+                     tf::Vector3& pos)
 {
   PathPosition npos = position;
   normalizePathPosition(path, npos);
 
   if (npos.distance == 0.0 || npos.index == path.points.size() - 1)
   {
+    auto& point = path.points[npos.index];
+    pos = tf::Vector3(point.x, point.y, 0.0);
+    return;
+  }
+
+  auto& start = path.points[npos.index];
+  auto& end = path.points[npos.index+1];
+
+  double distance = std::sqrt(std::pow(start.x - end.x, 2.0) + std::pow(start.y - end.y, 2.0));
+  double frac = npos.distance/distance;
+
+  pos = tf::Vector3(start.x*(1.0 - frac) + end.x*frac,
+                  start.y*(1.0 - frac) + end.y*frac,
+                  0.0);
+}
+
+void getPathPose(const marti_nav_msgs::Path& path,
+                 const PathPosition position,
+                 tf::Transform& tf,
+                 const bool allow_extrapolation)
+{
+  PathPosition npos = position;
+  normalizePathPosition(path, npos);
+
+  if (npos.distance == 0.0 || npos.index == path.points.size() - 1)
+  {
+    if (npos.index == path.points.size() - 1 && npos.distance > 0.0
+        && path.points.size() > 1 
+        && allow_extrapolation)
+    {
+      // extrapolate
+      auto& start = path.points[npos.index];
+      auto& prev = path.points[npos.index-1];
+
+      tf::Vector3 pos(start.x, start.y, 0.0);
+      tf::Vector3 dir = tf::Vector3(start.x-prev.x, start.y-prev.y, 0.0).normalized();
+      pos += npos.distance*dir;
+      tf = tf::Transform(tf::createQuaternionFromYaw(start.yaw), pos);
+      return;
+    }
+
     auto& point = path.points[npos.index];
     tf = tf::Transform(tf::createQuaternionFromYaw(point.yaw),
                          tf::Vector3(point.x, point.y, 0.0));
@@ -203,7 +290,7 @@ void getPathPose(const marti_nav_msgs::Path& path,
   tf::Vector3 pos(start.x*(1.0 - frac) + end.x*frac,
                   start.y*(1.0 - frac) + end.y*frac,
                   0.0);
-  double yaw = start.yaw*(1.0 - frac) + end.yaw*frac;
+  double yaw = interpolateAngle(start.yaw, end.yaw, frac);
   tf = tf::Transform(tf::createQuaternionFromYaw(yaw), pos);
 }
 

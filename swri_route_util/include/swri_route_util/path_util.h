@@ -68,6 +68,13 @@ bool findLocalNearestDistanceForward(
 // Automatically normalizes the path positions
 void getPathPose(const marti_nav_msgs::Path& path,
                  const PathPosition position,
-                 tf::Transform& tf);
+                 tf::Transform& tf,
+                 const bool allow_extrapolation = false);
+
+// Gets a vector3 representing a position along a route
+// Automatically normalizes the path positions
+void getPathPosition(const marti_nav_msgs::Path& path,
+                 const PathPosition position,
+                 tf::Vector3& tf);
 }
 #endif  // SWRI_ROUTE_UTIL_UTIL_H_
