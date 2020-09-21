@@ -29,9 +29,9 @@
 
 #include <algorithm>
 #include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.h>
-#include <image_transport/publisher.h>
-#include <image_transport/subscriber.h>
+#include <image_transport/image_transport.hpp>
+#include <image_transport/publisher.hpp>
+#include <image_transport/subscriber.hpp>
 #include <opencv2/core/core.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
