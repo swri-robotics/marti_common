@@ -27,8 +27,8 @@
 #
 # *****************************************************************************
 
-# This file takes in a service file and splits it into two topics and a header file with useful
-# includes and type definitions to match standard services.
+# This file takes in a service file and splits it into two topics and a header
+# file with useful includes and type definitions to match standard services.
 
 # Arguments are:
 # 1. Input service file path
@@ -38,14 +38,23 @@
 # 5. Service name
 # 6. Output header file path
 
+import re
 import sys
 
 data = sys.argv
 
 
-# https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
-def camel_to_snake(s):
-    return ''.join(['_'+c.lower() if c.isupper() else c for c in s]).lstrip('_')
+# Copying the logic from the rosidl package's
+# string_camel_case_to_lower_case_underscore.cmake file
+def camel_to_snake(camel):
+    # Insert underscores before any upper case letter that is not followed by a
+    # lower case letter
+    snake = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", camel)
+    # Insert an underscore before any upper case letter that is preceded by a
+    # lower case letter or number
+    snake = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", snake)
+    snake = snake.lower()
+    return snake
 
 
 rf = open(data[1], "rt")
