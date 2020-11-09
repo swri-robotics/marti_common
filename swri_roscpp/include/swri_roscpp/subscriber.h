@@ -293,11 +293,7 @@ int Subscriber::messageCount() const
 inline
 rclcpp::Duration Subscriber::age(const rclcpp::Time &now) const
 {
-  if (now == rclcpp::Time(0, 0)) {
-    return impl_->age(rclcpp::Clock().now());
-  } else {
-    return impl_->age(now);
-  }
+  return impl_->age(now);
 }
 
 inline
