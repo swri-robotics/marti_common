@@ -293,11 +293,7 @@ int Subscriber::messageCount() const
 inline
 rclcpp::Duration Subscriber::age(const rclcpp::Time &now) const
 {
-  if (now == rclcpp::Time(0, 0)) {
-    return impl_->age(rclcpp::Clock().now());
-  } else {
-    return impl_->age(now);
-  }
+  return impl_->age(now);
 }
 
 inline
@@ -399,7 +395,7 @@ void Subscriber::setTimeout(const rclcpp::Duration &time_out)
 inline
 void Subscriber::setTimeout(const double time_out)
 {
-  setTimeout(rclcpp::Duration(time_out));
+  setTimeout(std::chrono::duration<double>(time_out));
 }
 
 inline
