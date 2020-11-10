@@ -169,6 +169,8 @@ namespace swri
     {
       if (message_count_ < 1) {
         return rclcpp::Duration::max();
+      } else if (now == rclcpp::Time(0, 0)) {
+        return nh_->now() - last_header_stamp_;
       } else {
         return now - last_header_stamp_;
       }
