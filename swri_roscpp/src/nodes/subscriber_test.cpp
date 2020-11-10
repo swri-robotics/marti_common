@@ -41,6 +41,8 @@ namespace du = diagnostic_updater;
 // Alias type for easier access to DiagnosticStatus enumerations.
 typedef diagnostic_msgs::msg::DiagnosticStatus DS;
 
+using namespace std::chrono_literals;
+
 class SubscriberTest : public rclcpp::Node
 {
   rclcpp::TimerBase::SharedPtr init_timer_;
@@ -74,7 +76,7 @@ class SubscriberTest : public rclcpp::Node
     std::function<void(const std::shared_ptr< nav_msgs::msg::Odometry const> &)> callback = boost::bind(&SubscriberTest::handleMessage, this, _1);
     sub_ = swri::Subscriber(*this, "odom", 100, callback);
 
-    sub_.setTimeout(rclcpp::Duration(1.0));
+    sub_.setTimeout(1s);
 
     diagnostic_updater_.setHardwareID("none");
     diagnostic_updater_.add(

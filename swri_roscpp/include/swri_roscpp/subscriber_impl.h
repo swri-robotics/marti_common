@@ -52,15 +52,15 @@ namespace swri
     rclcpp::Time last_header_stamp_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
     rclcpp::Time last_receive_time_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
 
-    rclcpp::Duration total_latency_ = rclcpp::Duration(0);
+    rclcpp::Duration total_latency_ = rclcpp::Duration::from_seconds(0.0);
     rclcpp::Duration min_latency_ = rclcpp::Duration::max();
-    rclcpp::Duration max_latency_ = rclcpp::Duration(0);
+    rclcpp::Duration max_latency_ = rclcpp::Duration::from_seconds(0.0);
 
     rclcpp::Duration total_periods_ = rclcpp::Duration::max();
     rclcpp::Duration min_period_ = rclcpp::Duration::max();
-    rclcpp::Duration max_period_ = rclcpp::Duration(0);
+    rclcpp::Duration max_period_ = rclcpp::Duration::from_seconds(0.0);
 
-    rclcpp::Duration timeout_ = rclcpp::Duration(0, 0);
+    rclcpp::Duration timeout_ = rclcpp::Duration::from_seconds(0.0);
     bool in_timeout_;
     int timeout_count_;
     bool blocking_timeout_;
@@ -181,7 +181,7 @@ namespace swri
       if (message_count_ < 1) {
         return rclcpp::Duration::max();
       } else {
-        return rclcpp::Duration(total_latency_.seconds() / message_count_);
+        return rclcpp::Duration::from_seconds(total_latency_.seconds() / message_count_);
       }
     }
 
@@ -217,7 +217,7 @@ namespace swri
       if (message_count_ < 2) {
         return rclcpp::Duration::max();
       } else {
-        return rclcpp::Duration(total_periods_.seconds() / (message_count_ -1));
+        return rclcpp::Duration::from_seconds(total_periods_.seconds() / (message_count_ - 1));
       }
     }
 

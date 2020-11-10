@@ -33,13 +33,15 @@
 #include <iomanip>
 #include <sstream>
 
+using namespace std::chrono_literals;
+
 namespace swri_console_util
 {
   ProgressBar::ProgressBar() :
       paused_(false),
       percent_complete_(0),
       start_time_(clock_.now()),
-      paused_time_(0)
+      paused_time_(0s)
   {
     SetupTerminal();
   }
