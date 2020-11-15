@@ -35,7 +35,7 @@ include_directories(SYSTEM
 add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
-target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-deprecated-declarations")
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${YamlCpp_LIBRARIES}

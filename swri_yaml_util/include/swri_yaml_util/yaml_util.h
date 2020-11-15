@@ -60,7 +60,7 @@ namespace swri_yaml_util
   bool LoadMap(const std::map<std::string, std::string>& dict, YAML::Node& yaml);
   bool FindValue(const YAML::Node& node, const std::string& name);
   
-  std::auto_ptr<YAML::Node> Clone(const YAML::Node& node);
+  std::unique_ptr<YAML::Node> Clone(const YAML::Node& node);
   
   std::string ToString(double value, int32_t precision);
 }
