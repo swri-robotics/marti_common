@@ -82,6 +82,7 @@ target_link_libraries(${PROJECT_NAME}
   opencv_imgproc
   opencv_video
 )
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 
 add_library(${PROJECT_NAME}_nodelets
