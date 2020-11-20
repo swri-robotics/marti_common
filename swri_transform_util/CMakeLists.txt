@@ -60,7 +60,7 @@ include_directories(SYSTEM
   ${PROJ_INCLUDE_DIRS}
 )
 
-if ($ENV{ROS_DISTRO} EQUAL "kinetic")
+if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
   set(CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
