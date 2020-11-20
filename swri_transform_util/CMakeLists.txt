@@ -61,7 +61,7 @@ include_directories(SYSTEM
 )
 
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-  set(CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
