@@ -60,6 +60,11 @@ include_directories(SYSTEM
   ${PROJ_INCLUDE_DIRS}
 )
 
+if ($ENV{ROS_DISTRO} EQUAL "kinetic")
+  set(CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
 add_library(${PROJECT_NAME}
   src/georeference.cpp
   src/local_xy_util.cpp
@@ -82,10 +87,6 @@ target_link_libraries(${PROJECT_NAME}
   opencv_imgproc
   opencv_video
 )
-if ($ENV{ROS_DISTRO} EQUAL "kinetic")
-  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
-  set_property(TARGET ${PROJECT_NAME} PROPERTY CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 
 add_library(${PROJECT_NAME}_nodelets
@@ -93,10 +94,6 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/gps_transform_publisher.cpp
   src/nodelets/object_transformer.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES} ${PROJECT_NAME})
-if ($ENV{ROS_DISTRO} EQUAL "kinetic")
-  set_property(TARGET ${PROJECT_NAME}_nodelets PROPERTY CXX_STANDARD 11)
-  set_property(TARGET ${PROJECT_NAME}_nodelets PROPERTY CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
 target_compile_definitions(${PROJECT_NAME}_nodelets PRIVATE "-D__STDC_FORMAT_MACROS") 
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
