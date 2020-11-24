@@ -2,6 +2,12 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix topic services under ros2 (`#604 <https://github.com/swri-robotics/marti_common/issues/604>`_)
+* Fix bugs related to subscription age and setting timeout (`#609 <https://github.com/swri-robotics/marti_common/issues/609>`_, `#611 <https://github.com/swri-robotics/marti_common/issues/611>`_) (`#612 <https://github.com/swri-robotics/marti_common/issues/612>`_)
+* Contributors: David Anthony, mschickler
+
 3.3.1 (2020-08-19)
 ------------------
 

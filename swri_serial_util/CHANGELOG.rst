@@ -2,6 +2,11 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Make SerialPort's functions virtual (`#608 <https://github.com/swri-robotics/marti_common/issues/608>`_)
+* Contributors: Ryan DelGizzi
+
 3.3.1 (2020-08-19)
 ------------------
 
