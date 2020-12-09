@@ -32,10 +32,14 @@ include_directories(SYSTEM
   ${YamlCpp_INCLUDE_DIR}
 )
 
+if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
 add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${YamlCpp_LIBRARIES}
