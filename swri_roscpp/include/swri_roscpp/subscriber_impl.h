@@ -81,7 +81,8 @@ class SubscriberImpl
         } else {
           min_latency_ = std::min(min_latency_, latency);
           max_latency_ = std::max(max_latency_, latency);
-          total_latency_ += latency;
+          double latency_weight_ = 0.1;
+          total_latency_.fromSec(latency_weight_*latency.toSec() + (1-latency_weight_)*total_latency_.toSec());
         }
       }
 

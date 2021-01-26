@@ -120,12 +120,12 @@ namespace swri_serial_util
      * @param[in]  device  The OS path of the device.
      * @param[in]  config  The port configuration settings.
      */
-    bool Open(const std::string &device, SerialConfig config = SerialConfig());
+    virtual bool Open(const std::string &device, SerialConfig config = SerialConfig());
 
     /**
      * Close the serial port.
      */
-    void Close();
+    virtual void Close();
 
     /**
      * Read bytes from the serial port.
@@ -140,9 +140,9 @@ namespace swri_serial_util
      *
      * @returns Read result (SUCCESS, TIMEOUT, INTERRUPTED, or ERROR).
      */
-    Result ReadBytes(std::vector<uint8_t>& output, size_t max_bytes, int32_t timeout);
+    virtual Result ReadBytes(std::vector<uint8_t>& output, size_t max_bytes, int32_t timeout);
 
-    int32_t Write(const std::vector<uint8_t>& input);
+    virtual int32_t Write(const std::vector<uint8_t>& input);
 
     /**
      * Get the most recent error message.
