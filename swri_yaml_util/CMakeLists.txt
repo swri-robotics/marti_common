@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(swri_yaml_util)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+)
 
 find_package(PkgConfig)
 pkg_check_modules(YamlCpp yaml-cpp)
@@ -13,6 +15,7 @@ file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 catkin_package(
   INCLUDE_DIRS include ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   LIBRARIES ${PROJECT_NAME} ${YamlCpp_LIBRARIES}
+  CATKIN_DEPENDS roscpp
 )
 
 if( ${YamlCpp_VERSION} MATCHES "0.[23].*")
