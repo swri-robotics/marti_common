@@ -30,7 +30,7 @@ endif()
 
 find_package(yaml-cpp REQUIRED)
 find_package(OpenCV REQUIRED calib3d core highgui imgproc video)
-find_package(Boost REQUIRED thread)
+find_package(Boost REQUIRED filesystem thread)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROJ proj)
@@ -42,7 +42,7 @@ if(NOT "${PROJ_FOUND}")
   )
 endif()
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/georeference.cpp
   src/local_xy_util.cpp
   src/utm_util.cpp
@@ -71,6 +71,7 @@ target_compile_definitions(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
+  Boost::filesystem
   Boost::thread
   opencv_calib3d
   opencv_core
