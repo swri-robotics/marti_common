@@ -36,6 +36,7 @@
 #include <nav_msgs/msg/odometry.hpp>
 
 namespace du = diagnostic_updater;
+using namespace std::chrono_literals;
 
 // Alias type for easier access to DiagnosticStatus enumerations.
 typedef diagnostic_msgs::msg::DiagnosticStatus DS;
@@ -66,7 +67,7 @@ class StoringSubscriberTest : public rclcpp::Node
 
   void initialize()
   {
-    sub_.setTimeout(rclcpp::Duration(1.0));
+    sub_.setTimeout(rclcpp::Duration(1ns));
     sub_ = swri::Subscriber(*this, "odom", &msg_);
 
     diagnostic_updater_.setHardwareID("none");

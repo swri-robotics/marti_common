@@ -42,7 +42,7 @@
 
 // RANGER Libraries
 #include <swri_image_util/image_normalization.h>
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 
 namespace swri_image_util
 {
@@ -70,7 +70,7 @@ namespace swri_image_util
         generate_and_write_image();
         RCLCPP_ERROR(this->get_logger(), "\nNode killed before enough frames received to generate "
                         "normalized image, so a normalized image was generated with "
-                        "available frames (%d vs. %d)\n",
+                        "available frames (%d vs. %ld)\n",
                 image_count_,
                 this->get_parameter("max_num_to_average").as_int());
       }
@@ -105,7 +105,7 @@ namespace swri_image_util
         if (raw_count_++ % this->get_parameter("num_to_skip").as_int() == 0)
         {
           image_count_++;
-          RCLCPP_ERROR(this->get_logger(), "Got image %d of %d",
+          RCLCPP_ERROR(this->get_logger(), "Got image %d of %ld",
                        image_count_,
                        max_num_to_average);
 

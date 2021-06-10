@@ -32,9 +32,9 @@
 #include <boost/make_shared.hpp>
 
 #include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.h>
-#include <image_transport/publisher.h>
-#include <image_transport/subscriber.h>
+#include <image_transport/image_transport.hpp>
+#include <image_transport/publisher.hpp>
+#include <image_transport/subscriber.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -48,7 +48,7 @@ namespace swri_image_util
     explicit ImagePubNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("image_pub", options)
     {
-      this->declare_parameter("image_file");
+      this->declare_parameter<std::string>("image_file");
       this->declare_parameter("mode", sensor_msgs::image_encodings::BGR8);
       this->declare_parameter("rate", 1);
 
