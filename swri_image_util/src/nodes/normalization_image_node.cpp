@@ -42,7 +42,7 @@
 
 // RANGER Libraries
 #include <swri_image_util/image_normalization.h>
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 
 namespace swri_image_util
 {
