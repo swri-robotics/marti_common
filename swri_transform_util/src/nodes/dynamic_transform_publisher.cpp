@@ -112,7 +112,7 @@ namespace swri_transform_util
       geometry_msgs::msg::TransformStamped stamped_transform;
       stamped_transform.transform = tf2::toMsg(transform);
       stamped_transform.header.stamp = rclcpp::Clock().now() +
-          rclcpp::Duration::from_nanoseconds(this->get_parameter("stamp_offset").as_double());
+          rclcpp::Duration(std::chrono::nanoseconds(std::lround(this->get_parameter("stamp_offset").as_double())));
       stamped_transform.child_frame_id = this->get_parameter("child_frame").as_string();
       stamped_transform.header.frame_id = this->get_parameter("parent_frame").as_string();
 

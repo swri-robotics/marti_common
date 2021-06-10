@@ -35,6 +35,7 @@
 #include <boost/utility/enable_if.hpp>
 
 #include <chrono>
+#include <cmath>
 
 using namespace std::chrono_literals;
 
@@ -185,7 +186,9 @@ namespace swri
       if (message_count_ < 1) {
         return rclcpp::Duration::max();
       } else {
-        return rclcpp::Duration::from_nanoseconds(total_latency_.seconds() / message_count_);
+        return rclcpp::Duration(
+          std::chrono::nanoseconds(
+            std::lround(total_latency_.seconds() / message_count_)));
       }
     }
 
@@ -221,7 +224,9 @@ namespace swri
       if (message_count_ < 2) {
         return rclcpp::Duration::max();
       } else {
-        return rclcpp::Duration::from_nanoseconds(total_periods_.seconds() / (message_count_ -1));
+        return rclcpp::Duration(
+          std::chrono::nanoseconds(
+            std::lround(total_periods_.seconds() / (message_count_ -1))));
       }
     }
 
