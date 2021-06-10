@@ -32,7 +32,7 @@
 #include <boost/make_shared.hpp>
 
 #include <cv_bridge/cv_bridge.h>
-#include <image_transport/image_transport.hpp>
+#include <image_transport/image_transport.h>
 #include <image_transport/publisher.hpp>
 #include <image_transport/subscriber.hpp>
 #include <opencv2/core/core.hpp>
