@@ -31,9 +31,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
-
 #include <chrono>
-#include <cmath>
 
 namespace swri
 {
@@ -131,9 +129,7 @@ class TimerImpl
     if (ticks_ < 2) {
       return rclcpp::Duration::max();
     } else {
-      return rclcpp::Duration(
-        std::chrono::nanoseconds(
-          std::lround(total_periods_.seconds() / (ticks_ - 1))));
+      return rclcpp::Duration::from_nanoseconds(total_periods_.seconds() / (ticks_ - 1));
     }
   }
   
