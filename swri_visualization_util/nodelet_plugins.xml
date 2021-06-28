@@ -1,0 +1,15 @@
+<library path="lib/libaravis_camera_driver">
+  
+  <class name="aravis_camera_driver/basler_camera_nodelet" type="aravis_camera_driver::BaslerCameraNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet for Basler cameras.
+    </description>
+  </class>
+
+  <class name="aravis_camera_driver/adaptive_auto_exposure" type="aravis_camera_driver::AdaptiveAutoExposureNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet for adaptive auto-exposure.
+    </description>
+  </class>
+
+</library>
