@@ -51,12 +51,111 @@ class DocTopicReader:
         # Let caller know if reading was successful
         return self.callback_called
 
+    def write_node_documentation(self, output_file=sys.stdout):
+        # TODO error out correctly if the last topic wasn't read correctly
+        if (self.last_doc_msg is None):
+            print('DocTopicReader failed to read documentation topic and cannot write out the node documentation')
+            return
+        self.write_node_header_documentation(output_file)
+        self.write_node_subscriptions_documentation(output_file)
+        self.write_node_publishers_documentation(output_file)
+        self.write_node_parameters_documentation(output_file)
+        self.write_node_services_documentation(output_file)
+
+    def write_node_header_documentation(self, output_file=sys.stdout):
+        output_file.write("{name} - ({nodelet_manager})\n{description}\n\n".format(name=self.last_doc_msg.name,
+            nodelet_manager=self.last_doc_msg.nodelet_manager,
+            description=self.last_doc_msg.description if self.last_doc_msg.description else "TODO: node description"))
+
+    def write_node_subscriptions_documentation(self, output_file=sys.stdout):
+        output_file.write("Subscriptions:\n")
+        subs = [topic for topic in self.last_doc_msg.topics if topic.advertised == False] 
+        for sub in subs:
+            output_file.write('  * ')
+            self.write_topic_info_docstring(sub, output_file)
+        output_file.write('\n')
+
+    def write_topic_info_docstring(self, topic_info_msg, output_file=sys.stdout):
+        output_file.write("{name} - ({type}) - {description}\n".format(name=topic_info_msg.name,
+            type=topic_info_msg.message_type,
+            description=topic_info_msg.description))
+
+    def write_node_publishers_documentation(self, output_file=sys.stdout):
+        output_file.write("Publishers:\n")
+        pubs = [topic for topic in self.last_doc_msg.topics if topic.advertised == True]
+        for pub in pubs:
+            output_file.write('  * ')
+            self.write_topic_info_docstring(pub, output_file)
+        output_file.write('\n')
+
+    def write_node_parameters_documentation(self, output_file=sys.stdout):
+        if len(self.last_doc_msg.parameters) > 0:
+            output_file.write("Parameters:\n")
+            for param in self.last_doc_msg.parameters:
+                output_file.write('  * ')
+                self.write_param_info_docstring(param, output_file)
+            output_file.write('\n')
+
+    def write_node_services_documentation(self, output_file=sys.stdout):
+        servs = [service for service in self.last_doc_msg.services if service.server == True]
+        if len(servs) > 0:
+            output_file.write("Services:\n")
+            for serv in self.last_doc_msg.services:
+                output_file.write('  * ')
+                self.write_service_info_docstring(serv, output_file=sys.stdout)
+            output_file.write('\n')
+
+    def write_param_info_docstring(self, param_info_msg, output_file=sys.stdout):
+        default_val = ""
+        type_str = "unknown_type"
+        if (param_info_msg.type == ParamInfo.TYPE_DOUBLE):
+            default_val = param_info_msg.default_double
+            type_str = "double"
+            output_file.write("{name} - ({type}, {default:.6g}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description))
+            return
+        elif (param_info_msg.type == ParamInfo.TYPE_STRING):
+            default_val = param_info_msg.default_string
+            type_str = "string"
+            output_file.write("{name} - ({type}, {default}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description))
+            return
+        elif (param_info_msg.type == ParamInfo.TYPE_INT):
+            default_val = param_info_msg.default_int
+            type_str = "int"
+            output_file.write("{name} - ({type}, {default:d}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description))
+            return
+        elif (param_info_msg.type == ParamInfo.TYPE_FLOAT):
+            default_val = param_info_msg.default_float
+            type_str = "float"
+            output_file.write("{name} - ({type}, {default:.6g}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description))
+            return
+        elif (param_info_msg.type == ParamInfo.TYPE_BOOL):
+            default_val = "true" if param_info_msg.default_bool else "false"
+            type_str = "bool"
+            output_file.write("{name} - ({type}, {default}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description))
+            return
+        # Unknown type write
+        output_file.write("{name} - ({type}, {default}) - {description}\n".format(name=param_info_msg.name,
+            type=type_str, default=default_val, description=param_info_msg.description))
+
+
+    def write_service_info_docstring(self, service_info_msg, output_file=sys.stdout):
+        output_file.write("{name} - ({type}) - {description}\n".format(name=service_info_msg.name,
+            type=service_info_msg.message_type, description=service_info_msg.description))
+
 ## TODO make this a document topic reader class that can cache 
 ## the document messages it reads and do the reading / file output seperatly 
-def read_documentation_topic(rosmaster, topic, output_file=sys.stdout):
+def read_documentation_topic(rosmaster, topic, yaml=False, output_file=sys.stdout):
     topic_reader = DocTopicReader(rosmaster)
     if topic_reader.read_doc_topic(topic):
-        output_file.write(genpy.message.strify_message(topic_reader.last_doc_msg) + '\n')
+        if yaml:
+            output_file.write(genpy.message.strify_message(topic_reader.last_doc_msg) + '\n')
+        else:
+            topic_reader.write_node_documentation(output_file)
 
 def get_documentation_publications(rosmaster):
     """
@@ -85,7 +184,7 @@ def get_documentation_publications(rosmaster):
             #print('node {0} with node namespace {1} publishes topic {2}'.format(n, node_namespace ,t))
     return doc_topics, doc_node_namespaces, doc_publisher_nodes
 
-def rosman_node(rosmaster, node_name):
+def rosman_node(rosmaster, node_name, yaml=False):
     # The doc_node_namespaces are probably the more accurate "node" information for the documentation topic
     # since the doc_publisher nodes for a doc topic can be a nodelet manager
     documentation_info = get_documentation_publications(rosmaster)
@@ -94,7 +193,7 @@ def rosman_node(rosmaster, node_name):
         if node_name in node_namespace or node_name in publishers:
             # TODO handle or buble up the handling of file opening/closing if the 
             # output is desired from something other than stdout
-            read_documentation_topic(rosmaster, topic)
+            read_documentation_topic(rosmaster, topic, yaml=yaml)
 
 def _rosman_node_main(argv):
     """
@@ -102,7 +201,8 @@ def _rosman_node_main(argv):
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog node node1 [node2...]')
-    # parser.add_option(help="Print overview/developer information for a desired node")
+    parser.add_option('-y','--yaml', dest="yaml", action="store_true", 
+            default=False, help='print node documentation output as a yaml compliant string')
     (options, args) = parser.parse_args(args)
     
     if not args:
@@ -110,7 +210,7 @@ def _rosman_node_main(argv):
 
     ros_master = rosgraph.Master('/rosman')
     for node in args:
-        rosman_node(ros_master, node)
+        rosman_node(ros_master, node, yaml=options.yaml)
 
 def _rosman_topics_main(argv):
     """
