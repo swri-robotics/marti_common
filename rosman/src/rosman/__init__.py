@@ -184,16 +184,15 @@ def get_documentation_publications(rosmaster):
             #print('node {0} with node namespace {1} publishes topic {2}'.format(n, node_namespace ,t))
     return doc_topics, doc_node_namespaces, doc_publisher_nodes
 
-def rosman_node(rosmaster, node_name, yaml=False):
+def rosman_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
     # The doc_node_namespaces are probably the more accurate "node" information for the documentation topic
     # since the doc_publisher nodes for a doc topic can be a nodelet manager
     documentation_info = get_documentation_publications(rosmaster)
-    # TODO I don't think I'm iterating through this correctly
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
         if node_name in node_namespace or node_name in publishers:
             # TODO handle or buble up the handling of file opening/closing if the 
             # output is desired from something other than stdout
-            read_documentation_topic(rosmaster, topic, yaml=yaml)
+            read_documentation_topic(rosmaster, topic, yaml=yaml, output_file=output_file)
 
 def _rosman_node_main(argv):
     """
@@ -203,14 +202,22 @@ def _rosman_node_main(argv):
     parser = OptionParser(usage='usage: %prog node node1 [node2...]')
     parser.add_option('-y','--yaml', dest="yaml", action="store_true", 
             default=False, help='print node documentation output as a yaml compliant string')
+    parser.add_option('-f', '--filename', dest="filename", action="store",
+            metavar="FILE", help="write output to FILE. If the file exists, the output will be appended, otherwise a new file with the name FILE will be created.")
     (options, args) = parser.parse_args(args)
     
     if not args:
         parser.error('You must specify at least one node name')
 
     ros_master = rosgraph.Master('/rosman')
-    for node in args:
-        rosman_node(ros_master, node, yaml=options.yaml)
+    if options.filename:
+        with open(options.filename, 'a') as output_file:
+            for node in args:
+                rosman_node(ros_master, node, yaml=options.yaml, output_file=output_file)
+    else:
+        # Write all to stdout
+        for node in args:
+            rosman_node(ros_master, node, yaml=options.yaml)
 
 def _rosman_topics_main(argv):
     """
