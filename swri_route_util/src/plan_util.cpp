@@ -83,6 +83,11 @@ void fillOrientations(marti_nav_msgs::Plan &path)
         next_pt.y - pt.y,
         next_pt.x - pt.x);
 
+    if (pt.flags & marti_nav_msgs::PlanPoint::FLAG_REVERSE)
+    {
+      yaw += M_PI;
+    }
+
     pt.yaw = yaw;
   }
 
