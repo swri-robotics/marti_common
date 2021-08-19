@@ -39,6 +39,9 @@
 
 #include <marti_common_msgs/NodeInfo.h>
 
+// Macro which adds line number info
+#define SWRI_NODE_HANDLE(nh, pnh, description) swri::NodeHandle(nh, pnh, description, __FILE__)
+
 // This is a smart nodehandle that handles storing documentation as well as tracking node names in nodelet managers.
 
 namespace swri
@@ -69,7 +72,8 @@ public:
   }
 
   NodeHandle(ros::NodeHandle nh, ros::NodeHandle pnh,
-             const std::string description = "")
+             const std::string description = "",
+             const char* source_file = "")
   {
     // create a new nh
     NodeHandleInternal* inh = new NodeHandleInternal;
@@ -89,6 +93,7 @@ public:
 
       inh->info_msg_.name = inh->node_name_;
       inh->info_msg_.description = description;
+      inh->info_msg_.location = source_file;
       std::string nm = ros::NodeHandle("~").getNamespace();
       if (inh->info_msg_.name != nm)
       {
