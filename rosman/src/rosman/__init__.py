@@ -19,6 +19,8 @@ import rospy
 import genpy
 from marti_common_msgs.msg import NodeInfo, TopicInfo, ParamInfo, ServiceInfo
 
+DOCUMENTATION_TOPIC_MATCHER = re.compile("/documentation$")
+
 def _check_master(rosmaster):
     try:
         rosmaster.getPid()
@@ -147,6 +149,14 @@ class DocTopicReader:
         output_file.write("{name} - ({type}) - {description}\n".format(name=service_info_msg.name,
             type=service_info_msg.message_type, description=service_info_msg.description))
 
+    def get_doc_msg_topic(self, input_topic):
+        if self.last_doc_msg is None:
+            return False
+        for doc_topic in self.last_doc_msg.topics:
+            if doc_topic.resolved_name == input_topic:
+                return doc_topic
+        return False
+
 ## TODO make this a document topic reader class that can cache 
 ## the document messages it reads and do the reading / file output seperatly 
 def read_documentation_topic(rosmaster, topic, yaml=False, output_file=sys.stdout):
@@ -157,24 +167,23 @@ def read_documentation_topic(rosmaster, topic, yaml=False, output_file=sys.stdou
         else:
             topic_reader.write_node_documentation(output_file)
 
-def get_documentation_publications(rosmaster):
+def get_documentation_publications(rosmaster, ros_sys_state=None):
     """
     Get all the current documentation topics in the system
     """
-    # get the master system state
-    try:
-        ros_sys_state = rosmaster.getSystemState()
-    except socket.error:
-        print('Could not communicate with ROS master!')
-        sys.exit(2)
+    # get the master system state if not passed in by caller
+    if ros_sys_state is None:
+        try:
+            ros_sys_state = rosmaster.getSystemState()
+        except socket.error:
+            print('Could not communicate with ROS master!')
+            sys.exit(2)
     pubs, _, _ = ros_sys_state
-    # doc_matcher = re.compile('/documentation$')
-    doc_match_string = '/documentation$'
     doc_topics = []
     doc_node_namespaces = []
     doc_publisher_nodes = []
     for t, n in pubs:
-        doc_match = re.search(doc_match_string, t)
+        doc_match = DOCUMENTATION_TOPIC_MATCHER.search(t)
         if doc_match:
             # Try stripping the node namespace off the topic
             node_namespace = t[0:doc_match.span()[0]]
@@ -190,9 +199,34 @@ def rosman_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
     documentation_info = get_documentation_publications(rosmaster)
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
         if node_name in node_namespace or node_name in publishers:
-            # TODO handle or buble up the handling of file opening/closing if the 
-            # output is desired from something other than stdout
             read_documentation_topic(rosmaster, topic, yaml=yaml, output_file=output_file)
+
+def rosman_topic(rosmaster, topic):
+    # Find the desired topic in the list of publishers from the system state
+    try:
+        ros_sys_state = rosmaster.getSystemState()
+    except socket.error:
+        print('Could not communicate with ROS master!')
+        sys.exit(2)
+    pubs, _, _ = ros_sys_state
+    topic_documentation_found = False
+    for t, publisher_nodes in pubs:
+        if t == topic:
+            for node in publisher_nodes:
+                # print('Found topic: {t} published by node: {n}'.format(t=t, n=node))
+                doc_info = get_documentation_publications(rosmaster, ros_sys_state)
+                for doc_topic, doc_pub_namespace, doc_pubs in zip(doc_info[0], doc_info[1], doc_info[2]):
+                    if node in doc_pub_namespace or node in doc_pubs:
+                        # print('Found {node} in namespace {ns} or doc publishers {dp}'.format(node=node, ns=doc_pub_namespace, dp=doc_pubs))
+                        topic_reader = DocTopicReader(rosmaster)
+                        if topic_reader.read_doc_topic(doc_topic):
+                            topic_doc = topic_reader.get_doc_msg_topic(topic)
+                            if topic_doc:
+                                topic_reader.write_node_header_documentation()
+                                topic_reader.write_topic_info_docstring(topic_doc)
+                                topic_documentation_found = True
+    if topic_documentation_found == False:
+        print('Could not find published documentation for topic: {t}'.format(t=topic))
 
 def _rosman_node_main(argv):
     """
@@ -219,20 +253,27 @@ def _rosman_node_main(argv):
         for node in args:
             rosman_node(ros_master, node, yaml=options.yaml)
 
-def _rosman_topics_main(argv):
+def _rosman_topic_main(argv):
     """
     Entry point for rosman topics command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog topics topic1 [topic2...]')
     (options, args) = parser.parse_args(args)
-
+    
+    rosmaster = rosgraph.Master('/rosman')
     if not args:
         parser.error('You must specify at least one topic name')
-    for node in args:
-        print('querying node {n}'.format(n=node))
+    for topic in args:
+        rosman_topic(rosmaster, topic)
+    # Basic algorithm:
+    # - Search for input topic(s)
+    # - Find publisher of input topic(s)
+    # - Check through documentation publishers to see if the topic publisher has documentation
+    # - Search through output documentation for that node to get documentation for this topic
+    # - Print topic documentation
 
-def _rosman_params_main(argv):
+def _rosman_param_main(argv):
     """
     Entry point for rosman params command
     """
@@ -245,7 +286,7 @@ def _rosman_params_main(argv):
     for node in args:
         print('querying node {n}'.format(n=node))
 
-def _rosman_services_main(argv):
+def _rosman_service_main(argv):
     """
     Entry point for rosman services command
     """
@@ -267,9 +308,9 @@ def _tool_usage(return_error=True):
 
 Commands:
 \trosman node\tGet overview documentation for a running node
-\trosman topics\tGet documentation for a desired topic
-\trosman params\tGet documentation for a desired parameter
-\trosman services\tGet documentation about a desired service
+\trosman topic\tGet documentation for a desired topic
+\trosman param\tGet documentation for a desired parameter
+\trosman service\tGet documentation about a desired service
 
 Type rosman <command> -h for more detailed usage, e.g. 'rosman params -h'
 """)
@@ -292,12 +333,12 @@ def rosmanmain(argv=None):
         command = argv[1]
         if command == 'node':
             _rosman_node_main(argv)
-        elif command == 'topics':
-            _rosman_topics_main(argv)
+        elif command == 'topic':
+            _rosman_topic_main(argv)
         elif command == 'params':
-            _rosman_params_main(argv)
+            _rosman_param_main(argv)
         elif command == 'services':
-            _rosman_services_main(argv)
+            _rosman_service_main(argv)
         elif command in ('-h', '--help'):
             _tool_usage(return_error=False)
         else:
