@@ -156,12 +156,21 @@ class DocTopicReader:
             if doc_topic.resolved_name == input_topic:
                 return doc_topic
         return False
+
     def get_doc_msg_param(self, input_param):
         if self.last_doc_msg is None:
             return False
         for doc_param in self.last_doc_msg.parameters:
             if doc_param.resolved_name == input_param:
                 return doc_param
+        return False
+
+    def get_doc_msg_service(self, input_service):
+        if self.last_doc_msg is None:
+            return False
+        for doc_service in self.last_doc_msg.services:
+            if doc_service.resolved_name == input_service:
+                return doc_service
         return False
 
 def read_documentation_topic(rosmaster, topic, yaml=False, output_file=sys.stdout):
@@ -247,6 +256,18 @@ def rosman_param(rosmaster, param):
    if param_documentation_found == False:
        print('Could not find published documentation for parameter: {p}'.format(p=param))
 
+def rosman_service(rosmaster, service):
+    service_documentation_found = False
+    doc_topics, _, _ = get_documentation_publications(rosmaster)
+    topic_reader = DocTopicReader(rosmaster)
+    for doc_topic in doc_topics:
+        if topic_reader.read_doc_topic(doc_topic):
+            service_doc = topic_reader.get_doc_msg_service(service)
+            if service_doc:
+                service_documentation_found = True
+    if service_documentation_found == False:
+        print('Could not find published documentation for service: {s}'.format(s=service))
+
 def _rosman_node_main(argv):
     """
     Entry point for rosman node command
@@ -308,10 +329,11 @@ def _rosman_service_main(argv):
     parser = OptionParser(usage='usage: %prog services service1 [service2...]')
     (options, args) = parser.parse_args(args)
 
+    rosmaster = rosgraph.Master('/rosman')
     if not args:
         parser.error('You must specify at least one service name')
-    for node in args:
-        print('querying node {n}'.format(n=node))
+    for serv in args:
+        rosman_service(rosmaster, serv)
 
 def _tool_usage(return_error=True):
     """
