@@ -156,9 +156,14 @@ class DocTopicReader:
             if doc_topic.resolved_name == input_topic:
                 return doc_topic
         return False
+    def get_doc_msg_param(self, input_param):
+        if self.last_doc_msg is None:
+            return False
+        for doc_param in self.last_doc_msg.parameters:
+            if doc_param.resolved_name == input_param:
+                return doc_param
+        return False
 
-## TODO make this a document topic reader class that can cache 
-## the document messages it reads and do the reading / file output seperatly 
 def read_documentation_topic(rosmaster, topic, yaml=False, output_file=sys.stdout):
     topic_reader = DocTopicReader(rosmaster)
     if topic_reader.read_doc_topic(topic):
@@ -198,7 +203,7 @@ def rosman_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
     # since the doc_publisher nodes for a doc topic can be a nodelet manager
     documentation_info = get_documentation_publications(rosmaster)
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
-        if node_name in node_namespace or node_name in publishers:
+        if node_namespace in node_name or node_name in publishers:
             read_documentation_topic(rosmaster, topic, yaml=yaml, output_file=output_file)
 
 def rosman_topic(rosmaster, topic):
@@ -227,6 +232,20 @@ def rosman_topic(rosmaster, topic):
                                 topic_documentation_found = True
     if topic_documentation_found == False:
         print('Could not find published documentation for topic: {t}'.format(t=topic))
+
+def rosman_param(rosmaster, param):
+   param_documentation_found = False
+   doc_topics, doc_node_namespaces, doc_publishers = get_documentation_publications(rosmaster)
+   topic_reader = DocTopicReader(rosmaster)
+   for doc_topic in doc_topics:
+        if topic_reader.read_doc_topic(doc_topic):
+            param_doc = topic_reader.get_doc_msg_param(param)
+            if param_doc:
+                topic_reader.write_node_header_documentation()
+                topic_reader.write_param_info_docstring(param_doc)
+                param_documentation_found = True
+   if param_documentation_found == False:
+       print('Could not find published documentation for parameter: {p}'.format(p=param))
 
 def _rosman_node_main(argv):
     """
@@ -266,12 +285,6 @@ def _rosman_topic_main(argv):
         parser.error('You must specify at least one topic name')
     for topic in args:
         rosman_topic(rosmaster, topic)
-    # Basic algorithm:
-    # - Search for input topic(s)
-    # - Find publisher of input topic(s)
-    # - Check through documentation publishers to see if the topic publisher has documentation
-    # - Search through output documentation for that node to get documentation for this topic
-    # - Print topic documentation
 
 def _rosman_param_main(argv):
     """
@@ -281,10 +294,11 @@ def _rosman_param_main(argv):
     parser = OptionParser(usage='usage: %prog params param1 [param2...]')
     (options, args) = parser.parse_args(args)
 
+    rosmaster = rosgraph.Master('/rosman')
     if not args:
         parser.error('You must specify at least one param name')
-    for node in args:
-        print('querying node {n}'.format(n=node))
+    for param in args:
+        rosman_param(rosmaster, param)
 
 def _rosman_service_main(argv):
     """
@@ -335,9 +349,9 @@ def rosmanmain(argv=None):
             _rosman_node_main(argv)
         elif command == 'topic':
             _rosman_topic_main(argv)
-        elif command == 'params':
+        elif command == 'param':
             _rosman_param_main(argv)
-        elif command == 'services':
+        elif command == 'service':
             _rosman_service_main(argv)
         elif command in ('-h', '--help'):
             _tool_usage(return_error=False)
