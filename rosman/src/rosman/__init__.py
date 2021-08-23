@@ -264,6 +264,8 @@ def rosman_service(rosmaster, service):
         if topic_reader.read_doc_topic(doc_topic):
             service_doc = topic_reader.get_doc_msg_service(service)
             if service_doc:
+                topic_reader.write_node_header_documentation()
+                topic_reader.write_service_info_docstring(service_doc)
                 service_documentation_found = True
     if service_documentation_found == False:
         print('Could not find published documentation for service: {s}'.format(s=service))
