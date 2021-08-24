@@ -17,3 +17,9 @@ catkin_package(
 
 catkin_python_setup()
 
+install(DIRECTORY scripts
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+catkin_add_env_hooks(15.rosman SHELLS bash DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
+
