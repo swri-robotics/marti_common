@@ -6,5 +6,6 @@
 if [ -z "$CATKIN_ENV_HOOK_WORKSPACE" ]; then
   CATKIN_ENV_HOOK_WORKSPACE="@(CMAKE_INSTALL_PREFIX)"
 fi
-. "$CATKIN_ENV_HOOK_WORKSPACE"/share/rosman/scripts/rosman.bash"
+. "$CATKIN_ENV_HOOK_WORKSPACE/share/rosman/scripts/rosman.bash"
 @[end if]@
+
