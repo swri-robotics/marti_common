@@ -211,9 +211,106 @@ def rosman_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
     # The doc_node_namespaces are probably the more accurate "node" information for the documentation topic
     # since the doc_publisher nodes for a doc topic can be a nodelet manager
     documentation_info = get_documentation_publications(rosmaster)
+    node_documentation_found = False
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
         if node_namespace in node_name or node_name in publishers:
             read_documentation_topic(rosmaster, topic, yaml=yaml, output_file=output_file)
+            node_documentation_found = True
+    return node_documentation_found
+
+def rosman_node_fallback(rosmaster, node_name, yaml=False, output_file=sys.stdout):
+    # TODO figure out if we need to support other options in fallback?
+    # if yaml:
+    #     print('YAML output not supported for rosman node fallback documentation!')
+    #     yaml = False
+    if output_file is not sys.stdout:
+        print('Output other than stdout not support for rosman node fallback documentation!')
+        output_file = sys.stdout
+
+    def topic_type(t, pub_topics):
+        matches = [t_type for t_name, t_type in pub_topics if t_name == t]
+        if matches:
+            return matches[0]
+        return 'unknown type'
+
+    def param_type(param_value):
+        if isinstance(param_value, float):
+            # Can't really distinguish between float and double
+            return ParamInfo.TYPE_DOUBLE
+        elif isinstance(param_value, str):
+            return ParamInfo.TYPE_STRING
+        elif isinstance(param_value, int):
+            return ParamInfo.TYPE_INT
+        elif isinstance(param_value, bool):
+            return ParamInfo.TYPE_BOOL
+        else:
+            # Reasonable failure fallback?
+            return ParamInfo.TYPE_STRING 
+    try:
+        ros_sys_state = rosmaster.getSystemState()
+        pub_topics = rosmaster.getPublishedTopics('/')
+        # param_list_success, _, param_list = rosmaster.getParamNames()
+        param_list = rosmaster.getParamNames()
+    except socket.error:
+        print('Could not communicate with ROS master!')
+        sys.exit(2)
+    pubs = sorted([t for t, l in ros_sys_state[0] if node_name in l])
+    subs = sorted([t for t, l in ros_sys_state[1] if node_name in l])
+    srvs = sorted([t for t, l in ros_sys_state[2] if node_name in l])
+    # This will only retrieve private parameters for this node, but better than nothing
+    params = sorted([p for p in param_list if p.startswith(node_name)])
+
+    # Fill out a shim node documentation and hack the DocTopicReader to write output
+    doc = NodeInfo()
+    doc.name = node_name
+    doc.description = 'Warning: no documentation topic is published for {n}. Falling back to standard rosnode info.'.format(n=node_name)
+    for pub in pubs:
+        topic_doc = TopicInfo()
+        topic_doc.name = pub
+        topic_doc.resolved_name = pub
+        topic_doc.message_type = topic_type(pub, pub_topics)
+        topic_doc.advertised = True
+        doc.topics.append(topic_doc)
+    for sub in subs:
+        topic_doc = TopicInfo()
+        topic_doc.name = sub
+        topic_doc.resolved_name = sub
+        topic_doc.message_type = topic_type(sub, pub_topics)
+        topic_doc.advertised = False
+        doc.topics.append(topic_doc)
+    for param in params:
+        param_doc = ParamInfo()
+        param_doc.name = param.replace(node_name, '')
+        if param_doc.name[0] == '/':
+            param_doc.name = param_doc.name[1:]
+        param_doc.resolved_name = param
+        param_val = rosmaster.getParam(param)
+        param_doc.type = param_type(param_val)
+        if param_type == ParamInfo.TYPE_DOUBLE:
+            param_doc.default_double = float(param_val)
+        elif param_type == ParamInfo.TYPE_STRING:
+            param_doc.default_string = str(param_val)
+        elif param_type == ParamInfo.TYPE_INT:
+            param_doc.default_int = int(param_val)
+        elif param_type == ParamInfo.TYPE_BOOL:
+            param_doc.default_bool = bool(param_val)
+        doc.parameters.append(param_doc)
+    for srv in srvs:
+        if not (srv.endswith('get_loggers') or srv.endswith('set_logger_level')):
+            srv_doc = ServiceInfo()
+            srv_doc.name = srv
+            srv_doc.resolved_name = srv
+            # TODO get service type info
+            srv_doc.message_type = 'unknown type'
+            srv_doc.server = True
+            doc.services.append(srv_doc)
+    topic_reader = DocTopicReader(rosmaster)
+    topic_reader.last_doc_msg = doc
+    if yaml:
+        output_file.write(genpy.message.strify_message(doc) + '\n')
+    else:
+        topic_reader.write_node_documentation(output_file)
+
 
 def rosman_topic(rosmaster, topic):
     # Find the desired topic in the list of publishers from the system state
@@ -289,11 +386,13 @@ def _rosman_node_main(argv):
     if options.filename:
         with open(options.filename, 'a') as output_file:
             for node in args:
-                rosman_node(ros_master, node, yaml=options.yaml, output_file=output_file)
+                if not rosman_node(ros_master, node, yaml=options.yaml, output_file=output_file):
+                    rosman_node_fallback(ros_master, node, yaml=options.yaml, output_file=output_file)
     else:
         # Write all to stdout
         for node in args:
-            rosman_node(ros_master, node, yaml=options.yaml)
+            if not rosman_node(ros_master, node, yaml=options.yaml):
+                rosman_node_fallback(ros_master, node, yaml=options.yaml)
 
 def _rosman_topic_main(argv):
     """
