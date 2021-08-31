@@ -28,6 +28,9 @@ def _check_master(rosmaster):
         # Stealing rostopics exception type for now
         raise rostopic.ROSTopicIOException("Unable to communicate with master!")
 
+def _sort_fn(e):
+    return e.name
+
 class DocTopicReader:
     def __init__(self, rosmaster):
         self.rosmaster = rosmaster
@@ -58,20 +61,52 @@ class DocTopicReader:
         if (self.last_doc_msg is None):
             print('DocTopicReader failed to read documentation topic and cannot write out the node documentation')
             return
+
+        # sort things
+        self.last_doc_msg.topics.sort(key=_sort_fn)
+        self.last_doc_msg.parameters.sort(key=_sort_fn)
+        self.last_doc_msg.services.sort(key=_sort_fn)
+
+        # output the overall header
         self.write_node_header_documentation(output_file)
-        self.write_node_subscriptions_documentation(output_file)
-        self.write_node_publishers_documentation(output_file)
-        self.write_node_parameters_documentation(output_file)
-        self.write_node_services_documentation(output_file)
+
+        # divide by grouping then print for each group, starting with empty
+        groups = {}
+        for topic in self.last_doc_msg.topics:
+            if topic.group not in groups:
+                groups[topic.group] = NodeInfo()
+            groups[topic.group].topics.append(topic)
+
+        for topic in self.last_doc_msg.parameters:
+            if topic.group not in groups:
+                groups[topic.group] = NodeInfo()
+            groups[topic.group].parameters.append(topic)
+
+        # output the empty group first
+        self.write_node_subscriptions_documentation(output_file, groups[""])
+        self.write_node_publishers_documentation(output_file, groups[""])
+        self.write_node_parameters_documentation(output_file, groups[""])
+        self.write_node_services_documentation(output_file, groups[""])
+        
+        for group in groups:
+            if group == "":
+                continue
+
+            output_file.write("\n\nGroup: {name}\n\n".format(name=group))
+
+            self.write_node_subscriptions_documentation(output_file, groups[group])
+            self.write_node_publishers_documentation(output_file, groups[group])
+            self.write_node_parameters_documentation(output_file, groups[group])
+            self.write_node_services_documentation(output_file, groups[group])
 
     def write_node_header_documentation(self, output_file=sys.stdout):
         output_file.write("{name} - ({nodelet_manager})\n{description}\n\n".format(name=self.last_doc_msg.name,
             nodelet_manager=self.last_doc_msg.nodelet_manager,
             description=self.last_doc_msg.description if self.last_doc_msg.description else "TODO: node description"))
 
-    def write_node_subscriptions_documentation(self, output_file=sys.stdout):
+    def write_node_subscriptions_documentation(self, output_file, data):
         output_file.write("Subscriptions:\n")
-        subs = [topic for topic in self.last_doc_msg.topics if topic.advertised == False] 
+        subs = [topic for topic in data.topics if topic.advertised == False] 
         for sub in subs:
             output_file.write('  * ')
             self.write_topic_info_docstring(sub, output_file)
@@ -82,24 +117,24 @@ class DocTopicReader:
             type=topic_info_msg.message_type,
             description=topic_info_msg.description))
 
-    def write_node_publishers_documentation(self, output_file=sys.stdout):
+    def write_node_publishers_documentation(self, output_file, data):
         output_file.write("Publishers:\n")
-        pubs = [topic for topic in self.last_doc_msg.topics if topic.advertised == True]
+        pubs = [topic for topic in data.topics if topic.advertised == True]
         for pub in pubs:
             output_file.write('  * ')
             self.write_topic_info_docstring(pub, output_file)
         output_file.write('\n')
 
-    def write_node_parameters_documentation(self, output_file=sys.stdout):
+    def write_node_parameters_documentation(self, output_file, data):
         if len(self.last_doc_msg.parameters) > 0:
             output_file.write("Parameters:\n")
-            for param in self.last_doc_msg.parameters:
+            for param in data.parameters:
                 output_file.write('  * ')
                 self.write_param_info_docstring(param, output_file)
             output_file.write('\n')
 
-    def write_node_services_documentation(self, output_file=sys.stdout):
-        servs = [service for service in self.last_doc_msg.services if service.server == True]
+    def write_node_services_documentation(self, output_file, data):
+        servs = [service for service in data.services if service.server == True]
         if len(servs) > 0:
             output_file.write("Services:\n")
             for serv in self.last_doc_msg.services:
@@ -113,7 +148,11 @@ class DocTopicReader:
         if (param_info_msg.type == ParamInfo.TYPE_DOUBLE):
             default_val = param_info_msg.default_double
             type_str = "double"
-            output_file.write("{name} - ({type}, {default:.6g}) - {description}\n".format(name=param_info_msg.name,
+            if param_info_msg.max_value != param_info_msg.min_value:
+                output_file.write("{name} - ({type}, {min:.6g} <= {default:.6g} <= {max:.6g}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description, max=param_info_msg.max_value, min=param_info_msg.min_value))
+            else:
+                output_file.write("{name} - ({type}, {default:.6g}) - {description}\n".format(name=param_info_msg.name,
                 type=type_str, default=default_val, description=param_info_msg.description))
             return
         elif (param_info_msg.type == ParamInfo.TYPE_STRING):
@@ -131,7 +170,11 @@ class DocTopicReader:
         elif (param_info_msg.type == ParamInfo.TYPE_FLOAT):
             default_val = param_info_msg.default_float
             type_str = "float"
-            output_file.write("{name} - ({type}, {default:.6g}) - {description}\n".format(name=param_info_msg.name,
+            if param_info_msg.max_value != param_info_msg.min_value:
+                output_file.write("{name} - ({type}, {min:.6g} <= {default:.6g} <= {max:.6g}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, default=default_val, description=param_info_msg.description, max=param_info_msg.max_value, min=param_info_msg.min_value))
+            else:
+                output_file.write("{name} - ({type}, {default:.6g}) - {description}\n".format(name=param_info_msg.name,
                 type=type_str, default=default_val, description=param_info_msg.description))
             return
         elif (param_info_msg.type == ParamInfo.TYPE_BOOL):
@@ -139,6 +182,11 @@ class DocTopicReader:
             type_str = "bool"
             output_file.write("{name} - ({type}, {default}) - {description}\n".format(name=param_info_msg.name,
                 type=type_str, default=default_val, description=param_info_msg.description))
+            return
+        elif (param_info_msg.type == ParamInfo.TYPE_XMLRPC):
+            type_str = "XMLRPC"
+            output_file.write("{name} - ({type}) - {description}\n".format(name=param_info_msg.name,
+                type=type_str, description=param_info_msg.description))
             return
         # Unknown type write
         output_file.write("{name} - ({type}, {default}) - {description}\n".format(name=param_info_msg.name,
@@ -286,13 +334,13 @@ def rosman_node_fallback(rosmaster, node_name, yaml=False, output_file=sys.stdou
         param_doc.resolved_name = param
         param_val = rosmaster.getParam(param)
         param_doc.type = param_type(param_val)
-        if param_type == ParamInfo.TYPE_DOUBLE:
+        if param_doc.type == ParamInfo.TYPE_DOUBLE:
             param_doc.default_double = float(param_val)
-        elif param_type == ParamInfo.TYPE_STRING:
+        elif param_doc.type == ParamInfo.TYPE_STRING:
             param_doc.default_string = str(param_val)
-        elif param_type == ParamInfo.TYPE_INT:
+        elif param_doc.type == ParamInfo.TYPE_INT:
             param_doc.default_int = int(param_val)
-        elif param_type == ParamInfo.TYPE_BOOL:
+        elif param_doc.type == ParamInfo.TYPE_BOOL:
             param_doc.default_bool = bool(param_val)
         doc.parameters.append(param_doc)
     for srv in srvs:

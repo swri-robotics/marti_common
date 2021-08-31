@@ -63,6 +63,18 @@ class NodeHandle
   };
 
   boost::shared_ptr<NodeHandleInternal> nh_;
+  std::string namespace_;
+  std::string grouping_;
+
+  // Resolves the the relative namespace name, namely handles globals
+  std::string resolveName(const std::string& name) const
+  {
+    if (name.length() && name[0] == '/')
+    {
+      return name;
+    }
+    return namespace_ + name;
+  }
 
 public:
 
@@ -105,6 +117,51 @@ public:
 
   operator void*() const { return nh_ ? (void*)1 : (void*)0; }
 
+  // Gets a handle relative the base swri::NodeHandle
+  swri::NodeHandle getNodeHandle(const std::string& ns,
+                                 const std::string& group = "")
+  {
+    auto ret = *this;
+    ret.namespace_ = ns;
+    if (ns.length())
+    {
+      ret.namespace_ += '/';
+    }
+    // Only change the group if a new one is indicated, otherwise use our parents
+    if (group.length())
+    {
+      ret.grouping_ = group;
+    }
+    return ret;
+  }
+
+  inline void getParam(const std::string& name, XmlRpc::XmlRpcValue& value,
+    const std::string description = "")
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    //std::string resolved_name = nh_->pnh_.resolveName(name);
+    //_used_params.insert(resolved_name);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.getParam(real_name, value);
+    //ROS_INFO("Read parameter %s = %lf", name.c_str(), variable);
+
+    // todo deduplicate
+    if (nh_->enable_docs_)
+    {
+      marti_common_msgs::ParamInfo info;
+      info.name = real_name;
+      info.description = description;
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
+      info.type = marti_common_msgs::ParamInfo::TYPE_XMLRPC;
+      info.dynamic = false;
+      nh_->info_msg_.parameters.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+  }
+
   // param always uses the private namespace
   inline
   void param(const std::string &name,
@@ -118,22 +175,176 @@ public:
 
     //std::string resolved_name = nh_->pnh_.resolveName(name);
     //_used_params.insert(resolved_name);
-    nh_->pnh_.param(name, variable, default_value);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
-      ROS_INFO("Read parameter %s = %lf", name.c_str(), variable);
+      ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
     }
 
     // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_common_msgs::ParamInfo info;
-      info.name = name;
+      info.name = real_name;
       info.description = description;
-      info.resolved_name = nh_->pnh_.resolveName(name);
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
       info.type = marti_common_msgs::ParamInfo::TYPE_DOUBLE;
       info.default_double = default_value;
       info.dynamic = dynamic;
+      nh_->info_msg_.parameters.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+  }
+
+  // param always uses the private namespace
+  // this function clamps the parameter to the indicated range
+  inline
+  void ranged_param(const std::string &name,
+      double &variable,
+      const double default_value,
+      const std::string description = "",
+      const double min_value = 0.0,
+      const double max_value = 0.0,
+      const bool dynamic = false)
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    //std::string resolved_name = nh_->pnh_.resolveName(name);
+    //_used_params.insert(resolved_name);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
+    if (!dynamic)
+    {
+      ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
+    }
+
+    if (variable < min_value)
+    {
+      ROS_ERROR("Parameter '%s' is out of range. Clamping to %f.", real_name.c_str(), min_value);
+      variable = min_value;
+    }
+    else if (variable > max_value)
+    {
+      ROS_ERROR("Parameter '%s' is out of range. Clamping to %f.", real_name.c_str(), max_value);
+      variable = max_value;
+    }
+
+    // todo deduplicate
+    if (nh_->enable_docs_)
+    {
+      marti_common_msgs::ParamInfo info;
+      info.name = real_name;
+      info.description = description;
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
+      info.type = marti_common_msgs::ParamInfo::TYPE_DOUBLE;
+      info.default_double = default_value;
+      info.dynamic = dynamic;
+      info.max_value = max_value;
+      info.min_value = min_value;
+      nh_->info_msg_.parameters.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+  }
+
+  inline
+  void ranged_param(const std::string &name,
+      int &variable,
+      const int default_value,
+      const std::string description = "",
+      const int min_value = 0.0,
+      const int max_value = 0.0,
+      const bool dynamic = false)
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    //std::string resolved_name = nh_->pnh_.resolveName(name);
+    //_used_params.insert(resolved_name);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
+    if (!dynamic)
+    {
+      ROS_INFO("Read parameter %s = %i", real_name.c_str(), variable);
+    }
+
+    if (variable < min_value)
+    {
+      ROS_ERROR("Parameter '%s' is out of range. Clamping to %i.", real_name.c_str(), min_value);
+      variable = min_value;
+    }
+    else if (variable > max_value)
+    {
+      ROS_ERROR("Parameter '%s' is out of range. Clamping to %i.", real_name.c_str(), max_value);
+      variable = max_value;
+    }
+
+    // todo deduplicate
+    if (nh_->enable_docs_)
+    {
+      marti_common_msgs::ParamInfo info;
+      info.name = real_name;
+      info.description = description;
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
+      info.type = marti_common_msgs::ParamInfo::TYPE_INT;
+      info.default_int = default_value;
+      info.dynamic = dynamic;
+      info.max_value = max_value;
+      info.min_value = min_value;
+      nh_->info_msg_.parameters.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+  }
+
+  inline
+  void ranged_param(const std::string &name,
+      float &variable,
+      const float default_value,
+      const std::string description = "",
+      const float min_value = 0.0,
+      const float max_value = 0.0,
+      const bool dynamic = false)
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    //std::string resolved_name = nh_->pnh_.resolveName(name);
+    //_used_params.insert(resolved_name);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
+    if (!dynamic)
+    {
+      ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
+    }
+
+    if (variable < min_value)
+    {
+      ROS_ERROR("Parameter '%s' is out of range. Clamping to %f.", real_name.c_str(), min_value);
+      variable = min_value;
+    }
+    else if (variable > max_value)
+    {
+      ROS_ERROR("Parameter '%s' is out of range. Clamping to %f.", real_name.c_str(), max_value);
+      variable = max_value;
+    }
+
+    // todo deduplicate
+    if (nh_->enable_docs_)
+    {
+      marti_common_msgs::ParamInfo info;
+      info.name = real_name;
+      info.description = description;
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
+      info.type = marti_common_msgs::ParamInfo::TYPE_FLOAT;
+      info.default_float = default_value;
+      info.dynamic = dynamic;
+      info.max_value = max_value;
+      info.min_value = min_value;
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
@@ -151,19 +362,21 @@ public:
 
     //std::string resolved_name = nh_->pnh_.resolveName(name);
     //_used_params.insert(resolved_name);
-    nh_->pnh_.param(name, variable, default_value);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
-      ROS_INFO("Read parameter %s = %lf", name.c_str(), variable);
+      ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
     }
 
     // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_common_msgs::ParamInfo info;
-      info.name = name;
+      info.name = real_name;
       info.description = description;
-      info.resolved_name = nh_->pnh_.resolveName(name);
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
       info.type = marti_common_msgs::ParamInfo::TYPE_DOUBLE;
       info.default_double = default_value;
       info.dynamic = dynamic;
@@ -185,19 +398,21 @@ public:
 
     //std::string resolved_name = nh_->pnh_.resolveName(name);
     //_used_params.insert(resolved_name);
-    nh_->pnh_.param(name, variable, default_value);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
-      ROS_INFO("Read parameter %s = %i", name.c_str(), variable);
+      ROS_INFO("Read parameter %s = %i", real_name.c_str(), variable);
     }
 
     // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_common_msgs::ParamInfo info;
-      info.name = name;
+      info.name = real_name;
       info.description = description;
-      info.resolved_name = nh_->pnh_.resolveName(name);
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
       info.type = marti_common_msgs::ParamInfo::TYPE_INT;
       info.default_int = default_value;
       info.dynamic = dynamic;
@@ -219,19 +434,21 @@ public:
 
     //std::string resolved_name = nh_->pnh_.resolveName(name);
     //_used_params.insert(resolved_name);
-    nh_->pnh_.param(name, variable, default_value);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
-      ROS_INFO("Read parameter %s = %s", name.c_str(), variable.c_str());
+      ROS_INFO("Read parameter %s = %s", real_name.c_str(), variable.c_str());
     }
 
     // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_common_msgs::ParamInfo info;
-      info.name = name;
+      info.name = real_name;
       info.description = description;
-      info.resolved_name = nh_->pnh_.resolveName(name);
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
       info.type = marti_common_msgs::ParamInfo::TYPE_STRING;
       info.default_string = default_value;
       info.dynamic = dynamic;
@@ -253,19 +470,21 @@ public:
 
     //std::string resolved_name = nh_->pnh_.resolveName(name);
     //_used_params.insert(resolved_name);
-    nh_->pnh_.param(name, variable, default_value);
+    std::string real_name = resolveName(name);
+    nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
-      ROS_INFO("Read parameter %s = %s", name.c_str(), variable ? "true" : "false");
+      ROS_INFO("Read parameter %s = %s", real_name.c_str(), variable ? "true" : "false");
     }
 
     // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_common_msgs::ParamInfo info;
-      info.name = name;
+      info.name = real_name;
       info.description = description;
-      info.resolved_name = nh_->pnh_.resolveName(name);
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
       info.type = marti_common_msgs::ParamInfo::TYPE_BOOL;
       info.default_bool = default_value;
       info.dynamic = dynamic;
@@ -286,13 +505,16 @@ public:
     if (!nh_)
       throw 7;// for now
 
+    std::string real_name = resolveName(name);
+
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = false;
       info.description = description;
@@ -300,7 +522,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return swri::Subscriber(nh_->nh_, name, queue_size, fp, obj, transport_hints);
+    return swri::Subscriber(nh_->nh_, real_name, queue_size, fp, obj, transport_hints);
   }
 
   // Using class method callback.
@@ -316,12 +538,14 @@ public:
       throw 7;// for now
 
     // todo deduplicate
+    std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = false;
       info.description = description;
@@ -329,7 +553,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return nh_->nh_.subscribe(name, queue_size, fp, obj, transport_hints);
+    return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
   }
 
   template<class M>
@@ -343,12 +567,14 @@ public:
       throw 7;// for now
 
     // todo deduplicate
+    std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = false;
       info.description = description;
@@ -356,7 +582,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return swri::Subscriber(nh_->nh_, name, dest, transport_hints);
+    return swri::Subscriber(nh_->nh_, real_name, dest, transport_hints);
   }
 
   // Using public node handle and class method callback.
@@ -369,12 +595,14 @@ public:
       throw 7;// for now
 
     // todo deduplicate
+    std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = false;
       info.description = description;
@@ -396,12 +624,14 @@ public:
       throw 7;// for now
 
     // todo deduplicate
+    std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = false;
       info.description = description;
@@ -409,7 +639,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return swri::OptionalSubscriber(nh_->nh_, name, queue_size, fp, obj);
+    return swri::OptionalSubscriber(nh_->nh_, real_name, queue_size, fp, obj);
   }
 
   // Uses the public node handle
@@ -423,12 +653,14 @@ public:
       throw 7;// for now
 
     // todo deduplicate
+    std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::ServiceInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<MReq>().value();
       info.topic_service = true;
       info.server = true;
@@ -438,7 +670,7 @@ public:
     }
 
     swri::TopicServiceServer tss;
-    tss.initialize(nh_->nh_, name, srv_func, obj);
+    tss.initialize(nh_->nh_, real_name, srv_func, obj);
     return tss;
   }
 
@@ -453,12 +685,14 @@ public:
       throw 7;// for now
 
     // todo deduplicate
+    std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
-      const std::string resolved_name = nh_->nh_.resolveName(name);
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
       marti_common_msgs::ServiceInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::service_traits::DataType<MReq>().value();
       info.topic_service = false;
       info.server = true;
@@ -467,7 +701,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return nh_->nh_.advertiseService(name, srv_func, obj);
+    return nh_->nh_.advertiseService(real_name, srv_func, obj);
   }
 
   // Advertising uses the public nh
@@ -481,9 +715,10 @@ public:
     if (!nh_)
       throw 7;// for now
 
-    const std::string resolved_name = nh_->nh_.resolveName(name);
+    std::string real_name = resolveName(name);
+    const std::string resolved_name = nh_->nh_.resolveName(real_name);
     ROS_INFO("Publishing [%s] to '%s' from node %s.",
-           name.c_str(),
+           real_name.c_str(),
            resolved_name.c_str(),
            nh_->node_name_.c_str());
 
@@ -491,8 +726,9 @@ public:
     if (nh_->enable_docs_)
     {
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = true;
       info.description = description;
@@ -500,7 +736,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return nh_->nh_.advertise<M>(name, queue_size, latched);
+    return nh_->nh_.advertise<M>(real_name, queue_size, latched);
   }
 
   // Advertising uses the public nh
@@ -508,14 +744,15 @@ public:
   ros::Publisher advertise(
     const std::string name,
     uint32_t queue_size,
-    const std::string description = "")
+    const char* description)
   {
     if (!nh_)
       throw 7;// for now
 
-    const std::string resolved_name = nh_->nh_.resolveName(name);
+    std::string real_name = resolveName(name);
+    const std::string resolved_name = nh_->nh_.resolveName(real_name);
     ROS_INFO("Publishing [%s] to '%s' from node %s.",
-           name.c_str(),
+           real_name.c_str(),
            resolved_name.c_str(),
            nh_->node_name_.c_str());
 
@@ -523,8 +760,9 @@ public:
     if (nh_->enable_docs_)
     {
       marti_common_msgs::TopicInfo info;
-      info.name = name;
+      info.name = real_name;
       info.resolved_name = resolved_name;
+      info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = true;
       info.description = description;
@@ -532,7 +770,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return nh_->nh_.advertise<M>(name, queue_size, false);
+    return nh_->nh_.advertise<M>(real_name, queue_size, false);
   }
 };
 
@@ -543,6 +781,17 @@ inline void param(swri::NodeHandle& nh,
   const std::string description = "")
 {
   nh.param(name, value, def, description);
+}
+
+inline void ranged_param(swri::NodeHandle& nh,
+  const std::string name,
+  double& value,
+  const double def,
+  const std::string description = "",
+  const double min = -std::numeric_limits<double>::infinity(),
+  const double max = std::numeric_limits<double>::infinity())
+{
+  nh.ranged_param(name, value, def, description, min, max);
 }
 
 template<typename T>
@@ -576,6 +825,16 @@ ros::Publisher advertise(swri::NodeHandle& nh,
 }
 
 // some simple utility functions
+template<typename M>
+ros::Publisher advertise(swri::NodeHandle& nh,
+  const std::string name,
+  uint32_t queue_size,
+  const char* description)
+{
+  return nh.advertise<M>(name, queue_size, false, description);
+}
+
+// some simple utility functions
 // Using class method callback.
 template<class M , class T >
 swri::Subscriber subscribe(swri::NodeHandle& nh,
@@ -587,6 +846,16 @@ swri::Subscriber subscribe(swri::NodeHandle& nh,
            const ros::TransportHints &transport_hints=ros::TransportHints())
 {
   return nh.subscribe(name, queue_size, fp, obj, description, transport_hints);
+}
+
+template<class M>
+swri::Subscriber subscribe(swri::NodeHandle& nh,
+           const std::string &name,
+           boost::shared_ptr< M const > *dest,
+           const std::string description = "",
+           const ros::TransportHints &transport_hints=ros::TransportHints())
+{
+  return nh.subscribe(name, dest, description, transport_hints);
 }
 
 }  // namespace swri

@@ -619,7 +619,7 @@ namespace swri
       //_used_params.insert(resolved_name);
       if (snh_)
       {
-        snh_.param(name, *value.flt, default_value, description, true);
+        snh_.ranged_param(name, *value.flt, default_value, description, min, max, true);
       }
       else
       {
@@ -654,7 +654,7 @@ namespace swri
       //_used_params.insert(resolved_name);
       if (snh_)
       {
-        snh_.param(name, *value.flt, default_value, description, true);
+        snh_.ranged_param(name, *value.flt, default_value, description, min, max, true);
       }
       else
       {
@@ -686,7 +686,7 @@ namespace swri
       //_used_params.insert(resolved_name);
       if (snh_)
       {
-        snh_.param(name, *value.dbl, default_value, description, true);
+        snh_.ranged_param(name, *value.dbl, default_value, description, min, max, true);
       }
       else
       {
@@ -721,7 +721,7 @@ namespace swri
       //_used_params.insert(resolved_name);
       if (snh_)
       {
-        snh_.param(name, *value.dbl, default_value, description, true);
+        snh_.ranged_param(name, *value.dbl, default_value, description, min, max, true);
       }
       else
       {
@@ -752,7 +752,7 @@ namespace swri
       //_used_params.insert(resolved_name);
       if (snh_)
       {
-        snh_.param(name, *value.integer, default_value, description, true);
+        snh_.ranged_param(name, *value.integer, default_value, description, min, max, true);
       }
       else
       {
@@ -787,7 +787,7 @@ namespace swri
       //_used_params.insert(resolved_name);
       if (snh_)
       {
-        snh_.param(name, *value.integer, default_value, description, true);
+        snh_.ranged_param(name, *value.integer, default_value, description, min, max, true);
       }
       else
       {
