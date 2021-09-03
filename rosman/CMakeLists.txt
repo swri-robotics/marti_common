@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(rosman)
 
 set(RUN_DEPS
-  marti_common_msgs
+  marti_introspection_msgs
   rosgraph
   rospy
   rostopic

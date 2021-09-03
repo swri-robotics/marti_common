@@ -2,7 +2,6 @@
 
 function _complete_rosman
 {
-  # printf "\nTotally screwing up your command now! Tab completion not yet implemented."
   local arg opts
   COMPREPLY=()
   arg="${COMP_WORDS[COMP_CWORD]}"

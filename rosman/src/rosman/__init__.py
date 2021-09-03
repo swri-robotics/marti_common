@@ -17,7 +17,7 @@ import rosgraph
 import rostopic
 import rospy
 import genpy
-from marti_common_msgs.msg import NodeInfo, TopicInfo, ParamInfo, ServiceInfo
+from marti_introspection_msgs.msg import NodeInfo, TopicInfo, ParamInfo, ServiceInfo
 
 DOCUMENTATION_TOPIC_MATCHER = re.compile("/documentation$")
 

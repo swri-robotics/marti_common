@@ -37,7 +37,7 @@
 
 #include <swri_roscpp/optional_subscriber.h>
 
-#include <marti_common_msgs/NodeInfo.h>
+#include <marti_introspection_msgs/NodeInfo.h>
 
 // Macro which adds line number info
 #define SWRI_NODE_HANDLE(nh, pnh, description) swri::NodeHandle(nh, pnh, description, __FILE__)
@@ -58,7 +58,7 @@ class NodeHandle
 
     // This is additional details about the node
     bool enable_docs_;
-    marti_common_msgs::NodeInfo info_msg_;
+    marti_introspection_msgs::NodeInfo info_msg_;
     ros::Publisher info_pub_;
   };
 
@@ -101,7 +101,7 @@ public:
     if (inh->enable_docs_)
     {
       // create the node specific publisher and initialize message
-      inh->info_pub_ = pnh.advertise<marti_common_msgs::NodeInfo>("documentation", 1, true);
+      inh->info_pub_ = pnh.advertise<marti_introspection_msgs::NodeInfo>("documentation", 1, true);
 
       inh->info_msg_.name = inh->node_name_;
       inh->info_msg_.description = description;
@@ -150,12 +150,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_XMLRPC;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_XMLRPC;
       info.dynamic = false;
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
@@ -185,12 +185,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_DOUBLE;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_DOUBLE;
       info.default_double = default_value;
       info.dynamic = dynamic;
       nh_->info_msg_.parameters.push_back(info);
@@ -235,12 +235,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_DOUBLE;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_DOUBLE;
       info.default_double = default_value;
       info.dynamic = dynamic;
       info.max_value = max_value;
@@ -285,12 +285,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_INT;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_INT;
       info.default_int = default_value;
       info.dynamic = dynamic;
       info.max_value = max_value;
@@ -335,12 +335,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_FLOAT;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_FLOAT;
       info.default_float = default_value;
       info.dynamic = dynamic;
       info.max_value = max_value;
@@ -372,12 +372,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_DOUBLE;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_DOUBLE;
       info.default_double = default_value;
       info.dynamic = dynamic;
       nh_->info_msg_.parameters.push_back(info);
@@ -408,12 +408,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_INT;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_INT;
       info.default_int = default_value;
       info.dynamic = dynamic;
       nh_->info_msg_.parameters.push_back(info);
@@ -444,12 +444,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_STRING;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_STRING;
       info.default_string = default_value;
       info.dynamic = dynamic;
       nh_->info_msg_.parameters.push_back(info);
@@ -480,12 +480,12 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::ParamInfo info;
+      marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_common_msgs::ParamInfo::TYPE_BOOL;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_BOOL;
       info.default_bool = default_value;
       info.dynamic = dynamic;
       nh_->info_msg_.parameters.push_back(info);
@@ -511,7 +511,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -542,7 +542,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -571,7 +571,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -599,7 +599,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -628,7 +628,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -657,7 +657,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::ServiceInfo info;
+      marti_introspection_msgs::ServiceInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -689,7 +689,7 @@ public:
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
-      marti_common_msgs::ServiceInfo info;
+      marti_introspection_msgs::ServiceInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -725,7 +725,7 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
@@ -759,7 +759,7 @@ public:
     // todo deduplicate
     if (nh_->enable_docs_)
     {
-      marti_common_msgs::TopicInfo info;
+      marti_introspection_msgs::TopicInfo info;
       info.name = real_name;
       info.resolved_name = resolved_name;
       info.group = grouping_;
