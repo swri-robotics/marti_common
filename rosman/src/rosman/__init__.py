@@ -381,7 +381,7 @@ def rosman_topic(rosmaster, topic):
     except socket.error:
         print('Could not communicate with ROS master!')
         sys.exit(2)
-    pubs, _, _ = ros_sys_state
+    pubs, subs, _ = ros_sys_state
     topic_documentation_found = False
     for t, publisher_nodes in pubs:
         if t == topic:
@@ -398,6 +398,24 @@ def rosman_topic(rosmaster, topic):
                                 topic_reader.write_node_header_documentation()
                                 topic_reader.write_topic_info_docstring(topic_doc)
                                 topic_documentation_found = True
+
+    # Find subscribers if there are no publishers
+    for t, subscriber_nodes in subs:
+        if t == topic:
+            for node in subscriber_nodes:
+                # print('Found topic: {t} published by node: {n}'.format(t=t, n=node))
+                doc_info = get_documentation_publications(rosmaster, ros_sys_state)
+                for doc_topic, doc_pub_namespace, doc_pubs in zip(doc_info[0], doc_info[1], doc_info[2]):
+                    if node in doc_pub_namespace or node in doc_pubs:
+                        # print('Found {node} in namespace {ns} or doc publishers {dp}'.format(node=node, ns=doc_pub_namespace, dp=doc_pubs))
+                        topic_reader = DocTopicReader(rosmaster)
+                        if topic_reader.read_doc_topic(doc_topic):
+                            topic_doc = topic_reader.get_doc_msg_topic(topic)
+                            if topic_doc and not topic_documentation_found:
+                                topic_reader.write_node_header_documentation()
+                                topic_reader.write_topic_info_docstring(topic_doc)
+                                topic_documentation_found = True
+
     if topic_documentation_found == False:
         print('Could not find published documentation for topic: {t}'.format(t=topic))
 
@@ -422,7 +440,16 @@ def rosman_service(rosmaster, service):
     for doc_topic in doc_topics:
         if topic_reader.read_doc_topic(doc_topic):
             service_doc = topic_reader.get_doc_msg_service(service)
-            if service_doc:
+            if service_doc and service_doc.server:
+                topic_reader.write_node_header_documentation()
+                topic_reader.write_service_info_docstring(service_doc)
+                service_documentation_found = True
+
+    # If still not found, check clients
+    for doc_topic in doc_topics:
+        if topic_reader.read_doc_topic(doc_topic):
+            service_doc = topic_reader.get_doc_msg_service(service)
+            if service_doc and not service_doc.server and not service_documentation_found:
                 topic_reader.write_node_header_documentation()
                 topic_reader.write_service_info_docstring(service_doc)
                 service_documentation_found = True
