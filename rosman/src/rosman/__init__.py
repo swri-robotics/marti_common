@@ -72,15 +72,20 @@ class DocTopicReader:
 
         # divide by grouping then print for each group, starting with empty
         groups = {}
-        for topic in self.last_doc_msg.topics:
-            if topic.group not in groups:
-                groups[topic.group] = NodeInfo()
-            groups[topic.group].topics.append(topic)
+        for item in self.last_doc_msg.topics:
+            if item.group not in groups:
+                groups[item.group] = NodeInfo()
+            groups[item.group].topics.append(item)
 
-        for topic in self.last_doc_msg.parameters:
-            if topic.group not in groups:
-                groups[topic.group] = NodeInfo()
-            groups[topic.group].parameters.append(topic)
+        for item in self.last_doc_msg.parameters:
+            if item.group not in groups:
+                groups[item.group] = NodeInfo()
+            groups[item.group].parameters.append(item)
+
+        for item in self.last_doc_msg.services:
+            if item.group not in groups:
+                groups[item.group] = NodeInfo()
+            groups[item.group].services.append(item)
 
         # output the empty group first
         self.write_node_subscriptions_documentation(output_file, groups[""])
@@ -98,6 +103,7 @@ class DocTopicReader:
             self.write_node_publishers_documentation(output_file, groups[group])
             self.write_node_parameters_documentation(output_file, groups[group])
             self.write_node_services_documentation(output_file, groups[group])
+
 
     def write_node_header_documentation(self, output_file=sys.stdout):
         output_file.write("{name} - ({nodelet_manager})\n{description}\n\n".format(name=self.last_doc_msg.name,
@@ -136,8 +142,16 @@ class DocTopicReader:
     def write_node_services_documentation(self, output_file, data):
         servs = [service for service in data.services if service.server == True]
         if len(servs) > 0:
-            output_file.write("Services:\n")
-            for serv in self.last_doc_msg.services:
+            output_file.write("Service Servers:\n")
+            for serv in servs:
+                output_file.write('  * ')
+                self.write_service_info_docstring(serv, output_file=sys.stdout)
+            output_file.write('\n')
+
+        servs = [service for service in data.services if service.server == False]
+        if len(servs) > 0:
+            output_file.write("Service Clients:\n")
+            for serv in servs:
                 output_file.write('  * ')
                 self.write_service_info_docstring(serv, output_file=sys.stdout)
             output_file.write('\n')
