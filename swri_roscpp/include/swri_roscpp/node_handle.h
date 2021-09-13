@@ -125,6 +125,10 @@ public:
     ret.namespace_ = ns;
     if (ns.length())
     {
+      if (ns.length() > 1 && ns[0] == '~')
+      {
+        ret.namespace_ = nh_->node_name_ + ns.substr(1);
+      }
       ret.namespace_ += '/';
     }
     // Only change the group if a new one is indicated, otherwise use our parents
@@ -133,6 +137,13 @@ public:
       ret.grouping_ = group;
     }
     return ret;
+  }
+
+  template <class T>
+  inline void getParam(const std::string& name, T& value,
+    const std::string description = "")
+  {
+    return param(name, value, value, description);
   }
 
   inline void getParam(const std::string& name, XmlRpc::XmlRpcValue& value,
@@ -556,6 +567,37 @@ public:
     return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
   }
 
+  // Using class method callback.
+  template<class M , class T >
+  ros::Subscriber subscribe_ros(const std::string &name,
+             uint32_t queue_size,
+             void(T::*fp)(const ros::MessageEvent< M const > &),
+             T *obj,
+             const std::string description = "",
+             const ros::TransportHints &transport_hints=ros::TransportHints())
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    // todo deduplicate
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
+  }
+
   template<class M>
   swri::Subscriber subscribe(
              const std::string &name,
@@ -643,6 +685,36 @@ public:
   }
 
   // Uses the public node handle
+  template<class M>
+  swri::TopicServiceClient<M> topic_service_client(const std::string &name,
+                const std::string description = "")
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    // todo deduplicate
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::ServiceInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<typename M:: Request>().value();
+      info.topic_service = true;
+      info.server = false;
+      info.description = description;
+      nh_->info_msg_.services.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    swri::TopicServiceClient<M> tsc;
+    tsc.initialize(nh_->nh_, real_name);
+    return tsc;
+  }
+
+  // Uses the public node handle
   template<class MReq, class MRes, class T>
   swri::TopicServiceServer topic_service_server(const std::string &name,
                 bool(T::*srv_func)(const MReq &, MRes &),
@@ -673,6 +745,33 @@ public:
     tss.initialize(nh_->nh_, real_name, srv_func, obj);
     return tss;
   }
+  
+  template<class T>
+  ros::ServiceClient serviceClient(const std::string& name,
+                const std::string& description)
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    // todo deduplicate
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::ServiceInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::service_traits::DataType<T>().value();
+      info.topic_service = false;
+      info.server = false;
+      info.description = description;
+      nh_->info_msg_.services.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return nh_->nh_.serviceClient<T>(name);
+  } 
 
   // Uses the public node handle
   template<class MReq, class MRes, class T>
@@ -771,6 +870,20 @@ public:
     }
 
     return nh_->nh_.advertise<M>(real_name, queue_size, false);
+  }
+
+  // Using class method callback.
+  template<class T >
+  ros::Timer createTimer(ros::Duration duration,
+             void(T::*fp)(const ros::TimerEvent &),
+             T *obj,
+             const bool oneshot = false,
+             const bool autostart = true)
+  {
+    if (!nh_)
+      throw 7;// for now
+
+    return nh_->nh_.createTimer(duration, fp, obj, oneshot, autostart);
   }
 };
 
