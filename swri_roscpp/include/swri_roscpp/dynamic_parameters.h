@@ -313,7 +313,7 @@ namespace swri
     void initialize(swri::NodeHandle& pnh)
     {
       boost::mutex::scoped_lock lock(*mutex_);
-      nh_ = boost::shared_ptr<ros::NodeHandle>(new ros::NodeHandle(pnh.nh_->pnh_));
+      nh_ = boost::shared_ptr<ros::NodeHandle>(new ros::NodeHandle(pnh.getDynamicParameterNodeHandle()));
       snh_ = pnh;
       descr_pub_ = nh_->advertise<dynamic_reconfigure::ConfigDescription>("parameter_descriptions", 1, true);
       update_pub_ = nh_->advertise<dynamic_reconfigure::Config>("parameter_updates", 1, true);

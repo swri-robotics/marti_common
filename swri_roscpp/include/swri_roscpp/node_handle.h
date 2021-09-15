@@ -76,6 +76,36 @@ class NodeHandle
     return namespace_ + name;
   }
 
+  // Get's the nodehandle to place dynamic parameter topics in
+  ros::NodeHandle getDynamicParameterNodeHandle() const
+  {
+    std::string ns = namespace_;
+    if (ns.length() && ns[0] == '/')
+    {
+      ns = ns.substr(1);
+    }
+    return ros::NodeHandle(nh_->pnh_.resolveName(ns));
+  }
+
+  // check if we should add a parameter or not (have we already added it?)
+  // also returns false if docs are disabled for simplicity
+  bool shouldAddParameter(const std::string& name) const
+  {
+    if (!nh_->enable_docs_)
+    {
+      return false;
+    }
+
+    for (const auto& param: nh_->info_msg_.parameters)
+    {
+      if (param.name == name)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
 public:
 
   NodeHandle()
@@ -84,7 +114,7 @@ public:
   }
 
   NodeHandle(ros::NodeHandle nh, ros::NodeHandle pnh,
-             const std::string description = "",
+             const std::string description,
              const char* source_file = "")
   {
     // create a new nh
@@ -140,26 +170,20 @@ public:
   }
 
   template <class T>
-  inline void getParam(const std::string& name, T& value,
-    const std::string description = "")
+  inline bool getParam(const std::string& name, T& value,
+    const std::string description)
   {
     return param(name, value, value, description);
   }
 
-  inline void getParam(const std::string& name, XmlRpc::XmlRpcValue& value,
-    const std::string description = "")
+  inline bool getParam(const std::string& name, XmlRpc::XmlRpcValue& value,
+    const std::string description)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.getParam(real_name, value);
-    //ROS_INFO("Read parameter %s = %lf", name.c_str(), variable);
+    bool set = nh_->pnh_.getParam(real_name, value);
+    ROS_INFO("Read XMLRPC parameter %s", name.c_str());
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -171,30 +195,25 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   // param always uses the private namespace
   inline
-  void param(const std::string &name,
+  bool param(const std::string &name,
       double &variable,
       const double default_value,
-      const std::string description = "",
+      const std::string description,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -207,26 +226,22 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   // param always uses the private namespace
   // this function clamps the parameter to the indicated range
   inline
-  void ranged_param(const std::string &name,
+  bool ranged_param(const std::string &name,
       double &variable,
       const double default_value,
-      const std::string description = "",
+      const std::string description,
       const double min_value = 0.0,
       const double max_value = 0.0,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
@@ -243,8 +258,7 @@ public:
       variable = max_value;
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -259,24 +273,20 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   inline
-  void ranged_param(const std::string &name,
+  bool ranged_param(const std::string &name,
       int &variable,
       const int default_value,
-      const std::string description = "",
+      const std::string description,
       const int min_value = 0.0,
       const int max_value = 0.0,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %i", real_name.c_str(), variable);
@@ -293,8 +303,7 @@ public:
       variable = max_value;
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -309,24 +318,20 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   inline
-  void ranged_param(const std::string &name,
+  bool ranged_param(const std::string &name,
       float &variable,
       const float default_value,
-      const std::string description = "",
+      const std::string description,
       const float min_value = 0.0,
       const float max_value = 0.0,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
@@ -343,8 +348,7 @@ public:
       variable = max_value;
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -359,29 +363,24 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   inline
-  void param(const std::string &name,
+  bool param(const std::string &name,
       float &variable,
       const float default_value,
-      const std::string description = "",
+      const std::string description,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %lf", real_name.c_str(), variable);
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -394,30 +393,25 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   // param always uses the private namespace
   inline
-  void param(const std::string &name,
+  bool param(const std::string &name,
       int &variable,
       const int default_value,
-      const std::string description = "",
+      const std::string description,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %i", real_name.c_str(), variable);
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -430,30 +424,25 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   // param always uses the private namespace
   inline
-  void param(const std::string &name,
+  bool param(const std::string &name,
       std::string &variable,
       const std::string default_value,
-      const std::string description = "",
+      const std::string description,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %s", real_name.c_str(), variable.c_str());
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -466,30 +455,25 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   // param always uses the private namespace
   inline
-  void param(const std::string &name,
+  bool param(const std::string &name,
       bool &variable,
       const bool default_value,
-      const std::string description = "",
+      const std::string description,
       const bool dynamic = false)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    //std::string resolved_name = nh_->pnh_.resolveName(name);
-    //_used_params.insert(resolved_name);
     std::string real_name = resolveName(name);
-    nh_->pnh_.param(real_name, variable, default_value);
+    bool set = nh_->pnh_.param(real_name, variable, default_value);
     if (!dynamic)
     {
       ROS_INFO("Read parameter %s = %s", real_name.c_str(), variable ? "true" : "false");
     }
 
-    // todo deduplicate
-    if (nh_->enable_docs_)
+    if (shouldAddParameter(real_name))
     {
       marti_introspection_msgs::ParamInfo info;
       info.name = real_name;
@@ -502,23 +486,20 @@ public:
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
     }
+    return set;
   }
 
   // Using class method callback.
   template<class M , class T >
-  swri::Subscriber subscribe(const std::string &name,
+  swri::Subscriber subscribe_swri(const std::string &name,
              uint32_t queue_size,
              void(T::*fp)(const boost::shared_ptr< M const > &),
              T *obj,
-             const std::string description = "",
+             const std::string description,
              const ros::TransportHints &transport_hints=ros::TransportHints())
   {
-    if (!nh_)
-      throw 7;// for now
-
     std::string real_name = resolveName(name);
 
-    // todo deduplicate
     if (nh_->enable_docs_)
     {
       const std::string resolved_name = nh_->nh_.resolveName(real_name);
@@ -538,17 +519,13 @@ public:
 
   // Using class method callback.
   template<class M , class T >
-  ros::Subscriber subscribe_ros(const std::string &name,
+  ros::Subscriber subscribe(const std::string &name,
              uint32_t queue_size,
              void(T::*fp)(const boost::shared_ptr< M const > &),
              T *obj,
-             const std::string description = "",
+             const std::string description,
              const ros::TransportHints &transport_hints=ros::TransportHints())
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -569,17 +546,13 @@ public:
 
   // Using class method callback.
   template<class M , class T >
-  ros::Subscriber subscribe_ros(const std::string &name,
+  ros::Subscriber subscribe(const std::string &name,
              uint32_t queue_size,
              void(T::*fp)(const ros::MessageEvent< M const > &),
              T *obj,
-             const std::string description = "",
+             const std::string description,
              const ros::TransportHints &transport_hints=ros::TransportHints())
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -599,16 +572,12 @@ public:
   }
 
   template<class M>
-  swri::Subscriber subscribe(
+  swri::Subscriber subscribe_swri(
              const std::string &name,
              boost::shared_ptr< M const > *dest,
-             const std::string description = "",
+             const std::string description,
              const ros::TransportHints &transport_hints=ros::TransportHints())
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -630,13 +599,9 @@ public:
   // Using public node handle and class method callback.
   // Only use this for strange things like message filters
   template<class M>
-  swri::Subscriber subscribe_later(const std::string &name,
-             const std::string description = "")
+  void subscribe_later(const std::string &name,
+             const std::string description)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -659,13 +624,9 @@ public:
              uint32_t queue_size,
              void(T::*fp)(const boost::shared_ptr< M const > &),
              T *obj,
-             const std::string description = "",
+             const std::string description,
              const ros::TransportHints &transport_hints=ros::TransportHints())
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -687,12 +648,8 @@ public:
   // Uses the public node handle
   template<class M>
   swri::TopicServiceClient<M> topic_service_client(const std::string &name,
-                const std::string description = "")
+                const std::string description)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -719,12 +676,8 @@ public:
   swri::TopicServiceServer topic_service_server(const std::string &name,
                 bool(T::*srv_func)(const MReq &, MRes &),
                 T *obj,
-                const std::string description = "")
+                const std::string description)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -750,10 +703,6 @@ public:
   ros::ServiceClient serviceClient(const std::string& name,
                 const std::string& description)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -778,12 +727,8 @@ public:
   ros::ServiceServer advertiseService(const std::string &name,
                 bool(T::*srv_func)(MReq &, MRes &),
                 T *obj,
-                const std::string description = "")
+                const std::string description)
   {
-    if (!nh_)
-      throw 7;// for now
-
-    // todo deduplicate
     std::string real_name = resolveName(name);
     if (nh_->enable_docs_)
     {
@@ -808,12 +753,9 @@ public:
   ros::Publisher advertise(
     const std::string name,
     uint32_t queue_size,
-    bool latched=false,
-    const std::string description = "")
+    bool latched,
+    const std::string description)
   {
-    if (!nh_)
-      throw 7;// for now
-
     std::string real_name = resolveName(name);
     const std::string resolved_name = nh_->nh_.resolveName(real_name);
     ROS_INFO("Publishing [%s] to '%s' from node %s.",
@@ -821,7 +763,6 @@ public:
            resolved_name.c_str(),
            nh_->node_name_.c_str());
 
-    // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_introspection_msgs::TopicInfo info;
@@ -845,9 +786,6 @@ public:
     uint32_t queue_size,
     const char* description)
   {
-    if (!nh_)
-      throw 7;// for now
-
     std::string real_name = resolveName(name);
     const std::string resolved_name = nh_->nh_.resolveName(real_name);
     ROS_INFO("Publishing [%s] to '%s' from node %s.",
@@ -855,7 +793,6 @@ public:
            resolved_name.c_str(),
            nh_->node_name_.c_str());
 
-    // todo deduplicate
     if (nh_->enable_docs_)
     {
       marti_introspection_msgs::TopicInfo info;
@@ -880,10 +817,18 @@ public:
              const bool oneshot = false,
              const bool autostart = true)
   {
-    if (!nh_)
-      throw 7;// for now
-
     return nh_->nh_.createTimer(duration, fp, obj, oneshot, autostart);
+  }
+
+  // Using class method callback.
+  template<class T >
+  ros::WallTimer createWallTimer(ros::WallDuration duration,
+             void(T::*fp)(const ros::WallTimerEvent &),
+             T *obj,
+             const bool oneshot = false,
+             const bool autostart = true)
+  {
+    return nh_->nh_.createWallTimer(duration, fp, obj, oneshot, autostart);
   }
 };
 
@@ -891,7 +836,7 @@ inline void param(swri::NodeHandle& nh,
   const std::string name,
   std::string& value,
   const std::string def,
-  const std::string description = "")
+  const std::string description)
 {
   nh.param(name, value, def, description);
 }
@@ -926,18 +871,32 @@ void param(swri::NodeHandle& nh,
   nh.param(name, value, def, description);
 }
 
+// Requires the parameter be set
+template<typename T>
+bool getParam(swri::NodeHandle& nh,
+  const std::string name,
+  T& value,
+  const std::string description)
+{
+  bool res = nh.getParam(name, value, description);
+  if (!res)
+  {
+    ROS_ERROR("Required parameter %s does not exist", name.c_str());
+  }
+  return res;
+}
+
 // some simple utility functions
 template<typename M>
 ros::Publisher advertise(swri::NodeHandle& nh,
   const std::string name,
   uint32_t queue_size,
-  bool latched=false,
-  const std::string description = "")
+  bool latched,
+  const std::string description)
 {
   return nh.advertise<M>(name, queue_size, latched, description);
 }
 
-// some simple utility functions
 template<typename M>
 ros::Publisher advertise(swri::NodeHandle& nh,
   const std::string name,
@@ -947,7 +906,6 @@ ros::Publisher advertise(swri::NodeHandle& nh,
   return nh.advertise<M>(name, queue_size, false, description);
 }
 
-// some simple utility functions
 // Using class method callback.
 template<class M , class T >
 swri::Subscriber subscribe(swri::NodeHandle& nh,
@@ -955,20 +913,31 @@ swri::Subscriber subscribe(swri::NodeHandle& nh,
            uint32_t queue_size,
            void(T::*fp)(const boost::shared_ptr< M const > &),
            T *obj,
-           const std::string description = "",
+           const std::string description,
            const ros::TransportHints &transport_hints=ros::TransportHints())
 {
-  return nh.subscribe(name, queue_size, fp, obj, description, transport_hints);
+  return nh.subscribe_swri(name, queue_size, fp, obj, description, transport_hints);
 }
 
 template<class M>
 swri::Subscriber subscribe(swri::NodeHandle& nh,
            const std::string &name,
            boost::shared_ptr< M const > *dest,
-           const std::string description = "",
+           const std::string description,
            const ros::TransportHints &transport_hints=ros::TransportHints())
 {
-  return nh.subscribe(name, dest, description, transport_hints);
+  return nh.subscribe_swri(name, dest, description, transport_hints);
+}
+
+inline void timeoutParam(swri::NodeHandle& nh,
+  swri::Subscriber& sub,
+  const std::string name,
+  const double timeout,
+  const std::string desc)
+{
+  double to = timeout;
+  nh.param(name, to, to, desc);
+  sub.setTimeout(to);
 }
 
 }  // namespace swri
