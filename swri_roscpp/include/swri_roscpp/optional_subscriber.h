@@ -33,8 +33,6 @@
 
 #include <swri_roscpp/subscriber.h>
 
-#include <marti_common_msgs/NodeInfo.h>
-
 // This is a wrapper that lets you bring a swri::Subscriber up and down with a simple function call
 
 namespace swri
