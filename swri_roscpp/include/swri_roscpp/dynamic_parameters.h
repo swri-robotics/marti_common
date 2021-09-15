@@ -615,8 +615,6 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.ranged_param(name, *value.flt, default_value, description, min, max, true);
@@ -650,8 +648,6 @@ namespace swri
       variable.data = value.flt;
       variable.mutex = mutex_;
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.ranged_param(name, *value.flt, default_value, description, min, max, true);
@@ -682,8 +678,6 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.ranged_param(name, *value.dbl, default_value, description, min, max, true);
@@ -717,8 +711,6 @@ namespace swri
       variable.data = value.dbl;
       variable.mutex = mutex_;
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.ranged_param(name, *value.dbl, default_value, description, min, max, true);
@@ -748,8 +740,6 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.ranged_param(name, *value.integer, default_value, description, min, max, true);
@@ -783,8 +773,6 @@ namespace swri
       variable.data = value.integer;
       variable.mutex = mutex_;
  
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.ranged_param(name, *value.integer, default_value, description, min, max, true);
@@ -811,8 +799,6 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.param(name, *value.boolean, default_value, description, true);
@@ -841,9 +827,7 @@ namespace swri
 
       variable.data = value.boolean;
       variable.mutex = mutex_;
- 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
+
       if (snh_)
       {
         snh_.param(name, *value.boolean, default_value, description, true);
@@ -870,8 +854,6 @@ namespace swri
       values_[name] = value;
       ordered_params_.push_back(name);
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.param(name, *value.str, default_value, description, true);
@@ -901,8 +883,6 @@ namespace swri
       variable.data = value.str;
       variable.mutex = mutex_;
 
-      //std::string resolved_name = nh_->resolveName(name);
-      //_used_params.insert(resolved_name);
       if (snh_)
       {
         snh_.param(name, *value.str, default_value, description, true);

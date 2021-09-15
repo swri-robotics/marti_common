@@ -2,13 +2,17 @@
 <package format="2">
   <name>rosman</name>
   <version>0.0.1</version>
-  <description>The rosman package</description>
+  <description>
+
+    rosman contains the rosman tool for introspecting ROS nodes
+
+  </description>
 
   <maintainer email="robert.brothers@swri.org">Robert Brothers</maintainer>
   <maintainer email="matthew.bries@swri.org">Matt Bries</maintainer>
 
-  <license>TODO</license>
-  <!-- <url type="website">http://wiki.ros.org/rosman</url> -->
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
 
   <author email="robert.brothers@swri.org">Robert Brothers</author>
 
