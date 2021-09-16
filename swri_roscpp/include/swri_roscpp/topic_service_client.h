@@ -144,7 +144,7 @@ private:
 template<class MReq>
 class TopicServiceClient 
 {
-  boost::shared_ptr<TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response>> impl_;
+  boost::shared_ptr<TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response> > impl_;
 
 public:
 
@@ -152,7 +152,7 @@ public:
                 const std::string &service,
                 const std::string &client_name = "")
   {
-    impl_ = boost::shared_ptr<TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response>>(
+    impl_ = boost::shared_ptr<TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response> >(
       new TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response>());
 
     impl_->initialize(nh, service, client_name);
