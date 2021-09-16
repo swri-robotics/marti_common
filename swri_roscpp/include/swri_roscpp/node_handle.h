@@ -96,9 +96,9 @@ class NodeHandle
       return false;
     }
 
-    for (const auto& param: nh_->info_msg_.parameters)
+    for (size_t i = 0; i < nh_->info_msg_.parameters.size(); i++)
     {
-      if (param.name == name)
+      if (nh_->info_msg_.parameters[i].name == name)
       {
         return false;
       }
@@ -151,13 +151,17 @@ public:
   swri::NodeHandle getNodeHandle(const std::string& ns,
                                  const std::string& group = "")
   {
-    auto ret = *this;
+    swri::NodeHandle ret = *this;
     ret.namespace_ = ns;
     if (ns.length())
     {
       if (ns.length() > 1 && ns[0] == '~')
       {
         ret.namespace_ = nh_->node_name_ + ns.substr(1);
+      }
+      else if (ns == "~")
+      {
+        ret.namespace_ = nh_->node_name_;
       }
       ret.namespace_ += '/';
     }
