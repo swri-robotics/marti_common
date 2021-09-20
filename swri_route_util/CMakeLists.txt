@@ -11,6 +11,7 @@ find_package(swri_geometry_util REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(swri_transform_util REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 ### Build Library ###
@@ -36,6 +37,7 @@ ament_target_dependencies(${PROJECT_NAME}
   swri_math_util
   swri_roscpp
   swri_transform_util
+  tf2_geometry_msgs
   visualization_msgs
 )
 
