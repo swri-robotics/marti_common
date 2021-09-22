@@ -30,6 +30,10 @@
 
 #include <swri_route_util/util.h>
 
+#include <chrono>
+
+using namespace std::chrono_literals;
+
 namespace swri_route_util
 {
 static geometry_msgs::msg::Point makePoint(const double x, const double y)
@@ -67,7 +71,7 @@ void markerForRouteSpeeds(
   m.color.g = 0.0;
   m.color.b = 0.0;
   m.color.a = 1.0;
-  m.lifetime = rclcpp::Duration(0);
+  m.lifetime = rclcpp::Duration(0ns);
   m.frame_locked = false;
 
   m.points.reserve(speeds.speeds.size()*2);

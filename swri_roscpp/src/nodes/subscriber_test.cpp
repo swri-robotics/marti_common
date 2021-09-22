@@ -36,7 +36,10 @@
 #include <std_msgs/msg/float32.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 
+#include <chrono>
+
 namespace du = diagnostic_updater;
+using namespace std::chrono_literals;
 
 // Alias type for easier access to DiagnosticStatus enumerations.
 typedef diagnostic_msgs::msg::DiagnosticStatus DS;
@@ -74,7 +77,7 @@ class SubscriberTest : public rclcpp::Node
     std::function<void(const std::shared_ptr< nav_msgs::msg::Odometry const> &)> callback = boost::bind(&SubscriberTest::handleMessage, this, _1);
     sub_ = swri::Subscriber(*this, "odom", 100, callback);
 
-    sub_.setTimeout(rclcpp::Duration(1.0));
+    sub_.setTimeout(rclcpp::Duration(1ns));
 
     diagnostic_updater_.setHardwareID("none");
     diagnostic_updater_.add(

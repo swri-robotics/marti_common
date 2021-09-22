@@ -32,6 +32,9 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 namespace swri_console_util
 {
@@ -39,7 +42,7 @@ namespace swri_console_util
       paused_(false),
       percent_complete_(0),
       start_time_(clock_.now()),
-      paused_time_(0)
+      paused_time_(0ns)
   {
     SetupTerminal();
   }
