@@ -9,9 +9,9 @@ find_package(rclcpp REQUIRED)
 
 # The Boost Random library headers and namespaces changed between version
 # 1.46 and 1.47
-find_package(Boost COMPONENTS random) 
+find_package(Boost COMPONENTS random)
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/math_util.cpp
   src/trig_util.cpp
   src/random.cpp
