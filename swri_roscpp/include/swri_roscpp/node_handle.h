@@ -548,6 +548,32 @@ public:
     return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
   }
 
+  // Using boost function callback.
+  template<class M>
+  ros::Subscriber subscribe(const std::string &name,
+             uint32_t queue_size,
+             const boost::function<void(const boost::shared_ptr< M const > &)>& callback,
+             const std::string description,
+             const ros::TransportHints &transport_hints=ros::TransportHints())
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return nh_->nh_.subscribe<M>(real_name, queue_size, callback, ros::VoidConstPtr(), transport_hints);
+  }
+
   // Using class method callback.
   template<class M , class T >
   ros::Subscriber subscribe(const std::string &name,
