@@ -6,6 +6,7 @@ set(BUILD_DEPS
   diagnostic_updater
   dynamic_reconfigure 
   marti_common_msgs
+  marti_introspection_msgs
   nav_msgs
   roscpp
   std_msgs
@@ -16,6 +17,7 @@ set(RUNTIME_DEPS
   diagnostic_updater 
   dynamic_reconfigure
   marti_common_msgs
+  marti_introspection_msgs
   nav_msgs 
   roscpp
   std_msgs

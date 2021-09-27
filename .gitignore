@@ -8,6 +8,7 @@
 *.bag
 *.pyc
 *~
+*.swp
 lib/
 _gtest_from_src/
 bin/
