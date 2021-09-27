@@ -35,11 +35,6 @@ include_directories(SYSTEM
   ${YamlCpp_INCLUDE_DIRS}
 )
 
-if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-  set(CMAKE_CXX_STANDARD 11)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
 add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
