@@ -520,8 +520,8 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                     print('DocTopicReader failed to read documentation topic and cannot write out the node documentation')
                     return
                 # sort things
-                topic_reader.last_doc_msg.parameters.sort(key=_sort_fn)
                 print("--------------------------------------------------------------------------------\nNode [" + topic_reader.last_doc_msg.name + "]")
+                topic_reader.last_doc_msg.parameters.sort(key=_sort_fn)
                 # divide by grouping then print for each group, starting with empty
                 groups = {}
 
@@ -552,6 +552,7 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
     except socket.error:
         print('Could not communicate with ROS master!')
         sys.exit(2)
+
     # This will only retrieve private parameters for this node, but better than nothing
     params = sorted([p for p in param_list if p.startswith(node_name)])
 
@@ -569,6 +570,7 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                 found = 1
         if found == 0:
             unused_param.append(param)
+
     print("Set but undocumented params\n")
     for param in unused_param:
         print("  " + param)
@@ -582,6 +584,7 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                         found = 1
             if found == 0:
                 undocumented_param.append(doc)
+
         print("\nDocumented but not set params\n")
         for param in undocumented_param:
             print("  " + param)
