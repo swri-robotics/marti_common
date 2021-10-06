@@ -488,7 +488,6 @@ def _rosman_check_main(argv):
     Entry point for rosman node command
     """
     args = argv[2:]
-    print("ARGS " ,args)
     parser = OptionParser(usage='usage: %prog node node1 [node2...]')
     parser.add_option('-y','--yaml', dest="yaml", action="store_true", 
             default=False, help='print node documentation output as a yaml compliant string')
@@ -507,11 +506,11 @@ def _rosman_check_main(argv):
         compare_param(ros_master, node, yaml=options.yaml, reverse=options.reverse)
 
 def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reverse=False):
-    documentation_info = get_documentation_publications(rosmaster)
     doc_server_array = []
     param_server_array = []
     unused_param = []
-    undocumented_param = []
+
+    documentation_info = get_documentation_publications(rosmaster)
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
         if node_namespace in node_name or node_name in publishers:
             topic_reader = DocTopicReader(rosmaster)
@@ -522,7 +521,7 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                     return
                 # sort things
                 topic_reader.last_doc_msg.parameters.sort(key=_sort_fn)
-
+                print("--------------------------------------------------------------------------------\nNode [" + topic_reader.last_doc_msg.name + "]")
                 # divide by grouping then print for each group, starting with empty
                 groups = {}
 
@@ -546,7 +545,6 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                         for param in data.parameters:
                             #print(param.resolved_name)
                             doc_server_array.append(param.resolved_name)
-
     
     try:
         ros_sys_state = rosmaster.getSystemState()
@@ -571,21 +569,22 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                 found = 1
         if found == 0:
             unused_param.append(param)
-    print("Set but undocumented params ")
+    print("Set but undocumented params\n")
     for param in unused_param:
-        print(param)
+        print("  " + param)
 
     if reverse == True:
+        undocumented_param = []
         for doc in doc_server_array:
             found = 0
             for param in param_server_array:
                     if param.find(doc) > -1:
                         found = 1
             if found == 0:
-                undocumented_param.append(param)
-        print("\nUndocumented but set params ")
+                undocumented_param.append(doc)
+        print("\nDocumented but not set params\n")
         for param in undocumented_param:
-            print(param)
+            print("  " + param)
 
 def _rosman_topic_main(argv):
     """
