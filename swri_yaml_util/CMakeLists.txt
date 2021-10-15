@@ -29,7 +29,7 @@ include_directories(include)
 include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS}
   ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}
-  ${YamlCpp_INCLUDE_DIR}
+  ${YamlCpp_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
