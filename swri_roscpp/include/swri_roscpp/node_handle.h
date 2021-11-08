@@ -203,7 +203,7 @@ public:
   }
 
   inline bool getParam(const std::string& name, std::vector<std::string>& value,
-  const std::string description)
+    const std::string description)
   {
     std::string real_name = resolveName(name);
     bool set = nh_->pnh_.getParam(real_name, value);
