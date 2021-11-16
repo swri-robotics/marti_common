@@ -775,7 +775,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return swri::ServiceServer(nh_->nh_, real_name, srv_func, obj);
+    return swri::ServiceServer(nh_->pnh_, real_name, srv_func, obj);
   }
 
   template<class MReq, class MRes, class T>
@@ -800,7 +800,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return swri::ServiceServer(nh_->nh_, real_name, srv_func, obj);
+    return swri::ServiceServer(nh_->pnh_, real_name, srv_func, obj);
   }
 
   template<class MReq, class MRes, class T>
@@ -825,7 +825,7 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
 
-    return swri::ServiceServer(nh_->nh_, real_name, srv_func, obj);
+    return swri::ServiceServer(nh_->pnh_, real_name, srv_func, obj);
   }
 
   // Advertising uses the public nh
