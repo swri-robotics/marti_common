@@ -32,7 +32,7 @@
 // ROS Libraries
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 
 namespace swri_image_util
 {
