@@ -483,6 +483,112 @@ def _rosman_node_main(argv):
             if not rosman_node(ros_master, node, yaml=options.yaml):
                 rosman_node_fallback(ros_master, node, yaml=options.yaml)
 
+def _rosman_check_main(argv):
+    """
+    Entry point for rosman node command
+    """
+    args = argv[2:]
+    parser = OptionParser(usage='usage: %prog node node1 [node2...]')
+    parser.add_option('-y','--yaml', dest="yaml", action="store_true", 
+            default=False, help='print node documentation output as a yaml compliant string')
+    parser.add_option('-f', '--filename', dest="filename", action="store",
+            metavar="FILE", help="write output to FILE. If the file exists, the output will be appended, otherwise a new file with the name FILE will be created.")
+    parser.add_option("-v", action="store_true", dest="reverse")
+    (options, args) = parser.parse_args(args)
+
+    if not args:
+        parser.error('You must specify at least one node name')
+
+    ros_master = rosgraph.Master('/rosman')
+
+    # Write all to stdout
+    for node in args:
+        compare_param(ros_master, node, yaml=options.yaml, reverse=options.reverse)
+
+def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reverse=False):
+    doc_server_array = []
+    param_server_array = []
+    unused_param = []
+
+    documentation_info = get_documentation_publications(rosmaster)
+    for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
+        if node_namespace in node_name or node_name in publishers:
+            topic_reader = DocTopicReader(rosmaster)
+            if topic_reader.read_doc_topic(topic):
+                # TODO error out correctly if the last topic wasn't read correctly
+                if (topic_reader.last_doc_msg is None):
+                    print('DocTopicReader failed to read documentation topic and cannot write out the node documentation')
+                    return
+                # sort things
+                print("--------------------------------------------------------------------------------\nNode [" + topic_reader.last_doc_msg.name + "]")
+                topic_reader.last_doc_msg.parameters.sort(key=_sort_fn)
+                # divide by grouping then print for each group, starting with empty
+                groups = {}
+
+                for item in topic_reader.last_doc_msg.parameters:
+                    if item.group not in groups:
+                        groups[item.group] = NodeInfo()
+                    groups[item.group].parameters.append(item)
+
+                data = groups[""]
+                if len(topic_reader.last_doc_msg.parameters) > 0:
+                    #print("DOCUMENTED:\n")
+                    for param in data.parameters:
+                        #print(param.resolved_name)
+                        doc_server_array.append(param.resolved_name)
+
+                for group in groups:
+                    if group == "":
+                        continue
+                    data = groups[group]
+                    if len(topic_reader.last_doc_msg.parameters) > 0:
+                        for param in data.parameters:
+                            #print(param.resolved_name)
+                            doc_server_array.append(param.resolved_name)
+    
+    try:
+        ros_sys_state = rosmaster.getSystemState()
+        param_list = rosmaster.getParamNames() #array
+    except socket.error:
+        print('Could not communicate with ROS master!')
+        sys.exit(2)
+
+    # This will only retrieve private parameters for this node, but better than nothing
+    params = sorted([p for p in param_list if p.startswith(node_name)])
+
+    # Fill out a shim node documentation and hack the DocTopicReader to write output
+    doc = NodeInfo()
+    for param in params:
+        param_doc = ParamInfo()
+        param_doc.name = param
+        param_server_array.append(param_doc.name)
+
+    for param in param_server_array:
+        found = 0
+        for doc in doc_server_array:
+            if doc.find(param) > -1:
+                found = 1
+        if found == 0:
+            unused_param.append(param)
+
+    print("Set but undocumented params\n")
+    for param in unused_param:
+        print("  " + param)
+
+    if reverse == True:
+        undocumented_param = []
+        for doc in doc_server_array:
+            found = 0
+            for param in param_server_array:
+                    if param.find(doc) > -1:
+                        found = 1
+            if found == 0:
+                undocumented_param.append(doc)
+
+        print("\nDocumented but not set params\n")
+        for param in undocumented_param:
+            print("  " + param)
+
 def _rosman_topic_main(argv):
     """
     Entry point for rosman topics command
@@ -559,6 +665,8 @@ def rosmanmain(argv=None):
         command = argv[1]
         if command == 'node':
             _rosman_node_main(argv)
+        elif command == 'check':
+            _rosman_check_main(argv)
         elif command == 'topic':
             _rosman_topic_main(argv)
         elif command == 'param':
