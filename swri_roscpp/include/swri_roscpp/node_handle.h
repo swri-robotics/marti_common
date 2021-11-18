@@ -216,7 +216,7 @@ public:
       info.description = description;
       info.group = grouping_;
       info.resolved_name = nh_->pnh_.resolveName(real_name);
-      info.type = marti_introspection_msgs::ParamInfo::TYPE_XMLRPC;
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_STRING;
       info.dynamic = false;
       nh_->info_msg_.parameters.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
@@ -920,7 +920,7 @@ bool getParam(swri::NodeHandle& nh,
 
 template<typename T>
 void setParam(swri::NodeHandle& nh,
-  const std::string name,
+  const std::string& name,
   T& value)
 {
   nh.setParam(name, value);
