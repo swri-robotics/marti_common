@@ -677,6 +677,28 @@ public:
   }
 
   // Using public node handle and class method callback.
+  // Only use this for strange things like image transports.
+  template<class M>
+  void advertise_later(const std::string &name,
+             const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = true;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+  }
+
+  // Using public node handle and class method callback.
   template<class M , class T >
   swri::OptionalSubscriber subscribe_optional(const std::string &name,
              uint32_t queue_size,
