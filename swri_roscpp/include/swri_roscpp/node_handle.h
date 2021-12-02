@@ -203,6 +203,34 @@ public:
     return set;
   }
 
+  inline bool getParam(const std::string& name, std::vector<std::string>& value,
+    const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    bool set = nh_->pnh_.getParam(real_name, value);
+    ROS_INFO("Read parameter %s", name.c_str());
+
+    if (shouldAddParameter(real_name))
+    {
+      marti_introspection_msgs::ParamInfo info;
+      info.name = real_name;
+      info.description = description;
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_STRING;
+      info.dynamic = false;
+      nh_->info_msg_.parameters.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+    return set;
+  }
+
+  template <class T>
+  inline void setParam(const std::string& name, T& value)
+  {
+    nh_->pnh_.setParam(name, value);
+  }
+
   // param always uses the private namespace
   inline
   bool param(const std::string &name,
@@ -1039,6 +1067,14 @@ bool getParam(swri::NodeHandle& nh,
     ROS_ERROR("Required parameter %s does not exist", name.c_str());
   }
   return res;
+}
+
+template<typename T>
+void setParam(swri::NodeHandle& nh,
+  const std::string& name,
+  T& value)
+{
+  nh.setParam(name, value);
 }
 
 // some simple utility functions
