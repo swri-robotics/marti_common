@@ -485,7 +485,7 @@ def _rosman_node_main(argv):
 
 def _rosman_check_main(argv):
     """
-    Entry point for rosman node command
+    Entry point for rosman check command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog node node1 [node2...]')
@@ -509,8 +509,9 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
     doc_server_array = []
     param_server_array = []
     unused_param = []
-
+    #print("compare_param top")
     documentation_info = get_documentation_publications(rosmaster)
+    print("\n--------------------------------------------------------------------------------\nNode [" + node_name + "]")
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
         if node_namespace in node_name or node_name in publishers:
             topic_reader = DocTopicReader(rosmaster)
@@ -520,7 +521,6 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                     print('DocTopicReader failed to read documentation topic and cannot write out the node documentation')
                     return
                 # sort things
-                print("--------------------------------------------------------------------------------\nNode [" + topic_reader.last_doc_msg.name + "]")
                 topic_reader.last_doc_msg.parameters.sort(key=_sort_fn)
                 # divide by grouping then print for each group, starting with empty
                 groups = {}
@@ -545,6 +545,9 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
                         for param in data.parameters:
                             #print(param.resolved_name)
                             doc_server_array.append(param.resolved_name)
+    if not doc_server_array:
+        print("Warning: no documentation topic is published for " + node_name + " Falling back to standard rosnode info.\n")
+        return
     
     try:
         ros_sys_state = rosmaster.getSystemState()
@@ -566,6 +569,10 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
     for param in param_server_array:
         found = 0
         for doc in doc_server_array:
+            for doc_param in data.parameters:
+                if doc_param.type == 0:
+                    if doc in param:
+                        found = 1
             if doc.find(param) > -1:
                 found = 1
         if found == 0:
