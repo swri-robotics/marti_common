@@ -509,7 +509,7 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
     doc_server_array = []
     param_server_array = []
     unused_param = []
-    #print("compare_param top")
+
     documentation_info = get_documentation_publications(rosmaster)
     print("\n--------------------------------------------------------------------------------\nNode [" + node_name + "]")
     for topic, node_namespace, publishers in zip(documentation_info[0], documentation_info[1], documentation_info[2]):
