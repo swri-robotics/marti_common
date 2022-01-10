@@ -92,6 +92,46 @@ TEST(LocalXyUtilTests, TestOffset2)
   EXPECT_FLOAT_EQ(y, y2);
 }
 
+TEST(LocalXyUtilTests, TestOffset3)
+{
+  // Set origin at dateline
+  swri_transform_util::LocalXyWgs84Util local_xy_util(0, -180);
+
+  double x = -100.0;
+  double y = 10.0;
+
+  // Offset is west, across the dateline
+  double lat, lon;
+  local_xy_util.ToWgs84(x, y, lat, lon);
+  EXPECT_NEAR(0.00009045, lat, 0.0000001);  // ~1cm accuracy
+  EXPECT_NEAR(179.9991017, lon, 0.0000001);
+
+  double x2, y2;
+  local_xy_util.ToLocalXy(lat, lon, x2, y2);
+  EXPECT_FLOAT_EQ(x, x2);
+  EXPECT_FLOAT_EQ(y, y2);
+}
+
+TEST(LocalXyUtilTests, TestOffset4)
+{
+  // Set origin just west of dateline
+  swri_transform_util::LocalXyWgs84Util local_xy_util(0, 179.9999);
+
+  double x = 100.0;
+  double y = -10.0;
+
+  // Offset is east, across the dateline
+  double lat, lon;
+  local_xy_util.ToWgs84(x, y, lat, lon);
+  EXPECT_NEAR(-0.00009045, lat, 0.0000001);  // ~1cm accuracy
+  EXPECT_NEAR(-179.9992017, lon, 0.0000001);
+
+  double x2, y2;
+  local_xy_util.ToLocalXy(lat, lon, x2, y2);
+  EXPECT_FLOAT_EQ(x, x2);
+  EXPECT_FLOAT_EQ(y, y2);
+}
+
 TEST(LocalXyUtilTests, LocalXyFromWgs84)
 {
   double x, y;
