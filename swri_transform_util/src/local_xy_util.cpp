@@ -273,9 +273,17 @@ namespace swri_transform_util
       double rlon = longitude * swri_math_util::_deg_2_rad;
       double dLat = (rlat - reference_latitude_) * rho_lat_;
       double dLon = (rlon - reference_longitude_);
-      // Check for case where the shortest distance is across the date line
-      if (dLon > swri_math_util::_pi) dLon -= swri_math_util::_2pi;
-      if (dLon < -swri_math_util::_pi) dLon += swri_math_util::_2pi;
+      // Check for case where the shortest distance crosses the antimeridian
+      if (dLon > swri_math_util::_pi)
+      {
+        dLon -= swri_math_util::_2pi;
+      }
+      
+      if (dLon < -swri_math_util::_pi)
+      {
+        dLon += swri_math_util::_2pi;
+      }
+      
       dLon *= rho_lon_;
 
       x =  cos_angle_ * dLon + sin_angle_ * dLat;
