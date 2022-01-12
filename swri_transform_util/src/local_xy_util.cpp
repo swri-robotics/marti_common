@@ -311,8 +311,15 @@ namespace swri_transform_util
       latitude = rlat * swri_math_util::_rad_2_deg;
       longitude = rlon * swri_math_util::_rad_2_deg;
       // Constrain longitude in case it has wrapped across the date line
-      if (longitude >= 180.0) longitude -= 360.0;
-      if (longitude < -180.0) longitude += 360.0;
+      if (longitude >= 180.0)
+      {
+        longitude -= 360.0;
+      }
+      
+      if (longitude < -180.0)
+      {
+        longitude += 360.0;
+      }
     }
 
     return initialized_;
