@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rosman</name>
+  <version>2.15.0</version>
+  <description>
+
+    rosman contains the rosman tool for introspecting ROS nodes
+
+  </description>
+
+  <maintainer email="robert.brothers@swri.org">Robert Brothers</maintainer>
+  <maintainer email="matthew.bries@swri.org">Matt Bries</maintainer>
+
+  <license>BSD</license>
+  <url>https://github.com/swri-robotics/marti_common</url>
+
+  <author email="robert.brothers@swri.org">Robert Brothers</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>marti_introspection_msgs</depend>
+  <exec_depend>rosgraph</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rostopic</exec_depend>
+
+  <export>
+  </export>
+</package>

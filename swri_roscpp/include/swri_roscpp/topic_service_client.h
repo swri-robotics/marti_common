@@ -40,9 +40,9 @@
 namespace swri
 {
 template<class MReq, class MRes>
-class TopicServiceClientRaw
+class TopicServiceClientImpl
 {
-private:
+public:
   typedef
   boost::mutex request_lock_;
   ros::Subscriber response_sub_;
@@ -55,8 +55,7 @@ private:
 
   int sequence_;
 
-public:
-  TopicServiceClientRaw() : sequence_(0), timeout_(ros::Duration(4.0))
+  TopicServiceClientImpl() : sequence_(0), timeout_(ros::Duration(4.0))
   {
 
   }
@@ -74,7 +73,7 @@ public:
     service_name_ = rservice;
 
     request_pub_ = nh.advertise<MReq>(rservice + "/request", 10);
-    response_sub_ = nh.subscribe(rservice + "/response", 10, &TopicServiceClientRaw<MReq, MRes>::response_callback, this);
+    response_sub_ = nh.subscribe(rservice + "/response", 10, &TopicServiceClientImpl<MReq, MRes>::response_callback, this);
   }
 
   bool call(MReq& request, MRes& response)
@@ -118,20 +117,6 @@ public:
     return false;
   }
 
-  std::string getService()
-  {
-    return service_name_;
-  }
-
-  bool exists()
-  {
-    return request_pub_.getNumSubscribers() > 0 && response_sub_.getNumPublishers() > 0;
-  }
-
-  // The service server can output a console log message when the
-  // service is called if desired.
-  void setLogCalls(bool enable);
-  bool logCalls() const;
 private:
 
   void response_callback(const boost::shared_ptr<MRes>& message)
@@ -154,17 +139,39 @@ private:
 
     response_ = message;
   }
-};  // class TopicServiceClientRaw
+};  // class TopicServiceClientImpl
 
 template<class MReq>
-class TopicServiceClient: public TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>
+class TopicServiceClient 
 {
+  boost::shared_ptr<TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response> > impl_;
+
 public:
-  bool call(MReq& req)
+
+  void initialize(ros::NodeHandle &nh,
+                const std::string &service,
+                const std::string &client_name = "")
   {
-    return TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>::call(req.request, req.response);
+    impl_ = boost::shared_ptr<TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response> >(
+      new TopicServiceClientImpl<typename MReq:: Request, typename MReq:: Response>());
+
+    impl_->initialize(nh, service, client_name);
   }
 
+  std::string getService()
+  {
+    return impl_->service_name_;
+  }
+
+  bool exists()
+  {
+    return impl_->request_pub_.getNumSubscribers() > 0 && impl_->response_sub_.getNumPublishers() > 0;
+  }
+
+  bool call(MReq& req)
+  {
+    return impl_->call(req.request, req.response);
+  }
 };  // class TopicServiceClient
 
 
