@@ -169,7 +169,7 @@ namespace swri_yaml_util
   bool FindValue(const YAML::Node& node, const std::string& name)
   {
     #ifndef YAMLCPP_OLD_API
-      return node[name];
+      return static_cast<bool>(node[name]);
     #else
       return node.FindValue(name);
     #endif  // YAMLCPP_OLD_API

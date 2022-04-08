@@ -23,8 +23,18 @@ catkin_python_setup()
 find_package(OpenCV  REQUIRED calib3d core highgui imgproc video)
 find_package(Boost REQUIRED COMPONENTS filesystem serialization thread)
 
+# First try pkg-config. Should always work for PROJ >= 8. Should work with older
+# versions if they were installed with autotools
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROJ proj)
+
+# Next, try CMake, which should work if PROJ was installed with CMake
+if(NOT "${PROJ_FOUND}")
+  unset(PROJ_FOUND CACHE)
+  find_package(PROJ)
+endif()
+
+# Lastly, try to find the library directly, for backwards compatibility
 if(NOT "${PROJ_FOUND}")
   set(PROJ_INCLUDE_DIRS /usr/include)
   set(PROJ_LIBRARY_DIRS /usr/lib)
