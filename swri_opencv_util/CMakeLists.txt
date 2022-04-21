@@ -12,7 +12,7 @@ find_package(OpenCV REQUIRED core imgproc highgui)
 
 find_package(Boost REQUIRED COMPONENTS serialization thread) 
   
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/blend.cpp
   src/models.cpp
   src/model_fit.cpp

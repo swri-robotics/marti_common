@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem regex)
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/file_util.cpp
 )
 target_include_directories(${PROJECT_NAME}
