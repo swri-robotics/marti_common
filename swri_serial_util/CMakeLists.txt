@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED)
 
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME} SHARED
   src/serial_port.cpp
 )
 target_include_directories(${PROJECT_NAME}

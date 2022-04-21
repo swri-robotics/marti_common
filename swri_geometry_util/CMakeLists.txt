@@ -18,7 +18,7 @@ find_package(OpenCV REQUIRED core)
 
 find_package(Eigen3 REQUIRED)
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/cubic_spline.cpp
   src/geometry_util.cpp
   src/intersection.cpp

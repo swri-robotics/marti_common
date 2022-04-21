@@ -29,7 +29,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem system random)
 find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN3_DEFINITIONS})
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/draw_util.cpp
   src/geometry_util.cpp
   src/image_matching.cpp

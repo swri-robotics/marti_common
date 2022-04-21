@@ -15,7 +15,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
 ### Build Library ###
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME} SHARED
   src/route.cpp
   src/route_point.cpp
   src/route_speeds.cpp
