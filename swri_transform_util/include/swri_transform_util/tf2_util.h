@@ -37,7 +37,13 @@ namespace tf2
 
 tf2::Quaternion createQuaternionFromYaw(double yaw);
 
-tf2::Quaternion createQuaternionFromRollPitchYaw(double roll, double pitch, double yaw);
+tf2::Quaternion createQuaternionFromRPY(double roll, double pitch, double yaw);
+
+geometry_msgs::msg::Quaternion createQuaternionMsgFromRollPitchYaw(double roll, double pitch, double yaw);
+
+void quaternionTFToMsg(const Quaternion& bt, geometry_msgs::msg::Quaternion& msg);
+
+void quaternionMsgToTF(const geometry_msgs::msg::Quaternion& msg, Quaternion& bt);
 
 }
 

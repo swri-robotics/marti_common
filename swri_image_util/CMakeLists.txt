@@ -80,7 +80,7 @@ add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/image_pub_node.cpp
   src/nodes/normalization_image_node.cpp
   src/nodes/normalize_response_node.cpp
-#  src/nodes/replace_colors_nodelet.cpp
+  #src/nodes/replace_colors_node.cpp
   src/nodes/rotate_image_node.cpp
   src/nodes/scale_image_node.cpp
   src/nodes/warp_image_node.cpp
