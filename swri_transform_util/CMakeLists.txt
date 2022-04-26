@@ -50,6 +50,7 @@ add_library(${PROJECT_NAME} SHARED
   src/transformer.cpp
   src/transform_manager.cpp
   src/transform_util.cpp
+  src/tf2_util.cpp
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
 target_include_directories(${PROJECT_NAME}
