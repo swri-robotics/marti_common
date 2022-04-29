@@ -25,8 +25,7 @@ class ObstacleTransformer : public rclcpp::Node
   {
   public:
     explicit ObstacleTransformer(const rclcpp::NodeOptions& options) :
-      rclcpp::Node("obstacle_transformer", options),
-      tf_manager_(shared_from_this())
+      rclcpp::Node("obstacle_transformer", options)
     {
       this->declare_parameter("output_frame", "/wgs84");
 
@@ -42,6 +41,11 @@ class ObstacleTransformer : public rclcpp::Node
     }
 
   private:
+    void InitTransformManager()
+    {
+      tf_manager_ = std::make_shared<swri_transform_util::TransformManager>(shared_from_this());
+    }
+
     void handleObstacleArray(const marti_nav_msgs::msg::ObstacleArray::ConstSharedPtr& obj)
     {
       if (viz_pub_->get_subscription_count() == 0 && viz_pub_->get_intra_process_subscription_count() == 0)
@@ -53,8 +57,13 @@ class ObstacleTransformer : public rclcpp::Node
       *obstacles = *obj;
       obstacles->header.frame_id = output_frame_;
 
+      if (!tf_manager_)
+      {
+        InitTransformManager();
+      }
+
       swri_transform_util::Transform transform;
-      if (!tf_manager_.GetTransform(output_frame_, obj->header.frame_id, transform))
+      if (!tf_manager_->GetTransform(output_frame_, obj->header.frame_id, transform))
       {
         RCLCPP_WARN(this->get_logger(), "Failed to get transform.");
         return;
@@ -91,7 +100,7 @@ class ObstacleTransformer : public rclcpp::Node
     // parameters
     std::string output_frame_;
 
-    swri_transform_util::TransformManager tf_manager_;
+    std::shared_ptr<swri_transform_util::TransformManager> tf_manager_;
   };
 }
 
