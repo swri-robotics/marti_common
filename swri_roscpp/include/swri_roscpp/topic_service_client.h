@@ -30,6 +30,7 @@
 #define SWRI_ROSCPP_TOPIC_SERVICE_CLIENT_H_
 
 #include <ros/node_handle.h>
+#include <ros/this_node.h>
 
 #include <boost/thread/mutex.hpp>
 #include <boost/uuid/random_generator.hpp>
