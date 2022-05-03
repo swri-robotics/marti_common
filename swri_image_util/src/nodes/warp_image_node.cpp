@@ -47,7 +47,7 @@ namespace swri_image_util
     {
       this->declare_parameter("width", 0);
       this->declare_parameter("height", 0);
-      this->declare_parameter("transform", std::vector<int64_t>{});
+      this->declare_parameter("transform", std::vector<double>{});
 
       if (this->get_parameter("width").as_int() == 0 || this->get_parameter("height").as_int() == 0)
       {
@@ -61,7 +61,7 @@ namespace swri_image_util
         output_size_.width = this->get_parameter("width").as_int();
       }
 
-      const std::vector<int64_t> transform = this->get_parameter("transform").as_integer_array();
+      const std::vector<double> transform = this->get_parameter("transform").as_double_array();
       if (transform.size() != 9)
       {
         RCLCPP_FATAL(this->get_logger(),
@@ -70,10 +70,7 @@ namespace swri_image_util
         // Don't shut down, because that would bring down all other nodelets as well
         return;
       }
-      std::vector<int32_t> cv_transform;
-      std::transform(transform.begin(), transform.end(), std::back_inserter(cv_transform),
-        [](int64_t value) -> int32_t { return static_cast<int32_t>(value); });
-      cv::Mat tempMat = cv::Mat(cv_transform, true).reshape(0, 3);
+      m_ = cv::Mat(transform, true).reshape(0, 3);
       std::stringstream matstring;
       matstring << m_;
       RCLCPP_INFO(this->get_logger(), "Transformation matrix: %s", matstring.str().c_str());

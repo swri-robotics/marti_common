@@ -122,7 +122,7 @@ namespace swri_transform_util
      * @param[in] target_frame The TF (or special) frame id of the target
      * @param[in] source_frame The TF (or special) frame id of the source
      * @param[in] time         The requested time to request the transform.
-     *    rclcpp::Time(0) means the most recent time for which a valid transform
+     *    rclcpp::Time(0, 0, RCL_ROS_TIME) means the most recent time for which a valid transform
      *    is available.
      * @param[out] transform   The transform requested. If the function returns
      *    false, transform is not mutated.
