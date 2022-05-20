@@ -53,15 +53,15 @@ namespace swri
     rclcpp::Time last_header_stamp_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
     rclcpp::Time last_receive_time_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
 
-    rclcpp::Duration total_latency_ = rclcpp::Duration(std::chrono::nanoseconds().zero());
+    rclcpp::Duration total_latency_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
     rclcpp::Duration min_latency_ = rclcpp::Duration::max();
-    rclcpp::Duration max_latency_ = rclcpp::Duration(std::chrono::nanoseconds().zero());
+    rclcpp::Duration max_latency_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
 
     rclcpp::Duration total_periods_ = rclcpp::Duration::max();
     rclcpp::Duration min_period_ = rclcpp::Duration::max();
-    rclcpp::Duration max_period_ = rclcpp::Duration(std::chrono::nanoseconds().zero());
+    rclcpp::Duration max_period_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
 
-    rclcpp::Duration timeout_ = rclcpp::Duration(std::chrono::nanoseconds().zero());
+    rclcpp::Duration timeout_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
     bool in_timeout_;
     int timeout_count_;
     bool blocking_timeout_;
