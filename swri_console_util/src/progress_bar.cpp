@@ -29,6 +29,7 @@
 
 #include <swri_console_util/progress_bar.h>
 
+#include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -39,7 +40,7 @@ namespace swri_console_util
       paused_(false),
       percent_complete_(0),
       start_time_(clock_.now()),
-      paused_time_(0)
+      paused_time_(std::chrono::nanoseconds::zero())
   {
     SetupTerminal();
   }

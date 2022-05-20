@@ -26,8 +26,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#include <swri_route_util/visualization.h>
+#include <chrono>
 
+#include <swri_route_util/visualization.h>
 #include <swri_route_util/util.h>
 
 namespace swri_route_util
@@ -67,7 +68,7 @@ void markerForRouteSpeeds(
   m.color.g = 0.0;
   m.color.b = 0.0;
   m.color.a = 1.0;
-  m.lifetime = rclcpp::Duration(0);
+  m.lifetime = rclcpp::Duration(std::chrono::nanoseconds::zero());
   m.frame_locked = false;
 
   m.points.reserve(speeds.speeds.size()*2);

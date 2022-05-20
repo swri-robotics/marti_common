@@ -66,7 +66,7 @@ class StoringSubscriberTest : public rclcpp::Node
 
   void initialize()
   {
-    sub_.setTimeout(rclcpp::Duration(1.0));
+    sub_.setTimeout(rclcpp::Duration(1, 0));
     sub_ = swri::Subscriber(*this, "odom", &msg_);
 
     diagnostic_updater_.setHardwareID("none");

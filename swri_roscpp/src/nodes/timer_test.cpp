@@ -81,7 +81,7 @@ class TimerTest : public rclcpp::Node
     // Do some work to give us a measurable time.
     int64_t fibonacci_index = this->get_parameter("fibonacci_index").as_int();
     size_t number = super_slow_fibonacci(fibonacci_index);
-    RCLCPP_INFO(this->get_logger(), "The %d-th number of the fibonacci sequence is %lu",
+    RCLCPP_INFO(this->get_logger(), "The %ld-th number of the fibonacci sequence is %lu",
              fibonacci_index, number);
   }
 
