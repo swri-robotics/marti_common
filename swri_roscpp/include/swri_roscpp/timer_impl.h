@@ -50,9 +50,9 @@ class TimerImpl
   WallTime tick_begin_wall_;
   rclcpp::Time tick_begin_normal_;
 
-  rclcpp::Duration total_periods_ = rclcpp::Duration(0, 0);
-  rclcpp::Duration min_period_ = rclcpp::Duration(0, 0);
-  rclcpp::Duration max_period_ = rclcpp::Duration(0, 0);
+  rclcpp::Duration total_periods_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
+  rclcpp::Duration min_period_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
+  rclcpp::Duration max_period_ = rclcpp::Duration(std::chrono::nanoseconds::zero());
 
   WallDuration total_durations_;
   WallDuration min_duration_;
@@ -129,7 +129,7 @@ class TimerImpl
     if (ticks_ < 2) {
       return rclcpp::Duration::max();
     } else {
-      return rclcpp::Duration(total_periods_.seconds() / (ticks_ - 1));
+      return rclcpp::Duration::from_seconds(total_periods_.seconds() / (ticks_ - 1));
     }
   }
   

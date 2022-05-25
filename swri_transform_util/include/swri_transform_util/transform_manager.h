@@ -110,6 +110,34 @@ namespace swri_transform_util
         Transform& transform) const;
 
     /**
+     * Get the Transform between two frames at a specified time
+     *
+     * This function gets the transform from source_frame to target_frame at
+     * the specified time and returns it as a swri_transform_util::Transform.
+     *
+     * The frame IDs for target_frame and source_frame can be either a frame id
+     * in the current TF tree or one of the special frames /UTM or /WGS84.
+     *
+     * This method waits for a 0.1 second timeout if the transform is not
+     * immediately available.
+     *
+     * @param[in] target_frame The TF (or special) frame id of the target
+     * @param[in] source_frame The TF (or special) frame id of the source
+     * @param[in] time         The requested time to request the transform.
+     *    rclcpp::Time(0, 0, RCL_ROS_TIME) means the most recent time for which a valid transform
+     *    is available.
+     * @param[out] transform   The transform requested. If the function returns
+     *    false, transform is not mutated.
+     * @return True if the transform is supported and available at the
+     *    requested time. False otherwise.
+     */
+    bool GetTransform(
+        const std::string& target_frame,
+        const std::string& source_frame,
+        const rclcpp::Time& time,
+        Transform& transform) const;
+
+    /**
      * Get the most recent Transform between two frames
      *
      * This function gets the most recent transform from source_frame to

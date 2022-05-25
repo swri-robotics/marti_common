@@ -221,6 +221,19 @@ namespace swri_transform_util
   bool TransformManager::GetTransform(
       const std::string& target_frame,
       const std::string& source_frame,
+      const rclcpp::Time& time,
+      Transform& transform) const
+  {
+    return GetTransform(
+      target_frame,
+      source_frame,
+      tf2::TimePoint(std::chrono::nanoseconds(time.nanoseconds())),
+      transform);
+  }
+
+  bool TransformManager::GetTransform(
+      const std::string& target_frame,
+      const std::string& source_frame,
       Transform& transform) const
   {
     return GetTransform(target_frame, source_frame, tf2::TimePointZero, transform);
