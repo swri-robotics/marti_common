@@ -41,7 +41,7 @@ namespace swri_transform_util
 {
   TransformManager::TransformManager(
     rclcpp::Node::SharedPtr node,
-    std::shared_ptr<tf2_ros::Buffer> tf_buffer = nullptr) :
+    std::shared_ptr<tf2_ros::Buffer> tf_buffer) :
     node_(node),
     tf_buffer_(nullptr)
   {
@@ -72,7 +72,7 @@ namespace swri_transform_util
 
     if (tf_buffer)
     {
-      Initialize(tf_buffer)
+      Initialize(tf_buffer);
     }
   }
 
