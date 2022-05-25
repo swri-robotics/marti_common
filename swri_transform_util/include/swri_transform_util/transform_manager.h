@@ -67,7 +67,9 @@ namespace swri_transform_util
   class TransformManager
   {
   public:
-    explicit TransformManager(rclcpp::Node::SharedPtr node);
+    explicit TransformManager(
+        rclcpp::Node::SharedPtr node,
+        std::shared_ptr<tf2_ros::Buffer> tf_buffer = nullptr);
 
     /**
      * Initialize the TransformManager with a tf2_ros::Buffer

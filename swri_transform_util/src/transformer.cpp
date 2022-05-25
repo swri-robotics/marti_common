@@ -42,8 +42,8 @@ namespace swri_transform_util
       const std::shared_ptr<LocalXyWgs84Util> xy_util)
   {
     tf_buffer_ = tf;
-    initialized_ = Initialize();
     local_xy_util_ = xy_util;
+    initialized_ = Initialize();
   }
 
   bool Transformer::Initialize()

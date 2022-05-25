@@ -39,8 +39,11 @@
 
 namespace swri_transform_util
 {
-  TransformManager::TransformManager(rclcpp::Node::SharedPtr node) :
-    node_(node)
+  TransformManager::TransformManager(
+    rclcpp::Node::SharedPtr node,
+    std::shared_ptr<tf2_ros::Buffer> tf_buffer) :
+    node_(node),
+    tf_buffer_(nullptr)
   {
     transformers_.clear();
     std::vector<std::shared_ptr<Transformer> > transformers;
@@ -66,10 +69,21 @@ namespace swri_transform_util
         }
       }
     }
+
+    if (tf_buffer)
+    {
+      Initialize(tf_buffer);
+    }
   }
 
   void TransformManager::Initialize(std::shared_ptr<tf2_ros::Buffer> tf_buffer)
   {
+    if (!tf_buffer)
+    {
+      RCLCPP_ERROR(node_->get_logger(),
+        "[transform_manager]: Must initialize transform manager with valid TF buffer");
+      return;
+    }
     tf_buffer_ = tf_buffer;
 
     local_xy_util_ = std::make_shared<LocalXyWgs84Util>(node_);
@@ -101,7 +115,8 @@ namespace swri_transform_util
 
     if (!tf_buffer_)
     {
-      RCLCPP_WARN(node_->get_logger(), "[transform_manager]: TF listener not initialized.");
+      RCLCPP_WARN(node_->get_logger(),
+        "[transform_manager]: Transform buffer not initialized.");
       return false;
     }
 
@@ -237,6 +252,8 @@ namespace swri_transform_util
 
     if (!tf_buffer_)
     {
+      RCLCPP_WARN(node_->get_logger(),
+        "[transform_manager]: Transform buffer not initialized.");
       return false;
     }
 
@@ -284,7 +301,8 @@ namespace swri_transform_util
       RCLCPP_WARN(
         node_->get_logger(),
         "[transform_manager]: No transformer for transforming '%s' to '%s'."
-        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        " If '%s' is a /tf frame, it may not have been broadcast recently,"
+        " or you may not have an active transform listener.",
         source.c_str(), target.c_str(), source.c_str());
 
       return false;
@@ -296,7 +314,8 @@ namespace swri_transform_util
       RCLCPP_WARN(
         node_->get_logger(),
         "[transform_manager]: No transformer for transforming '%s' to '%s'."
-        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        " If '%s' is a /tf frame, it may not have been broadcast recently,"
+        " or you may not have an active transform listener.",
         source.c_str(), target.c_str(), target.c_str());
 
       return false;
@@ -325,7 +344,12 @@ namespace swri_transform_util
       geometry_msgs::msg::TransformStamped& transform) const
   {
     if (!tf_buffer_)
+    {
+      RCLCPP_WARN(
+        node_->get_logger(),
+        "[transform_manager]: Attempted to get transform, but transform buffer is not valid");
       return false;
+    }
 
     bool has_transform = false;
     try
