@@ -316,10 +316,13 @@ class OriginManager(object):
         """
         self._publish_diagnostic()
         self._publish_identity_tf()
-        self._publish_origin()
 
     def start(self):
         """
         Creates a timer that periodically publishes our messages.
         """
+        # Publish the identity transform and then the origin once
+        self.publish_messages()
+        self._publish_origin()
+        # Periodically publish the identity transform and diagnostics
         self.timer = self.node.create_timer(1.0, self.publish_messages)
