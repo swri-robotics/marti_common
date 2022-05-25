@@ -301,7 +301,8 @@ namespace swri_transform_util
       RCLCPP_WARN(
         node_->get_logger(),
         "[transform_manager]: No transformer for transforming '%s' to '%s'."
-        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        " If '%s' is a /tf frame, it may not have been broadcast recently,"
+        " or you may not have an active transform listener.",
         source.c_str(), target.c_str(), source.c_str());
 
       return false;
@@ -313,7 +314,8 @@ namespace swri_transform_util
       RCLCPP_WARN(
         node_->get_logger(),
         "[transform_manager]: No transformer for transforming '%s' to '%s'."
-        " If '%s' is a /tf frame, it may not have been broadcast recently.",
+        " If '%s' is a /tf frame, it may not have been broadcast recently,"
+        " or you may not have an active transform listener.",
         source.c_str(), target.c_str(), target.c_str());
 
       return false;
