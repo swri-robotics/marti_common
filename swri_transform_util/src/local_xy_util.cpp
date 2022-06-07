@@ -107,9 +107,11 @@ namespace swri_transform_util
   void LocalXyWgs84Util::ResetInitialization()
   {
     std::string type;
+    rclcpp::QoS latching_qos(1);
+    latching_qos.transient_local();
     pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
         "/local_xy_origin",
-        1,
+        latching_qos,
         std::bind(&LocalXyWgs84Util::HandlePoseStamped, this, std::placeholders::_1));
     initialized_ = false;
   }
