@@ -71,10 +71,10 @@ namespace swri_transform_util
 
   void TransformManager::Initialize(boost::shared_ptr<tf::TransformListener> tf)
   {
-    if (tf == nullptr)
+    if (!tf)
     {
-      ROS_ERROR("Transform manager intialized with null tranform listener");
-      tf = boost::make_shared<tf::TransformListener>();
+      ROS_ERROR("Must initialize transform manager with a valid (not null) transform listener.");
+      return;
     }
     tf_listener_ = tf;
 

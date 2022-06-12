@@ -110,7 +110,7 @@ namespace swri_transform_util
     if (local_xy_util_->Initialized())
     {
       std::string local_xy_frame = local_xy_util_->Frame();
-      if (tf_listener_ == nullptr)
+      if (!tf_listener_)
       {
         ROS_WARN("Cannot initialize a Wgs84Transformer with an invalid transform listener.");
         initialized_ = false;
