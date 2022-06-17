@@ -153,7 +153,7 @@ public:
   void DoStuff()
   {
     swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
-    client.initialize(*this, swri_roscpp::topic_name, "test_client");
+    client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
 
     int checks = 0;
     // Wait up to 20s for the server to exist (it should be much faster than that)
