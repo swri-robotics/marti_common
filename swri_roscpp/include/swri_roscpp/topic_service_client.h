@@ -33,9 +33,6 @@
 #include <map>
 #include <mutex>
 
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 
 using namespace std::chrono_literals;
@@ -73,11 +70,21 @@ public:
                 const std::string &client_name = "")
   {
     node_ = node;
-    //Converts using string stream instead of to_string so non C++ 11 nodes won't fail
-    boost::uuids::random_generator gen;
-    boost::uuids::uuid u = gen();
-    std::string random_str = boost::uuids::to_string(u);
-    name_ = client_name.length() ? client_name : (node_->get_name() + random_str);
+    // Generate a quasi-random set of service names if the user did not
+    // provide values. std::string::compare() returns 0 if both strings
+    // have the same value. This is imperfect, but unless someone creates
+    // the same service call at exactly the same time using a multithreaded node,
+    // this should be safe
+    if (client_name.compare("") == 0)
+    {
+      auto current_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(
+        std::chrono::steady_clock::now()).time_since_epoch().count();
+      name_ = node_->get_name() + std::to_string(current_time);
+    }
+    else
+    {
+      name_ = client_name;
+    }
     service_name_ = service;
 
     request_pub_ = node_->create_publisher<MReq>(service + "/request", 10);
