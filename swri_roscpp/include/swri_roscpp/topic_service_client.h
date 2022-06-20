@@ -31,8 +31,8 @@
 
 #include <chrono>
 #include <map>
+#include <mutex>
 
-#include <boost/thread/mutex.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -46,7 +46,7 @@ template<class MReq, class MRes>
 class TopicServiceClientRaw
 {
 private:
-  boost::mutex request_lock_;
+  std::mutex request_lock_;
   std::shared_ptr<rclcpp::Subscription<MRes> > response_sub_;
   std::shared_ptr<rclcpp::Publisher<MReq> > request_pub_;
   std::shared_ptr<MRes> response_;
@@ -130,7 +130,7 @@ public:
 
   bool call(MReq& request, MRes& response)
   {
-    boost::mutex::scoped_lock scoped_lock(request_lock_);
+    std::lock_guard<std::mutex> scoped_lock(request_lock_);
 
     // block for response
     request.srv_header.stamp = node_->now();
