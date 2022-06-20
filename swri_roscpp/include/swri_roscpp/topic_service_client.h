@@ -51,19 +51,19 @@ private:
   std::shared_ptr<rclcpp::Publisher<MReq> > request_pub_;
   std::shared_ptr<MRes> response_;
 
-  rclcpp::Duration timeout_;
+  std::chrono::nanoseconds timeout_;
   std::string name_;
   std::string service_name_;
-  bool external_spin_;
+  bool internal_spin_;
 
   int sequence_;
 
 public:
-  TopicServiceClientRaw(bool external_spin=false) :
-    timeout_(std::chrono::duration<float>(4.0)),
+  TopicServiceClientRaw(bool internal_spin=true) :
+    timeout_(std::chrono::seconds(4)),
     sequence_(0),
     node_(nullptr),
-    external_spin_(external_spin)
+    internal_spin_(internal_spin)
   {
 
   }
@@ -118,6 +118,10 @@ public:
       {
         time_to_wait = timeout - (std::chrono::steady_clock::now() - start);
         rclcpp::sleep_for(std::chrono::milliseconds(2));
+        if (internal_spin_)
+        {
+          rclcpp::spin_some(node_->shared_from_this());
+        }
       }
     } while (time_to_wait > std::chrono::nanoseconds(0));
 
@@ -140,11 +144,37 @@ public:
     response_.reset();
     request_pub_->publish(request);
 
-    // Wait until we get a response
-    while (!response_ && node_->now() - request.srv_header.stamp < timeout_)
+    // Inspired by process in ClientBase::wait_for_service_nanoseconds in client.cpp
+    auto start = std::chrono::steady_clock::now();
+    std::chrono::nanoseconds time_to_wait = std::chrono::nanoseconds::max();
+    if (timeout_ > std::chrono::nanoseconds(0))
     {
-      rclcpp::spin_some(node_->shared_from_this());
+      time_to_wait = timeout_ - (std::chrono::steady_clock::now() - start);
     }
+
+    // Wait until we get a response
+    do
+    {
+      if (!rclcpp::ok())
+      {
+        return false;
+      }
+
+      if (response_)
+      {
+        return true;
+      }
+
+      if (timeout_ > std::chrono::nanoseconds(0))
+      {
+        time_to_wait = timeout_ - (std::chrono::steady_clock::now() - start);
+        rclcpp::sleep_for(std::chrono::milliseconds(2));
+        if (internal_spin_)
+        {
+          rclcpp::spin_some(node_->shared_from_this());
+        }
+      }
+    } while (time_to_wait > std::chrono::nanoseconds(0));
 
     sequence_++;
     if (response_)
@@ -153,7 +183,10 @@ public:
       response_.reset();
       return response.srv_header.result;
     }
-    return false;
+    else
+    {
+      return false;
+    }
   }
 
   std::string getService()
@@ -163,7 +196,7 @@ public:
 
   bool exists()
   {
-    return request_pub_->get_subscription_count() > 0 && response_sub_->get_publisher_count() > 0;
+    return (request_pub_->get_subscription_count() > 0) && (response_sub_->get_publisher_count() > 0);
   }
 
   // The service server can output a console log message when the
@@ -197,7 +230,7 @@ private:
 };  // class TopicServiceClientRaw
 
 template<class MReq>
-class TopicServiceClient: public TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>
+class TopicServiceClient : public TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>
 {
 public:
   template<typename RepT = int64_t, typename RatioT = std::milli>
