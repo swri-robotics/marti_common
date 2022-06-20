@@ -155,7 +155,7 @@ public:
     swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
     client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
 
-    client.wait_for_service();
+    client.wait_for_service(std::chrono::seconds(1));
     ASSERT_TRUE(client.exists());
 
     swri_roscpp::msg::TestTopicService srv;
