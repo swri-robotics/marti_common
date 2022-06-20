@@ -155,14 +155,7 @@ public:
     swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
     client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
 
-    int checks = 0;
-    // Wait up to 20s for the server to exist (it should be much faster than that)
-    while (!client.exists() && checks < 20)
-    {
-      RCLCPP_INFO(this->get_logger(), "Waiting for server to exist...");
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      checks++;
-    }
+    client.wait_for_service();
     ASSERT_TRUE(client.exists());
 
     swri_roscpp::msg::TestTopicService srv;

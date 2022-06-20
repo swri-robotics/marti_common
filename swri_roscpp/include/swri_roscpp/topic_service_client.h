@@ -87,24 +87,45 @@ public:
 
   bool wait_for_service_nanoseconds(std::chrono::nanoseconds timeout)
   {
+    // Inspired by process in ClientBase::wait_for_service_nanoseconds in client.cpp
     auto start = std::chrono::steady_clock::now();
-    bool conn_available = false;
-    while (
-      !conn_available && 
-      (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start) < timeout) &&
-      rclcpp::ok() &&
-      (request_pub_->get_subscription_count() == 0 || response_sub_->get_publisher_count() == 0))
+
+    if (timeout == std::chrono::nanoseconds(0))
     {
-      rclcpp::sleep_for(std::chrono::milliseconds(2));
-      conn_available = true;
+      return false;
     }
 
-    RCLCPP_ERROR_EXPRESSION(
+    std::chrono::nanoseconds time_to_wait = std::chrono::nanoseconds::max();
+    if (timeout > std::chrono::nanoseconds(0))
+    {
+      time_to_wait = timeout - (std::chrono::steady_clock::now() - start);
+    }
+
+    do
+    {
+      if (!rclcpp::ok())
+      {
+        return false;
+      }
+
+      if ((request_pub_->get_subscription_count() > 0) &&
+        (response_sub_->get_publisher_count() > 0))
+      {
+        return true;
+      }
+
+      if (timeout > std::chrono::nanoseconds(0))
+      {
+        time_to_wait = timeout - (std::chrono::steady_clock::now() - start);
+        rclcpp::sleep_for(std::chrono::milliseconds(2));
+      }
+    } while (time_to_wait > std::chrono::nanoseconds(0));
+
+    RCLCPP_ERROR(
       node_->get_logger(),
-      !conn_available,
       "Topic service timeout exceeded");
 
-    return conn_available;
+    return false;
   }
 
   bool call(MReq& request, MRes& response)
