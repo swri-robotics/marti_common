@@ -127,7 +127,7 @@ public:
         rclcpp::sleep_for(std::chrono::milliseconds(2));
         if (internal_spin_)
         {
-          rclcpp::spin_some(node_->shared_from_this());
+          rclcpp::spin_some(node_);
         }
       }
     } while (time_to_wait > std::chrono::nanoseconds(0));
@@ -178,7 +178,7 @@ public:
         rclcpp::sleep_for(std::chrono::milliseconds(2));
         if (internal_spin_)
         {
-          rclcpp::spin_some(node_->shared_from_this());
+          rclcpp::spin_some(node_);
         }
       }
     } while (time_to_wait > std::chrono::nanoseconds(0));
