@@ -72,7 +72,7 @@ namespace swri_roscpp
   class TopicServiceHandler
   {
   public:
-    TopicServiceHandler(rclcpp::Node* node) :
+    TopicServiceHandler(rclcpp::Node::SharedPtr node) :
       node_(node),
       call_count_(0),
       error_(false),
@@ -101,7 +101,7 @@ namespace swri_roscpp
       return is_running_;
     }
 
-    rclcpp::Node* node_;
+    rclcpp::Node::SharedPtr node_;
     int call_count_;
     bool error_;
     bool is_running_;
@@ -117,11 +117,11 @@ public:
 
   void DoStuff()
   {
-    swri_roscpp::TopicServiceHandler handler(this);
+    swri_roscpp::TopicServiceHandler handler(this->shared_from_this());
 
     swri::TopicServiceServer server;
     server.initialize(
-        *this,
+        this->shared_from_this(),
         swri_roscpp::topic_name,
         &swri_roscpp::TopicServiceHandler::handleTopicServiceRequest,
         &handler);

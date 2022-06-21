@@ -54,17 +54,17 @@ public:
     node_(nullptr)
   {}
 
-  void initialize(rclcpp::Node &nh,
+  void initialize(rclcpp::Node::SharedPtr nh,
               const std::string &service,
               bool(T::*srv_func)(const MReq &, MRes &),
               T *obj)
   {
-    node_ = &nh;
+    node_ = nh;
     callback_ = srv_func;
     obj_ = obj;
 
-    response_pub_ = nh.create_publisher<MRes>(service + "/response", 10);
-    request_sub_ = nh.create_subscription<MReq>(service + "/request",
+    response_pub_ = node_->create_publisher<MRes>(service + "/response", 10);
+    request_sub_ = node_->create_subscription<MReq>(service + "/request",
         10, std::bind(&TopicServiceServerImpl<MReq, MRes, T>::request_callback, this, std::placeholders::_1));
   }
 
@@ -84,7 +84,7 @@ private:
     response_pub_->publish(response);
   }
 
-  rclcpp::Node* node_;
+  rclcpp::Node::SharedPtr node_;
 };
 
 class TopicServiceServer
@@ -97,7 +97,7 @@ class TopicServiceServer
   TopicServiceServer() = default;
 
   template<class MReq, class MRes, class T>
-  void initialize(rclcpp::Node &nh,
+  void initialize(rclcpp::Node::SharedPtr nh,
                 const std::string &service,
                 bool(T::*srv_func)(const MReq&, MRes&),
                 T *obj);
@@ -105,7 +105,7 @@ class TopicServiceServer
 
 template<class MReq, class MRes, class T>
 inline
-void TopicServiceServer::initialize(rclcpp::Node &nh,
+void TopicServiceServer::initialize(rclcpp::Node::SharedPtr nh,
                           const std::string &service,
                           bool(T::*srv_func)(const MReq&, MRes&),
                           T *obj)
