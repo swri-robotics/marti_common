@@ -37,8 +37,8 @@
 #include <swri_roscpp/topic_service_client.h>
 #include <swri_roscpp/topic_service_server.h>
 
+#include <chrono>
 #include <thread>
-
 
 namespace swri_roscpp
 {
@@ -115,7 +115,7 @@ public:
     rclcpp::Node("topic_service_server_test")
   {}
 
-  void DoStuff()
+  void RunTest()
   {
     swri_roscpp::TopicServiceHandler handler(this->shared_from_this());
 
@@ -129,9 +129,10 @@ public:
     RCLCPP_INFO(this->get_logger(), "Initializing server.");
 
     rclcpp::Rate rate(50);
-    rclcpp::Time start = this->now();
+    auto start = std::chrono::steady_clock::now();
+
     // Wait up to 20s for the client to complete; it should be much faster than that
-    while (handler.is_running_ && (this->now() - start) < std::chrono::seconds(20))
+    while (handler.is_running_ && (std::chrono::steady_clock::now() - start) < std::chrono::seconds(20))
     {
       // If the server encounters any errors, it will set error_ to true
       //ASSERT_FALSE(handler.error_);
@@ -150,12 +151,13 @@ public:
       rclcpp::Node("topic_service_client_test")
   {}
 
-  void DoStuff()
+  void RunTest()
   {
     swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
     client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
 
-    client.wait_for_service(std::chrono::seconds(1));
+    bool wait_works = client.wait_for_service(std::chrono::seconds(1));
+    ASSERT_TRUE(wait_works);
     ASSERT_TRUE(client.exists());
 
     swri_roscpp::msg::TestTopicService srv;
@@ -184,7 +186,7 @@ TEST(SwriRoscppTests, TopicServiceClient)
 {
   auto client = std::shared_ptr<TopicServiceClientTests>(new TopicServiceClientTests);
 
-  client->DoStuff();
+  client->RunTest();
 }
 
 int main(int argc, char** argv)
@@ -197,7 +199,7 @@ int main(int argc, char** argv)
 
   std::thread server_thread([&]()
   {
-    server->DoStuff();
+    server->RunTest();
   });
 
   int res = RUN_ALL_TESTS();
