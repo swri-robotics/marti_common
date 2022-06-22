@@ -115,7 +115,7 @@ public:
     rclcpp::Node("topic_service_server_test")
   {}
 
-  void RunTest()
+  void WaitForRequests()
   {
     swri_roscpp::TopicServiceHandler handler(this->shared_from_this());
 
@@ -151,6 +151,36 @@ public:
       rclcpp::Node("topic_service_client_test")
   {}
 
+  void RunWaitTest()
+  {
+    swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
+    client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
+
+    bool wait_works = client.wait_for_service(std::chrono::seconds(1));
+    ASSERT_TRUE(wait_works);
+    ASSERT_TRUE(client.exists());
+
+    swri_roscpp::msg::TestTopicService srv;
+
+    // Iterate through our tests values and test submitting all of them
+    for (size_t i = 0; i < swri_roscpp::value_count; i++)
+    {
+      srv.request.request_value = swri_roscpp::test_values[i];
+      bool result = client.call(srv);
+
+      if (i + 1 < swri_roscpp::value_count)
+      {
+        ASSERT_TRUE(result);
+      }
+      else
+      {
+        // The very last value should cause the server to return false
+        ASSERT_FALSE(result);
+      }
+      ASSERT_EQ(swri_roscpp::test_values[i], srv.response.response_value);
+    }
+  }
+
   void RunTest()
   {
     swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
@@ -184,9 +214,17 @@ public:
 
 TEST(SwriRoscppTests, TopicServiceClient)
 {
+  std::shared_ptr<TopicServiceServerTests> server(new TopicServiceServerTests);
+  // Start a node that will act as the sink for the publish and subscribe tests
+  std::thread server_thread([&]()
+  {
+    server->WaitForRequests();
+  });
+
   auto client = std::shared_ptr<TopicServiceClientTests>(new TopicServiceClientTests);
 
   client->RunTest();
+  server_thread.join();
 }
 
 int main(int argc, char** argv)
@@ -195,16 +233,7 @@ int main(int argc, char** argv)
 
   rclcpp::init(argc, argv);
 
-  std::shared_ptr<TopicServiceServerTests> server(new TopicServiceServerTests);
-
-  std::thread server_thread([&]()
-  {
-    server->RunTest();
-  });
-
   int res = RUN_ALL_TESTS();
-
-  server_thread.join();
 
   return res;
 }
