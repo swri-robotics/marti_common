@@ -141,7 +141,9 @@ public:
 
   bool call(MReq& request, MRes& response)
   {
+    RCLCPP_ERROR(node_->get_logger(), "Starting call");
     std::lock_guard<std::mutex> scoped_lock(request_lock_);
+    RCLCPP_ERROR(node_->get_logger(), "Locked mutex");
 
     // block for response
     request.srv_header.stamp = node_->now();
@@ -149,7 +151,9 @@ public:
     request.srv_header.sender = name_;
 
     response_.reset();
+    RCLCPP_ERROR(node_->get_logger(), "Publishing request");
     request_pub_->publish(request);
+    RCLCPP_ERROR(node_->get_logger(), "Request published");
 
     // Inspired by process in ClientBase::wait_for_service_nanoseconds in client.cpp
     auto start = std::chrono::steady_clock::now();
@@ -158,40 +162,49 @@ public:
     {
       time_to_wait = timeout_ - (std::chrono::steady_clock::now() - start);
     }
+    RCLCPP_ERROR(node_->get_logger(), "Calculated time to wait");
 
     // Wait until we get a response
     do
     {
+      RCLCPP_ERROR(node_->get_logger(), "Top of loop");
       if (!rclcpp::ok())
       {
+        RCLCPP_ERROR(node_->get_logger(), "rclcpp was not okay");
         return false;
       }
 
       if (response_)
       {
-        return true;
+        break;
       }
 
       if (timeout_ > std::chrono::nanoseconds(0))
       {
+        RCLCPP_ERROR(node_->get_logger(), "Updating time to wait");
         time_to_wait = timeout_ - (std::chrono::steady_clock::now() - start);
         rclcpp::sleep_for(std::chrono::milliseconds(2));
+        RCLCPP_ERROR(node_->get_logger(), "Done sleeping");
         if (internal_spin_)
         {
+          RCLCPP_ERROR(node_->get_logger(), "Spinning");
           rclcpp::spin_some(node_);
+          RCLCPP_ERROR(node_->get_logger(), "Done spinning");
         }
       }
-    } while (time_to_wait > std::chrono::nanoseconds(0));
+    } while (!response_ && (time_to_wait > std::chrono::nanoseconds(0)));
 
     sequence_++;
     if (response_)
     {
+      RCLCPP_ERROR(node_->get_logger(), "Got result, %u", response_->srv_header.result);
       response = *response_;
       response_.reset();
       return response.srv_header.result;
     }
     else
     {
+      RCLCPP_ERROR(node_->get_logger(), "No result");
       return false;
     }
   }
