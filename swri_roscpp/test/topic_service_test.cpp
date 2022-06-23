@@ -37,8 +37,8 @@
 #include <swri_roscpp/topic_service_client.h>
 #include <swri_roscpp/topic_service_server.h>
 
+#include <chrono>
 #include <thread>
-
 
 namespace swri_roscpp
 {
@@ -72,7 +72,7 @@ namespace swri_roscpp
   class TopicServiceHandler
   {
   public:
-    TopicServiceHandler(rclcpp::Node* node) :
+    TopicServiceHandler(rclcpp::Node::SharedPtr node) :
       node_(node),
       call_count_(0),
       error_(false),
@@ -101,7 +101,7 @@ namespace swri_roscpp
       return is_running_;
     }
 
-    rclcpp::Node* node_;
+    rclcpp::Node::SharedPtr node_;
     int call_count_;
     bool error_;
     bool is_running_;
@@ -115,13 +115,13 @@ public:
     rclcpp::Node("topic_service_server_test")
   {}
 
-  void DoStuff()
+  void WaitForRequests()
   {
-    swri_roscpp::TopicServiceHandler handler(this);
+    swri_roscpp::TopicServiceHandler handler(this->shared_from_this());
 
     swri::TopicServiceServer server;
     server.initialize(
-        *this,
+        this->shared_from_this(),
         swri_roscpp::topic_name,
         &swri_roscpp::TopicServiceHandler::handleTopicServiceRequest,
         &handler);
@@ -129,9 +129,10 @@ public:
     RCLCPP_INFO(this->get_logger(), "Initializing server.");
 
     rclcpp::Rate rate(50);
-    rclcpp::Time start = this->now();
+    auto start = std::chrono::steady_clock::now();
+
     // Wait up to 20s for the client to complete; it should be much faster than that
-    while (handler.is_running_ && (this->now() - start) < std::chrono::seconds(20))
+    while (handler.is_running_ && (std::chrono::steady_clock::now() - start) < std::chrono::seconds(20))
     {
       // If the server encounters any errors, it will set error_ to true
       //ASSERT_FALSE(handler.error_);
@@ -150,19 +151,32 @@ public:
       rclcpp::Node("topic_service_client_test")
   {}
 
-  void DoStuff()
+  void RunWaitTest()
   {
     swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
-    client.initialize(*this, swri_roscpp::topic_name, "test_client");
+    client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
 
-    int checks = 0;
-    // Wait up to 20s for the server to exist (it should be much faster than that)
-    while (!client.exists() && checks < 20)
-    {
-      RCLCPP_INFO(this->get_logger(), "Waiting for server to exist...");
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      checks++;
-    }
+    bool wait_works = client.wait_for_service(std::chrono::seconds(1));
+    ASSERT_TRUE(wait_works);
+  }
+
+  void RunExistTest()
+  {
+    swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
+    client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
+
+    bool wait_works = client.wait_for_service(std::chrono::seconds(1));
+    ASSERT_TRUE(wait_works);
+    ASSERT_TRUE(client.exists());
+  }
+
+  void RunCompleteTest()
+  {
+    swri::TopicServiceClient<swri_roscpp::msg::TestTopicService> client;
+    client.initialize(this->shared_from_this(), swri_roscpp::topic_name, "test_client");
+
+    bool wait_works = client.wait_for_service(std::chrono::seconds(1));
+    ASSERT_TRUE(wait_works);
     ASSERT_TRUE(client.exists());
 
     swri_roscpp::msg::TestTopicService srv;
@@ -187,11 +201,46 @@ public:
   }
 };
 
-TEST(SwriRoscppTests, TopicServiceClient)
+TEST(SwriRoscppTests, TopicServiceClientWait)
 {
-  auto client = std::shared_ptr<TopicServiceClientTests>(new TopicServiceClientTests);
+  std::shared_ptr<TopicServiceServerTests> server(new TopicServiceServerTests);
+  // Start a node that will act as the sink for the publish and subscribe tests
+  std::thread server_thread([&]()
+  {
+    server->WaitForRequests();
+  });
 
-  client->DoStuff();
+  auto client = std::shared_ptr<TopicServiceClientTests>(new TopicServiceClientTests);
+  client->RunWaitTest();
+  server_thread.join();
+}
+
+TEST(SwriRoscppTests, TopicServiceClientExists)
+{
+  std::shared_ptr<TopicServiceServerTests> server(new TopicServiceServerTests);
+  // Start a node that will act as the sink for the publish and subscribe tests
+  std::thread server_thread([&]()
+  {
+    server->WaitForRequests();
+  });
+
+  auto client = std::shared_ptr<TopicServiceClientTests>(new TopicServiceClientTests);
+  client->RunExistTest();
+  server_thread.join();
+}
+
+TEST(SwriRoscppTests, TopicServiceClientComplete)
+{
+  std::shared_ptr<TopicServiceServerTests> server(new TopicServiceServerTests);
+  // Start a node that will act as the sink for the publish and subscribe tests
+  std::thread server_thread([&]()
+  {
+    server->WaitForRequests();
+  });
+
+  auto client = std::shared_ptr<TopicServiceClientTests>(new TopicServiceClientTests);
+  client->RunCompleteTest();
+  server_thread.join();
 }
 
 int main(int argc, char** argv)
@@ -200,16 +249,7 @@ int main(int argc, char** argv)
 
   rclcpp::init(argc, argv);
 
-  std::shared_ptr<TopicServiceServerTests> server(new TopicServiceServerTests);
-
-  std::thread server_thread([&]()
-  {
-    server->DoStuff();
-  });
-
   int res = RUN_ALL_TESTS();
-
-  server_thread.join();
 
   return res;
 }
