@@ -37,7 +37,7 @@
 
 namespace swri_transform_util
 {
-  TransformManager::TransformManager()
+  TransformManager::TransformManager(boost::shared_ptr<tf::TransformListener> tf)
   {
     std::vector<boost::shared_ptr<Transformer> > transformers;
     transformers.push_back(boost::make_shared<Wgs84Transformer>());
@@ -62,6 +62,11 @@ namespace swri_transform_util
           transformers_[iter->first][iter->second[j]] = transformer;
         }
       }
+    }
+
+    if (tf)
+    {
+      Initialize(tf);
     }
   }
 
