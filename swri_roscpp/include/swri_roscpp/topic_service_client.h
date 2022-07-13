@@ -240,10 +240,10 @@ template<class MReq>
 class TopicServiceClient : public TopicServiceClientRaw<typename MReq:: Request, typename MReq:: Response>
 {
 public:
-  template<typename RepT = int64_t, typename RatioT = std::milli>
+  template<typename RepT = int64_t, typename RatioT = std::nano>
   bool
   wait_for_service(
-    std::chrono::duration<RepT, RatioT> timeout = std::chrono::duration(std::chrono::nanoseconds(1s)))
+    std::chrono::duration<RepT, RatioT> timeout = std::chrono::duration<RepT, RatioT>(std::chrono::nanoseconds(1s)))
   {
     return TopicServiceClientRaw<typename MReq::Request, typename MReq::Response>::wait_for_service_nanoseconds(
       std::chrono::duration_cast<std::chrono::nanoseconds>(timeout));

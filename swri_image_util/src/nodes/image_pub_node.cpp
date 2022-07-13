@@ -48,7 +48,7 @@ namespace swri_image_util
     explicit ImagePubNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("image_pub", options)
     {
-      this->declare_parameter<std::string>("image_file");
+      this->declare_parameter<std::string>("image_file", "");
       this->declare_parameter<std::string>("mode", sensor_msgs::image_encodings::BGR8);
       this->declare_parameter<double>("rate", 1);
 
