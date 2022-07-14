@@ -56,20 +56,22 @@ private:
   int sequence_;
 
 public:
-  TopicServiceClientRaw(bool internal_spin=true) :
+  TopicServiceClientRaw() :
     timeout_(std::chrono::seconds(4)),
     sequence_(0),
     node_(nullptr),
-    internal_spin_(internal_spin)
+    internal_spin_(true)
   {
 
   }
 
   void initialize(rclcpp::Node::SharedPtr node,
                 const std::string &service,
-                const std::string &client_name = "")
+                const std::string &client_name = "",
+                bool internal_spin = true)
   {
     node_ = node;
+    internal_spin_ = internal_spin;
     // Generate a quasi-random set of service names if the user did not
     // provide values. std::string::compare() returns 0 if both strings
     // have the same value. This is imperfect, but unless someone creates
