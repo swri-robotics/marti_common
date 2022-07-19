@@ -101,7 +101,9 @@ class Subscriber
   
   Subscriber& operator=(const Subscriber &other);
 
-  virtual ~Subscriber();
+  virtual ~Subscriber()
+  {
+  }
 
   // Reset all statistics, including message and timeout counts.
   void resetStatistics();
@@ -274,11 +276,6 @@ Subscriber& Subscriber::operator=(const Subscriber &other)
   impl_->setTimeout(new_timeout);
 
   return *this;
-}
-
-Subscriber::~Subscriber()
-{
-
 }
 
 inline
