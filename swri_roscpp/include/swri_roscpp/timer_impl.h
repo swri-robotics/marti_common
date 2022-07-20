@@ -92,6 +92,11 @@ class TimerImpl
     resetStatistics();
   }
 
+  virtual ~TimerImpl()
+  {
+
+  }
+
   ros::Duration desiredPeriod() const
   {
     return desired_period_;

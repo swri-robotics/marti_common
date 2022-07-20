@@ -101,6 +101,10 @@ class Subscriber
   
   Subscriber& operator=(const Subscriber &other);
 
+  virtual ~Subscriber()
+  {
+  }
+
   // Reset all statistics, including message and timeout counts.
   void resetStatistics();
 
