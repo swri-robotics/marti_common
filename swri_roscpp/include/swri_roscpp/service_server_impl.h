@@ -67,6 +67,11 @@ class ServiceServerImpl
   {
   }
 
+  virtual ~ServiceServerImpl()
+  {
+
+  }
+
   void resetStatistics()
   {
     total_stats_.reset();
