@@ -15,5 +15,6 @@
   <buildtool_depend>pkg-config</buildtool_depend>
   <depend>boost</depend>
   <depend>yaml-cpp</depend>
+  <depend>roscpp</depend>
 </package>
 

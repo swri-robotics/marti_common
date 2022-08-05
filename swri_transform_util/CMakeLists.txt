@@ -70,6 +70,14 @@ include_directories(SYSTEM
   ${PROJ_INCLUDE_DIRS}
 )
 
+function(set_cxx_props targ)
+  if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
+    set_target_properties(${targ} PROPERTIES
+      CXX_STANDARD 11
+      CXX_STANDARD_REQUIRED ON)
+  endif()
+endfunction()
+
 add_library(${PROJECT_NAME}
   src/georeference.cpp
   src/local_xy_util.cpp
@@ -92,6 +100,7 @@ target_link_libraries(${PROJECT_NAME}
   opencv_imgproc
   opencv_video
 )
+set_cxx_props(${PROJECT_NAME})
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 
 add_library(${PROJECT_NAME}_nodelets
@@ -99,31 +108,39 @@ add_library(${PROJECT_NAME}_nodelets
   src/nodelets/gps_transform_publisher.cpp
   src/nodelets/object_transformer.cpp)
 target_link_libraries(${PROJECT_NAME}_nodelets ${catkin_LIBRARIES} ${PROJECT_NAME})
-set_target_properties(${PROJECT_NAME}_nodelets PROPERTIES COMPILE_FLAGS "-std=c++11 -D__STDC_FORMAT_MACROS")
+set_cxx_props(${PROJECT_NAME}_nodelets)
+target_compile_definitions(${PROJECT_NAME}_nodelets PRIVATE "-D__STDC_FORMAT_MACROS") 
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
+set_cxx_props(lat_lon_tf_echo)
 
 swri_nodelet_add_node(gps_transform_publisher ${PROJECT_NAME} GpsTransformPublisher)
 target_link_libraries(gps_transform_publisher ${PROJECT_NAME}_nodelets ${catkin_LIBRARIES})
+set_cxx_props(gps_transform_publisher)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
 
   add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
   target_link_libraries(test_local_xy_util ${PROJECT_NAME})
+  set_cxx_props(test_local_xy_util)
 
   add_rostest_gtest(test_utm_util launch/utm_util.test test/test_utm_util.cpp)
   target_link_libraries(test_utm_util ${PROJECT_NAME})
+  set_cxx_props(test_utm_util)
 
   add_rostest_gtest(test_transform_manager launch/transform_manager.test test/test_transform_manager.cpp)
   target_link_libraries(test_transform_manager ${PROJECT_NAME})
+  set_cxx_props(test_transform_manager)
 
   add_rostest_gtest(test_georeference launch/georeference.test test/test_georeference.cpp)
   target_link_libraries(test_georeference ${PROJECT_NAME})
+  set_cxx_props(test_georeference)
 
   add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
   target_link_libraries(test_transform_util ${PROJECT_NAME})
+  set_cxx_props(test_transform_util)
 
   add_rostest(test/initialize_invalid_gps.test)
   add_rostest(test/initialize_invalid_navsat.test)

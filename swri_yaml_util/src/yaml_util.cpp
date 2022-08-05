@@ -175,10 +175,10 @@ namespace swri_yaml_util
     #endif  // YAMLCPP_OLD_API
   }
   
-  std::auto_ptr<YAML::Node> Clone(const YAML::Node& node)
+  YamlNodePtr Clone(const YAML::Node& node)
   {
     #ifndef YAMLCPP_OLD_API
-      return std::auto_ptr<YAML::Node>(new YAML::Node(YAML::Clone(node)));
+      return YamlNodePtr(new YAML::Node(YAML::Clone(node)));
     #else
       return node.Clone();
     #endif  // YAMLCPP_OLD_API
