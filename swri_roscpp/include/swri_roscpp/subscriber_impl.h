@@ -140,6 +140,10 @@ class SubscriberImpl
     resetStatistics();
   }
 
+  virtual ~SubscriberImpl()
+  {
+  }
+
   const std::string& mappedTopic() const
   {
     return mapped_topic_;

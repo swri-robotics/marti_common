@@ -37,7 +37,7 @@
 
 namespace swri_transform_util
 {
-  TransformManager::TransformManager()
+  TransformManager::TransformManager(boost::shared_ptr<tf::TransformListener> tf)
   {
     std::vector<boost::shared_ptr<Transformer> > transformers;
     transformers.push_back(boost::make_shared<Wgs84Transformer>());
@@ -63,6 +63,11 @@ namespace swri_transform_util
         }
       }
     }
+
+    if (tf)
+    {
+      Initialize(tf);
+    }
   }
 
   TransformManager::~TransformManager()
@@ -71,6 +76,11 @@ namespace swri_transform_util
 
   void TransformManager::Initialize(boost::shared_ptr<tf::TransformListener> tf)
   {
+    if (!tf)
+    {
+      ROS_ERROR("Must initialize transform manager with a valid (not null) transform listener.");
+      return;
+    }
     tf_listener_ = tf;
 
     local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
