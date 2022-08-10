@@ -58,7 +58,7 @@ namespace swri_transform_util
   {
     if (!initialized_)
     {
-      Initialize();
+      initialized_ = Initialize();
     }
 
     if (!initialized_)
