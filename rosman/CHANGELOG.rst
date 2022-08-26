@@ -2,8 +2,8 @@
 Changelog for package rosman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.15.1 (2022-08-26)
+-------------------
 * Merge branch 'master' into PR644
 * Merge pull request `#643 <https://github.com/swri-robotics/marti_common/issues/643>`_ from rookie80/rosman_check_improvement
   added xlmrpc support for rosman check, changed output for rosman check
