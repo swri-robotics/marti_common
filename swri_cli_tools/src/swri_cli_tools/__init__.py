@@ -38,7 +38,7 @@ class DocTopicReader:
         self.last_doc_msg = None
         # Setup a node to read topics with
         _check_master(self.rosmaster)
-        rospy.init_node('rosman', anonymous=True)
+        rospy.init_node('swri_cli_tools', anonymous=True)
 
     def doc_topic_callback(self, doc_msg):
         self.last_doc_msg = doc_msg
@@ -269,7 +269,7 @@ def get_documentation_publications(rosmaster, ros_sys_state=None):
             #print('node {0} with node namespace {1} publishes topic {2}'.format(n, node_namespace ,t))
     return doc_topics, doc_node_namespaces, doc_publisher_nodes
 
-def rosman_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
+def swri_cli_tools_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
     # The doc_node_namespaces are probably the more accurate "node" information for the documentation topic
     # since the doc_publisher nodes for a doc topic can be a nodelet manager
     documentation_info = get_documentation_publications(rosmaster)
@@ -280,13 +280,13 @@ def rosman_node(rosmaster, node_name, yaml=False, output_file=sys.stdout):
             node_documentation_found = True
     return node_documentation_found
 
-def rosman_node_fallback(rosmaster, node_name, yaml=False, output_file=sys.stdout):
+def swri_cli_tools_node_fallback(rosmaster, node_name, yaml=False, output_file=sys.stdout):
     # TODO figure out if we need to support other options in fallback?
     # if yaml:
-    #     print('YAML output not supported for rosman node fallback documentation!')
+    #     print('YAML output not supported for swri_cli_tools node fallback documentation!')
     #     yaml = False
     if output_file is not sys.stdout:
-        print('Output other than stdout not support for rosman node fallback documentation!')
+        print('Output other than stdout not support for swri_cli_tools node fallback documentation!')
         output_file = sys.stdout
 
     def topic_type(t, pub_topics):
@@ -374,7 +374,7 @@ def rosman_node_fallback(rosmaster, node_name, yaml=False, output_file=sys.stdou
         topic_reader.write_node_documentation(output_file)
 
 
-def rosman_topic(rosmaster, topic):
+def swri_cli_tools_topic(rosmaster, topic):
     # Find the desired topic in the list of publishers from the system state
     try:
         ros_sys_state = rosmaster.getSystemState()
@@ -419,7 +419,7 @@ def rosman_topic(rosmaster, topic):
     if topic_documentation_found == False:
         print('Could not find published documentation for topic: {t}'.format(t=topic))
 
-def rosman_param(rosmaster, param):
+def swri_cli_tools_param(rosmaster, param):
    param_documentation_found = False
    doc_topics, doc_node_namespaces, doc_publishers = get_documentation_publications(rosmaster)
    topic_reader = DocTopicReader(rosmaster)
@@ -433,7 +433,7 @@ def rosman_param(rosmaster, param):
    if param_documentation_found == False:
        print('Could not find published documentation for parameter: {p}'.format(p=param))
 
-def rosman_service(rosmaster, service):
+def swri_cli_tools_service(rosmaster, service):
     service_documentation_found = False
     doc_topics, _, _ = get_documentation_publications(rosmaster)
     topic_reader = DocTopicReader(rosmaster)
@@ -456,9 +456,9 @@ def rosman_service(rosmaster, service):
     if service_documentation_found == False:
         print('Could not find published documentation for service: {s}'.format(s=service))
 
-def _rosman_node_main(argv):
+def _swri_cli_tools_node_main(argv):
     """
-    Entry point for rosman node command
+    Entry point for swri_cli_tools node command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog node node1 [node2...]')
@@ -471,21 +471,21 @@ def _rosman_node_main(argv):
     if not args:
         parser.error('You must specify at least one node name')
 
-    ros_master = rosgraph.Master('/rosman')
+    ros_master = rosgraph.Master('/swri_cli_tools')
     if options.filename:
         with open(options.filename, 'a') as output_file:
             for node in args:
-                if not rosman_node(ros_master, node, yaml=options.yaml, output_file=output_file):
-                    rosman_node_fallback(ros_master, node, yaml=options.yaml, output_file=output_file)
+                if not swri_cli_tools_node(ros_master, node, yaml=options.yaml, output_file=output_file):
+                    swri_cli_tools_node_fallback(ros_master, node, yaml=options.yaml, output_file=output_file)
     else:
         # Write all to stdout
         for node in args:
-            if not rosman_node(ros_master, node, yaml=options.yaml):
-                rosman_node_fallback(ros_master, node, yaml=options.yaml)
+            if not swri_cli_tools_node(ros_master, node, yaml=options.yaml):
+                swri_cli_tools_node_fallback(ros_master, node, yaml=options.yaml)
 
-def _rosman_check_main(argv):
+def _swri_cli_tools_check_main(argv):
     """
-    Entry point for rosman check command
+    Entry point for swri_cli_tools check command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog node node1 [node2...]')
@@ -499,7 +499,7 @@ def _rosman_check_main(argv):
     if not args:
         parser.error('You must specify at least one node name')
 
-    ros_master = rosgraph.Master('/rosman')
+    ros_master = rosgraph.Master('/swri_cli_tools')
 
     # Write all to stdout
     for node in args:
@@ -596,71 +596,71 @@ def compare_param(rosmaster, node_name, yaml=False, output_file=sys.stdout, reve
         for param in undocumented_param:
             print("  " + param)
 
-def _rosman_topic_main(argv):
+def _swri_cli_tools_topic_main(argv):
     """
-    Entry point for rosman topics command
+    Entry point for swri_cli_tools topics command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog topics topic1 [topic2...]')
     (options, args) = parser.parse_args(args)
     
-    rosmaster = rosgraph.Master('/rosman')
+    rosmaster = rosgraph.Master('/swri_cli_tools')
     if not args:
         parser.error('You must specify at least one topic name')
     for topic in args:
-        rosman_topic(rosmaster, topic)
+        swri_cli_tools_topic(rosmaster, topic)
 
-def _rosman_param_main(argv):
+def _swri_cli_tools_param_main(argv):
     """
-    Entry point for rosman params command
+    Entry point for swri_cli_tools params command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog params param1 [param2...]')
     (options, args) = parser.parse_args(args)
 
-    rosmaster = rosgraph.Master('/rosman')
+    rosmaster = rosgraph.Master('/swri_cli_tools')
     if not args:
         parser.error('You must specify at least one param name')
     for param in args:
-        rosman_param(rosmaster, param)
+        swri_cli_tools_param(rosmaster, param)
 
-def _rosman_service_main(argv):
+def _swri_cli_tools_service_main(argv):
     """
-    Entry point for rosman services command
+    Entry point for swri_cli_tools services command
     """
     args = argv[2:]
     parser = OptionParser(usage='usage: %prog services service1 [service2...]')
     (options, args) = parser.parse_args(args)
 
-    rosmaster = rosgraph.Master('/rosman')
+    rosmaster = rosgraph.Master('/swri_cli_tools')
     if not args:
         parser.error('You must specify at least one service name')
     for serv in args:
-        rosman_service(rosmaster, serv)
+        swri_cli_tools_service(rosmaster, serv)
 
 def _tool_usage(return_error=True):
     """
-    Print the full usage information for the rosman tool.
+    Print the full usage information for the swri_cli_tools tool.
     @param return_error set to true to return from this printout with error code os.EX_USAGE, otherwise exit returning 0.
     """
-    print("""rosman is a command-line tool for printing documentation about nodes, topics, and parameters from a live or playback system.
+    print("""swri_cli_tools is a command-line tool for printing documentation about nodes, topics, and parameters from a live or playback system.
 
 Commands:
-\trosman node\tGet overview documentation for a running node
-\trosman topic\tGet documentation for a desired topic
-\trosman param\tGet documentation for a desired parameter
-\trosman service\tGet documentation about a desired service
+\tswri_cli_tools node\tGet overview documentation for a running node
+\tswri_cli_tools topic\tGet documentation for a desired topic
+\tswri_cli_tools param\tGet documentation for a desired parameter
+\tswri_cli_tools service\tGet documentation about a desired service
 
-Type rosman <command> -h for more detailed usage, e.g. 'rosman params -h'
+Type swri_cli_tools <command> -h for more detailed usage, e.g. 'swri_cli_tools params -h'
 """)
     if return_error:
         sys.exit(getattr(os, 'EX_USAGE', 1))
     else:
         sys.exit(0)
 
-def rosmanmain(argv=None):
+def swri_cli_tools_main(argv=None):
     """
-    Prints rosman main entrypoint.
+    Prints swri_cli_tools main entrypoint.
     @param argv: override sys.argv
     @param argv: [str]
     """
@@ -671,15 +671,15 @@ def rosmanmain(argv=None):
     try:
         command = argv[1]
         if command == 'node':
-            _rosman_node_main(argv)
+            _swri_cli_tools_node_main(argv)
         elif command == 'check':
-            _rosman_check_main(argv)
+            _swri_cli_tools_check_main(argv)
         elif command == 'topic':
-            _rosman_topic_main(argv)
+            _swri_cli_tools_topic_main(argv)
         elif command == 'param':
-            _rosman_param_main(argv)
+            _swri_cli_tools_param_main(argv)
         elif command == 'service':
-            _rosman_service_main(argv)
+            _swri_cli_tools_service_main(argv)
         elif command in ('-h', '--help'):
             _tool_usage(return_error=False)
         else:

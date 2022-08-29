@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import swri_cli_tools
+
+if __name__ == '__main__':
+    swri_cli_tools.swri_cli_tools_main()

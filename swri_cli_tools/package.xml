@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>rosman</name>
+  <name>swri_cli_tools</name>
   <version>2.15.1</version>
   <description>
 
-    rosman contains the rosman tool for introspecting ROS nodes
+    Tools for inspecting the ROS graph
 
   </description>
 
   <maintainer email="robert.brothers@swri.org">Robert Brothers</maintainer>
-  <maintainer email="matthew.bries@swri.org">Matt Bries</maintainer>
+  <author>Matt Bries</author>
 
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>

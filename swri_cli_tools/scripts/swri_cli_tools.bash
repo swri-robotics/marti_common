@@ -1,6 +1,6 @@
-#  Bash completion functions to support the rosman CLI
+#  Bash completion functions to support the SwRI command line tools
 
-function _complete_rosman
+function _complete_swri_cli_tools
 {
   local arg opts
   COMPREPLY=()
@@ -31,4 +31,4 @@ function _complete_rosman
   fi
 }
 
-complete -F "_complete_rosman" "rosman"
+complete -F "_complete_swri_cli_tools" "swri_cli_tools"
