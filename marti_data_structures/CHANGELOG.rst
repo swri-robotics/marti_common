@@ -2,6 +2,9 @@
 Changelog for package marti_data_structures
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.14.2 (2020-09-09)
 -------------------
 

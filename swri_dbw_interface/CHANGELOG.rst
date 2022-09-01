@@ -2,6 +2,9 @@
 Changelog for package swri_dbw_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.14.2 (2020-09-09)
 -------------------
 
