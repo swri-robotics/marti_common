@@ -2,8 +2,8 @@
 Changelog for package rosman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.15.2 (2022-09-01)
+-------------------
 * Renamed rosman package to swri_cli_tools. (`#682 <https://github.com/swri-robotics/marti_common/issues/682>`_)
 * Contributors: Robert Brothers
 
