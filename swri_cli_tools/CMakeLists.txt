@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(rosman)
+project(swri_cli_tools)
 
 set(RUN_DEPS
   marti_introspection_msgs
