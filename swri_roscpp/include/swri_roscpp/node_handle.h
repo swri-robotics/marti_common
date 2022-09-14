@@ -1046,6 +1046,42 @@ public:
     return nh_->nh_.advertise<M>(real_name, queue_size, false);
   }
 
+  // Advertising uses the public nh
+  template<typename M>
+  ros::Publisher advertise(
+      const std::string &topic,
+      uint32_t queue_size,
+      const ros::SubscriberStatusCallback &connect_cb,
+      const ros::SubscriberStatusCallback &disconnect_cb = ros::SubscriberStatusCallback(), 
+      const ros::VoidConstPtr &tracked_object = ros::VoidConstPtr(),
+      bool latch=false,
+      const std::string &description = "")
+  {
+    std::string real_topic_name = resolveName(topic);
+    const std::string resolved_name = nh_->nh_.resolveName(real_topic_name);
+    ROS_INFO("Publishing [%s] to '%s' from node %s.",
+        real_topic_name.c_str(),
+        resolved_name.c_str(),
+        nh_->node_name_.c_str());
+    if (nh_->enable_docs_)
+    {
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_topic_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = true;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+    ros::AdvertiseOptions ops;
+    ops.init<M>(real_topic_name, queue_size, connect_cb, disconnect_cb);
+    ops.tracked_object = tracked_object;
+    ops.latch = latch;
+    return nh_->nh_.advertise(ops);
+  }
+
   // Using class method callback.
   template<class T >
   ros::Timer createTimer(ros::Duration duration,
