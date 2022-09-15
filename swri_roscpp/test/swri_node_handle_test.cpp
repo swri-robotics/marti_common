@@ -33,12 +33,15 @@
 #include <swri_roscpp/node_handle.h>
 #include <std_msgs/Empty.h>
 
+#include <iostream>
+
 class SwriNodeHandleTest : public testing::Test
 {
 public:
   SwriNodeHandleTest() : nh_(ros::NodeHandle(), ros::NodeHandle("~"), "Testing the swri::NodeHandle")
   {
   }
+
 protected:
   void SetUp() override
   {
@@ -79,15 +82,25 @@ TEST_F(SwriNodeHandleTest, testConnectCbAdvertise)
       "test subscribe");
   spinNumTimes(2);
   EXPECT_TRUE(connection_called);
+
+  ASSERT_TRUE(nh_.getEnableDocs());
+  auto doc_msg = nh_.getDocMsg();
+
+  bool found_test_topic=false;
+  for (const auto &topic : doc_msg.topics)
+  {
+    if (topic.name == "test")
+    {
+      found_test_topic = true;
+    }
+  }
+  EXPECT_TRUE(found_test_topic);
 }
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "swri_node_handle_test");
   testing::InitGoogleTest(&argc, argv);
-
-  ros::start();
   int result = RUN_ALL_TESTS();
-  ros::shutdown();
   return result;
 }

@@ -148,6 +148,32 @@ public:
 
   operator void*() const { return nh_ ? (void*)1 : (void*)0; }
 
+  // Get node handles internal setting for wether or not it is generating docs
+  inline bool getEnableDocs() const 
+  { 
+    if (nh_)
+    {
+      return nh_->enable_docs_; 
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  // Get a copy of the current documentation message from the node handle
+  inline marti_introspection_msgs::NodeInfo getDocMsg() const 
+  { 
+    if (nh_)
+    {
+      return nh_->info_msg_;
+    }
+    else
+    {
+      return marti_introspection_msgs::NodeInfo();
+    }
+  }
+
   // Gets a handle relative the base swri::NodeHandle
   swri::NodeHandle getNodeHandle(const std::string& ns,
                                  const std::string& group = "")
