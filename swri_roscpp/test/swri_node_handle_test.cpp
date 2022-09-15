@@ -33,8 +33,6 @@
 #include <swri_roscpp/node_handle.h>
 #include <std_msgs/Empty.h>
 
-#include <iostream>
-
 class SwriNodeHandleTest : public testing::Test
 {
 public:
@@ -82,6 +80,38 @@ TEST_F(SwriNodeHandleTest, testConnectCbAdvertise)
       "test subscribe");
   spinNumTimes(2);
   EXPECT_TRUE(connection_called);
+
+  ASSERT_TRUE(nh_.getEnableDocs());
+  auto doc_msg = nh_.getDocMsg();
+
+  bool found_test_topic=false;
+  for (const auto &topic : doc_msg.topics)
+  {
+    if (topic.name == "test")
+    {
+      found_test_topic = true;
+    }
+  }
+  EXPECT_TRUE(found_test_topic);
+}
+
+TEST_F(SwriNodeHandleTest, testAdvertiseOptions)
+{
+  bool cb_called=false;
+  auto empty_cb = [&cb_called](const std_msgs::EmptyConstPtr &msg){ cb_called = true; };
+  // Don't use swri nodehandle to only have 1 "test" topic doc in documentation message
+  ros::NodeHandle public_nh;
+  ros::Subscriber empty_sub = public_nh.subscribe<std_msgs::Empty>("test", 1, empty_cb);
+
+  ros::AdvertiseOptions ops;
+  ops.init<std_msgs::Empty>("test", 1, ros::SubscriberStatusCallback(), ros::SubscriberStatusCallback());
+  ops.tracked_object = ros::VoidConstPtr();
+  ops.latch = false;
+  ros::Publisher empty_pub = nh_.advertise(ops);
+  empty_pub.publish(boost::make_shared<std_msgs::Empty>());
+
+  spinNumTimes(3);
+  EXPECT_TRUE(cb_called);
 
   ASSERT_TRUE(nh_.getEnableDocs());
   auto doc_msg = nh_.getDocMsg();
