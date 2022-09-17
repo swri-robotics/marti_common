@@ -35,7 +35,7 @@
 #include <swri_transform_util/utm_transformer.h>
 #include <swri_transform_util/wgs84_transformer.h>
 
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 namespace swri_transform_util
 {

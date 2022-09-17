@@ -22,7 +22,7 @@ find_package(swri_opencv_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
 
-find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(OpenCV REQUIRED COMPONENTS core stitching)
 
 find_package(Boost REQUIRED COMPONENTS filesystem system random)
 
@@ -52,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
   Boost::system
   Eigen3::Eigen
   opencv_core
+  opencv_stitching
 )
 ament_target_dependencies(${PROJECT_NAME}
   camera_calibration_parsers
@@ -62,6 +63,7 @@ ament_target_dependencies(${PROJECT_NAME}
   message_filters
   nav_msgs
   rclcpp
+  rclcpp_components
   std_msgs
   swri_geometry_util
   swri_math_util

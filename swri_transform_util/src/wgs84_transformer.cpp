@@ -29,8 +29,7 @@
 
 #include <swri_transform_util/wgs84_transformer.h>
 
-#include <tf2/utils.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>

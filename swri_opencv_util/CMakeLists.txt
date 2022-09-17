@@ -31,7 +31,6 @@ target_link_libraries(${PROJECT_NAME}
   opencv_imgproc
   opencv_highgui
 )
-target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 ament_target_dependencies(${PROJECT_NAME}

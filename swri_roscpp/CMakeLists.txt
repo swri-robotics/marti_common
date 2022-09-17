@@ -16,7 +16,28 @@ find_package(std_srvs REQUIRED)
 
 # TODO pjr What to do about swri_roscpp-extras.cmake?
 
-### Build Test Node ###
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(${PROJECT_NAME} INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+)
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT "export_${PROJECT_NAME}"
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib
+  INCLUDES DESTINATION include
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+)
+
+ament_export_targets("export_${PROJECT_NAME}")
+
+# ### Build Test Node ###
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 target_include_directories(subscriber_test
   PUBLIC
@@ -77,34 +98,37 @@ ament_target_dependencies(timer_test
   std_srvs
   )
 
-if (BUILD_TESTING)
-  find_package(ament_cmake_gtest REQUIRED)
-  find_package(Boost REQUIRED COMPONENTS system)
+# if (BUILD_TESTING)
+#   find_package(ament_cmake_gtest REQUIRED)
+#   find_package(Boost REQUIRED COMPONENTS system)
 
-  rosidl_generate_interfaces(${PROJECT_NAME}
-    msg/TestTopicServiceRequest.msg
-    msg/TestTopicServiceResponse.msg
-    DEPENDENCIES std_msgs marti_common_msgs
-  )
+#   rosidl_generate_interfaces(${PROJECT_NAME}
+#     msg/TestTopicServiceRequest.msg
+#     msg/TestTopicServiceResponse.msg
+#     DEPENDENCIES std_msgs marti_common_msgs
+#   )
 
-  ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
-  rosidl_target_interfaces(topic_service_test_server ${PROJECT_NAME} "rosidl_typesupport_cpp")
-  target_link_libraries(topic_service_test_server
-    Boost::system
-    swri_roscpp__rosidl_typesupport_cpp
-  )
-  ament_target_dependencies(topic_service_test_server
-    rclcpp
-    marti_common_msgs
-  )
-  target_include_directories(topic_service_test_server
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-  )
-endif()
+#   ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
+#   rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+#   target_link_libraries(topic_service_test_server "${cpp_typesupport_target}")
+#   target_link_libraries(topic_service_test_server
+#     Boost::system
+#     swri_roscpp__rosidl_typesupport_cpp
+#   )
+#   ament_target_dependencies(topic_service_test_server
+#     rclcpp
+#     marti_common_msgs
+#   )
+#   target_include_directories(topic_service_test_server
+#     PUBLIC
+#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#     $<INSTALL_INTERFACE:include>
+#   )
+# endif()
 
 ### Install Test Node and Headers ###
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+
 install(TARGETS subscriber_test
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
