@@ -29,13 +29,11 @@
 
 #include <stdint.h>
 
+#include <swri_geometry_util/geometry_util.h>
 #include <swri_geometry_util/intersection.h>
 
 #define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
-#include <geos/geom/CoordinateArraySequence.h>
-#include <geos/geom/GeometryFactory.h>
-#include <geos/geom/Polygon.h>
-#include <geos/util/TopologyException.h>
+#include <geos_c.h>
 #undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
@@ -177,35 +175,22 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)
   {
+    if (a.size() < 3 || b.size() < 3)
+    {
+      return 0;
+    }
+
     // Create GEOS polygon from vertices in vector a.
-    geos::geom::CoordinateArraySequence* a_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < a.size(); i++)
-    {
-      a_coords->add(geos::geom::Coordinate(a[i][0], a[i][1]));
-    }
-    a_coords->add(a_coords->front());
+    GEOSGeometry* a_polygon = VectorToPolygon(a);
+    GEOSNormalize(a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b);
+    GEOSNormalize(b_polygon);
 
-    geos::geom::LinearRing* a_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(a_coords);
-    geos::geom::Polygon* a_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(a_ring, 0);
-    a_polygon->normalize();
-
-    // Create GEOS polygon from vertices in vector b.
-    geos::geom::CoordinateArraySequence* b_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < b.size(); i++)
-    {
-      b_coords->add(geos::geom::Coordinate(b[i][0], b[i][1]));
-    }
-    b_coords->add(b_coords->front());
-
-    geos::geom::LinearRing* b_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(b_coords);
-    geos::geom::Polygon* b_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(b_ring, 0);
-    b_polygon->normalize();
-
-    bool intersects =  a_polygon->intersects(b_polygon);
+    bool intersects = (GEOSIntersects(a_polygon, b_polygon) == 1);
 
     // Free polygon objects.
-    delete a_polygon;
-    delete b_polygon;
+    GEOSGeom_destroy(a_polygon);
+    GEOSGeom_destroy(b_polygon);
 
     return intersects;
   }
@@ -220,45 +205,24 @@ namespace swri_geometry_util
     }
 
     double area = 0;
-    // Create GEOS polygon from vertices in vector a.
-    geos::geom::CoordinateArraySequence* a_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < a.size(); i++)
+    GEOSGeometry* a_polygon = VectorToPolygon(a);
+    GEOSNormalize(a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b);
+    GEOSNormalize(b_polygon);
+
+    GEOSGeometry* intersection = GEOSIntersection(a_polygon, b_polygon);
+
+    if (intersection != 0)
     {
-      a_coords->add(geos::geom::Coordinate(a[i][0], a[i][1]));
+      if (GEOSArea(intersection, &area) == 0)
+      {
+        area = 0;
+      }
     }
-    a_coords->add(a_coords->front());
-
-    geos::geom::LinearRing* a_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(a_coords);
-    geos::geom::Polygon* a_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(a_ring, 0);
-    a_polygon->normalize();
-
-    // Create GEOS polygon from vertices in vector b.
-    geos::geom::CoordinateArraySequence* b_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < b.size(); i++)
-    {
-      b_coords->add(geos::geom::Coordinate(b[i][0], b[i][1]));
-    }
-    b_coords->add(b_coords->front());
-
-    geos::geom::LinearRing* b_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(b_coords);
-    geos::geom::Polygon* b_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(b_ring, 0);
-    b_polygon->normalize();
-
-    try
-    {
-        if (a_polygon->intersects(b_polygon))
-        {
-          area = a_polygon->intersection(b_polygon)->getArea();
-        }
-    }
-    catch (const geos::util::TopologyException& e)
-    {
-        // TODO Fix this
-    }
-
     // Free polygon objects.
-    delete a_polygon;
-    delete b_polygon;
+    GEOSGeom_destroy(a_polygon);
+    GEOSGeom_destroy(b_polygon);
+    GEOSGeom_destroy(intersection);
 
     return area;
   }

@@ -194,4 +194,27 @@ namespace swri_geometry_util
     point = (x + y) / 2;
     return true;
   }
+
+  GEOSGeometry* VectorToPolygon(const std::vector<cv::Vect2d>& v)
+  {
+    // Create GEOS polygon from vector of verticies. Allocate one extra
+    // element so first and last coordinate are the same, closing the polygon
+    GEOSCoordSequence* coords = GEOSCoordSeq_create(v.size() + 1, 2);
+    for (size_t i = 0; i < v.size(); i++)
+    {
+      GEOSCoordSeq_setX(coords, i, v.at(i)[0]);
+      GEOSCoordSeq_setY(coords, i, v.at(i)[1]);
+    }
+
+    // Make the first and last coordinate the same to define a closed polygon
+    GEOSCoordSeq_setX(a_coords, v.size(), a.front()[0]);
+    GEOSCoordSeq_setY(a_coords, v.size(), a.front()[1]);
+
+
+    GEOSGeometry* a_ring = GEOSGeom_createLinearRing(a_coords);
+    GEOSGeometry* a_polygon = GEOSGeom_createPolygon(a_ring, 0);
+    GEOSNormalize(a_polygon);
+
+    return a_polygon;
+  }
 }

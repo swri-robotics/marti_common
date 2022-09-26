@@ -30,6 +30,7 @@
 #ifndef GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 #define GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 
+#include <geos_c.h>
 #include <opencv2/core/core.hpp>
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Vector3.h>
@@ -124,6 +125,8 @@ namespace swri_geometry_util
       const tf2::Vector3& b1,
       const tf2::Vector3& b2,
       tf2::Vector3& point);
+
+  GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v);
 }
 
 #endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_

@@ -24,7 +24,7 @@ add_library(${PROJECT_NAME} SHARED
   src/intersection.cpp
   src/polygon.cpp
 )
-target_compile_definitions(${PROJECT_NAME} PUBLIC "-DUSE_UNSTABLE_GEOS_CPP_API")
+
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
