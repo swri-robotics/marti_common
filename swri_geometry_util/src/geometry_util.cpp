@@ -27,6 +27,7 @@
 //
 // *****************************************************************************
 
+#include <rcpputils/asserts.hpp>
 #include <swri_geometry_util/geometry_util.h>
 
 namespace swri_geometry_util
@@ -199,7 +200,9 @@ namespace swri_geometry_util
   {
     // Create GEOS polygon from vector of verticies. Allocate one extra
     // element so first and last coordinate are the same, closing the polygon
-    GEOSCoordSequence* coords = GEOSCoordSeq_create(v.size() + 1, 2);
+    rcpputils::assert_true(v.size() > 0);
+    GEOSCoordSequence* coords = GEOSCoordSeq_create((unsigned int)(v.size() + 1), 2);
+    //rcpputils::assert_true(coords != 0);
     for (size_t i = 0; i < v.size(); i++)
     {
       GEOSCoordSeq_setX(coords, i, v.at(i)[0]);

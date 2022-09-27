@@ -28,6 +28,8 @@
 // *****************************************************************************
 
 #include <stdint.h>
+#include <stdio.h>  /* for printf */
+#include <stdarg.h> /* for va_list */
 
 #include <swri_geometry_util/geometry_util.h>
 #include <swri_geometry_util/intersection.h>
@@ -38,6 +40,14 @@
 
 namespace swri_geometry_util
 {
+  static void geos_msg_handler(const char* fmt, ...)
+  {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf (fmt, ap);
+    va_end(ap);
+  }
+
   bool LineIntersection(
       const cv::Vec2d& p1,
       const cv::Vec2d& p2,
@@ -175,6 +185,7 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)
   {
+    initGEOS(geos_msg_handler, geos_msg_handler);
     if (a.size() < 3 || b.size() < 3)
     {
       return 0;
@@ -192,6 +203,7 @@ namespace swri_geometry_util
     GEOSGeom_destroy(a_polygon);
     GEOSGeom_destroy(b_polygon);
 
+    finishGEOS();
     return intersects;
   }
 
@@ -204,6 +216,7 @@ namespace swri_geometry_util
       return 0;
     }
 
+    initGEOS(geos_msg_handler, geos_msg_handler);
     double area = 0;
     GEOSGeometry* a_polygon = VectorToPolygon(a);
     GEOSNormalize(a_polygon);
@@ -224,6 +237,7 @@ namespace swri_geometry_util
     GEOSGeom_destroy(b_polygon);
     GEOSGeom_destroy(intersection);
 
+    finishGEOS();
     return area;
   }
 }
