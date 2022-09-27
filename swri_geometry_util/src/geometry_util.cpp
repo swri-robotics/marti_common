@@ -27,7 +27,6 @@
 //
 // *****************************************************************************
 
-#include <rcpputils/asserts.hpp>
 #include <swri_geometry_util/geometry_util.h>
 
 namespace swri_geometry_util
@@ -196,28 +195,4 @@ namespace swri_geometry_util
     return true;
   }
 
-  GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v)
-  {
-    // Create GEOS polygon from vector of verticies. Allocate one extra
-    // element so first and last coordinate are the same, closing the polygon
-    rcpputils::assert_true(v.size() > 0);
-    GEOSCoordSequence* coords = GEOSCoordSeq_create((unsigned int)(v.size() + 1), 2);
-    //rcpputils::assert_true(coords != 0);
-    for (size_t i = 0; i < v.size(); i++)
-    {
-      GEOSCoordSeq_setX(coords, i, v.at(i)[0]);
-      GEOSCoordSeq_setY(coords, i, v.at(i)[1]);
-    }
-
-    // Make the first and last coordinate the same to define a closed polygon
-    GEOSCoordSeq_setX(coords, v.size(), v.front()[0]);
-    GEOSCoordSeq_setY(coords, v.size(), v.front()[1]);
-
-
-    GEOSGeometry* ring = GEOSGeom_createLinearRing(coords);
-    GEOSGeometry* polygon = GEOSGeom_createPolygon(ring, 0, 0);
-    GEOSNormalize(polygon);
-
-    return polygon;
-  }
 }
