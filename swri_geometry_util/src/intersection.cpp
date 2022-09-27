@@ -245,7 +245,8 @@ namespace swri_geometry_util
   GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v)
   {
     // Create GEOS polygon from vector of verticies. Allocate one extra
-    // element so first and last coordinate are the same, closing the polygon
+    // element so first and last coordinate are the same, closing the polygon. Assumes
+    // calling function has already created context.
     GEOSCoordSequence* coords = GEOSCoordSeq_create(v.size() + 1, 2);
 
     for (size_t i = 0; i < v.size(); i++)
