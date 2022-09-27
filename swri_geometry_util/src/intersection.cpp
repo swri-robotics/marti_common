@@ -33,6 +33,7 @@
 
 #include <swri_geometry_util/geometry_util.h>
 #include <swri_geometry_util/intersection.h>
+#include "util.hpp"
 
 #define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
 #include <geos_c.h>

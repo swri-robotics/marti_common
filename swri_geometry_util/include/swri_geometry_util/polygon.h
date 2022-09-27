@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef POLYGON_H_
-#define POLYGON_H_
+#ifndef SWRI_GEOMETRY_UTIL_POLYGON_H_
+#define SWRI_GEOMETRY_UTIL_POLYGON_H_
 
 #include <sstream>
 

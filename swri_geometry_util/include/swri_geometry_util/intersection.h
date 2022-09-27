@@ -27,10 +27,10 @@
 //
 // *****************************************************************************
 
+#ifndef SWRI_GEOMETRY_UTIL_INTERSECTION_H_
+#define SWRI_GEOMETRY_UTIL_INTERSECTION_H_
+
 #include <vector>
-#define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
-#include <geos_c.h>
-#undef HAVE_INT64_T_64
 #include <opencv2/core/core.hpp>
 
 namespace swri_geometry_util
@@ -97,5 +97,6 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b);
 
-  GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v);
 }
+
+#endif
