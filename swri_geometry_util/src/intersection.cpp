@@ -186,11 +186,11 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)
   {
-    initGEOS(geos_msg_handler, geos_msg_handler);
     if (a.size() < 3 || b.size() < 3)
     {
       return 0;
     }
+    initGEOS(geos_msg_handler, geos_msg_handler);
 
     // Create GEOS polygon from vertices in vector a.
     GEOSGeometry* a_polygon = VectorToPolygon(a);
