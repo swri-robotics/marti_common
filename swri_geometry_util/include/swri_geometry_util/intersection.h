@@ -111,6 +111,8 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b,
       GEOSContextHandle_t& ctx);
+
+  void ReleaseContext(GEOSContextHandle_t&  ctx);
 }
 
 #endif

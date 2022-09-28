@@ -421,7 +421,6 @@ TEST(GeometryUtilTests, TestProjectEllipse_3)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
-
 // TODO(malban): Test projecting an ellipsoid that is not axis aligned.
 
 TEST(GeometryUtilTests, TestProjectEllipseInvalid_0)

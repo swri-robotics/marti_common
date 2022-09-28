@@ -307,6 +307,11 @@ namespace swri_geometry_util
     return area;
   }
 
+  void ReleaseContext(GEOSContextHandle_t& ctx)
+  {
+    GEOS_finish_r(ctx);
+  }
+
   GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v)
   {
     // Create GEOS polygon from vector of verticies. Allocate one extra
