@@ -208,6 +208,36 @@ namespace swri_geometry_util
     return intersects;
   }
 
+  GEOSContextHandle_t GetContext()
+  {
+    return NULL;
+  }
+
+  bool PolygonsIntersect(
+      const std::vector<cv::Vec2d>& a,
+      const std::vector<cv::Vec2d>& b,
+      GEOSContextHandle_t& ctx)
+  {
+    if (a.size() < 3 || b.size() < 3)
+    {
+      return 0;
+    }
+
+    // Create GEOS polygon from vertices in vector a.
+    GEOSGeometry* a_polygon = VectorToPolygon(a, ctx);
+    GEOSNormalize_r(ctx, a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b, ctx);
+    GEOSNormalize_r(ctx, b_polygon);
+
+    bool intersects = (GEOSIntersects_r(ctx, a_polygon, b_polygon) == 1);
+
+    // Free polygon objects.
+    GEOSGeom_destroy_r(ctx, a_polygon);
+    GEOSGeom_destroy_r(ctx, b_polygon);
+
+    return intersects;
+  }
+
   double PolygonIntersectionArea(
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)
@@ -228,17 +258,52 @@ namespace swri_geometry_util
 
     if (intersection != 0)
     {
+      // Returns 1 on success, 0 on exception
       if (GEOSArea(intersection, &area) == 0)
       {
         area = 0;
       }
     }
-    // Free polygon objects.
+    // Free polygon objects
     GEOSGeom_destroy(a_polygon);
     GEOSGeom_destroy(b_polygon);
     GEOSGeom_destroy(intersection);
 
     finishGEOS();
+    return area;
+  }
+
+  double PolygonIntersectionArea(
+      const std::vector<cv::Vec2d>& a,
+      const std::vector<cv::Vec2d>& b,
+      GEOSContextHandle_t& ctx)
+  {
+    if (a.size() < 3 || b.size() < 3)
+    {
+      return 0;
+    }
+
+    double area = 0;
+    GEOSGeometry* a_polygon = VectorToPolygon(a, ctx);
+    GEOSNormalize_r(ctx, a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b, ctx);
+    GEOSNormalize_r(ctx, b_polygon);
+
+    GEOSGeometry* intersection = GEOSIntersection_r(ctx, a_polygon, b_polygon);
+
+    if (intersection != 0)
+    {
+      // Returns 1 on success, 0 on exception
+      if (GEOSArea_r(ctx, intersection, &area) == 0)
+      {
+        area = 0;
+      }
+    }
+    // Free polygon objects
+    GEOSGeom_destroy_r(ctx, a_polygon);
+    GEOSGeom_destroy_r(ctx, b_polygon);
+    GEOSGeom_destroy_r(ctx, intersection);
+
     return area;
   }
 
@@ -263,6 +328,33 @@ namespace swri_geometry_util
     GEOSGeometry* ring = GEOSGeom_createLinearRing(coords);
     GEOSGeometry* polygon = GEOSGeom_createPolygon(ring, 0, 0);
     GEOSNormalize(polygon);
+
+    return polygon;
+  }
+
+  GEOSGeometry* VectorToPolygon(
+    const std::vector<cv::Vec2d>& v,
+    GEOSContextHandle_t& ctx)
+  {
+    // Create GEOS polygon from vector of verticies. Allocate one extra
+    // element so first and last coordinate are the same, closing the polygon. Assumes
+    // calling function has already created context.
+    GEOSCoordSequence* coords = GEOSCoordSeq_create_r(ctx, v.size() + 1, 2);
+
+    for (size_t i = 0; i < v.size(); i++)
+    {
+      GEOSCoordSeq_setX_r(ctx, coords, i, v.at(i)[0]);
+      GEOSCoordSeq_setY_r(ctx, coords, i, v.at(i)[1]);
+    }
+
+    // Make the first and last coordinate the same to define a closed polygon
+    GEOSCoordSeq_setX_r(ctx, coords, v.size(), v.front()[0]);
+    GEOSCoordSeq_setY_r(ctx, coords, v.size(), v.front()[1]);
+
+
+    GEOSGeometry* ring = GEOSGeom_createLinearRing_r(ctx, coords);
+    GEOSGeometry* polygon = GEOSGeom_createPolygon_r(ctx, ring, 0, 0);
+    GEOSNormalize_r(ctx, polygon);
 
     return polygon;
   }

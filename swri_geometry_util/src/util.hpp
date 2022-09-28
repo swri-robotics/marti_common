@@ -39,7 +39,12 @@
 
 namespace swri_geometry_util
 {
+// Convert vector of OpenCV coordinates to polygon
 GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v);
+// Convert vector of OpenCV coordinates to polygon, reentrant version
+GEOSGeometry* VectorToPolygon(
+  const std::vector<cv::Vec2d>& v,
+  GEOSContextHandle_t& ctx);
 }
 
 #endif

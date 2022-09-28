@@ -33,8 +33,13 @@
 #include <vector>
 #include <opencv2/core/core.hpp>
 
+#define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
+#include <geos_c.h>
+#undef HAVE_INT64_T_64
+
 namespace swri_geometry_util
 {
+  GEOSContextHandle_t GetContext();
 
   /**
    * Calculate the instersection between two lines defined by 4 points.
@@ -93,10 +98,19 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b);
 
+  bool PolygonsIntersect(
+      const std::vector<cv::Vec2d>& a,
+      const std::vector<cv::Vec2d>& b,
+      GEOSContextHandle_t& ctx);
+
   double PolygonIntersectionArea(
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b);
 
+  double PolygonIntersectionArea(
+      const std::vector<cv::Vec2d>& a,
+      const std::vector<cv::Vec2d>& b,
+      GEOSContextHandle_t& ctx);
 }
 
 #endif
