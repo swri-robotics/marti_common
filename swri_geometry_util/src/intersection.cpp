@@ -210,7 +210,7 @@ namespace swri_geometry_util
 
   GEOSContextHandle_t GetContext()
   {
-    return NULL;
+    return GEOS_init_r();
   }
 
   bool PolygonsIntersect(
