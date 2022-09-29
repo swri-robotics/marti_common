@@ -238,215 +238,157 @@ TEST(IntersectionTests, Intersects_9)
   swri_geometry_util::ReleaseContext(ctx);
 }
 
-//TEST(IntersectionTests, GetOverlappingArea_0)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat identity(2, 3, CV_32FC1);
-//  identity.at<float>(0,0) = 1;
-//  identity.at<float>(0,1) = 0;
-//  identity.at<float>(0,2) = 0;
-//  identity.at<float>(1,0) = 0;
-//  identity.at<float>(1,1) = 1;
-//  identity.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, identity));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_1)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat identity(2, 3, CV_32FC1);
-//  identity.at<float>(0,0) = 1;
-//  identity.at<float>(0,1) = 0;
-//  identity.at<float>(0,2) = 0;
-//  identity.at<float>(1,0) = 0;
-//  identity.at<float>(1,1) = 1;
-//  identity.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, identity));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_2)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat shift_15_x(2, 3, CV_32FC1);
-//  shift_15_x.at<float>(0,0) = 1;
-//  shift_15_x.at<float>(0,1) = 0;
-//  shift_15_x.at<float>(0,2) = 15;
-//  shift_15_x.at<float>(1,0) = 0;
-//  shift_15_x.at<float>(1,1) = 1;
-//  shift_15_x.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(0, swri_image_util::GetOverlappingArea(rect, shift_15_x));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_3)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat shift_15_x(2, 3, CV_32FC1);
-//  shift_15_x.at<float>(0,0) = 1;
-//  shift_15_x.at<float>(0,1) = 0;
-//  shift_15_x.at<float>(0,2) = 15;
-//  shift_15_x.at<float>(1,0) = 0;
-//  shift_15_x.at<float>(1,1) = 1;
-//  shift_15_x.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(50, swri_image_util::GetOverlappingArea(rect2, shift_15_x));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_4)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat shift_5_x(2, 3, CV_32FC1);
-//  shift_5_x.at<float>(0,0) = 1;
-//  shift_5_x.at<float>(0,1) = 0;
-//  shift_5_x.at<float>(0,2) = 5;
-//  shift_5_x.at<float>(1,0) = 0;
-//  shift_5_x.at<float>(1,1) = 1;
-//  shift_5_x.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(50, swri_image_util::GetOverlappingArea(rect, shift_5_x));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_5)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat shift_5_x(2, 3, CV_32FC1);
-//  shift_5_x.at<float>(0,0) = 1;
-//  shift_5_x.at<float>(0,1) = 0;
-//  shift_5_x.at<float>(0,2) = 5;
-//  shift_5_x.at<float>(1,0) = 0;
-//  shift_5_x.at<float>(1,1) = 1;
-//  shift_5_x.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(150, swri_image_util::GetOverlappingArea(rect2, shift_5_x));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_6)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat shift_5_xy(2, 3, CV_32FC1);
-//  shift_5_xy.at<float>(0,0) = 1;
-//  shift_5_xy.at<float>(0,1) = 0;
-//  shift_5_xy.at<float>(0,2) = 5;
-//  shift_5_xy.at<float>(1,0) = 0;
-//  shift_5_xy.at<float>(1,1) = 1;
-//  shift_5_xy.at<float>(1,2) = 5;
-//
-//  EXPECT_FLOAT_EQ(25, swri_image_util::GetOverlappingArea(rect, shift_5_xy));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_7)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat shift_5_xy(2, 3, CV_32FC1);
-//  shift_5_xy.at<float>(0,0) = 1;
-//  shift_5_xy.at<float>(0,1) = 0;
-//  shift_5_xy.at<float>(0,2) = 5;
-//  shift_5_xy.at<float>(1,0) = 0;
-//  shift_5_xy.at<float>(1,1) = 1;
-//  shift_5_xy.at<float>(1,2) = 5;
-//
-//  EXPECT_FLOAT_EQ(75, swri_image_util::GetOverlappingArea(rect2, shift_5_xy));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_8)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat rotate90(2, 3, CV_32FC1);
-//  rotate90.at<float>(0,0) = 0;
-//  rotate90.at<float>(0,1) = 1;
-//  rotate90.at<float>(0,2) = 0;
-//  rotate90.at<float>(1,0) = -1;
-//  rotate90.at<float>(1,1) = 0;
-//  rotate90.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, rotate90));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_9)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat rotate90(2, 3, CV_32FC1);
-//  rotate90.at<float>(0,0) = 0;
-//  rotate90.at<float>(0,1) = 1;
-//  rotate90.at<float>(0,2) = 0;
-//  rotate90.at<float>(1,0) = -1;
-//  rotate90.at<float>(1,1) = 0;
-//  rotate90.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect2, rotate90));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_10)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat rotate180(2, 3, CV_32FC1);
-//  rotate180.at<float>(0,0) = -1;
-//  rotate180.at<float>(0,1) = 0;
-//  rotate180.at<float>(0,2) = 0;
-//  rotate180.at<float>(1,0) = 0;
-//  rotate180.at<float>(1,1) = -1;
-//  rotate180.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, rotate180));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_11)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat rotate180(2, 3, CV_32FC1);
-//  rotate180.at<float>(0,0) = -1;
-//  rotate180.at<float>(0,1) = 0;
-//  rotate180.at<float>(0,2) = 0;
-//  rotate180.at<float>(1,0) = 0;
-//  rotate180.at<float>(1,1) = -1;
-//  rotate180.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, rotate180));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_12)
-//{
-//  cv::Rect rect(-5, -5, 10, 10);
-//
-//  cv::Mat rotate45(2, 3, CV_32FC1);
-//  rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(0,1) = std::sin(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(0,2) = 0;
-//  rotate45.at<float>(1,0) = -std::sin(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(1,1) = std::cos(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(82.842712, swri_image_util::GetOverlappingArea(rect, rotate45));
-//}
-//
-//TEST(IntersectionTests, GetOverlappingArea_13)
-//{
-//  cv::Rect rect2(-10, -5, 20, 10);
-//
-//  cv::Mat rotate45(2, 3, CV_32FC1);
-//  rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(0,1) = std::sin(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(0,2) = 0;
-//  rotate45.at<float>(1,0) = -std::sin(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(1,1) = std::cos(swri_math_util::_half_pi * 0.5);
-//  rotate45.at<float>(1,2) = 0;
-//
-//  EXPECT_FLOAT_EQ(136.3961, swri_image_util::GetOverlappingArea(rect2, rotate45));
-//}
+TEST(IntersectionTests, GetOverlappingArea_0)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  EXPECT_FLOAT_EQ(100, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_1)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_2)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, -5),
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_3)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, 5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(-5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_4)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, -5),
+    cv::Vec2d(5, -5),
+    cv::Vec2d(5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_5)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-1, 1),
+    cv::Vec2d(-1, -1),
+    cv::Vec2d(1, -1),
+    cv::Vec2d(1, 1)};
+
+  EXPECT_FLOAT_EQ(4, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_6)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-10, -10),
+    cv::Vec2d(-10, 10),
+    cv::Vec2d(10, 10),
+    cv::Vec2d(10, -10)};
+
+  EXPECT_FLOAT_EQ(100, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_7)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(5, 5),
+    cv::Vec2d(15, 5),
+    cv::Vec2d(15, 15),
+    cv::Vec2d(5, 15)};
+
+  EXPECT_FLOAT_EQ(0, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
 
 TEST(IntersectionTests, Intersects)
 {

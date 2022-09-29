@@ -49,6 +49,14 @@ namespace swri_geometry_util
     va_end(ap);
   }
 
+  GEOSContextHandle_t GetContext()
+  {
+    GEOSContextHandle_t ctx = GEOS_init_r();
+    GEOSContext_setNoticeHandler_r(ctx, geos_msg_handler);
+    GEOSContext_setErrorHandler_r(ctx, geos_msg_handler);
+    return ctx;
+  }
+
   bool LineIntersection(
       const cv::Vec2d& p1,
       const cv::Vec2d& p2,
@@ -206,11 +214,6 @@ namespace swri_geometry_util
 
     finishGEOS();
     return intersects;
-  }
-
-  GEOSContextHandle_t GetContext()
-  {
-    return GEOS_init_r();
   }
 
   bool PolygonsIntersect(
