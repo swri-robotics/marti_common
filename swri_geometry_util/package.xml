@@ -20,7 +20,7 @@
   -->
   <depend>cv_bridge</depend>
   <depend>eigen</depend>
-  <depend>libgeos-dev</depend>
+  <depend>geos</depend>
   <depend>rclcpp</depend>
   <depend>tf2</depend>
 
