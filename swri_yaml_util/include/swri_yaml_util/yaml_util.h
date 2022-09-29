@@ -32,6 +32,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <ros/common.h>
 
 #include <yaml-cpp/yaml.h>
 
@@ -55,12 +56,19 @@ namespace YAML
 
 namespace swri_yaml_util
 {
+  // Require Melodic or greater to remove deprecated auto_ptr type
+#if ROS_VERSION_MINIMUM(1, 14, 0)
+  typedef std::unique_ptr<YAML::Node> YamlNodePtr;
+#else
+  typedef std::auto_ptr<YAML::Node> YamlNodePtr;
+#endif
+
   bool LoadFile(const std::string& path, YAML::Node& yaml);
   bool LoadString(const std::string& input, YAML::Node& yaml);
   bool LoadMap(const std::map<std::string, std::string>& dict, YAML::Node& yaml);
   bool FindValue(const YAML::Node& node, const std::string& name);
   
-  std::auto_ptr<YAML::Node> Clone(const YAML::Node& node);
+  YamlNodePtr Clone(const YAML::Node& node);
   
   std::string ToString(double value, int32_t precision);
 }

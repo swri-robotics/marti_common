@@ -31,6 +31,7 @@
 
 #include <ros/node_handle.h>
 
+#include <swri_roscpp/service_server.h>
 #include <swri_roscpp/subscriber.h>
 #include <swri_roscpp/topic_service_client.h>
 #include <swri_roscpp/topic_service_server.h>
@@ -147,6 +148,32 @@ public:
 
   operator void*() const { return nh_ ? (void*)1 : (void*)0; }
 
+  // Get node handles internal setting for wether or not it is generating docs
+  inline bool getEnableDocs() const 
+  { 
+    if (nh_)
+    {
+      return nh_->enable_docs_; 
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  // Get a copy of the current documentation message from the node handle
+  inline marti_introspection_msgs::NodeInfo getDocMsg() const 
+  { 
+    if (nh_)
+    {
+      return nh_->info_msg_;
+    }
+    else
+    {
+      return marti_introspection_msgs::NodeInfo();
+    }
+  }
+
   // Gets a handle relative the base swri::NodeHandle
   swri::NodeHandle getNodeHandle(const std::string& ns,
                                  const std::string& group = "")
@@ -200,6 +227,34 @@ public:
       nh_->info_pub_.publish(nh_->info_msg_);
     }
     return set;
+  }
+
+  inline bool getParam(const std::string& name, std::vector<std::string>& value,
+    const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    bool set = nh_->pnh_.getParam(real_name, value);
+    ROS_INFO("Read parameter %s", name.c_str());
+
+    if (shouldAddParameter(real_name))
+    {
+      marti_introspection_msgs::ParamInfo info;
+      info.name = real_name;
+      info.description = description;
+      info.group = grouping_;
+      info.resolved_name = nh_->pnh_.resolveName(real_name);
+      info.type = marti_introspection_msgs::ParamInfo::TYPE_STRING;
+      info.dynamic = false;
+      nh_->info_msg_.parameters.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+    return set;
+  }
+
+  template <class T>
+  inline void setParam(const std::string& name, T& value)
+  {
+    nh_->pnh_.setParam(name, value);
   }
 
   // param always uses the private namespace
@@ -521,6 +576,33 @@ public:
     return swri::Subscriber(nh_->nh_, real_name, queue_size, fp, obj, transport_hints);
   }
 
+  // Using boost function callback.
+  template<class M>
+  swri::Subscriber subscribe_swri(const std::string &name,
+             uint32_t queue_size,
+             boost::function<void(const boost::shared_ptr<M const> &)> fp,
+             const std::string description,
+             const ros::TransportHints &transport_hints=ros::TransportHints())
+  {
+    std::string real_name = resolveName(name);
+
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return swri::Subscriber(nh_->nh_, real_name, queue_size, fp, transport_hints);
+  }
+
   // Using class method callback.
   template<class M , class T >
   ros::Subscriber subscribe(const std::string &name,
@@ -548,11 +630,91 @@ public:
     return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
   }
 
+  // The const class method overload
+  template<class M , class T >
+  ros::Subscriber subscribe(const std::string &name,
+             uint32_t queue_size,
+             void(T::*fp)(const boost::shared_ptr< M const > &) const,
+             T *obj,
+             const std::string description,
+             const ros::TransportHints &transport_hints=ros::TransportHints())
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
+  }
+
+  // Using boost function callback.
+  template<class M>
+  ros::Subscriber subscribe(const std::string &name,
+             uint32_t queue_size,
+             const boost::function<void(const boost::shared_ptr< M const > &)>& callback,
+             const std::string description,
+             const ros::TransportHints &transport_hints=ros::TransportHints())
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return nh_->nh_.subscribe<M>(real_name, queue_size, callback, ros::VoidConstPtr(), transport_hints);
+  }
+
   // Using class method callback.
   template<class M , class T >
   ros::Subscriber subscribe(const std::string &name,
              uint32_t queue_size,
              void(T::*fp)(const ros::MessageEvent< M const > &),
+             T *obj,
+             const std::string description,
+             const ros::TransportHints &transport_hints=ros::TransportHints())
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return nh_->nh_.subscribe(real_name, queue_size, fp, obj, transport_hints);
+  }
+
+  // Using const class method callback.
+  template<class M , class T >
+  ros::Subscriber subscribe(const std::string &name,
+             uint32_t queue_size,
+             void(T::*fp)(const ros::MessageEvent< M const > &) const,
              T *obj,
              const std::string description,
              const ros::TransportHints &transport_hints=ros::TransportHints())
@@ -616,6 +778,28 @@ public:
       info.group = grouping_;
       info.message_type = ros::message_traits::DataType<M>().value();
       info.advertised = false;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+  }
+
+  // Using public node handle and class method callback.
+  // Only use this for strange things like image transports.
+  template<class M>
+  void advertise_later(const std::string &name,
+             const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = true;
       info.description = description;
       nh_->info_msg_.topics.push_back(info);
       nh_->info_pub_.publish(nh_->info_msg_);
@@ -752,6 +936,81 @@ public:
     return nh_->nh_.advertiseService(real_name, srv_func, obj);
   }
 
+  template<class MReq, class MRes, class T>
+  swri::ServiceServer advertise_service_swri(const std::string &name,
+                bool(T::*srv_func)(MReq &, MRes &),
+                T *obj,
+                const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::ServiceInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::service_traits::DataType<MReq>().value();
+      info.topic_service = false;
+      info.server = true;
+      info.description = description;
+      nh_->info_msg_.services.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return swri::ServiceServer(nh_->pnh_, real_name, srv_func, obj);
+  }
+
+  template<class MReq, class MRes, class T>
+  swri::ServiceServer advertise_service_swri(const std::string &name,
+                bool(T::*srv_func)(ros::ServiceEvent< MReq, MRes > &),
+                T *obj,
+                const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::ServiceInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::service_traits::DataType<MReq>().value();
+      info.topic_service = false;
+      info.server = true;
+      info.description = description;
+      nh_->info_msg_.services.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return swri::ServiceServer(nh_->pnh_, real_name, srv_func, obj);
+  }
+
+  template<class MReq, class MRes, class T>
+  swri::ServiceServer advertise_service_swri(const std::string &name,
+                bool(T::*srv_func)(const std::string &, const MReq &, MRes &),
+                T *obj,
+                const std::string description)
+  {
+    std::string real_name = resolveName(name);
+    if (nh_->enable_docs_)
+    {
+      const std::string resolved_name = nh_->nh_.resolveName(real_name);
+      marti_introspection_msgs::ServiceInfo info;
+      info.name = real_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::service_traits::DataType<MReq>().value();
+      info.topic_service = false;
+      info.server = true;
+      info.description = description;
+      nh_->info_msg_.services.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+
+    return swri::ServiceServer(nh_->pnh_, real_name, srv_func, obj);
+  }
+
   // Advertising uses the public nh
   template<typename M>
   ros::Publisher advertise(
@@ -811,6 +1070,67 @@ public:
     }
 
     return nh_->nh_.advertise<M>(real_name, queue_size, false);
+  }
+
+  // Advertising uses the public nh
+  template<typename M>
+  ros::Publisher advertise(
+      const std::string &topic,
+      uint32_t queue_size,
+      const ros::SubscriberStatusCallback &connect_cb,
+      const ros::SubscriberStatusCallback &disconnect_cb = ros::SubscriberStatusCallback(), 
+      const ros::VoidConstPtr &tracked_object = ros::VoidConstPtr(),
+      bool latch=false,
+      const std::string &description = "")
+  {
+    std::string real_topic_name = resolveName(topic);
+    const std::string resolved_name = nh_->nh_.resolveName(real_topic_name);
+    ROS_INFO("Publishing [%s] to '%s' from node %s.",
+        real_topic_name.c_str(),
+        resolved_name.c_str(),
+        nh_->node_name_.c_str());
+    if (nh_->enable_docs_)
+    {
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_topic_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ros::message_traits::DataType<M>().value();
+      info.advertised = true;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+    ros::AdvertiseOptions ops;
+    ops.init<M>(real_topic_name, queue_size, connect_cb, disconnect_cb);
+    ops.tracked_object = tracked_object;
+    ops.latch = latch;
+    return nh_->nh_.advertise(ops);
+  }
+
+  // Advertising uses the public nh
+  inline ros::Publisher advertise(ros::AdvertiseOptions &ops,
+      const std::string &description = "")
+  {
+    std::string real_topic_name = resolveName(ops.topic);
+    const std::string resolved_name = nh_->nh_.resolveName(real_topic_name);
+    ROS_INFO("Publishing [%s] to '%s' from node %s.",
+        real_topic_name.c_str(),
+        resolved_name.c_str(),
+        nh_->node_name_.c_str());
+    if (nh_->enable_docs_)
+    {
+      marti_introspection_msgs::TopicInfo info;
+      info.name = real_topic_name;
+      info.resolved_name = resolved_name;
+      info.group = grouping_;
+      info.message_type = ops.datatype;
+      info.advertised = true;
+      info.description = description;
+      nh_->info_msg_.topics.push_back(info);
+      nh_->info_pub_.publish(nh_->info_msg_);
+    }
+    return nh_->nh_.advertise(ops); 
   }
 
   // Using class method callback.
@@ -890,6 +1210,14 @@ bool getParam(swri::NodeHandle& nh,
   return res;
 }
 
+template<typename T>
+void setParam(swri::NodeHandle& nh,
+  const std::string& name,
+  T& value)
+{
+  nh.setParam(name, value);
+}
+
 // some simple utility functions
 template<typename M>
 ros::Publisher advertise(swri::NodeHandle& nh,
@@ -931,6 +1259,36 @@ swri::Subscriber subscribe(swri::NodeHandle& nh,
            const ros::TransportHints &transport_hints=ros::TransportHints())
 {
   return nh.subscribe_swri(name, dest, description, transport_hints);
+}
+
+template<class MReq, class MRes, class T>
+swri::ServiceServer advertiseService(swri::NodeHandle& nh,
+           const std::string &service,
+           bool(T::*srv_func)(MReq &, MRes &),
+           T *obj,
+           const std::string description)
+{
+  return nh.advertise_service_swri(service, srv_func, obj, description);
+}
+
+template<class MReq, class MRes, class T>
+swri::ServiceServer advertiseService(swri::NodeHandle& nh,
+           const std::string &service,
+           bool(T::*srv_func)(ros::ServiceEvent< MReq, MRes > &),                
+           T *obj,
+           const std::string description)
+{
+  return nh.advertise_service_swri(service, srv_func, obj, description);
+}
+
+template<class MReq, class MRes, class T>
+swri::ServiceServer advertiseService(swri::NodeHandle& nh,
+           const std::string &service,
+           bool(T::*srv_func)(const std::string &, const MReq &, MRes &),
+           T *obj,
+           const std::string description)
+{
+  return nh.advertise_service_swri(service, srv_func, obj, description);
 }
 
 inline void timeoutParam(swri::NodeHandle& nh,

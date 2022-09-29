@@ -58,7 +58,7 @@ namespace swri_transform_util
   {
     if (!initialized_)
     {
-      Initialize();
+      initialized_ = Initialize();
     }
 
     if (!initialized_)
@@ -102,6 +102,7 @@ namespace swri_transform_util
 
   bool Wgs84Transformer::Initialize()
   {
+    bool initialized = false;
     if (!local_xy_util_)
     {
       local_xy_util_ = boost::make_shared<LocalXyWgs84Util>();
@@ -110,14 +111,18 @@ namespace swri_transform_util
     if (local_xy_util_->Initialized())
     {
       std::string local_xy_frame = local_xy_util_->Frame();
-      if (tf_listener_->frameExists(local_xy_frame))
+      if (!tf_listener_)
+      {
+        ROS_WARN("Cannot initialize a Wgs84Transformer with an invalid transform listener.");
+      }
+      else if (tf_listener_->frameExists(local_xy_frame))
       {
         local_xy_frame_ = local_xy_frame;
-        initialized_ = true;
+        initialized = true;
       }
     }
 
-    return initialized_;
+    return initialized;
   }
   
   TfToWgs84Transform::TfToWgs84Transform(

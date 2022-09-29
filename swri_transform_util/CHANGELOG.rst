@@ -2,6 +2,9 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.15.2 (2022-09-01)
+-------------------
+
 2.14.2 (2020-09-09)
 -------------------
 * stamp local_xy_origin message picked from list with now() (`#600 <https://github.com/swri-robotics/marti_common/issues/600>`_)

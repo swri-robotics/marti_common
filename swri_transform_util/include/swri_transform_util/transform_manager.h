@@ -62,7 +62,7 @@ namespace swri_transform_util
   class TransformManager
   {
   public:
-    TransformManager();
+    TransformManager(boost::shared_ptr<tf::TransformListener> tf = NULL);
     ~TransformManager();
 
     /**
