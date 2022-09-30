@@ -35,7 +35,7 @@
 #include <boost/serialization/singleton.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include <proj_api.h>
+#include <proj.h>
 
 namespace swri_transform_util
 {
@@ -166,9 +166,14 @@ namespace swri_transform_util
       private:
         UtmData();
 
+#ifdef USE_PROJ_API_6
+        PJ *utm_north_[60];
+        PJ *utm_south_[60];
+#else
         projPJ lat_lon_;
         projPJ utm_north_[60];
         projPJ utm_south_[60];
+#endif
 
         mutable boost::mutex mutex_;
     };

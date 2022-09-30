@@ -88,7 +88,13 @@ if (BUILD_TESTING)
   )
 
   ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
-  rosidl_target_interfaces(topic_service_test_server ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
+    rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+    target_link_libraries(topic_service_test_server "${cpp_typesupport_target}")
+  else()
+    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+  endif()
+
   target_link_libraries(topic_service_test_server
     Boost::system
     swri_roscpp__rosidl_typesupport_cpp

@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
+find_package(diagnostic_updater REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
@@ -69,7 +70,7 @@ target_compile_definitions(${PROJECT_NAME}
   PRIVATE
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
 )
-target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
+
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::filesystem
@@ -84,6 +85,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 ament_target_dependencies(${PROJECT_NAME}
   diagnostic_msgs
+  diagnostic_updater
   geographic_msgs
   geometry_msgs
   gps_msgs
@@ -111,6 +113,28 @@ target_include_directories(${PROJECT_NAME}_nodes
   INTERFACE
   ${PROJ_INCLUDE_DIRS}
 )
+if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
+  target_compile_definitions(${PROJECT_NAME}
+    PRIVATE "-DUSE_TF2_H_FILES")
+  target_compile_definitions(${PROJECT_NAME}_nodes
+    PRIVATE "-DUSE_TF2_H_FILES")
+endif()
+
+if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
+  target_compile_definitions(${PROJECT_NAME}
+    PRIVATE "-DUSE_PROJ_API_6")
+  target_compile_definitions(${PROJECT_NAME}_nodes
+    PRIVATE "-DUSE_PROJ_API_6")
+endif()
+
+# Workaround to https://github.com/ros2/geometry2/pull/427
+if ("$ENV{ROS_DISTRO}" STREQUAL "rolling" OR "$ENV{ROS_DISTRO}" STREQUAL "humble")
+  target_compile_definitions(${PROJECT_NAME}
+    PRIVATE "-DFROM_MSG_WORKAROUND")
+  target_compile_definitions(${PROJECT_NAME}_nodes
+    PRIVATE "-DFROM_MSG_WORKAROUND")
+endif()
+
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
@@ -120,6 +144,8 @@ target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
 ament_target_dependencies(${PROJECT_NAME}_nodes
   marti_nav_msgs
   rcl_interfaces
+  swri_roscpp
+  rclcpp_components
 )
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)

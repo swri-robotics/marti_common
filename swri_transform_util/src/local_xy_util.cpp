@@ -32,7 +32,9 @@
 #include <cmath>
 #include <functional>
 
+#ifndef FROM_MSG_WORKAROUND
 #include <tf2/utils.h>
+#endif
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
@@ -41,6 +43,37 @@
 
 namespace swri_transform_util
 {
+#ifdef FROM_MSG_WORKAROUND
+  inline
+  double getYaw(const geometry_msgs::msg::Quaternion & q)
+  {
+    double yaw;
+
+    double sqw;
+    double sqx;
+    double sqy;
+    double sqz;
+
+    sqx = q.x * q.x;
+    sqy = q.y * q.y;
+    sqz = q.z * q.z;
+    sqw = q.w * q.w;
+
+    // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
+    // normalization added from urdfom_headers
+    double sarg = -2 * (q.x * q.z - q.w * q.y) / (sqx + sqy + sqz + sqw);
+
+    if (sarg <= -0.99999) {
+      yaw = -2 * atan2(q.y, q.x);
+    } else if (sarg >= 0.99999) {
+      yaw = 2 * atan2(q.y, q.x);
+    } else {
+      yaw = atan2(2 * (q.x * q.y + q.w * q.z), sqw + sqx - sqy - sqz);
+    }
+    return yaw;
+  }
+#endif
+
   void LocalXyFromWgs84(
       double latitude,
       double longitude,
@@ -139,11 +172,19 @@ namespace swri_transform_util
 
   void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
   {
+#ifdef FROM_MSG_WORKAROUND
+    HandleOrigin(pose->pose.position.y,
+        pose->pose.position.x,
+        pose->pose.position.z,
+        getYaw(pose->pose.orientation),
+        pose->header.frame_id);
+#else
     HandleOrigin(pose->pose.position.y,
         pose->pose.position.x,
         pose->pose.position.z,
         tf2::getYaw(pose->pose.orientation),
         pose->header.frame_id);
+#endif
   }
 
   void LocalXyWgs84Util::HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id)
