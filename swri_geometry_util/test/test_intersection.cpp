@@ -31,6 +31,365 @@
 
 #include <swri_geometry_util/intersection.h>
 
+TEST(IntersectionTests, Intersects_0)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-2, -2),
+    cv::Vec2d(2, -2),
+    cv::Vec2d(2, 2),
+    cv::Vec2d(-2, 2)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-1, -1),
+    cv::Vec2d(1, -1),
+    cv::Vec2d(1, 1),
+    cv::Vec2d(-1, 1)};
+
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b1, b2, ctx));
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b2, b1, ctx));
+
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_1)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-2, -2),
+    cv::Vec2d(2, -2),
+    cv::Vec2d(2, 2),
+    cv::Vec2d(-2, 2)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-4, -4),
+    cv::Vec2d(-4, -1.5),
+    cv::Vec2d(-1.5, -1.5),
+    cv::Vec2d(-1.5, -4)};
+
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b1, b2, ctx));
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b2, b1, ctx));
+
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_2)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-2, -2),
+    cv::Vec2d(2, -2),
+    cv::Vec2d(2, 2),
+    cv::Vec2d(-2, 2)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(1.5, 1.5),
+    cv::Vec2d(1.5, 7.5),
+    cv::Vec2d(7.5, 7.5),
+    cv::Vec2d(7.5, 1.5)};
+
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b2, b1));
+
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_3)
+{
+  auto ctx = swri_geometry_util::GetContext();
+
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-2, -2),
+    cv::Vec2d(2, -2),
+    cv::Vec2d(2, 2),
+    cv::Vec2d(-2, 2)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(4, 4),
+    cv::Vec2d(4, 10),
+    cv::Vec2d(10, 10),
+    cv::Vec2d(10, 4)};
+
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b2, b1));
+
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_4)
+{
+  auto ctx = swri_geometry_util::GetContext();
+
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-1, -1),
+    cv::Vec2d(-1, 1),
+    cv::Vec2d(1, 1),
+    cv::Vec2d(1, -1)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-4, -4),
+    cv::Vec2d(-4, -1.5),
+    cv::Vec2d(-1.5, -1.5),
+    cv::Vec2d(-1.5, -4)};
+
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b2, b1));
+
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_5)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-1, -1),
+    cv::Vec2d(-1, 1),
+    cv::Vec2d(1, 1),
+    cv::Vec2d(1, -1)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(1.5, 1.5),
+    cv::Vec2d(1.5, 7.5),
+    cv::Vec2d(7.5, 7.5),
+    cv::Vec2d(7.5, 1.5)};
+
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b2, b1));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_6)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-1, -1),
+    cv::Vec2d(-1, 1),
+    cv::Vec2d(1, 1),
+    cv::Vec2d(1, -1)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(4, 4),
+    cv::Vec2d(4, 10),
+    cv::Vec2d(10, 10),
+    cv::Vec2d(10, 4)};
+
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b2, b1));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_7)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-4, -4),
+    cv::Vec2d(-4, -1.5),
+    cv::Vec2d(-1.5, -1.5),
+    cv::Vec2d(-1.5, -4)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(1.5, 1.5),
+    cv::Vec2d(1.5, 7.5),
+    cv::Vec2d(7.5, 7.5),
+    cv::Vec2d(7.5, 1.5)};
+
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b2, b1));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_8)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-4, -4),
+    cv::Vec2d(-4, -1.5),
+    cv::Vec2d(-1.5, -1.5),
+    cv::Vec2d(-1.5, -4)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(4, 4),
+    cv::Vec2d(4, 10),
+    cv::Vec2d(10, 10),
+    cv::Vec2d(10, 4)};
+
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_FALSE(swri_geometry_util::PolygonsIntersect(b2, b1));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, Intersects_9)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(1.5, 1.5),
+    cv::Vec2d(1.5, 7.5),
+    cv::Vec2d(7.5, 7.5),
+    cv::Vec2d(7.5, 1.5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(4, 4),
+    cv::Vec2d(4, 10),
+    cv::Vec2d(10, 10),
+    cv::Vec2d(10, 4)};
+
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b1, b2));
+  EXPECT_TRUE(swri_geometry_util::PolygonsIntersect(b2, b1));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_0)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  EXPECT_FLOAT_EQ(100, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_1)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_2)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, -5),
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_3)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, 5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(-5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_4)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(0, -5),
+    cv::Vec2d(5, -5),
+    cv::Vec2d(5, 0)};
+
+  EXPECT_FLOAT_EQ(25, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_5)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-1, 1),
+    cv::Vec2d(-1, -1),
+    cv::Vec2d(1, -1),
+    cv::Vec2d(1, 1)};
+
+  EXPECT_FLOAT_EQ(4, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_6)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(-10, -10),
+    cv::Vec2d(-10, 10),
+    cv::Vec2d(10, 10),
+    cv::Vec2d(10, -10)};
+
+  EXPECT_FLOAT_EQ(100, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
+TEST(IntersectionTests, GetOverlappingArea_7)
+{
+  auto ctx = swri_geometry_util::GetContext();
+  std::vector<cv::Vec2d> b1 = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  std::vector<cv::Vec2d> b2 = {
+    cv::Vec2d(5, 5),
+    cv::Vec2d(15, 5),
+    cv::Vec2d(15, 15),
+    cv::Vec2d(5, 15)};
+
+  EXPECT_FLOAT_EQ(0, swri_geometry_util::PolygonIntersectionArea(b1, b2));
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
 TEST(IntersectionTests, Intersects)
 {
   cv::Vec2d c;

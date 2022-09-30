@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2015, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2022, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,24 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_GEOMETRY_UTIL_CUBIC_SPLINE_H_
-#define SWRI_GEOMETRY_UTIL_CUBIC_SPLINE_H_
+#ifndef SWRI_GEOMETRY_UTIL_UTIL_HPP_
+#define SWRI_GEOMETRY_UTIL_UTIL_HPP_
 
-#include <vector>
-#include <opencv2/core/core.hpp>
-#include <tf2/transform_datatypes.h>
-#include <tf2/LinearMath/Vector3.h>
+#define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
+#include <geos_c.h>
+#undef HAVE_INT64_T_64
+
+// This header file contains definitions that should not be used by downstream
+// users of this package
 
 namespace swri_geometry_util
 {
-  bool CubicSplineInterpolation(
-    const std::vector<cv::Vec2d>& points,
-    double delta,
-    std::vector<std::vector<cv::Vec2d> >& splines);
-
-  bool CubicSplineInterpolation(
-    const std::vector<tf2::Vector3>& points,
-    double delta,
-    std::vector<std::vector<tf2::Vector3> >& splines);
+// Convert vector of OpenCV coordinates to polygon
+GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v);
+// Convert vector of OpenCV coordinates to polygon, reentrant version
+GEOSGeometry* VectorToPolygon(
+  const std::vector<cv::Vec2d>& v,
+  GEOSContextHandle_t& ctx);
 }
 
 #endif

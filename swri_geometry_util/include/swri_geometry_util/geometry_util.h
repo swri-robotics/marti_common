@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef GEOMETRY_UTIL_GEOMETRY_UTIL_H_
-#define GEOMETRY_UTIL_GEOMETRY_UTIL_H_
+#ifndef SWRI_GEOMETRY_UTIL_GEOMETRY_UTIL_H_
+#define SWRI_GEOMETRY_UTIL_GEOMETRY_UTIL_H_
 
 #include <opencv2/core/core.hpp>
 #include <tf2/transform_datatypes.h>

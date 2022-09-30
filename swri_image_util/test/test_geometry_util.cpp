@@ -40,44 +40,99 @@
 #include <swri_math_util/constants.h>
 #include <swri_image_util/geometry_util.h>
 
-TEST(GeometryUtilTests, Intersects)
+TEST(GeometryUtilTests, Intersects_0)
 {
   swri_image_util::BoundingBox b1(-2, -2, 4, 4);
   swri_image_util::BoundingBox b2(-1, -1, 2, 2);
+
+  EXPECT_TRUE(swri_image_util::Intersects(b1, b2));
+  EXPECT_TRUE(swri_image_util::Intersects(b2, b1));
+}
+
+TEST(GeometryUtilTests, Intersects_1)
+{
+  swri_image_util::BoundingBox b1(-2, -2, 4, 4);
   swri_image_util::BoundingBox b3(-4, -4, 2.5, 2.5);
+
+  EXPECT_TRUE(swri_image_util::Intersects(b1, b3));
+  EXPECT_TRUE(swri_image_util::Intersects(b3, b1));
+}
+
+TEST(GeometryUtilTests, Intersects_2)
+{
+  swri_image_util::BoundingBox b1(-2, -2, 4, 4);
+  swri_image_util::BoundingBox b4(1.5, 1.5, 6, 6);
+
+  EXPECT_TRUE(swri_image_util::Intersects(b1, b4));
+  EXPECT_TRUE(swri_image_util::Intersects(b4, b1));
+}
+
+TEST(GeometryUtilTests, Intersects_3)
+{
+  swri_image_util::BoundingBox b1(-2, -2, 4, 4);
+  swri_image_util::BoundingBox b5(4, 4, 6, 6);
+
+  EXPECT_FALSE(swri_image_util::Intersects(b1, b5));
+  EXPECT_FALSE(swri_image_util::Intersects(b5, b1));
+}
+
+TEST(GeometryUtilTests, Intersects_4)
+{
+  swri_image_util::BoundingBox b2(-1, -1, 2, 2);
+  swri_image_util::BoundingBox b3(-4, -4, 2.5, 2.5);
+
+  EXPECT_FALSE(swri_image_util::Intersects(b2, b3));
+  EXPECT_FALSE(swri_image_util::Intersects(b3, b2));
+}
+
+TEST(GeometryUtilTests, Intersects_5)
+{
+  swri_image_util::BoundingBox b2(-1, -1, 2, 2);
+  swri_image_util::BoundingBox b4(1.5, 1.5, 6, 6);
+
+  EXPECT_FALSE(swri_image_util::Intersects(b2, b4));
+  EXPECT_FALSE(swri_image_util::Intersects(b4, b2));
+}
+
+TEST(GeometryUtilTests, Intersects_6)
+{
+  swri_image_util::BoundingBox b2(-1, -1, 2, 2);
+  swri_image_util::BoundingBox b5(4, 4, 6, 6);
+
+  EXPECT_FALSE(swri_image_util::Intersects(b2, b5));
+  EXPECT_FALSE(swri_image_util::Intersects(b5, b2));
+}
+
+TEST(GeometryUtilTests, Intersects_7)
+{
+  swri_image_util::BoundingBox b3(-4, -4, 2.5, 2.5);
+  swri_image_util::BoundingBox b4(1.5, 1.5, 6, 6);
+
+  EXPECT_FALSE(swri_image_util::Intersects(b3, b4));
+  EXPECT_FALSE(swri_image_util::Intersects(b4, b3));
+}
+
+TEST(GeometryUtilTests, Intersects_8)
+{
+  swri_image_util::BoundingBox b3(-4, -4, 2.5, 2.5);
+  swri_image_util::BoundingBox b5(4, 4, 6, 6);
+
+  EXPECT_FALSE(swri_image_util::Intersects(b3, b5));
+  EXPECT_FALSE(swri_image_util::Intersects(b5, b3));
+}
+
+TEST(GeometryUtilTests, Intersects_9)
+{
   swri_image_util::BoundingBox b4(1.5, 1.5, 6, 6);
   swri_image_util::BoundingBox b5(4, 4, 6, 6);
 
-  EXPECT_TRUE(swri_image_util::Intersects(b1, b2));
-  EXPECT_TRUE(swri_image_util::Intersects(b1, b3));
-  EXPECT_TRUE(swri_image_util::Intersects(b1, b4));
-  EXPECT_FALSE(swri_image_util::Intersects(b1, b5));
-
-  EXPECT_TRUE(swri_image_util::Intersects(b2, b1));
-  EXPECT_FALSE(swri_image_util::Intersects(b2, b3));
-  EXPECT_FALSE(swri_image_util::Intersects(b2, b4));
-  EXPECT_FALSE(swri_image_util::Intersects(b2, b5));
-
-  EXPECT_TRUE(swri_image_util::Intersects(b3, b1));
-  EXPECT_FALSE(swri_image_util::Intersects(b3, b2));
-  EXPECT_FALSE(swri_image_util::Intersects(b3, b4));
-  EXPECT_FALSE(swri_image_util::Intersects(b3, b5));
-
-  EXPECT_TRUE(swri_image_util::Intersects(b4, b1));
-  EXPECT_FALSE(swri_image_util::Intersects(b4, b2));
-  EXPECT_FALSE(swri_image_util::Intersects(b4, b3));
   EXPECT_TRUE(swri_image_util::Intersects(b4, b5));
-
-  EXPECT_FALSE(swri_image_util::Intersects(b5, b1));
-  EXPECT_FALSE(swri_image_util::Intersects(b5, b2));
-  EXPECT_FALSE(swri_image_util::Intersects(b5, b3));
   EXPECT_TRUE(swri_image_util::Intersects(b5, b4));
 }
 
-TEST(GeometryUtilTests, GetOverlappingArea1)
+TEST(GeometryUtilTests, GetOverlappingArea_0)
 {
   cv::Rect rect(-5, -5, 10, 10);
-  cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat identity(2, 3, CV_32FC1);
   identity.at<float>(0,0) = 1;
@@ -88,7 +143,26 @@ TEST(GeometryUtilTests, GetOverlappingArea1)
   identity.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, identity));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_1)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat identity(2, 3, CV_32FC1);
+  identity.at<float>(0,0) = 1;
+  identity.at<float>(0,1) = 0;
+  identity.at<float>(0,2) = 0;
+  identity.at<float>(1,0) = 0;
+  identity.at<float>(1,1) = 1;
+  identity.at<float>(1,2) = 0;
+
   EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, identity));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_2)
+{
+  cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat shift_15_x(2, 3, CV_32FC1);
   shift_15_x.at<float>(0,0) = 1;
@@ -99,7 +173,26 @@ TEST(GeometryUtilTests, GetOverlappingArea1)
   shift_15_x.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(0, swri_image_util::GetOverlappingArea(rect, shift_15_x));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_3)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat shift_15_x(2, 3, CV_32FC1);
+  shift_15_x.at<float>(0,0) = 1;
+  shift_15_x.at<float>(0,1) = 0;
+  shift_15_x.at<float>(0,2) = 15;
+  shift_15_x.at<float>(1,0) = 0;
+  shift_15_x.at<float>(1,1) = 1;
+  shift_15_x.at<float>(1,2) = 0;
+
   EXPECT_FLOAT_EQ(50, swri_image_util::GetOverlappingArea(rect2, shift_15_x));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_4)
+{
+  cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat shift_5_x(2, 3, CV_32FC1);
   shift_5_x.at<float>(0,0) = 1;
@@ -110,7 +203,26 @@ TEST(GeometryUtilTests, GetOverlappingArea1)
   shift_5_x.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(50, swri_image_util::GetOverlappingArea(rect, shift_5_x));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_5)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat shift_5_x(2, 3, CV_32FC1);
+  shift_5_x.at<float>(0,0) = 1;
+  shift_5_x.at<float>(0,1) = 0;
+  shift_5_x.at<float>(0,2) = 5;
+  shift_5_x.at<float>(1,0) = 0;
+  shift_5_x.at<float>(1,1) = 1;
+  shift_5_x.at<float>(1,2) = 0;
+
   EXPECT_FLOAT_EQ(150, swri_image_util::GetOverlappingArea(rect2, shift_5_x));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_6)
+{
+  cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat shift_5_xy(2, 3, CV_32FC1);
   shift_5_xy.at<float>(0,0) = 1;
@@ -121,13 +233,26 @@ TEST(GeometryUtilTests, GetOverlappingArea1)
   shift_5_xy.at<float>(1,2) = 5;
 
   EXPECT_FLOAT_EQ(25, swri_image_util::GetOverlappingArea(rect, shift_5_xy));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_7)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat shift_5_xy(2, 3, CV_32FC1);
+  shift_5_xy.at<float>(0,0) = 1;
+  shift_5_xy.at<float>(0,1) = 0;
+  shift_5_xy.at<float>(0,2) = 5;
+  shift_5_xy.at<float>(1,0) = 0;
+  shift_5_xy.at<float>(1,1) = 1;
+  shift_5_xy.at<float>(1,2) = 5;
+
   EXPECT_FLOAT_EQ(75, swri_image_util::GetOverlappingArea(rect2, shift_5_xy));
 }
 
-TEST(GeometryUtilTests, GetOverlappingArea2)
+TEST(GeometryUtilTests, GetOverlappingArea_8)
 {
   cv::Rect rect(-5, -5, 10, 10);
-  cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat rotate90(2, 3, CV_32FC1);
   rotate90.at<float>(0,0) = 0;
@@ -138,7 +263,26 @@ TEST(GeometryUtilTests, GetOverlappingArea2)
   rotate90.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, rotate90));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_9)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat rotate90(2, 3, CV_32FC1);
+  rotate90.at<float>(0,0) = 0;
+  rotate90.at<float>(0,1) = 1;
+  rotate90.at<float>(0,2) = 0;
+  rotate90.at<float>(1,0) = -1;
+  rotate90.at<float>(1,1) = 0;
+  rotate90.at<float>(1,2) = 0;
+
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect2, rotate90));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_10)
+{
+  cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat rotate180(2, 3, CV_32FC1);
   rotate180.at<float>(0,0) = -1;
@@ -149,7 +293,26 @@ TEST(GeometryUtilTests, GetOverlappingArea2)
   rotate180.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, rotate180));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_11)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat rotate180(2, 3, CV_32FC1);
+  rotate180.at<float>(0,0) = -1;
+  rotate180.at<float>(0,1) = 0;
+  rotate180.at<float>(0,2) = 0;
+  rotate180.at<float>(1,0) = 0;
+  rotate180.at<float>(1,1) = -1;
+  rotate180.at<float>(1,2) = 0;
+
   EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, rotate180));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_12)
+{
+  cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat rotate45(2, 3, CV_32FC1);
   rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
@@ -160,10 +323,24 @@ TEST(GeometryUtilTests, GetOverlappingArea2)
   rotate45.at<float>(1,2) = 0;
 
   EXPECT_FLOAT_EQ(82.842712, swri_image_util::GetOverlappingArea(rect, rotate45));
+}
+
+TEST(GeometryUtilTests, GetOverlappingArea_13)
+{
+  cv::Rect rect2(-10, -5, 20, 10);
+
+  cv::Mat rotate45(2, 3, CV_32FC1);
+  rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0,1) = std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0,2) = 0;
+  rotate45.at<float>(1,0) = -std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1,1) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1,2) = 0;
+
   EXPECT_FLOAT_EQ(136.3961, swri_image_util::GetOverlappingArea(rect2, rotate45));
 }
 
-TEST(GeometryUtilTests, TestProjectEllipse1)
+TEST(GeometryUtilTests, TestProjectEllipse_0)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
   ellipsoid1.at<float>(0,0) = 1;
@@ -190,7 +367,7 @@ TEST(GeometryUtilTests, TestProjectEllipse1)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
-TEST(GeometryUtilTests, TestProjectEllipse2)
+TEST(GeometryUtilTests, TestProjectEllipse_1)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
   ellipsoid1.at<float>(0,0) = 10;
@@ -217,7 +394,7 @@ TEST(GeometryUtilTests, TestProjectEllipse2)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
-TEST(GeometryUtilTests, TestProjectEllipse3)
+TEST(GeometryUtilTests, TestProjectEllipse_3)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
   ellipsoid1.at<float>(0,0) = 10;
@@ -244,10 +421,9 @@ TEST(GeometryUtilTests, TestProjectEllipse3)
   EXPECT_EQ(ellipse1.at<float>(1, 1), projected1.at<float>(1, 1));
 }
 
-
 // TODO(malban): Test projecting an ellipsoid that is not axis aligned.
 
-TEST(GeometryUtilTests, TestProjectEllipseInvalid1)
+TEST(GeometryUtilTests, TestProjectEllipseInvalid_0)
 {
   cv::Mat ellipsoid2(3, 3, CV_32FC1);
   ellipsoid2.at<float>(0,0) = 1;
@@ -265,7 +441,7 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid1)
   EXPECT_TRUE(projected2.empty());
 }
 
-TEST(GeometryUtilTests, TestProjectEllipseInvalid2)
+TEST(GeometryUtilTests, TestProjectEllipseInvalid_1)
 {
   cv::Mat ellipsoid2(2, 2, CV_32FC1);
   ellipsoid2.at<float>(0,0) = 1;
@@ -278,7 +454,7 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid2)
   EXPECT_TRUE(projected2.empty());
 }
 
-TEST(GeometryUtilTests, TestProjectEllipseInvalid3)
+TEST(GeometryUtilTests, TestProjectEllipseInvalid_2)
 {
   cv::Mat ellipsoid2(2, 2, CV_32SC1);
   ellipsoid2.at<int32_t>(0,0) = 1;
@@ -291,7 +467,7 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid3)
   EXPECT_TRUE(projected2.empty());
 }
 
-TEST(GeometryUtilTests, TestGetEllipsePoints1)
+TEST(GeometryUtilTests, TestGetEllipsePoints_0)
 {
   cv::Mat ellipse(2, 2, CV_32FC1);
   ellipse.at<float>(0,0) = 1;

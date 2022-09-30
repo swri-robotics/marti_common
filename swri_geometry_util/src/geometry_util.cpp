@@ -194,4 +194,5 @@ namespace swri_geometry_util
     point = (x + y) / 2;
     return true;
   }
+
 }

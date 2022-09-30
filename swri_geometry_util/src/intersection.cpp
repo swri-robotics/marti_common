@@ -28,18 +28,35 @@
 // *****************************************************************************
 
 #include <stdint.h>
+#include <stdio.h>  /* for printf */
+#include <stdarg.h> /* for va_list */
 
+#include <swri_geometry_util/geometry_util.h>
 #include <swri_geometry_util/intersection.h>
+#include "util.hpp"
 
 #define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
-#include <geos/geom/CoordinateArraySequence.h>
-#include <geos/geom/GeometryFactory.h>
-#include <geos/geom/Polygon.h>
-#include <geos/util/TopologyException.h>
+#include <geos_c.h>
 #undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
 {
+  static void geos_msg_handler(const char* fmt, ...)
+  {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf (fmt, ap);
+    va_end(ap);
+  }
+
+  GEOSContextHandle_t GetContext()
+  {
+    GEOSContextHandle_t ctx = GEOS_init_r();
+    GEOSContext_setNoticeHandler_r(ctx, geos_msg_handler);
+    GEOSContext_setErrorHandler_r(ctx, geos_msg_handler);
+    return ctx;
+  }
+
   bool LineIntersection(
       const cv::Vec2d& p1,
       const cv::Vec2d& p2,
@@ -177,35 +194,49 @@ namespace swri_geometry_util
       const std::vector<cv::Vec2d>& a,
       const std::vector<cv::Vec2d>& b)
   {
+    if (a.size() < 3 || b.size() < 3)
+    {
+      return 0;
+    }
+    initGEOS(geos_msg_handler, geos_msg_handler);
+
     // Create GEOS polygon from vertices in vector a.
-    geos::geom::CoordinateArraySequence* a_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < a.size(); i++)
-    {
-      a_coords->add(geos::geom::Coordinate(a[i][0], a[i][1]));
-    }
-    a_coords->add(a_coords->front());
+    GEOSGeometry* a_polygon = VectorToPolygon(a);
+    GEOSNormalize(a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b);
+    GEOSNormalize(b_polygon);
 
-    geos::geom::LinearRing* a_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(a_coords);
-    geos::geom::Polygon* a_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(a_ring, 0);
-    a_polygon->normalize();
-
-    // Create GEOS polygon from vertices in vector b.
-    geos::geom::CoordinateArraySequence* b_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < b.size(); i++)
-    {
-      b_coords->add(geos::geom::Coordinate(b[i][0], b[i][1]));
-    }
-    b_coords->add(b_coords->front());
-
-    geos::geom::LinearRing* b_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(b_coords);
-    geos::geom::Polygon* b_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(b_ring, 0);
-    b_polygon->normalize();
-
-    bool intersects =  a_polygon->intersects(b_polygon);
+    bool intersects = (GEOSIntersects(a_polygon, b_polygon) == 1);
 
     // Free polygon objects.
-    delete a_polygon;
-    delete b_polygon;
+    GEOSGeom_destroy(a_polygon);
+    GEOSGeom_destroy(b_polygon);
+
+    finishGEOS();
+    return intersects;
+  }
+
+  bool PolygonsIntersect(
+      const std::vector<cv::Vec2d>& a,
+      const std::vector<cv::Vec2d>& b,
+      GEOSContextHandle_t& ctx)
+  {
+    if (a.size() < 3 || b.size() < 3)
+    {
+      return 0;
+    }
+
+    // Create GEOS polygon from vertices in vector a.
+    GEOSGeometry* a_polygon = VectorToPolygon(a, ctx);
+    GEOSNormalize_r(ctx, a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b, ctx);
+    GEOSNormalize_r(ctx, b_polygon);
+
+    bool intersects = (GEOSIntersects_r(ctx, a_polygon, b_polygon) == 1);
+
+    // Free polygon objects.
+    GEOSGeom_destroy_r(ctx, a_polygon);
+    GEOSGeom_destroy_r(ctx, b_polygon);
 
     return intersects;
   }
@@ -219,47 +250,120 @@ namespace swri_geometry_util
       return 0;
     }
 
+    initGEOS(geos_msg_handler, geos_msg_handler);
     double area = 0;
-    // Create GEOS polygon from vertices in vector a.
-    geos::geom::CoordinateArraySequence* a_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < a.size(); i++)
+    GEOSGeometry* a_polygon = VectorToPolygon(a);
+    GEOSNormalize(a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b);
+    GEOSNormalize(b_polygon);
+
+    GEOSGeometry* intersection = GEOSIntersection(a_polygon, b_polygon);
+
+    if (intersection != 0)
     {
-      a_coords->add(geos::geom::Coordinate(a[i][0], a[i][1]));
+      // Returns 1 on success, 0 on exception
+      if (GEOSArea(intersection, &area) == 0)
+      {
+        area = 0;
+      }
     }
-    a_coords->add(a_coords->front());
+    // Free polygon objects
+    GEOSGeom_destroy(a_polygon);
+    GEOSGeom_destroy(b_polygon);
+    GEOSGeom_destroy(intersection);
 
-    geos::geom::LinearRing* a_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(a_coords);
-    geos::geom::Polygon* a_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(a_ring, 0);
-    a_polygon->normalize();
+    finishGEOS();
+    return area;
+  }
 
-    // Create GEOS polygon from vertices in vector b.
-    geos::geom::CoordinateArraySequence* b_coords = new geos::geom::CoordinateArraySequence();
-    for (size_t i = 0; i < b.size(); i++)
+  double PolygonIntersectionArea(
+      const std::vector<cv::Vec2d>& a,
+      const std::vector<cv::Vec2d>& b,
+      GEOSContextHandle_t& ctx)
+  {
+    if (a.size() < 3 || b.size() < 3)
     {
-      b_coords->add(geos::geom::Coordinate(b[i][0], b[i][1]));
-    }
-    b_coords->add(b_coords->front());
-
-    geos::geom::LinearRing* b_ring = geos::geom::GeometryFactory::getDefaultInstance()->createLinearRing(b_coords);
-    geos::geom::Polygon* b_polygon = geos::geom::GeometryFactory::getDefaultInstance()->createPolygon(b_ring, 0);
-    b_polygon->normalize();
-
-    try
-    {
-        if (a_polygon->intersects(b_polygon))
-        {
-          area = a_polygon->intersection(b_polygon)->getArea();
-        }
-    }
-    catch (const geos::util::TopologyException& e)
-    {
-        // TODO Fix this
+      return 0;
     }
 
-    // Free polygon objects.
-    delete a_polygon;
-    delete b_polygon;
+    double area = 0;
+    GEOSGeometry* a_polygon = VectorToPolygon(a, ctx);
+    GEOSNormalize_r(ctx, a_polygon);
+    GEOSGeometry* b_polygon = VectorToPolygon(b, ctx);
+    GEOSNormalize_r(ctx, b_polygon);
+
+    GEOSGeometry* intersection = GEOSIntersection_r(ctx, a_polygon, b_polygon);
+
+    if (intersection != 0)
+    {
+      // Returns 1 on success, 0 on exception
+      if (GEOSArea_r(ctx, intersection, &area) == 0)
+      {
+        area = 0;
+      }
+    }
+    // Free polygon objects
+    GEOSGeom_destroy_r(ctx, a_polygon);
+    GEOSGeom_destroy_r(ctx, b_polygon);
+    GEOSGeom_destroy_r(ctx, intersection);
 
     return area;
+  }
+
+  void ReleaseContext(GEOSContextHandle_t& ctx)
+  {
+    GEOS_finish_r(ctx);
+  }
+
+  GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v)
+  {
+    // Create GEOS polygon from vector of verticies. Allocate one extra
+    // element so first and last coordinate are the same, closing the polygon. Assumes
+    // calling function has already created context.
+    GEOSCoordSequence* coords = GEOSCoordSeq_create(v.size() + 1, 2);
+
+    for (size_t i = 0; i < v.size(); i++)
+    {
+      GEOSCoordSeq_setX(coords, i, v.at(i)[0]);
+      GEOSCoordSeq_setY(coords, i, v.at(i)[1]);
+    }
+
+    // Make the first and last coordinate the same to define a closed polygon
+    GEOSCoordSeq_setX(coords, v.size(), v.front()[0]);
+    GEOSCoordSeq_setY(coords, v.size(), v.front()[1]);
+
+
+    GEOSGeometry* ring = GEOSGeom_createLinearRing(coords);
+    GEOSGeometry* polygon = GEOSGeom_createPolygon(ring, 0, 0);
+    GEOSNormalize(polygon);
+
+    return polygon;
+  }
+
+  GEOSGeometry* VectorToPolygon(
+    const std::vector<cv::Vec2d>& v,
+    GEOSContextHandle_t& ctx)
+  {
+    // Create GEOS polygon from vector of verticies. Allocate one extra
+    // element so first and last coordinate are the same, closing the polygon. Assumes
+    // calling function has already created context.
+    GEOSCoordSequence* coords = GEOSCoordSeq_create_r(ctx, v.size() + 1, 2);
+
+    for (size_t i = 0; i < v.size(); i++)
+    {
+      GEOSCoordSeq_setX_r(ctx, coords, i, v.at(i)[0]);
+      GEOSCoordSeq_setY_r(ctx, coords, i, v.at(i)[1]);
+    }
+
+    // Make the first and last coordinate the same to define a closed polygon
+    GEOSCoordSeq_setX_r(ctx, coords, v.size(), v.front()[0]);
+    GEOSCoordSeq_setY_r(ctx, coords, v.size(), v.front()[1]);
+
+
+    GEOSGeometry* ring = GEOSGeom_createLinearRing_r(ctx, coords);
+    GEOSGeometry* polygon = GEOSGeom_createPolygon_r(ctx, ring, 0, 0);
+    GEOSNormalize_r(ctx, polygon);
+
+    return polygon;
   }
 }
