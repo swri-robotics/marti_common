@@ -128,7 +128,7 @@ if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
 endif()
 
 # Workaround to https://github.com/ros2/geometry2/pull/427
-if ("$ENV{ROS_DISTRO}" STREQUAL "rolling" OR "$ENV{ROS_DISTRO}" STREQUAL "humble")
+if (("$ENV{ROS_DISTRO}" STREQUAL "rolling") OR ("$ENV{ROS_DISTRO}" STREQUAL "humble"))
   target_compile_definitions(${PROJECT_NAME}
     PRIVATE "-DFROM_MSG_WORKAROUND")
   target_compile_definitions(${PROJECT_NAME}_nodes
