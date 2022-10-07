@@ -15,6 +15,26 @@ find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
 # TODO pjr What to do about swri_roscpp-extras.cmake?
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(${PROJECT_NAME} INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+)
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT "export_${PROJECT_NAME}"
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib
+  INCLUDES DESTINATION include
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+)
+
+ament_export_targets("export_${PROJECT_NAME}")
 
 # ### Build Test Node ###
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
@@ -81,7 +101,7 @@ if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(Boost REQUIRED COMPONENTS system)
 
-  rosidl_generate_interfaces(${PROJECT_NAME}
+  rosidl_generate_interfaces(${PROJECT_NAME}_test
     msg/TestTopicServiceRequest.msg
     msg/TestTopicServiceResponse.msg
     DEPENDENCIES std_msgs marti_common_msgs
@@ -90,13 +110,13 @@ if (BUILD_TESTING)
   ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
 
   if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
-    rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+    rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
     target_link_libraries(topic_service_test_server
       Boost::system
       "${cpp_typesupport_target}"
     )
   else()
-    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
     target_link_libraries(topic_service_test_server
       Boost::system
       swri_roscpp_test__rosidl_typesupport_cpp
