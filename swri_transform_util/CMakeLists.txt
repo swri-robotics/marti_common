@@ -71,6 +71,10 @@ target_compile_definitions(${PROJECT_NAME}
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
 )
 
+if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
+  target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
+endif()
+
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::filesystem
