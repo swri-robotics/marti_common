@@ -163,6 +163,11 @@ target_include_directories(lat_lon_tf_echo
   INTERFACE
   ${PROJ_INCLUDE_DIRS}
 )
+
+if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
+  target_compile_definitions(lat_lon_tf_echo PRIVATE "-DUSE_TF2_H_FILES")
+endif()
+
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
 # TODO pjr Convert unit tests
