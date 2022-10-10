@@ -15,8 +15,28 @@ find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
 # TODO pjr What to do about swri_roscpp-extras.cmake?
+add_library(${PROJECT_NAME} INTERFACE)
 
-### Build Test Node ###
+target_include_directories(${PROJECT_NAME} INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+)
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT "export_${PROJECT_NAME}"
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib
+  INCLUDES DESTINATION include
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+)
+
+ament_export_targets("export_${PROJECT_NAME}")
+
+# ### Build Test Node ###
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 target_include_directories(subscriber_test
   PUBLIC
@@ -77,22 +97,35 @@ ament_target_dependencies(timer_test
   std_srvs
   )
 
-if (BUILD_TESTING)
+  # Disabling Foxy and Galactic tests until https://github.com/ros2/rosidl/pull/639 is merged
+if (BUILD_TESTING AND ("$ENV{ROS_DISTRO}" STRGREATER "galactic"))
   find_package(ament_cmake_gtest REQUIRED)
   find_package(Boost REQUIRED COMPONENTS system)
 
-  rosidl_generate_interfaces(${PROJECT_NAME}
+  rosidl_generate_interfaces(${PROJECT_NAME}_test
     msg/TestTopicServiceRequest.msg
     msg/TestTopicServiceResponse.msg
     DEPENDENCIES std_msgs marti_common_msgs
+    LIBRARY_NAME ${PROJECT_NAME}
   )
 
   ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
-  rosidl_target_interfaces(topic_service_test_server ${PROJECT_NAME} "rosidl_typesupport_cpp")
-  target_link_libraries(topic_service_test_server
-    Boost::system
-    swri_roscpp__rosidl_typesupport_cpp
-  )
+
+  # Humble and onwards
+  if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
+    rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
+    target_link_libraries(topic_service_test_server
+      Boost::system
+      "${cpp_typesupport_target}"
+    )
+  else()
+    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
+    target_link_libraries(topic_service_test_server
+      Boost::system
+      swri_roscpp_test__rosidl_typesupport_cpp
+    )
+  endif()
+
   ament_target_dependencies(topic_service_test_server
     rclcpp
     marti_common_msgs
@@ -102,6 +135,8 @@ if (BUILD_TESTING)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
+
+  ament_export_dependencies(rosidl_default_runtime)
 endif()
 
 ### Install Test Node and Headers ###

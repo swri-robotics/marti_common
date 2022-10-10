@@ -82,22 +82,43 @@ namespace swri_transform_util
   UtmUtil::UtmData::UtmData()
   {
     // Initialize lat long projection.
+#ifndef USE_PROJ_API_6
     lat_lon_ = pj_init_plus("+proj=latlong +ellps=WGS84");
+#endif
 
     // Initialize projection for each UTM zone.
     char args[64];
     for (int i = 0; i < 60; i++)
     {
       snprintf(args, sizeof(args), "+proj=utm +ellps=WGS84 +zone=%d", i + 1);
-      utm_north_[i] = pj_init_plus(args);
-
       snprintf(args, sizeof(args), "+proj=utm +ellps=WGS84 +zone=%d +south", i + 1);
+
+#ifdef USE_PROJ_API_6
+      P_ll_north_[i] = proj_create_crs_to_crs(PJ_DEFAULT_CTX,
+                               "+proj=latlong +ellps=WGS84",
+                               args,
+                               NULL);
+      P_ll_south_[i] = proj_create_crs_to_crs(PJ_DEFAULT_CTX,
+                               "+proj=latlong +ellps=WGS84",
+                               args,
+                               NULL);
+#else
+      utm_north_[i] = pj_init_plus(args);
       utm_south_[i] = pj_init_plus(args);
+#endif
+
     }
   }
 
   UtmUtil::UtmData::~UtmData()
   {
+#ifdef USE_PROJ_API_6
+    for (int i = 0; i < 60; i++)
+    {
+      proj_destroy(P_ll_north_[i]);
+      proj_destroy(P_ll_south_[i]);
+    }
+#else
     pj_free(lat_lon_);
 
     // Cleanup projection memory.
@@ -106,6 +127,7 @@ namespace swri_transform_util
       pj_free(utm_north_[i]);
       pj_free(utm_south_[i]);
     }
+#endif
   }
 
   void UtmUtil::UtmData::ToUtm(
@@ -125,6 +147,23 @@ namespace swri_transform_util
     double y = latitude * swri_math_util::_deg_2_rad;
 
     // Get easting and northing values.
+#ifdef USE_PROJ_API_6
+    PJ_COORD c, c_out;
+    c = proj_coord(x, y, 0, 0);
+
+    // Get easting and northing values.
+    if (band <= 'N')
+    {
+      c_out = proj_trans(P_ll_south_[zone - 1], PJ_FWD, c);
+    }
+    else
+    {
+      c_out = proj_trans(P_ll_north_[zone - 1], PJ_FWD, c);
+    }
+
+    easting = c_out.enu.e;
+    northing = c_out.enu.n;
+#else
     if (band <= 'N')
     {
       pj_transform(lat_lon_, utm_south_[zone - 1], 1, 0, &x, &y, NULL);
@@ -136,6 +175,7 @@ namespace swri_transform_util
 
     easting = x;
     northing = y;
+#endif
   }
 
   void UtmUtil::UtmData::ToUtm(
@@ -163,6 +203,22 @@ namespace swri_transform_util
     double x = easting;
     double y = northing;
 
+#ifdef USE_PROJ_API_6
+    PJ_COORD c, c_out;
+    c = proj_coord(easting, northing, 0, 0);
+
+    if (band <= 'N')
+    {
+      c_out = proj_trans(P_ll_south_[zone - 1], PJ_INV, c);
+    }
+    else
+    {
+      c_out = proj_trans(P_ll_south_[zone - 1], PJ_INV, c);
+    }
+
+    longitude = c_out.xyz.x * swri_math_util::_rad_2_deg;
+    latitude = c_out.xyz.y * swri_math_util::_rad_2_deg;
+#else
     if (band <= 'N')
     {
       pj_transform(utm_south_[zone - 1], lat_lon_, 1, 0, &x, &y, NULL);
@@ -174,6 +230,7 @@ namespace swri_transform_util
 
     longitude = x * swri_math_util::_rad_2_deg;
     latitude = y * swri_math_util::_rad_2_deg;
+#endif
   }
 
   UtmUtil::UtmUtil() :

@@ -30,9 +30,19 @@
 #include <boost/smart_ptr.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+
+#ifndef FROM_MSG_WORKAROUND
+#include <tf2/utils.h>
+#endif
+
+#ifdef USE_TF2_H_FILES
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
+
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
-#include <tf2/utils.h>
 #include <geographic_msgs/msg/geo_pose.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <gps_msgs/msg/gps_fix.hpp>

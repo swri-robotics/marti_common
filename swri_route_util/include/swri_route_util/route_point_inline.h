@@ -31,7 +31,11 @@
 
 #include <boost/lexical_cast.hpp>
 
+#ifdef USE_TF2_H_FILES
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 namespace swri_route_util
 {
