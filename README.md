@@ -36,14 +36,14 @@ Package migration notes:
 
 Also note that many features have not been tested yet.  Please open an issue if you try to use something and it doesn't work.
 
-Installation (ROS Dashing, Eloquent, Foxy)
+Installation (ROS Foxy, Galactic, Humble)
 ------------
 
 If you have installed ROS 2, you can install any of the packages in this repository with apt-get:
 
     sudo apt-get install ros-${ROS_DISTRO}-<package>
 
-Building From Source (ROS Dashing, Eloquent, Foxy)
+Building From Source (ROS Foxy, Galactic, Humble)
 ------------
 
 These directions assume you have already set up rosdep. See the [rosdep documentation](http://wiki.ros.org/rosdep) on the ROS wiki for help setting up rosdep.
