@@ -67,7 +67,7 @@ target_include_directories(${PROJECT_NAME}
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_definitions(${PROJECT_NAME}
-  PRIVATE
+  PUBLIC
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
 )
 
@@ -76,6 +76,7 @@ if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
 endif()
 
 target_link_libraries(${PROJECT_NAME}
+  PUBLIC
   Boost::boost
   Boost::filesystem
   Boost::thread
@@ -88,6 +89,7 @@ target_link_libraries(${PROJECT_NAME}
   yaml-cpp
 )
 ament_target_dependencies(${PROJECT_NAME}
+  PUBLIC
   diagnostic_msgs
   diagnostic_updater
   geographic_msgs
@@ -117,27 +119,27 @@ target_include_directories(${PROJECT_NAME}_nodes
   INTERFACE
   ${PROJ_INCLUDE_DIRS}
 )
+
+set(TF_UTIL_DEFINITIONS "")
 if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
-  target_compile_definitions(${PROJECT_NAME}
-    PRIVATE "-DUSE_TF2_H_FILES")
-  target_compile_definitions(${PROJECT_NAME}_nodes
-    PRIVATE "-DUSE_TF2_H_FILES")
+  set(TF_UTIL_DEFINITIONS "-DUSE_TF2_H_FILES ${TF_UTIL_DEFINITIONS}")
 endif()
 
 if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
-  target_compile_definitions(${PROJECT_NAME}
-    PRIVATE "-DUSE_PROJ_API_6")
-  target_compile_definitions(${PROJECT_NAME}_nodes
-    PRIVATE "-DUSE_PROJ_API_6")
+  set(TF_UTIL_DEFINITIONS "-DUSE_PROJ_API_6 ${TF_UTIL_DEFINITIONS}")
 endif()
 
 # Workaround to https://github.com/ros2/geometry2/pull/427
 if (("$ENV{ROS_DISTRO}" STREQUAL "rolling") OR ("$ENV{ROS_DISTRO}" STREQUAL "humble"))
-  target_compile_definitions(${PROJECT_NAME}
-    PRIVATE "-DFROM_MSG_WORKAROUND")
-  target_compile_definitions(${PROJECT_NAME}_nodes
-    PRIVATE "-DFROM_MSG_WORKAROUND")
+  set(TF_UTIL_DEFINITIONS "-DFROM_MSG_WORKAROUND ${TF_UTIL_DEFINITIONS}")
 endif()
+
+target_compile_definitions(${PROJECT_NAME}
+  PUBLIC "${TF_UTIL_DEFINITIONS}"
+  )
+target_compile_definitions(${PROJECT_NAME}_nodes
+  PRIVATE "${TF_UTIL_DEFINITIONS}"
+  )
 
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
@@ -220,15 +222,16 @@ install(PROGRAMS nodes/initialize_origin.py
 )
 
 ament_python_install_package(${PROJECT_NAME})
-
+ament_export_definitions("${TF_UTIL_DEFINITIONS}")
 ament_export_dependencies(
   ament_cmake
   geographic_msgs
   gps_msgs
+  tf2_geometry_msgs
 )
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
   ${PROJ_LIBRARIES}
 )
-
 ament_package()
+
