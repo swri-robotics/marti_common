@@ -97,7 +97,8 @@ ament_target_dependencies(timer_test
   std_srvs
   )
 
-if (BUILD_TESTING)
+  # Disabling Foxy tests until https://github.com/ros2/rosidl/pull/639 is merged
+if (BUILD_TESTING AND ("$ENV{ROS_DISTRO}" STRGREATER "foxy"))
   find_package(ament_cmake_gtest REQUIRED)
   find_package(Boost REQUIRED COMPONENTS system)
 
@@ -118,10 +119,10 @@ if (BUILD_TESTING)
       "${cpp_typesupport_target}"
     )
   else()
-    rosidl_target_interfaces(topic_service_test_server ${PROJECT_NAME}_test "rosidl_typesupport_cpp")
+    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
     target_link_libraries(topic_service_test_server
       Boost::system
-      swri_roscpp__rosidl_typesupport_cpp
+      swri_roscpp_test__rosidl_typesupport_cpp
     )
   endif()
 
