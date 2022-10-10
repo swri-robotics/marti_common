@@ -97,8 +97,8 @@ ament_target_dependencies(timer_test
   std_srvs
   )
 
-  # Disabling Foxy tests until https://github.com/ros2/rosidl/pull/639 is merged
-if (BUILD_TESTING AND ("$ENV{ROS_DISTRO}" STRGREATER "foxy"))
+  # Disabling Foxy and Galactic tests until https://github.com/ros2/rosidl/pull/639 is merged
+if (BUILD_TESTING AND ("$ENV{ROS_DISTRO}" STRGREATER "galactic"))
   find_package(ament_cmake_gtest REQUIRED)
   find_package(Boost REQUIRED COMPONENTS system)
 
