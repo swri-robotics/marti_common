@@ -35,6 +35,7 @@ if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
 endif()
 
 ament_target_dependencies(${PROJECT_NAME}
+  PUBLIC
   ament_cmake
   marti_common_msgs
   marti_nav_msgs
@@ -62,5 +63,5 @@ install(DIRECTORY include/
 ament_export_dependencies(ament_cmake)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
-
 ament_package()
+
