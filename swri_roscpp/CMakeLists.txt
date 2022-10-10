@@ -118,12 +118,11 @@ if (BUILD_TESTING)
       "${cpp_typesupport_target}"
     )
   else()
-    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
+    rosidl_target_interfaces(topic_service_test_server ${PROJECT_NAME}_test "rosidl_typesupport_cpp")
     target_link_libraries(topic_service_test_server
       Boost::system
-      swri_roscpp_test__rosidl_typesupport_cpp
+      swri_roscpp__rosidl_typesupport_cpp
     )
-
   endif()
 
   ament_target_dependencies(topic_service_test_server
