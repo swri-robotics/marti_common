@@ -2,8 +2,8 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.4.2 (2022-10-10)
+------------------
 * Add Humble Support (`#691 <https://github.com/swri-robotics/marti_common/issues/691>`_)
   * Adding Humble support based on @shrijitsingh99 PR in https://github.com/swri-robotics/marti_common/pull/685
 * Contributors: David Anthony, Shrijit Singh
