@@ -2,6 +2,14 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add Humble Support (`#691 <https://github.com/swri-robotics/marti_common/issues/691>`_)
+  * Adding Humble support based on @shrijitsingh99 PR in https://github.com/swri-robotics/marti_common/pull/685
+* Switch to C API (`#689 <https://github.com/swri-robotics/marti_common/issues/689>`_)
+  * Switch to GEOS C API from C++ API
+* Contributors: David Anthony, Shrijit Singh
+
 3.3.2 (2020-11-24)
 ------------------
 

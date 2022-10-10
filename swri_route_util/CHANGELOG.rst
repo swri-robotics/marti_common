@@ -2,6 +2,12 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add Humble Support (`#691 <https://github.com/swri-robotics/marti_common/issues/691>`_)
+  * Adding Humble support based on @shrijitsingh99 PR in https://github.com/swri-robotics/marti_common/pull/685
+* Contributors: David Anthony, Shrijit Singh
+
 3.3.2 (2020-11-24)
 ------------------
 
