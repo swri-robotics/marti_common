@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix ament exports (`#693 <https://github.com/swri-robotics/marti_common/issues/693>`_)
+  * Fix ament exports
+* Contributors: P. J. Reed
+
 3.4.2 (2022-10-10)
 ------------------
 * Add Humble Support (`#691 <https://github.com/swri-robotics/marti_common/issues/691>`_)
