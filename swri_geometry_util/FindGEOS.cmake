@@ -46,7 +46,7 @@ IF (NOT DEFINED GEOS_INCLUDE_DIR OR NOT DEFINED GEOS_LIBRARY OR NOT DEFINED GEOS
             OUTPUT_VARIABLE GEOS_PREFIX)
 
         FIND_PATH(GEOS_INCLUDE_DIR
-            geos/geom.h
+            geos_c.h
             PATHS
                 ${GEOS_PREFIX}/include
                 /usr/local/include
