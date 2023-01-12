@@ -1,4 +1,4 @@
 def document():
     """Document a running system"""
-    print('Hello')
+    print('DJA: Document Hello')
 
