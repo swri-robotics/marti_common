@@ -4,12 +4,18 @@ from ros2cli.command import CommandExtension
 
 class SwriCommand(CommandExtension):
     """Execute SwRI CLI command"""
-    def add_arguments(self, parser, cli_name, *, arg=None):
+    def add_arguments(self, parser, cli_name, *, argv=None):
         """Add arguments"""
         self._subparser = parser
-        add_subparsers_on_demand(parser, cli_name, '_verb', 'swri_cli_tools.verb', required=False, argv=argv)
+        add_subparsers_on_demand(
+            parser,
+            cli_name,
+            '_verb',
+            'swri.verb',
+            required=False,
+            argv=argv)
     
-    def main(self, *, args):
+    def main(self, *, parser, args):
         """ Create command """
         if not hasattr(args, '_verb'):
             self._subparser.print_help()

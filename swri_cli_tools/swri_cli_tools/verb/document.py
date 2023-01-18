@@ -9,7 +9,7 @@ except ImportError:
 import swri_cli_tools.document
 from swri_cli_tools.verb import VerbExtension
 
-class CreateDocumentVerb(VerbExtension):
+class DocumentVerb(VerbExtension):
     """Document running system"""
 
     def add_arguments(self, parser, cli_name):
