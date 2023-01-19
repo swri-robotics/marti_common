@@ -56,12 +56,7 @@ namespace YAML
 
 namespace swri_yaml_util
 {
-  // Require Melodic or greater to remove deprecated auto_ptr type
-#if ROS_VERSION_MINIMUM(1, 14, 0)
   typedef std::unique_ptr<YAML::Node> YamlNodePtr;
-#else
-  typedef std::auto_ptr<YAML::Node> YamlNodePtr;
-#endif
 
   bool LoadFile(const std::string& path, YAML::Node& yaml);
   bool LoadString(const std::string& input, YAML::Node& yaml);
