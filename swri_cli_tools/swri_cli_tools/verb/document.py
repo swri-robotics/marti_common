@@ -2,18 +2,16 @@ import sys
 
 import swri_cli_tools.document
 from swri_cli_tools.verb import VerbExtension
+from ros2node.api import NodeNameCompleter
 
 
 class DocumentVerb(VerbExtension):
     """Document running system"""
 
     def add_arguments(self, parser, cli_name):
-        pass
+        parser.add_argument(
+            '-a', '--all', action='store_true',
+            help='Display all nodes even hidden ones')
 
-    def main(self, *, args) -> int:
-        try:
-            swri_cli_tools.document.document_system()
-        except swri_cli_tools.errors.SWRIError as e:
-            print(f'Unable to document system: {str(e)}', file=sys.stderr)
-            return 1
-        return 0
+    def main(self, *, args):
+        print('DJA: Verb success!')
