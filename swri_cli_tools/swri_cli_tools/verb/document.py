@@ -1,13 +1,8 @@
 import sys
 
-try:
-    from argcomplete.completers import DirectoriesCompleter
-except ImportError:
-    def DirectoriesCompleter():
-        return None
-
 import swri_cli_tools.document
 from swri_cli_tools.verb import VerbExtension
+
 
 class DocumentVerb(VerbExtension):
     """Document running system"""
