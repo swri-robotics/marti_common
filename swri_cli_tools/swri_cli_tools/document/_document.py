@@ -2,6 +2,7 @@ from natsort import natsorted
 
 
 from swri_cli_tools.api._node_info import NodeInfo
+from swri_cli_tools.api._node_info import print_node_infos
 
 from ros2cli.node.strategy import NodeStrategy
 
@@ -55,3 +56,4 @@ def document_system(args):
                 action_servers=action_servers,
                 action_clients=action_clients))
 
+    print_node_infos(nodes) 

@@ -1,7 +1,6 @@
 """Holds information about node in ROS 2 system."""
 
 from __future__ import annotations
-from natsort import natsorted
 from typing import List
 
 from ros2node.api import TopicInfo
@@ -18,24 +17,24 @@ def print_node_info(node: NodeInfo):
     print('    - Publishers:')
     for p in node.publishers:
         print('        - {}:'.format(p.name))
-        print('            {}:'.format(p.type))
+        print('            {}:'.format(p.types))
     print('    - Subscribers:')
     for s in node.subscribers:
         print('        - {}:'.format(s.name))
-        print('            {}:'.format(s.type))
+        print('            {}:'.format(s.types))
     print('    - Service Servers:')
     for s in node.service_servers:
         print('        - {}:'.format(s.name))
-        print('            {}:'.format(s.type))
+        print('            {}:'.format(s.types))
     for c in node.service_clients:
         print('        - {}:'.format(c.name))
-        print('            {}:'.format(c.type))
+        print('            {}:'.format(c.types))
     for s in node.action_servers:
         print('        - {}:'.format(s.name))
-        print('            {}:'.format(s.type))
+        print('            {}:'.format(s.types))
     for c in node.action_clients:
         print('        - {}:'.format(c.name))
-        print('            {}:'.format(c.type))
+        print('            {}:'.format(c.types))
 
 class NodeInfo:
     """Information about node for documentation."""
@@ -115,7 +114,7 @@ class NodeInfo:
         self._service_clients += connections
 
     @property
-    def service_client(self):
+    def service_clients(self):
         """Get all service clients associated with node."""
         return self._service_clients
 
@@ -137,6 +136,6 @@ class NodeInfo:
         self._action_clients += connections
 
     @property
-    def action_client(self):
+    def action_clients(self):
         """Get all action clients associated with node."""
         return self._action_clients
