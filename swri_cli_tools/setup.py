@@ -12,7 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name])
     ],
-    install_requires=['setuptools', 'ros2cli'],
+    install_requires=['ros2cli'],
     zip_safe=True,
     author='David Anthony',
     author_email='david.anthony@swri.org',

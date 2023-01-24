@@ -16,6 +16,7 @@ from ros2node.api import get_subscriber_info
 
 def document_system(args):
     """Document a running system."""
+    nodes = []
     with NodeStrategy(args) as node:
         names = get_node_names(node=node, include_hidden_nodes=args.hidden)
         names = natsorted(name.full_name for name in names)
@@ -37,17 +38,20 @@ def document_system(args):
                 node=node,
                 remote_node_name=name,
                 include_hidden=args.hidden)
-            actions_servers = get_action_server_info(
+            action_servers = get_action_server_info(
                 node=node,
                 remote_node_name=name,
                 include_hidden=args.hidden)
-            actions_clients = get_action_client_info(
+            action_clients = get_action_client_info(
                 node=node,
                 remote_node_name=name,
                 include_hidden=args.hidden)
 
-            new_node = NodeInfo()
-            for s in subscribers:
-                c = ConnectionInfo()
-                new_node.add_subscriber(c)
+            nodes.append(NodeInfo(name=name,
+                publishers=publishers,
+                subscribers=subscribers,
+                service_servers=service_servers,
+                service_clients=service_clients,
+                action_servers=action_servers,
+                action_clients=action_clients))
 

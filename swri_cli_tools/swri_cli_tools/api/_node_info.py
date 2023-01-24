@@ -1,21 +1,61 @@
 """Holds information about node in ROS 2 system."""
 
+from __future__ import annotations
+from natsort import natsorted
 from typing import List
 
 from ros2node.api import TopicInfo
 
+
+def print_node_infos(nodes: List(NodeInfo)):
+    """Print information about nodes."""
+    for node in nodes:
+        print_node_info(node)
+
+def print_node_info(node: NodeInfo):
+    """Print information about single node."""
+    print('- {}:'.format(node.name))
+    print('    - Publishers:')
+    for p in node.publishers:
+        print('        - {}:'.format(p.name))
+        print('            {}:'.format(p.type))
+    print('    - Subscribers:')
+    for s in node.subscribers:
+        print('        - {}:'.format(s.name))
+        print('            {}:'.format(s.type))
+    print('    - Service Servers:')
+    for s in node.service_servers:
+        print('        - {}:'.format(s.name))
+        print('            {}:'.format(s.type))
+    for c in node.service_clients:
+        print('        - {}:'.format(c.name))
+        print('            {}:'.format(c.type))
+    for s in node.action_servers:
+        print('        - {}:'.format(s.name))
+        print('            {}:'.format(s.type))
+    for c in node.action_clients:
+        print('        - {}:'.format(c.name))
+        print('            {}:'.format(c.type))
+
 class NodeInfo:
     """Information about node for documentation."""
 
-    def __init__(self) -> None:
+    def __init__(self,
+        name: str = None,
+        publishers: List(TopicInfo) = [],
+        subscribers: List(TopicInfo) = [],
+        service_servers: List(TopicInfo) = [],
+        service_clients: List(TopicInfo) = [],
+        action_servers: List(TopicInfo) = [],
+        action_clients: List(TopicInfo) = []) -> None:
         """Construct node information class."""
-        self._name = None
-        self._publishers = []
-        self._subscribers = []
-        self._service_servers = []
-        self._service_clients = []
-        self._action_servers = []
-        self._action_clients = []
+        self._name = name
+        self._publishers = publishers
+        self._subscribers = subscribers
+        self._service_servers = service_servers
+        self._service_clients = service_clients
+        self._action_servers = action_servers
+        self._action_clients = action_clients
 
     @property
     def name(self):
@@ -23,7 +63,7 @@ class NodeInfo:
         return self._name
 
     @name.setter
-    def name(self, value):
+    def name(self, value) -> None:
         """Set node name."""
         self._name = value
 
