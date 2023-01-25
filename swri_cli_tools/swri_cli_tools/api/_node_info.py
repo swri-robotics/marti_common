@@ -17,24 +17,30 @@ def print_node_info(node: NodeInfo):
     print('    - Publishers:')
     for p in node.publishers:
         print('        - {}:'.format(p.name))
-        print('            {}:'.format(p.types))
+        for t in p.types:
+            print('            {}:'.format(t))
     print('    - Subscribers:')
     for s in node.subscribers:
         print('        - {}:'.format(s.name))
-        print('            {}:'.format(s.types))
+        for t in s.types:
+            print('            {}:'.format(t))
     print('    - Service Servers:')
     for s in node.service_servers:
         print('        - {}:'.format(s.name))
-        print('            {}:'.format(s.types))
+        for t in s.types:
+            print('            {}:'.format(t))
     for c in node.service_clients:
         print('        - {}:'.format(c.name))
-        print('            {}:'.format(c.types))
+        for t in c.types:
+            print('            {}:'.format(t))
     for s in node.action_servers:
         print('        - {}:'.format(s.name))
-        print('            {}:'.format(s.types))
+        for t in s.types:
+            print('            {}:'.format(t))
     for c in node.action_clients:
         print('        - {}:'.format(c.name))
-        print('            {}:'.format(c.types))
+        for t in c.types:
+            print('            {}:'.format(t))
 
 class NodeInfo:
     """Information about node for documentation."""

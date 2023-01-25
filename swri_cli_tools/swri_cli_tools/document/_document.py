@@ -6,6 +6,8 @@ from swri_cli_tools.api._node_info import print_node_infos
 
 from ros2cli.node.strategy import NodeStrategy
 
+from ros2node.api import get_absolute_node_name
+from ros2node.api import parse_node_name
 from ros2node.api import get_action_client_info
 from ros2node.api import get_action_server_info
 from ros2node.api import get_node_names
@@ -17,10 +19,10 @@ from ros2node.api import get_subscriber_info
 
 def document_system(args):
     """Document a running system."""
-    nodes = []
+    nodes = {}
     with NodeStrategy(args) as node:
         names = get_node_names(node=node, include_hidden_nodes=args.hidden)
-        names = natsorted(name.full_name for name in names)
+        names = natsorted(get_absolute_node_name(name.full_name) for name in names)
 
         for name in names:
             subscribers = get_subscriber_info(
@@ -48,12 +50,12 @@ def document_system(args):
                 remote_node_name=name,
                 include_hidden=args.hidden)
 
-            nodes.append(NodeInfo(name=name,
+            nodes[name] = NodeInfo(name=name,
                 publishers=publishers,
                 subscribers=subscribers,
                 service_servers=service_servers,
                 service_clients=service_clients,
                 action_servers=action_servers,
-                action_clients=action_clients))
-
-    print_node_infos(nodes) 
+                action_clients=action_clients)
+        
+    print_node_infos(nodes)
