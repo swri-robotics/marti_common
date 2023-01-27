@@ -99,7 +99,7 @@ def document_system(args):
 
                     nodes[target_node].parameters.append(ParameterInfo(
                         param_name,
-                        str(parameter.values[0].type),
+                        parameter.values[0].type,
                         str(value)))
 
             node.destroy_client(client)
