@@ -14,7 +14,15 @@ class DocumentVerb(VerbExtension):
             '--hidden',
             action='store_true',
             dest='hidden',
-            help='include hidden node and topic information')
+            required=False,
+            help='Include hidden node and topic information')
+        parser.add_argument(
+            '--node', '-n',
+            dest='nodes',
+            required=False,
+            default=None,
+            nargs='+',
+            help='Set of nodes to document. If unused, all nodes will be documented')
 
     def main(self, *, args):
         document_system(args)

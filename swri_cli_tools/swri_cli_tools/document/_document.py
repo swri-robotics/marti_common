@@ -29,9 +29,12 @@ def document_system(args):
     nodes = {}
     names = ()
     with NodeStrategy(args) as node:
-        names = get_node_names(node=node, include_hidden_nodes=args.hidden)
-        names = natsorted(get_absolute_node_name(name.full_name)
-                          for name in names)
+        if args.nodes is None:
+            names = get_node_names(node=node, include_hidden_nodes=args.hidden)
+            names = natsorted(get_absolute_node_name(name.full_name)
+                              for name in names)
+        else:
+            names = natsorted(args.nodes)
 
         for name in names:
             subscribers = get_subscriber_info(
