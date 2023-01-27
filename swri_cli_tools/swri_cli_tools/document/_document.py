@@ -34,10 +34,13 @@ def document_system(args):
         names = natsorted(get_absolute_node_name(name.full_name) for name in names)
 
         for name in names:
+            print("DJA: Processing {}".format(name))
             subscribers = get_subscriber_info(
                 node=node,
                 remote_node_name=name,
                 include_hidden=args.hidden)
+            for s in subscribers:
+                print("{}".format(s))
             publishers = get_publisher_info(
                 node=node,
                 remote_node_name=name,
@@ -102,5 +105,5 @@ def document_system(args):
                         str(value)))
 
             node.destroy_client(client)
-        
-    print_node_infos(list(nodes.items()))
+    print("\tDJA4: {}".format(list(nodes.values())))
+    print_node_infos(list(nodes.values()))
