@@ -13,7 +13,6 @@ def print_node_infos(nodes: List(NodeInfo)):
 
 def print_node_info(node: NodeInfo):
     """Print information about single node."""
-    print("DJA3: {}".format(node.subscribers))
     print('- {}:'.format(node.name))
     print('    - Publishers:')
     for p in node.publishers:
@@ -47,9 +46,9 @@ def print_node_info(node: NodeInfo):
             print('            {}:'.format(t))
     print('    - Parameters:')
     for p in node.parameters:
-        print('        - {}:'.format(p.name))
-        print('            - {}'.format(p.type))
-        print('            - {}'.format(p.value))
+        print('        - {}:'.format(p.param_name))
+        print('            - {}'.format(p.param_type))
+        print('            - {}'.format(p.param_value))
 class NodeInfo:
     """Information about node for documentation."""
 
@@ -66,7 +65,6 @@ class NodeInfo:
         self._name = name
         self._publishers = publishers
         self._subscribers = subscribers
-        print("\tDJA2: {}".format(subscribers))
         self._service_servers = service_servers
         self._service_clients = service_clients
         self._action_servers = action_servers

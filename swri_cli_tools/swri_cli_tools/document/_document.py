@@ -39,8 +39,6 @@ def document_system(args):
                 node=node,
                 remote_node_name=name,
                 include_hidden=args.hidden)
-            for s in subscribers:
-                print("{}".format(s))
             publishers = get_publisher_info(
                 node=node,
                 remote_node_name=name,
@@ -98,12 +96,11 @@ def document_system(args):
                     value = None
                     if parameter.values:
                         value = get_value(parameter_value=parameter.values[0])
-                    
+
                     nodes[target_node].parameters.append(ParameterInfo(
                         param_name,
                         str(parameter.values[0].type),
                         str(value)))
 
             node.destroy_client(client)
-    print("\tDJA4: {}".format(list(nodes.values())))
     print_node_infos(list(nodes.values()))
