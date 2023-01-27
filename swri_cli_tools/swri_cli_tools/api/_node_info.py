@@ -29,19 +29,26 @@ def print_node_info(node: NodeInfo):
         print('        - {}:'.format(s.name))
         for t in s.types:
             print('            {}:'.format(t))
+    print('    - Service Clients:')
     for c in node.service_clients:
         print('        - {}:'.format(c.name))
         for t in c.types:
             print('            {}:'.format(t))
+    print('    - Action Servers:')
     for s in node.action_servers:
         print('        - {}:'.format(s.name))
         for t in s.types:
             print('            {}:'.format(t))
+    print('    - Action Clients:')
     for c in node.action_clients:
         print('        - {}:'.format(c.name))
         for t in c.types:
             print('            {}:'.format(t))
-
+    print('    - Parameters:')
+    for p in node.parameters:
+        print('        - {}:'.format(p.name))
+        print('            - {}'.format(p.type))
+        print('            - {}:'.format(p.value))
 class NodeInfo:
     """Information about node for documentation."""
 
@@ -52,7 +59,8 @@ class NodeInfo:
         service_servers: List(TopicInfo) = [],
         service_clients: List(TopicInfo) = [],
         action_servers: List(TopicInfo) = [],
-        action_clients: List(TopicInfo) = []) -> None:
+        action_clients: List(TopicInfo) = [],
+        parameters: List(ParameterInfo) = []) -> None:
         """Construct node information class."""
         self._name = name
         self._publishers = publishers
@@ -61,6 +69,7 @@ class NodeInfo:
         self._service_clients = service_clients
         self._action_servers = action_servers
         self._action_clients = action_clients
+        self._parameters = parameters
 
     @property
     def name(self):
@@ -145,3 +154,42 @@ class NodeInfo:
     def action_clients(self):
         """Get all action clients associated with node."""
         return self._action_clients
+
+    def add_parameter(self, parameter):
+        """Add parameter to node."""
+        self._parameters.append(parameter)
+
+    def add_parameters(self, parameters):
+        """Add parameters to node."""
+        self._parameters += parameters
+
+    @property
+    def parameters(self):
+        """Get parameters associated with node."""
+        return self._parameters
+
+class ParameterInfo:
+    """Hold information about node parameter."""
+    def __init__(self,
+        param_name: str = None,
+        param_type: str = None,
+        param_value: str = None) -> None:
+
+        self._param_name = param_name
+        self._param_type = param_type
+        self._param_value = param_value
+
+    @property
+    def param_name(self):
+        """Get parameter name."""
+        return self._param_name
+
+    @property
+    def param_type(self):
+        """Get parameter type."""
+        return self._param_type
+
+    @property
+    def param_value(self):
+        """Get parameter value."""
+        return self._param_value
