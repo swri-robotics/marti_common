@@ -12,6 +12,7 @@ def print_node_infos(nodes: List(NodeInfo)):
     for node in nodes:
         print_node_info(node)
 
+
 def print_node_info(node: NodeInfo):
     """Print information about single node."""
     print('- {}:'.format(node.name))
@@ -50,18 +51,20 @@ def print_node_info(node: NodeInfo):
         print('        - {}:'.format(p.param_name))
         print('            - {}'.format(p.param_type))
         print('            - {}'.format(p.param_value))
+
+
 class NodeInfo:
     """Information about node for documentation."""
 
     def __init__(self,
-        name: str = None,
-        publishers: List(TopicInfo) = [],
-        subscribers: List(TopicInfo) = [],
-        service_servers: List(TopicInfo) = [],
-        service_clients: List(TopicInfo) = [],
-        action_servers: List(TopicInfo) = [],
-        action_clients: List(TopicInfo) = [],
-        parameters: List(ParameterInfo) = []) -> None:
+                 name: str = None,
+                 publishers: List(TopicInfo) = [],
+                 subscribers: List(TopicInfo) = [],
+                 service_servers: List(TopicInfo) = [],
+                 service_clients: List(TopicInfo) = [],
+                 action_servers: List(TopicInfo) = [],
+                 action_clients: List(TopicInfo) = [],
+                 parameters: List(ParameterInfo) = []) -> None:
         """Construct node information class."""
         self._name = name
         self._publishers = publishers
@@ -169,12 +172,14 @@ class NodeInfo:
         """Get parameters associated with node."""
         return self._parameters
 
+
 class ParameterInfo:
     """Hold information about node parameter."""
+
     def __init__(self,
-        param_name: str = None,
-        param_type: ParameterType = None,
-        param_value: str = None) -> None:
+                 param_name: str = None,
+                 param_type: ParameterType = None,
+                 param_value: str = None) -> None:
 
         self._param_name = param_name
         self._param_type = "Unknown"
@@ -198,7 +203,7 @@ class ParameterInfo:
             self._param_type = "string array"
         elif param_type == ParameterType.PARAMETER_NOT_SET:
             self._param_type = "Not set"
- 
+
         self._param_value = param_value
 
     @property

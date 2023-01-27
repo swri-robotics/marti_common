@@ -1,6 +1,7 @@
 from ros2cli.plugin_system import PLUGIN_SYSTEM_VERSION
 from ros2cli.plugin_system import satisfies_version
 
+
 class VerbExtension:
     NAME = None
     EXTENSION_POINT_VERSION = '0.1'

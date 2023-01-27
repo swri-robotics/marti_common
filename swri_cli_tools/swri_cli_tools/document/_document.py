@@ -1,6 +1,5 @@
 from natsort import natsorted
 
-
 from swri_cli_tools.api._node_info import NodeInfo
 from swri_cli_tools.api._node_info import ParameterInfo
 from swri_cli_tools.api._node_info import print_node_infos
@@ -31,10 +30,10 @@ def document_system(args):
     names = ()
     with NodeStrategy(args) as node:
         names = get_node_names(node=node, include_hidden_nodes=args.hidden)
-        names = natsorted(get_absolute_node_name(name.full_name) for name in names)
+        names = natsorted(get_absolute_node_name(name.full_name)
+                          for name in names)
 
         for name in names:
-            print("DJA: Processing {}".format(name))
             subscribers = get_subscriber_info(
                 node=node,
                 remote_node_name=name,
@@ -61,12 +60,12 @@ def document_system(args):
                 include_hidden=args.hidden)
 
             nodes[name] = NodeInfo(name=name,
-                publishers=publishers,
-                subscribers=subscribers,
-                service_servers=service_servers,
-                service_clients=service_clients,
-                action_servers=action_servers,
-                action_clients=action_clients)
+                                   publishers=publishers,
+                                   subscribers=subscribers,
+                                   service_servers=service_servers,
+                                   service_clients=service_clients,
+                                   action_servers=action_servers,
+                                   action_clients=action_clients)
 
     with DirectNode(args) as node:
         for target_node in names:
