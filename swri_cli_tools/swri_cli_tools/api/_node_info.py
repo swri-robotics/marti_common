@@ -48,7 +48,7 @@ def print_node_info(node: NodeInfo):
     for p in node.parameters:
         print('        - {}:'.format(p.name))
         print('            - {}'.format(p.type))
-        print('            - {}:'.format(p.value))
+        print('            - {}'.format(p.value))
 class NodeInfo:
     """Information about node for documentation."""
 

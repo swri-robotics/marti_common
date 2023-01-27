@@ -68,7 +68,7 @@ def document_system(args):
                 action_clients=action_clients)
 
     with DirectNode(args) as node:
-        for target_node in names.keys():
+        for target_node in names:
             service_name = f'{target_node}/list_parameters'
             client = node.create_client(ListParameters, service_name)
 
