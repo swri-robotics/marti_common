@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ament_cmake REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(marti_common_msgs REQUIRED)
+find_package(marti_introspection_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosidl_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -46,7 +48,9 @@ target_include_directories(subscriber_test
 ament_target_dependencies(subscriber_test
   diagnostic_updater
   marti_common_msgs
+  marti_introspection_msgs
   nav_msgs
+  rcl_interfaces
   rclcpp
   std_msgs
   std_srvs

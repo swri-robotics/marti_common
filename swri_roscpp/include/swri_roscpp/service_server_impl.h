@@ -29,6 +29,8 @@
 #ifndef SWRI_ROSCPP_SERVICE_SERVER_IMPL_H_
 #define SWRI_ROSCPP_SERVICE_SERVER_IMPL_H_
 
+#include <map>
+
 #include <boost/lexical_cast.hpp>
 
 #include <rclcpp/service.hpp>
