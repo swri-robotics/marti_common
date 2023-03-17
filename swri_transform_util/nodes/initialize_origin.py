@@ -69,11 +69,12 @@ class OriginInitializer(rclpy.node.Node):
                                                             ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
                                                              descriptor=rclpy.node.ParameterDescriptor(
-                                                                 name='local_xy_gpsfix_topic',
-                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
+                                                                 name='local_xy_origins',
+                                                                 type=rclpy.parameter.ParameterType.PARAMETER_DOUBLE_ARRAY
                                                              ))
 
         self.get_logger().info("Origin: %s" % self.local_xy_origin_param.value)
+        self.get_logger().info("Frame: %s" % self.local_xy_frame_param.value)
 
         self.manager = OriginManager(self, self.local_xy_frame_param.value)
         if self.local_xy_origin_param.value == 'auto':
@@ -90,13 +91,18 @@ class OriginInitializer(rclpy.node.Node):
             self.subscribers = [gps_sub, navsat_sub]
         else:
             try:
-                origin_list = yaml.safe_load(self.local_xy_origins_param.value)
+                self.get_logger().info("local_xy_origins_param[0]: %lf" % self.local_xy_origins_param.value[0]) 
+                self.get_logger().info("local_xy_origins_param[1]: %lf" % self.local_xy_origins_param.value[1]) 
+                origin_dict={'latitude': self.local_xy_origins_param.value[0],  
+                             'longitude':self.local_xy_origins_param.value[1],  
+                             'altitude':self.local_xy_origins_param.value[2],   
+                             'heading':self.local_xy_origins_param.value[3]}
             except rclpy.exceptions.ParameterException:
                 message = 'local_xy_origin is "{}", but local_xy_origins is not specified'
                 self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
                 exit(1)
             try:
-                self.manager.set_origin_from_list(self.local_xy_origin_param.value, origin_list)
+                self.manager.set_origin_from_dict(origin_dict)
             except (TypeError, KeyError) as e:
                 message = 'local_xy_origins is malformed or does not contain the local_xy_origin "{}"'
                 self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
