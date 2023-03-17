@@ -22,7 +22,9 @@
   <depend>dynamic_reconfigure</depend>
   -->
   <depend>marti_common_msgs</depend>
+  <depend>marti_introspection_msgs</depend>
   <depend>nav_msgs</depend>
+  <depend>rcl_interfaces</depend>
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
