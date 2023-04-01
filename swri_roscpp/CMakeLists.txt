@@ -2,7 +2,17 @@ cmake_minimum_required(VERSION 3.10)
 
 project(swri_roscpp)
 
-set(CMAKE_CXX_STANDARD 14)
+# Default to C++ version appropriate for the ROS distribution
+if(NOT CMAKE_CXX_STANDARD)
+  if ("$ENV{ROS_DISTRO}" STRGREATER "foxy")
+    set(CMAKE_CXX_STANDARD 17) 
+  else()
+    set(CMAKE_CXX_STANDARD 14) 
+  endif()
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(diagnostic_updater REQUIRED)
@@ -14,47 +24,51 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
-target_link_libraries(${PROJECT_NAME} INTERFACE
-  ${diagnostic_updater_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-)
+# How we build header only libraries changed in Humble
+if("$ENV{ROS_DISTRO}" STRGREATER "galactic")
+  rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 
-target_include_directories(${PROJECT_NAME} INTERFACE
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>"
-  ${diagnostic_updater_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-  ${std_msgs_INCLUDE_DIRS}
-)
+  if(cpp_typesupport_target)
+    add_library(${PROJECT_NAME} INTERFACE)
 
-install(TARGETS ${PROJECT_NAME}
-  EXPORT "${PROJECT_NAME}Targets"
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib
-  INCLUDES DESTINATION include
-)
+    target_link_libraries(${PROJECT_NAME} INTERFACE
+      ${diagnostic_updater_LIBRARIES}
+      ${rclcpp_LIBRARIES}
+      ${std_msgs_LIBRARIES}
+    )
+    target_include_directories(${PROJECT_NAME}_library INTERFACE
+      "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+      "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+      ${diagnostic_updater_INCLUDE_DIRS}
+      ${rclcpp_INCLUDE_DIRS}
+      ${std_msgs_INCLUDE_DIRS}
+    )
+      target_link_libraries(${PROJECT_NAME}_library INTERFACE
+      "${cpp_typesupport_target}"
+    )
+  
+  install(DIRECTORY include/
+    DESTINATION include/${PROJECT_NAME}
+  )
+  install(TARGETS ${PROJECT_NAME}_library
+    EXPORT export_${PROJECT_NAME}
+  )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-)
+  # Export old-style CMake variables
+  ament_export_include_directories("include/${PROJECT_NAME}")
 
-ament_export_targets("${PROJECT_NAME}Targets" HAS_LIBRARY_TARGET)
+  # Export modern CMake targets
+  ament_export_targets(export_${PROJECT_NAME})
+  endif()
 
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(diagnostic_updater)
-ament_export_dependencies(marti_common_msgs)
-ament_export_dependencies(nav_msgs)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(std_msgs)
-ament_export_dependencies(std_srvs)
+  # Only test on Humble or newer until https://github.com/ros2/rosidl/pull/639 is merged
+  include(cmake/swri_roscpp-test.cmake)
 
-# ### Build Test Nodes ###
+else()
+
+endif()
+
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
-target_compile_features(subscriber_test PRIVATE cxx_std_17)
 target_include_directories(subscriber_test
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -71,108 +85,6 @@ target_link_libraries(subscriber_test
   ${std_msgs_LIBRARIES}
   ${std_srvs_LIBRARIES}
 )
-
-add_executable(storing_subscriber_test src/nodes/storing_subscriber_test.cpp)
-target_compile_features(storing_subscriber_test PRIVATE cxx_std_17)
-target_include_directories(storing_subscriber_test
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${diagnostic_updater_INCLUDE_DIRS}
-  ${nav_msgs_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-)
-target_link_libraries(storing_subscriber_test
-  ${diagnostic_updater_LIBRARIES}
-  ${marti_common_msgs_LIBRARIES}
-  ${nav_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${std_srvs_LIBRARIES}
-  )
-
-add_executable(service_server_test src/nodes/service_server_test.cpp)
-target_compile_features(service_server_test PRIVATE cxx_std_17)
-target_include_directories(service_server_test
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${diagnostic_updater_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-  ${std_srvs_INCLUDE_DIRS}
-)
-target_link_libraries(service_server_test
-  ${diagnostic_updater_LIBRARIES}
-  ${marti_common_msgs_LIBRARIES}
-  ${nav_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${std_srvs_LIBRARIES}
-  )
-
-add_executable(timer_test src/nodes/timer_test.cpp)
-target_compile_features(timer_test PRIVATE cxx_std_17)
-target_include_directories(timer_test
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${diagnostic_updater_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-)
-target_link_libraries(timer_test
-  ${diagnostic_updater_LIBRARIES}
-  ${marti_common_msgs_LIBRARIES}
-  ${nav_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${std_srvs_LIBRARIES}
-  )
-
-# Disabling Foxy and Galactic tests until https://github.com/ros2/rosidl/pull/639 is merged
-if (BUILD_TESTING AND ("$ENV{ROS_DISTRO}" STRGREATER "galactic"))
-  find_package(ament_cmake_gtest REQUIRED)
-  find_package(Boost REQUIRED COMPONENTS system)
-
-  rosidl_generate_interfaces(${PROJECT_NAME}_test
-    msg/TestTopicServiceRequest.msg
-    msg/TestTopicServiceResponse.msg
-    DEPENDENCIES std_msgs marti_common_msgs
-    LIBRARY_NAME ${PROJECT_NAME}
-  )
-
-  ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
-  target_compile_features(topic_service_test_server PRIVATE cxx_std_17)
-
-  # Humble and onwards
-  if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
-    rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
-    target_link_libraries(topic_service_test_server
-      Boost::system
-      "${cpp_typesupport_target}"
-    )
-  else()
-    rosidl_target_interfaces(topic_service_test_server "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
-    target_link_libraries(topic_service_test_server
-      Boost::system
-      swri_roscpp_test__rosidl_typesupport_cpp
-    )
-  endif()
-
-  target_link_libraries(topic_service_test_server
-    ${rclcpp_LIBRARIES}
-    ${marti_common_msgs_LIBRARIES}
-  )
-  target_include_directories(topic_service_test_server
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    ${rclcpp_INCLUDE_DIRS}
-    ${marti_common_msgs_INCLUDE_DIRS}
-  )
-
-  ament_export_dependencies(rosidl_default_runtime)
-endif()
-
 ### Install Test Node and Headers ###
 install(TARGETS subscriber_test
   ARCHIVE DESTINATION lib
@@ -188,5 +100,13 @@ install(DIRECTORY include/
 install(DIRECTORY launch/
   DESTINATION launch
 )
+
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(diagnostic_updater)
+ament_export_dependencies(marti_common_msgs)
+ament_export_dependencies(nav_msgs)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(std_msgs)
+ament_export_dependencies(std_srvs)
 
 ament_package(CONFIG_EXTRAS cmake/swri_roscpp-extras.cmake )
