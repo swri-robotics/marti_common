@@ -64,8 +64,14 @@ if("$ENV{ROS_DISTRO}" STRGREATER "galactic")
   # Only test on Humble or newer until https://github.com/ros2/rosidl/pull/639 is merged
   include(cmake/swri_roscpp-test.cmake)
 
+  install(DIRECTORY include/
+    DESTINATION include
+  )
 else()
-
+  install(DIRECTORY include/${PROJECT_NAME}/
+    DESTINATION include/${PROJECT_NAME}
+  )
+  ament_export_include_directories(include)
 endif()
 
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
@@ -93,9 +99,6 @@ install(TARGETS subscriber_test
 )
 install(PROGRAMS scripts/service_splitter.py
   DESTINATION bin
-)
-install(DIRECTORY include/
-  DESTINATION include
 )
 install(DIRECTORY launch/
   DESTINATION launch
