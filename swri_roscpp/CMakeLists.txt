@@ -26,26 +26,20 @@ find_package(std_srvs REQUIRED)
 
 # How we build header only libraries changed in Humble
 if("$ENV{ROS_DISTRO}" STRGREATER "galactic")
-  rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+  add_library(${PROJECT_NAME}_library INTERFACE)
 
-  if(cpp_typesupport_target)
-    add_library(${PROJECT_NAME} INTERFACE)
-
-    target_link_libraries(${PROJECT_NAME} INTERFACE
-      ${diagnostic_updater_LIBRARIES}
-      ${rclcpp_LIBRARIES}
-      ${std_msgs_LIBRARIES}
-    )
-    target_include_directories(${PROJECT_NAME}_library INTERFACE
-      "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-      "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-      ${diagnostic_updater_INCLUDE_DIRS}
-      ${rclcpp_INCLUDE_DIRS}
-      ${std_msgs_INCLUDE_DIRS}
-    )
-      target_link_libraries(${PROJECT_NAME}_library INTERFACE
-      "${cpp_typesupport_target}"
-    )
+  target_link_libraries(${PROJECT_NAME}_library INTERFACE
+    ${diagnostic_updater_LIBRARIES}
+    ${rclcpp_LIBRARIES}
+    ${std_msgs_LIBRARIES}
+  )
+  target_include_directories(${PROJECT_NAME}_library INTERFACE
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    ${diagnostic_updater_INCLUDE_DIRS}
+    ${rclcpp_INCLUDE_DIRS}
+    ${std_msgs_INCLUDE_DIRS}
+  )
   
   install(DIRECTORY include/
     DESTINATION include/${PROJECT_NAME}
@@ -59,7 +53,6 @@ if("$ENV{ROS_DISTRO}" STRGREATER "galactic")
 
   # Export modern CMake targets
   ament_export_targets(export_${PROJECT_NAME})
-  endif()
 
   # Only test on Humble or newer until https://github.com/ros2/rosidl/pull/639 is merged
   include(cmake/swri_roscpp-test.cmake)
