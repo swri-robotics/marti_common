@@ -56,10 +56,6 @@ if("$ENV{ROS_DISTRO}" STRGREATER "galactic")
 
   # Only test on Humble or newer until https://github.com/ros2/rosidl/pull/639 is merged
   include(cmake/swri_roscpp-test.cmake)
-
-  install(DIRECTORY include/
-    DESTINATION include
-  )
 else()
   install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION include/${PROJECT_NAME}
