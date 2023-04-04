@@ -89,6 +89,8 @@ class ServiceServerTest : public rclcpp::Node
   bool handleService1(const std::shared_ptr<std_srvs::srv::Empty::Request>& req,
                       const std::shared_ptr<std_srvs::srv::Empty::Response>& res)
   {
+    (void)req;
+    (void)res;
     RCLCPP_INFO(this->get_logger(), "test service 1 called. returning %s",
              test1_result_ ? "true" : "false");
     return test1_result_;

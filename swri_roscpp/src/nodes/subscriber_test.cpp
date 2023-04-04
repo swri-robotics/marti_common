@@ -92,7 +92,9 @@ class SubscriberTest : public rclcpp::Node
 
   void handleMessage(const nav_msgs::msg::Odometry::ConstSharedPtr &msg)
   {
-    RCLCPP_INFO_ONCE(this->get_logger(), "Receiving messages.");
+    // Suppresses unused parameter warning
+    (void)msg;
+    RCLCPP_INFO_ONCE(this->get_logger(), "Receiving messages");
   }
 
   void handleDiagnosticsTimer()
