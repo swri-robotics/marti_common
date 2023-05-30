@@ -2,6 +2,17 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix dependencies (`#704 <https://github.com/danthony06/marti_common/issues/704>`_)
+  * Fixing build process so dependencies are correctly exported.
+* Make timeout 0.1 seconds instead of 0 (`#694 <https://github.com/danthony06/marti_common/issues/694>`_)
+* Set origin (`#696 <https://github.com/danthony06/marti_common/issues/696>`_)
+  * Improved origin initialization
+  ---------
+  Co-authored-by: tcappellari <tiffany.cappellari@swri.org>
+* Contributors: David Anthony, Tiffany Cappellari, Veronica Knisley
+
 3.5.1 (2022-11-29)
 ------------------
 
