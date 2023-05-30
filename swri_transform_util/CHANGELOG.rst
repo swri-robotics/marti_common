@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.2 (2023-05-30)
+------------------
 * Fix dependencies (`#704 <https://github.com/danthony06/marti_common/issues/704>`_)
   * Fixing build process so dependencies are correctly exported.
 * Make timeout 0.1 seconds instead of 0 (`#694 <https://github.com/danthony06/marti_common/issues/694>`_)

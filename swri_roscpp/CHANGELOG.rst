@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.2 (2023-05-30)
+------------------
 * Fix dependencies (`#704 <https://github.com/danthony06/marti_common/issues/704>`_)
   * Fixing build process so dependencies are correctly exported.
 * Contributors: David Anthony

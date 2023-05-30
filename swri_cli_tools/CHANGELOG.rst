@@ -2,8 +2,8 @@
 Changelog for package swri_cli_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.2 (2023-05-30)
+------------------
 * Add CLI Tools to ROS 2 (`#701 <https://github.com/danthony06/marti_common/issues/701>`_)
   * Add ability to document running system for either all nodes or a set of nodes.
 * Contributors: David Anthony
