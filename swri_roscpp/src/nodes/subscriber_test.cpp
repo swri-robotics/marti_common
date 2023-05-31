@@ -70,7 +70,7 @@ class SubscriberTest : public rclcpp::Node
     // Example to subscribe using a boost function.  I am unable to
     // figure out how to get the compiler to infer the type, so I have
     // to declare the function first and then pass that.
-    std::function<void(const std::shared_ptr< nav_msgs::msg::Odometry const> &)> callback =
+    std::function<void(const nav_msgs::msg::Odometry::ConstSharedPtr &)> callback =
       boost::bind(&SubscriberTest::handleMessage, this, boost::placeholders::_1);
     sub_ = swri::Subscriber(*this, "odom", 100, callback);
 

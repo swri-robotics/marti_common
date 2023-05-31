@@ -309,7 +309,7 @@ namespace swri
         rclcpp::Node& nh,
         const std::string &topic,
         uint32_t queue_size,
-        void(T::*fp)(const std::shared_ptr< M const > &),
+        void(T::*fp)(const std::shared_ptr<const M> &),
         T *obj,
         const rclcpp::QoS& transport_hints)
     {
