@@ -43,6 +43,7 @@ template<class MReq, class MRes>
 class TopicServiceClientRaw
 {
 private:
+  rclcpp::Node::SharedPtr node_;
   std::mutex request_lock_;
   std::shared_ptr<rclcpp::Subscription<MRes> > response_sub_;
   std::shared_ptr<rclcpp::Publisher<MReq> > request_pub_;
@@ -53,14 +54,14 @@ private:
   std::string service_name_;
   bool internal_spin_;
 
-  int sequence_;
+  unsigned int sequence_;
 
 public:
   TopicServiceClientRaw() :
-    timeout_(std::chrono::seconds(4)),
-    sequence_(0),
     node_(nullptr),
-    internal_spin_(true)
+    timeout_(std::chrono::seconds(4)),
+    internal_spin_(true),
+    sequence_(0)
   {
 
   }
@@ -208,12 +209,7 @@ public:
     return (request_pub_->get_subscription_count() > 0) && (response_sub_->get_publisher_count() > 0);
   }
 
-  // The service server can output a console log message when the
-  // service is called if desired.
-  void setLogCalls(bool enable);
-  bool logCalls() const;
 private:
-
   void response_callback(const std::shared_ptr<MRes> message)
   {
     RCLCPP_DEBUG(node_->get_logger(), "Got response for %s with sequence %i",
@@ -234,8 +230,6 @@ private:
 
     response_ = message;
   }
-
-  rclcpp::Node::SharedPtr node_;
 };  // class TopicServiceClientRaw
 
 template<class MReq>
