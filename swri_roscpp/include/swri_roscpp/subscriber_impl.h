@@ -329,7 +329,7 @@ namespace swri
 
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
                                          hints,
-                                         std::bind(&TypedSubscriberImpl::handleMessage<M>,
+                                         std::bind(&TypedSubscriberImpl::handleMessage<const M>,
                                                    this, std::placeholders::_1)
                                          );
     }
