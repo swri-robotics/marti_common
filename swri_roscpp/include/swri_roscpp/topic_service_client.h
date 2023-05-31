@@ -47,7 +47,7 @@ private:
   std::mutex request_lock_;
   std::shared_ptr<rclcpp::Subscription<MRes> > response_sub_;
   std::shared_ptr<rclcpp::Publisher<MReq> > request_pub_;
-  std::shared_ptr<MRes> response_;
+  std::shared_ptr<const MRes> response_;
 
   std::chrono::nanoseconds timeout_;
   std::string name_;
@@ -91,8 +91,13 @@ public:
     service_name_ = service;
 
     request_pub_ = node_->create_publisher<MReq>(service + "/request", 10);
-    response_sub_ = node_->create_subscription<MRes>(service + "/response",
-        10, std::bind(&TopicServiceClientRaw<MReq, MRes>::response_callback, this, std::placeholders::_1));
+    response_sub_ = node_->create_subscription<MRes>(
+      service + "/response",
+      10,
+      std::bind(
+        &TopicServiceClientRaw<MReq, MRes>::response_callback,
+        this,
+        std::placeholders::_1));
   }
 
   bool wait_for_service_nanoseconds(std::chrono::nanoseconds timeout)
@@ -210,7 +215,7 @@ public:
   }
 
 private:
-  void response_callback(const std::shared_ptr<MRes> message)
+  void response_callback(const std::shared_ptr<const MRes> &message)
   {
     RCLCPP_DEBUG(node_->get_logger(), "Got response for %s with sequence %i",
              message->srv_header.sender.c_str(), message->srv_header.sequence);
