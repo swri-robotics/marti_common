@@ -102,7 +102,7 @@ namespace swri_roscpp
     }
 
     rclcpp::Node::SharedPtr node_;
-    int call_count_;
+    size_t call_count_;
     bool error_;
     bool is_running_;
   };

@@ -64,13 +64,18 @@ public:
     obj_ = obj;
 
     response_pub_ = node_->create_publisher<MRes>(service + "/response", 10);
-    request_sub_ = node_->create_subscription<MReq>(service + "/request",
-        10, std::bind(&TopicServiceServerImpl<MReq, MRes, T>::request_callback, this, std::placeholders::_1));
+    request_sub_ = node_->create_subscription<MReq>(
+      service + "/request",
+      10,
+      std::bind(
+        &TopicServiceServerImpl<MReq, MRes, T>::request_callback,
+        this,
+        std::placeholders::_1));
   }
 
 private:
 
-  void request_callback(const std::shared_ptr<MReq> message)
+  void request_callback(const std::shared_ptr<const MReq> &message)
   {
     RCLCPP_DEBUG(node_->get_logger(),
         "Got request from %s with sequence %i", message->srv_header.sender.c_str(), message->srv_header.sequence);

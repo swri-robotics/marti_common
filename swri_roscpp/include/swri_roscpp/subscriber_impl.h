@@ -309,7 +309,7 @@ namespace swri
         rclcpp::Node& nh,
         const std::string &topic,
         uint32_t queue_size,
-        void(T::*fp)(const std::shared_ptr< M const > &),
+        void(T::*fp)(const std::shared_ptr<const M> &),
         T *obj,
         const rclcpp::QoS& transport_hints)
     {
@@ -329,7 +329,7 @@ namespace swri
 
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
                                          hints,
-                                         std::bind(&TypedSubscriberImpl::handleMessage<M>,
+                                         std::bind(&TypedSubscriberImpl::handleMessage<const M>,
                                                    this, std::placeholders::_1)
                                          );
     }
@@ -337,7 +337,7 @@ namespace swri
     // Handler for messages with headers
     template <class M2 = M>
     typename std::enable_if<(bool)has_header<M2>(), void>::type
-    handleMessage(const std::shared_ptr< M > msg)
+    handleMessage(const std::shared_ptr<const M> msg)
     {
       processHeader(msg->header.stamp);
       (obj_->*callback_)(msg);
@@ -346,7 +346,7 @@ namespace swri
     // Handler for messages without headers
     template <class M2 = M>
     typename std::enable_if< !(bool)has_header<M2>(), void>::type
-    handleMessage(const std::shared_ptr< M > msg)
+    handleMessage(const std::shared_ptr<const M> msg)
     {
       processHeader(nh_->now());
       (obj_->*callback_)(msg);
@@ -356,7 +356,7 @@ namespace swri
   template<class M>
   class BindSubscriberImpl : public SubscriberImpl
   {
-    std::function<void(const std::shared_ptr< const M > )> callback_;
+    std::function<void(const std::shared_ptr<const M>)> callback_;
 
 
   public:
@@ -364,7 +364,7 @@ namespace swri
         rclcpp::Node& nh,
         const std::string &topic,
         uint32_t queue_size,
-        const std::function<void(const std::shared_ptr< const M > )> &callback,
+        const std::function<void(const std::shared_ptr<const M>)> &callback,
         const rclcpp::QoS& transport_hints)
     {
       unmapped_topic_ = topic;
