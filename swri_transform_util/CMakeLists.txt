@@ -129,8 +129,10 @@ if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
   set(TF_UTIL_DEFINITIONS "-DUSE_PROJ_API_6 ${TF_UTIL_DEFINITIONS}")
 endif()
 
-# Workaround to https://github.com/ros2/geometry2/pull/427
-if (("$ENV{ROS_DISTRO}" STREQUAL "rolling") OR ("$ENV{ROS_DISTRO}" STREQUAL "humble"))
+# Workaround to https://github.com/ros2/geometry2/pull/427. Still a problem as of Humble.
+# I am specifying individual distributions as a remainder to periodically check if this PR
+# ever gets merged in.
+if (("$ENV{ROS_DISTRO}" STREQUAL "rolling") OR ("$ENV{ROS_DISTRO}" STREQUAL "humble") OR ("$ENV{ROS_DISTRO}" STREQUAL "iron"))
   set(TF_UTIL_DEFINITIONS "-DFROM_MSG_WORKAROUND ${TF_UTIL_DEFINITIONS}")
 endif()
 
