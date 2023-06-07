@@ -54,6 +54,12 @@ target_link_libraries(${PROJECT_NAME}
   opencv_core
   opencv_stitching
 )
+
+# Iron and later switched some cv_bridge files to .hpp from .h
+if ("$ENV{ROS_DISTRO}" STRLESS "iron")
+  target_compile_definitions(${PROJECT_NAME} PRIVATE "-DUSE_CVBRIDGE_H_FILES")
+endif()
+
 ament_target_dependencies(${PROJECT_NAME}
   camera_calibration_parsers
   cv_bridge
