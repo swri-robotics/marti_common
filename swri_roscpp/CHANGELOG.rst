@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.3 (2023-06-07)
+------------------
 * Fixing build warnings (`#707 <https://github.com/swri-robotics/marti_common/issues/707>`_)
 * Contributors: David Anthony
 
