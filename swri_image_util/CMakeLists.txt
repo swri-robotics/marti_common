@@ -55,11 +55,6 @@ target_link_libraries(${PROJECT_NAME}
   opencv_stitching
 )
 
-# Iron and later switched some cv_bridge files to .hpp from .h
-if ("$ENV{ROS_DISTRO}" STRLESS "iron")
-  target_compile_definitions(${PROJECT_NAME} PRIVATE "-DUSE_CVBRIDGE_H_FILES")
-endif()
-
 ament_target_dependencies(${PROJECT_NAME}
   camera_calibration_parsers
   cv_bridge
@@ -112,6 +107,11 @@ target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
 ament_target_dependencies(${PROJECT_NAME}_nodes
   ament_index_cpp
 )
+
+# Iron and later switched some cv_bridge files to .hpp from .h
+if ("$ENV{ROS_DISTRO}" STRLESS "iron")
+  target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_CVBRIDGE_H_FILES")
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
