@@ -30,7 +30,11 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.h>
+#ifdef USE_CVBRIDGE_H_FILES
 #include <cv_bridge/cv_bridge.h>
+#else
+#include <cv_bridge/cv_bridge.hpp>
+#endif
 #include <sensor_msgs/msg/image.hpp>
 #include <swri_image_util/replace_colors.h>
 

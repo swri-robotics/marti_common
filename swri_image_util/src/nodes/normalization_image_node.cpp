@@ -34,7 +34,11 @@
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
+#ifdef USE_CVBRIDGE_H_FILES
 #include <cv_bridge/cv_bridge.h>
+#else
+#include <cv_bridge/cv_bridge.hpp>
+#endif
 
 // OpenCV Libraries
 #include <opencv2/core/core.hpp>

@@ -29,7 +29,11 @@
 
 #include <string>
 
+#ifdef USE_CVBRIDGE_H_FILES
 #include <cv_bridge/cv_bridge.h>
+#else
+#include <cv_bridge/cv_bridge.hpp>
+#endif
 #include <image_transport/image_transport.hpp>
 #include <opencv2/core/core.hpp>
 #include <rclcpp/rclcpp.hpp>

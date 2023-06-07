@@ -35,7 +35,11 @@
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.hpp>
 #include <sensor_msgs/msg/image.hpp>
+#ifdef USE_CVBRIDGE_H_FILES
 #include <cv_bridge/cv_bridge.h>
+#else
+#include <cv_bridge/cv_bridge.hpp>
+#endif
 #include <swri_image_util/image_normalization.h>
 
 #include <swri_math_util/math_util.h>

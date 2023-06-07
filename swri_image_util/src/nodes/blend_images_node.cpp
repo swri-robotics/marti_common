@@ -30,7 +30,11 @@
 #include <opencv2/core/core.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+#ifdef USE_CVBRIDGE_H_FILES
 #include <cv_bridge/cv_bridge.h>
+#else
+#include <cv_bridge/cv_bridge.hpp>
+#endif
 #include <image_transport/image_transport.hpp>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
