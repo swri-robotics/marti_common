@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix Iron CvBridge Warnings (`#711 <https://github.com/swri-robotics/marti_common/issues/711>`_)
+* Contributors: David Anthony
+
 3.5.2 (2023-05-30)
 ------------------
 
