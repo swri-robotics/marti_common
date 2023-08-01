@@ -79,12 +79,29 @@ class Subscriber
              T *obj,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
 
-  // Using a boost function callback.
+  // Using a standard function callback.
   template<class M>
   Subscriber(rclcpp::Node &nh,
              const std::string &topic,
              uint32_t queue_size,
              const std::function<void(const std::shared_ptr<M const> &)> &callback,
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
+  
+  // Versions of the previous functions, but with unique pointers for the
+  // message instead of shared pointers
+  template<class M , class T >
+  Subscriber(rclcpp::Node &nh,
+             const std::string &topic,
+             uint32_t queue_size,
+             void(T::*fp)(const std::unique_ptr< M const > &),
+             T *obj,
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
+
+  template<class M>
+  Subscriber(rclcpp::Node &nh,
+             const std::string &topic,
+             uint32_t queue_size,
+             const std::function<void(const std::unique_ptr<M const> &)> &callback,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
 
   // This is an alternate interface that stores a received message in
