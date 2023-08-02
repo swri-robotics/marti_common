@@ -116,7 +116,7 @@ class Subscriber
   Subscriber(rclcpp::Node &nh,
              const std::string &topic,
              std::shared_ptr< M const > *dest,
-             const rclcpp::QoS& transport_hints = rclcpp::QoS(1
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(
               rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
   
   Subscriber& operator=(const Subscriber &other);
