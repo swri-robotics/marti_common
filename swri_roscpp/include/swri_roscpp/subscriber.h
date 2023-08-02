@@ -29,7 +29,6 @@
 #ifndef SWRI_ROSCPP_SUBSCRIBER_H_
 #define SWRI_ROSCPP_SUBSCRIBER_H_
 
-
 #include <rclcpp/rclcpp.hpp>
 #include <diagnostic_updater/diagnostic_status_wrapper.hpp>
 
@@ -77,7 +76,8 @@ class Subscriber
              uint32_t queue_size,
              void(T::*fp)(const std::shared_ptr< M const > &),
              T *obj,
-             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
 
   // Using a standard function callback.
   template<class M>
@@ -85,7 +85,8 @@ class Subscriber
              const std::string &topic,
              uint32_t queue_size,
              const std::function<void(const std::shared_ptr<M const> &)> &callback,
-             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
   
   // Versions of the previous functions, but with unique pointers for the
   // message instead of shared pointers
@@ -95,14 +96,16 @@ class Subscriber
              uint32_t queue_size,
              void(T::*fp)(const std::unique_ptr< M const > &),
              T *obj,
-             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
 
   template<class M>
   Subscriber(rclcpp::Node &nh,
              const std::string &topic,
              uint32_t queue_size,
              const std::function<void(const std::unique_ptr<M const> &)> &callback,
-             const rclcpp::QoS& transport_hints = rclcpp::QoS(1));
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
 
   // This is an alternate interface that stores a received message in
   // a variable without calling a user-defined callback function.
