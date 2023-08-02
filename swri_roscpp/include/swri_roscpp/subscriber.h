@@ -116,7 +116,7 @@ class Subscriber
   Subscriber(rclcpp::Node &nh,
              const std::string &topic,
              std::shared_ptr< M const > *dest,
-             const rclcpp::QoS& transport_hints = rclcpp::QoS(
+             const rclcpp::QoS& transport_hints = rclcpp::QoS(1
               rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
   
   Subscriber& operator=(const Subscriber &other);
@@ -194,7 +194,7 @@ class Subscriber
     DIAG_LATENCY    = 1 << 3,  // Include latency information
     DIAG_RATE       = 1 << 4,  // Include rate information
 
-    DIAG_ALL        = a0,       // Abbreviation to include all information
+    DIAG_ALL        = ~0,       // Abbreviation to include all information
     DIAG_MOST       = DIAG_ALL ^ DIAG_CONNECTION
     // Abbreviation to include everything except connection info.
   };
