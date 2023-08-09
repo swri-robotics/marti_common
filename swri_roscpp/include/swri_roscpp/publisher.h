@@ -38,7 +38,8 @@ namespace swri
       rclcpp::Node &nh,
       const std::string name,
       uint32_t queue_size,
-      bool latched=false)
+      bool latched=false,
+      rclcpp::PublisherOptions pub_options=rclcpp::PublisherOptions())
   {
     RCLCPP_INFO(nh.get_logger(), "Publishing [%s].",
                 name.c_str());
@@ -47,7 +48,7 @@ namespace swri
     {
       qos = qos.transient_local();
     }
-    return nh.create_publisher<M>(name, qos);
+    return nh.create_publisher<M>(name, qos, pub_options);
   }
 }  // namespace swri
 #endif  // SWRI_ROSCPP_PUBLISHER_H_

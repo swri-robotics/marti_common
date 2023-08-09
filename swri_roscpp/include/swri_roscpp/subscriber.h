@@ -77,7 +77,8 @@ class Subscriber
              void(T::*fp)(const std::shared_ptr< M const > &),
              T *obj,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(
-              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)),
+             const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions());
 
   // Using a standard function callback.
   template<class M>
@@ -86,8 +87,9 @@ class Subscriber
              uint32_t queue_size,
              const std::function<void(const std::shared_ptr<M const> &)> &callback,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(
-              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
-  
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)),
+             const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions());
+
   // Versions of the previous functions, but with unique pointers for the
   // message instead of shared pointers
   template<class M , class T >
@@ -97,7 +99,8 @@ class Subscriber
              void(T::*fp)(const std::unique_ptr< M const > &),
              T *obj,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(
-              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)),
+             const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions());
 
   template<class M>
   Subscriber(rclcpp::Node &nh,
@@ -105,7 +108,8 @@ class Subscriber
              uint32_t queue_size,
              const std::function<void(const std::unique_ptr<M const> &)> &callback,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(
-              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)),
+             const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions());
 
   // This is an alternate interface that stores a received message in
   // a variable without calling a user-defined callback function.
@@ -117,8 +121,9 @@ class Subscriber
              const std::string &topic,
              std::shared_ptr< M const > *dest,
              const rclcpp::QoS& transport_hints = rclcpp::QoS(
-              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)));
-  
+              rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default)),
+             const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions());
+
   Subscriber& operator=(const Subscriber &other);
 
   // Reset all statistics, including message and timeout counts.
@@ -164,7 +169,7 @@ class Subscriber
   // Provide a negative value to disable the timeout (default is -1).
   void setTimeout(const rclcpp::Duration &time_out);
   void setTimeout(const double time_out);
-  
+
   // Block/unblock timeouts from occuring.  This allows you to
   // temporarily block timeouts (for example, if a message is not
   // expected in a particular mode).  Returns the current state
@@ -229,11 +234,12 @@ Subscriber::Subscriber(rclcpp::Node &nh,
                        uint32_t queue_size,
                        void(T::*fp)(const std::shared_ptr< M const > &),
                        T *obj,
-                       const rclcpp::QoS& transport_hints)
+                       const rclcpp::QoS& transport_hints,
+                       const rclcpp::SubscriptionOptions sub_options)
 {
   impl_ = std::shared_ptr<SubscriberImpl>(
     new TypedSubscriberImpl<M,T>(
-      nh, topic, queue_size, fp, obj, transport_hints));
+      nh, topic, queue_size, fp, obj, transport_hints, sub_options));
 }
 
 template<class M>
@@ -242,11 +248,12 @@ Subscriber::Subscriber(rclcpp::Node &nh,
                        const std::string &topic,
                        uint32_t queue_size,
                        const std::function<void(const std::shared_ptr<M const> &)> &callback,
-                       const rclcpp::QoS& transport_hints)
+                       const rclcpp::QoS& transport_hints,
+                       const rclcpp::SubscriptionOptions sub_options)
 {
   impl_ = std::shared_ptr<SubscriberImpl>(
     new BindSubscriberImpl<M>(
-      nh, topic, queue_size, callback, transport_hints));
+      nh, topic, queue_size, callback, transport_hints, sub_options));
 }
 
 template<class M>
@@ -254,11 +261,12 @@ inline
 Subscriber::Subscriber(rclcpp::Node &nh,
                        const std::string &topic,
                        std::shared_ptr< M const > *dest,
-                       const rclcpp::QoS& transport_hints)
+                       const rclcpp::QoS& transport_hints,
+                       const rclcpp::SubscriptionOptions sub_options)
 {
   impl_ = std::shared_ptr<SubscriberImpl>(
     new StorageSubscriberImpl<M>(
-      nh, topic, dest, transport_hints));
+      nh, topic, dest, transport_hints, sub_options));
 }
 
 inline
