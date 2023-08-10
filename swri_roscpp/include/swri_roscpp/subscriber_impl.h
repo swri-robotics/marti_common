@@ -311,7 +311,8 @@ namespace swri
         uint32_t queue_size,
         void(T::*fp)(const std::shared_ptr<const M> &),
         T *obj,
-        const rclcpp::QoS& transport_hints)
+        const rclcpp::QoS& transport_hints,
+        const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions())
     {
       unmapped_topic_ = topic;
       // mapped_topic_ = nh->ResolveName(topic);
@@ -330,7 +331,8 @@ namespace swri
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
                                          hints,
                                          std::bind(&TypedSubscriberImpl::handleMessage<const M>,
-                                                   this, std::placeholders::_1)
+                                                   this, std::placeholders::_1),
+                                         sub_options
                                          );
     }
 
@@ -365,7 +367,8 @@ namespace swri
         const std::string &topic,
         uint32_t queue_size,
         const std::function<void(const std::shared_ptr<const M>)> &callback,
-        const rclcpp::QoS& transport_hints)
+        const rclcpp::QoS& transport_hints,
+        const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions())
     {
       unmapped_topic_ = topic;
       //mapped_topic_ = nh->ResolveName(topic);
@@ -380,7 +383,8 @@ namespace swri
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
                                          hints,
                                          std::bind(&BindSubscriberImpl::handleMessage<M>,
-                                                   this, std::placeholders::_1)
+                                                   this, std::placeholders::_1),
+                                         sub_options
                                         );
     }
 
@@ -413,7 +417,8 @@ namespace swri
         rclcpp::Node& nh,
         const std::string &topic,
         std::shared_ptr< const M > *dest,
-        const rclcpp::QoS& transport_hints)
+        const rclcpp::QoS& transport_hints,
+        const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions())
     {
       unmapped_topic_ = topic;
       //mapped_topic_ = nh->ResolveName(topic);
@@ -425,7 +430,8 @@ namespace swri
       sub_ = nh_->create_subscription<M>(unmapped_topic_,
                                          transport_hints,
                                          std::bind(&StorageSubscriberImpl::handleMessage<M>,
-                                                   this, std::placeholders::_1)
+                                                   this, std::placeholders::_1),
+                                         sub_options
                                          );
     }
 
