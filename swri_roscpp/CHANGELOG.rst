@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.5.4 (2023-08-14)
+------------------
 * Add publisher and subscription options to constructors (`#714 <https://github.com/swri-robotics/marti_common/issues/714>`_)
 * Use System QoS Settings as Defaults (`#713 <https://github.com/swri-robotics/marti_common/issues/713>`_)
 * Adding wrapper for unique_ptr arguments (`#712 <https://github.com/swri-robotics/marti_common/issues/712>`_)

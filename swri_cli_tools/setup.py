@@ -5,7 +5,7 @@ package_name = 'swri_cli_tools'
 
 setup(
     name=package_name,
-    version='3.5.3',
+    version='3.5.4',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),

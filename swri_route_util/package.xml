@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>swri_route_util</name>
-  <version>3.5.3</version>
+  <version>3.5.4</version>
 
   <description>
     This library provides functionality to simplify working with the

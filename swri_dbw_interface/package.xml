@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>swri_dbw_interface</name>
-  <version>3.5.3</version>
+  <version>3.5.4</version>
   <description>
     This package provides documentation on common interface conventions for
     drive-by-wire systems.
