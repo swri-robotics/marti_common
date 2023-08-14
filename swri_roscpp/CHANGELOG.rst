@@ -2,6 +2,13 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add publisher and subscription options to constructors (`#714 <https://github.com/swri-robotics/marti_common/issues/714>`_)
+* Use System QoS Settings as Defaults (`#713 <https://github.com/swri-robotics/marti_common/issues/713>`_)
+* Adding wrapper for unique_ptr arguments (`#712 <https://github.com/swri-robotics/marti_common/issues/712>`_)
+* Contributors: David Anthony, Veronica Knisley
+
 3.5.3 (2023-06-07)
 ------------------
 * Fixing build warnings (`#707 <https://github.com/swri-robotics/marti_common/issues/707>`_)
