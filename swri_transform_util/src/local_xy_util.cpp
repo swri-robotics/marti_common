@@ -27,23 +27,20 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/local_xy_util.h>
 
 #include <cmath>
 #include <functional>
 
-#ifndef FROM_MSG_WORKAROUND
 #include <tf2/utils.h>
-#endif
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/earth_constants.h>
+#include <swri_transform_util/local_xy_util.h>
 #include <swri_transform_util/transform_util.h>
 
 namespace swri_transform_util
 {
-#ifdef FROM_MSG_WORKAROUND
   inline
   double getYaw(const geometry_msgs::msg::Quaternion & q)
   {
@@ -72,7 +69,6 @@ namespace swri_transform_util
     }
     return yaw;
   }
-#endif
 
   void LocalXyFromWgs84(
       double latitude,
@@ -172,19 +168,11 @@ namespace swri_transform_util
 
   void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
   {
-#ifdef FROM_MSG_WORKAROUND
     HandleOrigin(pose->pose.position.y,
         pose->pose.position.x,
         pose->pose.position.z,
         getYaw(pose->pose.orientation),
         pose->header.frame_id);
-#else
-    HandleOrigin(pose->pose.position.y,
-        pose->pose.position.x,
-        pose->pose.position.z,
-        tf2::getYaw(pose->pose.orientation),
-        pose->header.frame_id);
-#endif
   }
 
   void LocalXyWgs84Util::HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id)

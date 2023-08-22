@@ -29,11 +29,6 @@ target_include_directories(${PROJECT_NAME}
 )
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
-  target_compile_definitions(${PROJECT_NAME}
-    PRIVATE "-DUSE_TF2_H_FILES")
-endif()
-
 ament_target_dependencies(${PROJECT_NAME}
   PUBLIC
   ament_cmake

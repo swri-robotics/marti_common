@@ -30,11 +30,7 @@
 #ifndef TRANSFORM_UTIL_TF2_UTIL_H_
 #define TRANSFORM_UTIL_TF2_UTIL_H_
 
-#ifdef USE_TF2_H_FILES
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#else
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-#endif
 
 namespace tf2
 {

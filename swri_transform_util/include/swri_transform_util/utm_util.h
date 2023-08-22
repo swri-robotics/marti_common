@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2023, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,7 @@
 #include <boost/serialization/singleton.hpp>
 #include <boost/thread/mutex.hpp>
 
-#ifdef USE_PROJ_API_6
 #include <proj.h>
-#else
-#include <proj_api.h>
-#endif
 
 namespace swri_transform_util
 {
@@ -170,14 +166,8 @@ namespace swri_transform_util
       private:
         UtmData();
 
-#ifdef USE_PROJ_API_6
         PJ *P_ll_north_[60];
         PJ *P_ll_south_[60];
-#else
-        projPJ lat_lon_;
-        projPJ utm_north_[60];
-        projPJ utm_south_[60];
-#endif
 
         mutable boost::mutex mutex_;
     };

@@ -71,10 +71,6 @@ target_compile_definitions(${PROJECT_NAME}
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
 )
 
-if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
-  target_compile_definitions(${PROJECT_NAME} PUBLIC "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H")
-endif()
-
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
   Boost::boost
@@ -120,22 +116,6 @@ target_include_directories(${PROJECT_NAME}_nodes
   ${PROJ_INCLUDE_DIRS}
 )
 
-set(TF_UTIL_DEFINITIONS "")
-if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
-  set(TF_UTIL_DEFINITIONS "-DUSE_TF2_H_FILES ${TF_UTIL_DEFINITIONS}")
-endif()
-
-if ("$ENV{ROS_DISTRO}" STRGREATER "galactic")
-  set(TF_UTIL_DEFINITIONS "-DUSE_PROJ_API_6 ${TF_UTIL_DEFINITIONS}")
-endif()
-
-# Workaround to https://github.com/ros2/geometry2/pull/427. Still a problem as of Humble.
-# I am specifying individual distributions as a remainder to periodically check if this PR
-# ever gets merged in.
-if (("$ENV{ROS_DISTRO}" STREQUAL "rolling") OR ("$ENV{ROS_DISTRO}" STREQUAL "humble") OR ("$ENV{ROS_DISTRO}" STREQUAL "iron"))
-  set(TF_UTIL_DEFINITIONS "-DFROM_MSG_WORKAROUND ${TF_UTIL_DEFINITIONS}")
-endif()
-
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC "${TF_UTIL_DEFINITIONS}"
   )
@@ -167,10 +147,6 @@ target_include_directories(lat_lon_tf_echo
   INTERFACE
   ${PROJ_INCLUDE_DIRS}
 )
-
-if ("$ENV{ROS_DISTRO}" STRLESS_EQUAL "galactic")
-  target_compile_definitions(lat_lon_tf_echo PRIVATE "-DUSE_TF2_H_FILES")
-endif()
 
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 

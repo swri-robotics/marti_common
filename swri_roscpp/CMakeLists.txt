@@ -4,11 +4,7 @@ project(swri_roscpp)
 
 # Default to C++ version appropriate for the ROS distribution
 if(NOT CMAKE_CXX_STANDARD)
-  if ("$ENV{ROS_DISTRO}" STRGREATER "foxy")
     set(CMAKE_CXX_STANDARD 17) 
-  else()
-    set(CMAKE_CXX_STANDARD 14) 
-  endif()
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -24,44 +20,35 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
-# How we build header only libraries changed in Humble
-if("$ENV{ROS_DISTRO}" STRGREATER "galactic")
-  add_library(${PROJECT_NAME}_library INTERFACE)
+add_library(${PROJECT_NAME}_library INTERFACE)
 
-  target_link_libraries(${PROJECT_NAME}_library INTERFACE
-    ${diagnostic_updater_LIBRARIES}
-    ${rclcpp_LIBRARIES}
-    ${std_msgs_LIBRARIES}
-  )
-  target_include_directories(${PROJECT_NAME}_library INTERFACE
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-    ${diagnostic_updater_INCLUDE_DIRS}
-    ${rclcpp_INCLUDE_DIRS}
-    ${std_msgs_INCLUDE_DIRS}
-  )
-  
-  install(DIRECTORY include/
-    DESTINATION include/${PROJECT_NAME}
-  )
-  install(TARGETS ${PROJECT_NAME}_library
-    EXPORT export_${PROJECT_NAME}
-  )
+target_link_libraries(${PROJECT_NAME}_library INTERFACE
+  ${diagnostic_updater_LIBRARIES}
+  ${rclcpp_LIBRARIES}
+  ${std_msgs_LIBRARIES}
+)
+target_include_directories(${PROJECT_NAME}_library INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  ${diagnostic_updater_INCLUDE_DIRS}
+  ${rclcpp_INCLUDE_DIRS}
+  ${std_msgs_INCLUDE_DIRS}
+)
 
-  # Export old-style CMake variables
-  ament_export_include_directories("include/${PROJECT_NAME}")
+install(DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}
+)
+install(TARGETS ${PROJECT_NAME}_library
+  EXPORT export_${PROJECT_NAME}
+)
 
-  # Export modern CMake targets
-  ament_export_targets(export_${PROJECT_NAME})
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
 
-  # Only test on Humble or newer until https://github.com/ros2/rosidl/pull/639 is merged
-  include(cmake/swri_roscpp-test.cmake)
-else()
-  install(DIRECTORY include/${PROJECT_NAME}/
-    DESTINATION include/${PROJECT_NAME}
-  )
-  ament_export_include_directories(include)
-endif()
+# Export modern CMake targets
+ament_export_targets(export_${PROJECT_NAME})
+
+include(cmake/swri_roscpp-test.cmake)
 
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 target_include_directories(subscriber_test
