@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <package format="3">
   <name>swri_roscpp</name>
-  <version>3.5.4</version>
+  <version>3.6.0</version>
   <description>
 
      swri_roscpp

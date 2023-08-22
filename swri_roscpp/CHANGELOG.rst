@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.6.0 (2023-08-22)
+------------------
 * Rolling updates (`#715 <https://github.com/swri-robotics/marti_common/issues/715>`_)
   - Updating code for Rolling.
   - Removing conditional compilation code related to EOL distributions.
