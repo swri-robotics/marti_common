@@ -69,7 +69,6 @@ set_property(TARGET ${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
-    USE_PROJ_H=${USE_PROJ_H}
 )
 
 target_link_libraries(${PROJECT_NAME}
