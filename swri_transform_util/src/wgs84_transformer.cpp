@@ -29,14 +29,9 @@
 
 #include <swri_transform_util/wgs84_transformer.h>
 
-#ifdef USE_TF2_H_FILES
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#else
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-#endif
-
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 namespace swri_transform_util
 {
@@ -161,12 +156,7 @@ namespace swri_transform_util
     tf2::Stamped<tf2::Transform> inverse_transform = GetStampedTransform();
     inverse_transform.setData(inverse_transform.inverse());
 
-#if USE_NEW_TF2_TOMSG == 1
     auto inverse_tf_msg = tf2::toMsg(inverse_transform);
-#else
-    auto inverse_tf_msg =
-      tf2::toMsg<tf2::Stamped<tf2::Transform>, geometry_msgs::msg::TransformStamped>(inverse_transform);
-#endif
     inverse_tf_msg.header.frame_id = transform_.child_frame_id;
     inverse_tf_msg.child_frame_id = transform_.header.frame_id;
     TransformImplPtr inverse = std::make_shared<Wgs84ToTfTransform>(

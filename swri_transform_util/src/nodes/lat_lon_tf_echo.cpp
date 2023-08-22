@@ -27,57 +27,15 @@
 //
 // *****************************************************************************
 
-#include <boost/smart_ptr.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 
-#ifndef FROM_MSG_WORKAROUND
-#include <tf2/utils.h>
-#else
-#include <geometry_msgs/msg/quaternion.hpp>
-namespace tf2 {
-  inline
-  double getYaw(const geometry_msgs::msg::Quaternion & q)
-  {
-    double yaw;
-
-    double sqw;
-    double sqx;
-    double sqy;
-    double sqz;
-
-    sqx = q.x * q.x;
-    sqy = q.y * q.y;
-    sqz = q.z * q.z;
-    sqw = q.w * q.w;
-
-    // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
-    // normalization added from urdfom_headers
-    double sarg = -2 * (q.x * q.z - q.w * q.y) / (sqx + sqy + sqz + sqw);
-
-    if (sarg <= -0.99999) {
-      yaw = -2 * atan2(q.y, q.x);
-    } else if (sarg >= 0.99999) {
-      yaw = 2 * atan2(q.y, q.x);
-    } else {
-      yaw = atan2(2 * (q.x * q.y + q.w * q.z), sqw + sqx - sqy - sqz);
-    }
-    return yaw;
-  }
-}
-#endif
-
-#ifdef USE_TF2_H_FILES
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#else
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-#endif
-
-#include <tf2_ros/buffer.h>
-#include <tf2_ros/transform_listener.h>
 #include <geographic_msgs/msg/geo_pose.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <gps_msgs/msg/gps_fix.hpp>
+#include <tf2/utils.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_transform_util/local_xy_util.h>
