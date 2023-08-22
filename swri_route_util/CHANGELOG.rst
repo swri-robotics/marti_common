@@ -2,6 +2,13 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rolling updates (`#715 <https://github.com/swri-robotics/marti_common/issues/715>`_)
+  - Updating code for Rolling.
+  - Removing conditional compilation code related to EOL distributions.
+* Contributors: David Anthony
+
 3.5.4 (2023-08-14)
 ------------------
 
