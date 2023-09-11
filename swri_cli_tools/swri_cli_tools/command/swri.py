@@ -29,7 +29,6 @@ from ros2cli.command import CommandExtension
 
 class SwriCommand(CommandExtension):
     """Execute SwRI CLI command"""
-
     def add_arguments(self, parser, cli_name):
         """Add arguments"""
         self._subparser = parser
