@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixing Buildfarm Issues (`#716 <https://github.com/swri-robotics/marti_common/issues/716>`_)
+  * Cleaning up code to fix build farm errors
+* Contributors: David Anthony
+
 3.6.0 (2023-08-22)
 ------------------
 * Rolling updates (`#715 <https://github.com/swri-robotics/marti_common/issues/715>`_)
