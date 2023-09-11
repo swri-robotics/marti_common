@@ -4,17 +4,22 @@
   <name>swri_cli_tools</name>
   <version>3.6.0</version>
   <description>Command line tools for introspecting ROS systems</description>
+
   <maintainer email="swri-robotics@swri.org">Southwest Research Institute</maintainer>
   <author email="david.anthony@swri.org">David Anthony</author>
-  <license>BSD 3 Clause</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <license>BSD 3 Clause</license>
 
   <depend>marti_introspection_msgs</depend>
   <depend>python3-natsort</depend>
+  <depend>rcl_interfaces</depend>
+  <depend>rclpy</depend>
+  <depend>ros2cli</depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_python</build_type>

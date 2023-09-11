@@ -1,17 +1,10 @@
 from setuptools import find_packages
 from setuptools import setup
 
-package_name = 'swri_cli_tools'
-
 setup(
-    name=package_name,
+    name='swri_cli_tools',
     version='3.6.0',
     packages=find_packages(exclude=['test']),
-    data_files=[
-        ('share/' + package_name, ['package.xml']),
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name])
-    ],
     install_requires=['ros2cli'],
     zip_safe=True,
     author='David Anthony',
@@ -21,6 +14,7 @@ setup(
     url='https://github.com/swri-robotics/marti_common',
     keywords=['ROS'],
     classifiers=[
+        'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD 3 Clause',
         'Programming Language :: Python',

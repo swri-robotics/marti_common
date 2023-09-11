@@ -1,10 +1,12 @@
 """Holds information about node in ROS 2 system."""
 
-from __future__ import annotations
 from typing import List
 
 from rcl_interfaces.msg import ParameterType
 from ros2node.api import TopicInfo
+
+from swri_cli_tools.api._node_info import NodeInfo
+from swri_cli_tools.api._node_info import ParameterInfo
 
 
 def print_node_infos(nodes: List(NodeInfo)):
