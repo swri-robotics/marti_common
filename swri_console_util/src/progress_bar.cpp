@@ -136,7 +136,7 @@ namespace swri_console_util
     PrintTime();
   }
 
-  char ProgressBar::ReadCharFromStdin()
+  signed char ProgressBar::ReadCharFromStdin()
   {
     fd_set testfd = stdin_fdset_;
 
@@ -146,7 +146,7 @@ namespace swri_console_util
 
     if (select(maxfd_, &testfd, NULL, NULL, &tv) <= 0)
     {
-      return EOF;
+      return static_cast<signed char>(EOF);
     }
 
     return getc(stdin);

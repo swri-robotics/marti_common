@@ -47,7 +47,7 @@ namespace swri_console_util
     void SetProgress(double percent_complete);
     void PrintTime();
     void CheckForPause();
-    char ReadCharFromStdin();
+    signed char ReadCharFromStdin();
 
     static std::string GetTimeString(double seconds);
     static std::string IntToString(int64_t i, int width = 0);
