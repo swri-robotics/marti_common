@@ -9,14 +9,10 @@ jobs:
 
     strategy:
       matrix:
-        ros_distro: [noetic]
-        ros_repo: [main, testing]
+        env:
+          - {ROS_DISTRO: noetic, ROS_REPO: testing}
 
     steps:
-      - name: Fetch repository
-        uses: actions/checkout@v4
-      - name: Run industrial_ci
-        uses: 'ros-industrial/industrial_ci@master'
-        env:
-          ROS_DISTRO: ${{ matrix.ros_distro }}
-          ROS_REPO: ${{ matrix.ros_repo }}
+      - uses: actions/checkout@v4
+      - uses: 'ros-industrial/industrial_ci@master'
+        env: ${{matrix.env}}
