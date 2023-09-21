@@ -3,11 +3,10 @@
   <name>swri_roscpp</name>
   <version>2.15.2</version>
   <description>
-
-     swri_roscpp
-
+    Enhancements to roscpp functionality to reduce boilerplate code and implement common patterns.
   </description>
-  <maintainer email="preed@swri.org">P. J. Reed</maintainer>
+  <author>P. J. Reed</author>
+  <maintainer email="swri-robotics@swri.org">Southwest Research Institute</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
