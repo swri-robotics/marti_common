@@ -4,12 +4,10 @@
   <name>swri_image_util</name>
   <version>3.6.1</version>
   <description>
-
-     swri_image_util
-
+    A package of commonly image manipulation utilities.
   </description>
   <author>Kris Kozak</author>
-  <maintainer email="preed@swri.org">P. J. Reed</maintainer>
+  <maintainer email="swri-robotics@swri.org">Southwest Research Institute</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
  
