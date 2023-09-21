@@ -4,12 +4,10 @@
   <name>swri_console_util</name>
   <version>3.6.1</version>
   <description>
-
-     swri_console_util
-
+    Utility functions for interacting with console
   </description>
   <author>Marc Alban</author>
-  <maintainer email="preed@swri.org">P. J. Reed</maintainer>
+  <maintainer email="swri-rorobircs@swri.org">Southwest Research Institute</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
   
