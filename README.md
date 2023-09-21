@@ -1,10 +1,21 @@
-marti\_common
-![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg)
-![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=dashing-devel)
-[![ROS2 Build Farm Build Status](http://build.ros2.org/buildStatus/icon?job=Ddev__marti_common__ubuntu_bionic_amd64)](http://build.ros2.org/job/Ddev__marti_common__ubuntu_bionic_amd64/)
-=============
+MARTI Common
+--------
 
 This repository provides various utility packages created at [Southwest Reseach Institute](http://www.swri.org)'s [Intelligent Vehicle Systems](http://www.swri.org/4org/d10/isd/ivs/default.htm) section for working with [Robot Operating System(ROS)](http://www.ros.org).  This branch adds support for ROS 2 Dashing and newer releases.  Most packages from ROS 1 have been ported, but a few have been removed due to being unnecessary or redundant, and some functionality is not implemented yet.
+
+Build Status
+--------
+ROS2 Distro | Branch | Build status | Released packages
+:---------: | :----: | :----------: | :---------------:
+**Humble** | [`humble`](https://github.com/swri-robotics/marti_common/tree/ros2-devel) | [![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=ros2-devel)](https://github.com/swri-robotics/marti_common/blob/ros2-devel/.github/workflows/main.yml?branch=ros2-devel) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Hdev__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Hdev__marti_common__ubuntu_jammy_amd64/) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Hbin__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Hbin__marti_common__ubuntu_jammy_amd64/) | [swri_cli_tools](https://index.ros.org/p/swri_cli_tools/github-swri-robotics-marti_common/#humble) <br /> [swri_console_util](https://index.ros.org/p/swri_console_util/github-swri-robotics-marti_common/#humble) <br /> [swri_dbw_interface](https://index.ros.org/p/swri_dbw_interface/github-swri-robotics-marti_common/#humble) <br /> [swri_geometry_util](https://index.ros.org/p/swri_geometry_util/github-swri-robotics-marti_common/#humble) <br /> [swri_image_util](https://index.ros.org/p/swri_image_util/github-swri-robotics-marti_common/#humble) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/github-swri-robotics-marti_common/#humble) <br /> [swri_opencv_util](https://index.ros.org/p/swri_opencv_util/github-swri-robotics-marti_common/#humble) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/github-swri-robotics-marti_common/#humble) <br /> [swri_prefix_tools](https://index.ros.org/p/swri_prefix_tools/github-swri-robotics-marti_common/#humble) <br /> [swri_roscpp](https://index.ros.org/p/swri_roscpp/github-swri-robotics-marti_common/#humble) <br /> [swri_route_util](https://index.ros.org/p/swri_route_util/github-swri-robotics-marti_common/#humble) <br /> [swri_serial_util](https://index.ros.org/p/swri_serial_util/github-swri-robotics-marti_common/#humble) <br /> [swri_system_util](https://index.ros.org/p/swri_system_util/github-swri-robotics-marti_common/#humble) <br /> [swri_transform_util](https://index.ros.org/p/swri_transform_util/github-swri-robotics-marti_common/#humble)
+**Iron** | [`iron`](https://github.com/swri-robotics/marti_common/tree/ros2-devel) | [![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=ros2-devel)](https://github.com/swri-robotics/marti_common/blob/ros2-devel/.github/workflows/main.yml?branch=ros2-devel) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Idev__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Idev__marti_common__ubuntu_jammy_amd64/) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Ibin__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Ibin__marti_common__ubuntu_jammy_amd64/) | [swri_cli_tools](https://index.ros.org/p/swri_cli_tools/github-swri-robotics-marti_common/#iron) <br /> [swri_console_util](https://index.ros.org/p/swri_console_util/github-swri-robotics-marti_common/#iron) <br /> [swri_dbw_interface](https://index.ros.org/p/swri_dbw_interface/github-swri-robotics-marti_common/#iron) <br /> [swri_geometry_util](https://index.ros.org/p/swri_geometry_util/github-swri-robotics-marti_common/#iron) <br /> [swri_image_util](https://index.ros.org/p/swri_image_util/github-swri-robotics-marti_common/#iron) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/github-swri-robotics-marti_common/#iron) <br /> [swri_opencv_util](https://index.ros.org/p/swri_opencv_util/github-swri-robotics-marti_common/#iron) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/github-swri-robotics-marti_common/#iron) <br /> [swri_prefix_tools](https://index.ros.org/p/swri_prefix_tools/github-swri-robotics-marti_common/#iron) <br /> [swri_roscpp](https://index.ros.org/p/swri_roscpp/github-swri-robotics-marti_common/#iron) <br /> [swri_route_util](https://index.ros.org/p/swri_route_util/github-swri-robotics-marti_common/#iron) <br /> [swri_serial_util](https://index.ros.org/p/swri_serial_util/github-swri-robotics-marti_common/#iron) <br /> [swri_system_util](https://index.ros.org/p/swri_system_util/github-swri-robotics-marti_common/#iron) <br /> [swri_transform_util](https://index.ros.org/p/swri_transform_util/github-swri-robotics-marti_common/#iron)
+**Rolling** | [`rolling`](https://github.com/swri-robotics/marti_common/tree/ros2-devel) | [![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=ros2-devel)](https://github.com/swri-robotics/marti_common/blob/ros2-devel/.github/workflows/main.yml?branch=ros2-devel) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Rdev__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Rdev__marti_common__ubuntu_jammy_amd64/) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Rbin__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Rbin__marti_common__ubuntu_jammy_amd64/) | [swri_cli_tools](https://index.ros.org/p/swri_cli_tools/github-swri-robotics-marti_common/#rolling) <br /> [swri_console_util](https://index.ros.org/p/swri_console_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_dbw_interface](https://index.ros.org/p/swri_dbw_interface/github-swri-robotics-marti_common/#rolling) <br /> [swri_geometry_util](https://index.ros.org/p/swri_geometry_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_image_util](https://index.ros.org/p/swri_image_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_opencv_util](https://index.ros.org/p/swri_opencv_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_prefix_tools](https://index.ros.org/p/swri_prefix_tools/github-swri-robotics-marti_common/#rolling) <br /> [swri_roscpp](https://index.ros.org/p/swri_roscpp/github-swri-robotics-marti_common/#rolling) <br /> [swri_route_util](https://index.ros.org/p/swri_route_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_serial_util](https://index.ros.org/p/swri_serial_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_system_util](https://index.ros.org/p/swri_system_util/github-swri-robotics-marti_common/#rolling) <br /> [swri_transform_util](https://index.ros.org/p/swri_transform_util/github-swri-robotics-marti_common/#rolling)
+
+
+![CI](https://github.com/swri-robotics/marti_common/workflows/CI/badge.svg?branch=ros2-devel)
+[![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Hdev__marti_common__ubuntu_jammy_amd64)](https://build.ros2.org/job/Hdev__marti_common__ubuntu_jammy_amd64/)
+
+
 
 Overview
 --------
@@ -25,25 +36,16 @@ Removed packages:
 
 Package migration notes:
 1. `swri_image_util`  
-    `replace_colors_node` has not been ported yet due to extensive changes in how ROS parameters work
-2. `swri_roscpp`
-    1. Many parameter-related classes have been removed; they are unnecessary due to `roscpp::Node::delcare_parameter` providing equivalent functionality now
-    2. Topic services have not been ported yet
-3. `swri_transform_util`  
-    `initialize_origin.py` does not publish a tf frame due to tf2 Python bindings not being fully functional in ROS 2 Dashing
-4. Launch files
-    Launch files have not yet been migrated to ROS 2
+    `replace_colors_node` has not been ported from ROS 1 yet due to extensive changes in how ROS parameters work
 
-Also note that many features have not been tested yet.  Please open an issue if you try to use something and it doesn't work.
-
-Installation (ROS Foxy, Galactic, Humble)
+Installation (ROS 2 Humble, Iron, Rolling)
 ------------
 
 If you have installed ROS 2, you can install any of the packages in this repository with apt-get:
 
     sudo apt-get install ros-${ROS_DISTRO}-<package>
 
-Building From Source (ROS Foxy, Galactic, Humble)
+Building From Source (ROS 2 Humble, Iron, Rolling)
 ------------
 
 These directions assume you have already set up rosdep. See the [rosdep documentation](http://wiki.ros.org/rosdep) on the ROS wiki for help setting up rosdep.
