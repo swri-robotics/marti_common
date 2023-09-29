@@ -102,12 +102,12 @@ def get_child(pid, timeout=10.0):
         if proc.status == psutil.STATUS_ZOMBIE:
             print "Warning: process %d is defunct." % pid
             return None
-        if len(proc.get_children()) > 0:
+        if len(proc.children()) > 0:
             break
         time.sleep(0.1)
         t += 0.1
 
-    children = [c.pid for c in proc.get_children()]
+    children = [c.pid for c in proc.children()]
 
     if len(children) == 0:
         return None
