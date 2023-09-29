@@ -149,6 +149,12 @@ namespace swri_transform_util
         local_xy_frame_ = local_xy_frame;
         initialized_ = true;
       }
+      else
+      {
+        RCLCPP_ERROR(logger_,
+          "UtmTransformer::Initialize: Frame %s was not found so transformer did not initialize",
+          local_xy_frame.c_str());
+      }
     }
 
     if (initialized_)
