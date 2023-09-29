@@ -250,11 +250,23 @@ namespace swri_transform_util
       double rlat = latitude * swri_math_util::_deg_2_rad;
       double rlon = longitude * swri_math_util::_deg_2_rad;
       double dLat = (rlat - reference_latitude_) * rho_lat_;
-      double dLon = (rlon - reference_longitude_) * rho_lon_;
-
+      double dLon = (rlon - reference_longitude_);
+      // Check for case where the shortest distance crosses the antimeridian
+      if (dLon > swri_math_util::_pi)
+      {   
+        dLon -= swri_math_util::_2pi;
+      }   
+      
+      if (dLon < -swri_math_util::_pi)
+      {   
+        dLon += swri_math_util::_2pi;
+      }   
+        
+      dLon *= rho_lon_;
+  
       x =  cos_angle_ * dLon + sin_angle_ * dLat;
       y = -sin_angle_ * dLon + cos_angle_ * dLat;
-
+  
       return true;
     }
 
@@ -276,6 +288,16 @@ namespace swri_transform_util
 
       latitude = rlat * swri_math_util::_rad_2_deg;
       longitude = rlon * swri_math_util::_rad_2_deg;
+      // Constrain longitude in case it has wrapped across the date line
+      if (longitude >= 180.0)
+      {   
+        longitude -= 360.0;
+      }   
+        
+      if (longitude < -180.0)
+      {
+        longitude += 360.0;
+      }
     }
 
     return initialized_;
