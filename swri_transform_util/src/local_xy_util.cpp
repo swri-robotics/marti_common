@@ -200,6 +200,13 @@ namespace swri_transform_util
         // compatibility with older bag files.
         node_->get_parameter_or("/local_xy_frame", frame, frame_);
       }
+      else
+      {
+        if (frame[0] == '/')
+        {
+          frame.erase(0, 1);
+        }
+      }
 
       frame_ = frame;
 
