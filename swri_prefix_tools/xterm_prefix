@@ -77,7 +77,7 @@ def child_func():
     subscript = os.path.join(script_dir, 'xterm_prefix_' + sys.argv[1])
 
     if not os.path.exists(subscript):
-        print "Could not find subscript %r" % subscript
+        print("Could not find subscript {}".format(subscript))
         sys.exit(1)
 
     # Launch the node in an xterm.  We use exec so that the xterm
@@ -100,7 +100,7 @@ def get_child(pid, timeout=10.0):
     while t < timeout:
         proc = psutil.Process(pid)
         if proc.status == psutil.STATUS_ZOMBIE:
-            print "Warning: process %d is defunct." % pid
+            print("Warning: process {} is defunct.".format(pid)) 
             return None
         if len(proc.children()) > 0:
             break
@@ -112,7 +112,7 @@ def get_child(pid, timeout=10.0):
     if len(children) == 0:
         return None
     elif len(children) > 1:
-        print "Warning: Found multiple children, selecting the first..."
+        print("Warning: Found multiple children, selecting the first...")
         
     return children[0]    
 
@@ -129,14 +129,14 @@ def main_func(child):
     # a new process that execed over that script.
     grandchild = get_child(child)    
     if grandchild is None:
-        print "Found no running process for node.  Quitting."
+        print("Found no running process for node.  Quitting.")
         sys.exit(1)        
 
     # Next we get the child of the bash script.  This should be the
     # actual node.
     great_grandchild = get_child(grandchild)
     if great_grandchild is None:
-        print "Found no running process for node.  Quitting."
+        print("Found no running process for node.  Quitting.")
         sys.exit(1)        
 
     # Setup the signals that we want to forward to the child node.
