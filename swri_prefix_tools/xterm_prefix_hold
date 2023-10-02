@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Run the node directly in xterm and keep the window open after the
-# process finished.
-
-$@
-echo "<--- Node Completed ---->"
-sleep infinity
