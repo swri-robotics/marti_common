@@ -89,11 +89,11 @@ TEST_F(TransformManagerTests, Identity1)
 /* TEST_F(TransformManagerTests, IdentityNoSlash) */
 /* { */
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/near_field", */
 /*       "near_field", */
 /*       transform)); */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "near_field", */
 /*       "/near_field", */
 /*       transform)); */
@@ -104,7 +104,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 p1(435, -900, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/some_frame", */
 /*       "/some_frame", */
 /*       transform)); */
@@ -126,7 +126,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 far_field(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/near_field", */
 /*       "/far_field", */
 /*       transform)); */
@@ -148,7 +148,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 far_field(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/near_field", */
 /*       "far_field", */
 /*       transform)); */
@@ -170,7 +170,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 far_field(0, 0, 0); */
 
 /*   tf::StampedTransform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/near_field", */
 /*       "/far_field", */
 /*       transform)); */
@@ -187,7 +187,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 wgs84(-98.471944, 29.526667, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       swri_transform_util::_utm_frame, */
 /*       swri_transform_util::_wgs84_frame, */
 /*       transform)); */
@@ -209,7 +209,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 wgs84(-98.471944, 29.526667, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "utm", */
 /*       "wgs84", */
 /*       transform)); */
@@ -231,7 +231,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 utm(551170, 3266454, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       swri_transform_util::_wgs84_frame, */
 /*       swri_transform_util::_utm_frame, */
 /*       transform)); */
@@ -253,7 +253,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 tf(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       swri_transform_util::_utm_frame, */
 /*       "/far_field", */
 /*       transform)); */
@@ -275,7 +275,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 tf(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "utm", */
 /*       "far_field", */
 /*       transform)); */
@@ -296,7 +296,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 tf(500, 500, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       swri_transform_util::_utm_frame, */
 /*       "/far_field", */
 /*       transform)); */
@@ -318,7 +318,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/far_field", */
 /*       swri_transform_util::_utm_frame, */
 /*       transform)); */
@@ -340,7 +340,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/near_field", */
 /*       swri_transform_util::_utm_frame, */
 /*       transform)); */
@@ -362,7 +362,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 utm(537460.3372816057 - 500, 3258123.434110421 - 500, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/far_field", */
 /*       swri_transform_util::_utm_frame, */
 /*       transform)); */
@@ -384,7 +384,7 @@ TEST_F(TransformManagerTests, Identity1)
 /*   tf2::Vector3 utm(551170, 3266454, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "/far_field", */
 /*       swri_transform_util::_utm_frame, */
 /*       transform)); */
@@ -422,49 +422,49 @@ TEST_F(TransformManagerTests, Wgs84ToTf1)
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-/* TEST_F(TransformManagerTests, Wgs84ToTf1NoSlash) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0); */
+TEST_F(TransformManagerTests, Wgs84ToTf1NoSlash)
+{
+  // Local Origin
+  tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
-/*       "far_field", */
-/*       "wgs84", */
-/*       transform)); */
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "far_field",
+      "wgs84",
+      transform));
 
-/*   tf2::Vector3 tf = transform * wgs84; */
+  tf2::Vector3 tf = transform * wgs84;
 
-/*   EXPECT_FLOAT_EQ(0, tf.x()); */
-/*   EXPECT_FLOAT_EQ(0, tf.y()); */
+  EXPECT_FLOAT_EQ(0, tf.x());
+  EXPECT_FLOAT_EQ(0, tf.y());
 
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * tf; */
-/*   EXPECT_FLOAT_EQ(wgs84.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(wgs84.y(), p3.y()); */
-/* } */
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * tf;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
+}
 
-/* TEST_F(TransformManagerTests, Wgs84ToTf2) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0); */
+TEST_F(TransformManagerTests, Wgs84ToTf2)
+{
+  // Local Origin
+  tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
-/*       "/near_field", */
-/*       swri_transform_util::_wgs84_frame, */
-/*       transform)); */
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/near_field",
+      swri_transform_util::_wgs84_frame,
+      transform));
 
-/*   tf2::Vector3 tf = transform * wgs84; */
+  tf2::Vector3 tf = transform * wgs84;
 
-/*   EXPECT_FLOAT_EQ(-500, tf.x()); */
-/*   EXPECT_FLOAT_EQ(-500, tf.y()); */
+  EXPECT_FLOAT_EQ(-500, tf.x());
+  EXPECT_FLOAT_EQ(-500, tf.y());
 
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * tf; */
-/*   EXPECT_FLOAT_EQ(wgs84.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(wgs84.y(), p3.y()); */
-/* } */
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * tf;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
+}
 
 /* TEST_F(TransformManagerTests, TfToWgs84_1) */
 /* { */
@@ -472,7 +472,7 @@ TEST_F(TransformManagerTests, Wgs84ToTf1)
 /*   tf2::Vector3 tf(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       swri_transform_util::_wgs84_frame, */
 /*       "/far_field", */
 /*       transform)); */
@@ -494,7 +494,7 @@ TEST_F(TransformManagerTests, Wgs84ToTf1)
 /*   tf2::Vector3 tf(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       "wgs84", */
 /*       "far_field", */
 /*       transform)); */
@@ -515,7 +515,7 @@ TEST_F(TransformManagerTests, Wgs84ToTf1)
 /*   tf2::Vector3 tf(0, 0, 0); */
 
 /*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager.GetTransform( */
+/*   ASSERT_TRUE(_tf_manager->GetTransform( */
 /*       swri_transform_util::_wgs84_frame, */
 /*       "/near_field", */
 /*       transform)); */

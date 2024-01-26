@@ -73,12 +73,12 @@ def generate_test_description():
         arguments=[
             "--x", "500.0",
             "--y", "500.0",
-            "--z", "0.0",
-            "--roll", "0.0",
-            "--pitch", "0.0",
-            "--yaw", "0.0",
-            "--frame_id", "/far_field",
-            "--child_frame_id", "/near_field"],
+            "--z", "0",
+            "--roll", "0",
+            "--pitch", "0",
+            "--yaw", "0",
+            "--frame-id", "far_field",
+            "--child-frame-id", "near_field"],
     )
     # TODO static transform publisher tf2
     # TODO static transform publisher tf3
