@@ -154,12 +154,12 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(launch_testing_ament_cmake)
 
-  # ament_add_gtest_executable(transform_manager_test test/test_transform_manager.cpp)
-  # target_include_directories(transform_manager_test PRIVATE
-  #   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  # )
-  # target_link_libraries(transform_manager_test ${PROJECT_NAME})
-  # ament_target_dependencies(transform_manager_test rclcpp tf2 tf2_ros)
+  ament_add_gtest_executable(transform_manager_test test/test_transform_manager.cpp)
+  target_include_directories(transform_manager_test PRIVATE
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  )
+  target_link_libraries(transform_manager_test ${PROJECT_NAME})
+  ament_target_dependencies(transform_manager_test rclcpp tf2 tf2_ros)
 
   # add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
   # target_link_libraries(test_local_xy_util ${PROJECT_NAME})
@@ -182,11 +182,10 @@ if(BUILD_TESTING)
   # add_rostest(test/initialize_origin_auto_gps.test)
   # add_rostest(test/initialize_origin_auto_navsat.test)
   # add_rostest(test/initialize_origin_manual.test)
-  # add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
 
   install(TARGETS
-    # transform_manager_test
-    utm_util_test
+    transform_manager_test
     DESTINATION lib/${PROJECT_NAME}
   )
 

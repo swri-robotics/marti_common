@@ -32,6 +32,7 @@
 #include <functional>
 
 #include <tf2/utils.h>
+#include <rcutils/logging_macros.h>
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/trig_util.h>
@@ -209,7 +210,7 @@ namespace swri_transform_util
       }
 
       frame_ = frame;
-
+      RCUTILS_LOG_WARN("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, reference_altitude_);
       Initialize();
       pose_sub_.reset();
       return;
