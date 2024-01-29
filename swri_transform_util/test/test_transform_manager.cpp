@@ -86,319 +86,319 @@ TEST_F(TransformManagerTests, Identity1)
   EXPECT_FLOAT_EQ(p1.y(), p3.y());
 }
 
-/* TEST_F(TransformManagerTests, IdentityNoSlash) */
-/* { */
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/near_field", */
-/*       "near_field", */
-/*       transform)); */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "near_field", */
-/*       "/near_field", */
-/*       transform)); */
-/* } */
-
-/* TEST_F(TransformManagerTests, Identity2) */
-/* { */
-/*   tf2::Vector3 p1(435, -900, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/some_frame", */
-/*       "/some_frame", */
-/*       transform)); */
-
-/*   tf2::Vector3 p2 = transform * p1; */
-
-/*   EXPECT_FLOAT_EQ(p1.x(), p2.x()); */
-/*   EXPECT_FLOAT_EQ(p1.y(), p2.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * p2; */
-/*   EXPECT_FLOAT_EQ(p1.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(p1.y(), p3.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, TfToTf1) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 far_field(0, 0, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/near_field", */
-/*       "/far_field", */
-/*       transform)); */
-
-/*   tf2::Vector3 near_field = transform * far_field; */
-
-/*   EXPECT_FLOAT_EQ(-500, near_field.x()); */
-/*   EXPECT_FLOAT_EQ(-500, near_field.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * near_field; */
-/*   EXPECT_FLOAT_EQ(far_field.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(far_field.y(), p3.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, TfToTf1NoSlash) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 far_field(0, 0, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/near_field", */
-/*       "far_field", */
-/*       transform)); */
-
-/*   tf2::Vector3 near_field = transform * far_field; */
-
-/*   EXPECT_FLOAT_EQ(-500, near_field.x()); */
-/*   EXPECT_FLOAT_EQ(-500, near_field.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * near_field; */
-/*   EXPECT_FLOAT_EQ(far_field.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(far_field.y(), p3.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, TfToTf2) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 far_field(0, 0, 0); */
-
-/*   tf::StampedTransform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/near_field", */
-/*       "/far_field", */
-/*       transform)); */
-
-/*   tf2::Vector3 near_field = transform * far_field; */
-
-/*   EXPECT_FLOAT_EQ(-500, near_field.x()); */
-/*   EXPECT_FLOAT_EQ(-500, near_field.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, WgsToUtm) */
-/* { */
-/*   // San Antonio International Airport */
-/*   tf2::Vector3 wgs84(-98.471944, 29.526667, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       swri_transform_util::_utm_frame, */
-/*       swri_transform_util::_wgs84_frame, */
-/*       transform)); */
-
-/*   tf2::Vector3 utm = transform * wgs84; */
-
-/*   EXPECT_FLOAT_EQ(551170, utm.x()); */
-/*   EXPECT_FLOAT_EQ(3266454, utm.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * utm; */
-/*   EXPECT_FLOAT_EQ(wgs84.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(wgs84.y(), p3.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, WgsToUtmNoSlash) */
-/* { */
-/*   // San Antonio International Airport */
-/*   tf2::Vector3 wgs84(-98.471944, 29.526667, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "utm", */
-/*       "wgs84", */
-/*       transform)); */
-
-/*   tf2::Vector3 utm = transform * wgs84; */
-
-/*   EXPECT_FLOAT_EQ(551170, utm.x()); */
-/*   EXPECT_FLOAT_EQ(3266454, utm.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * utm; */
-/*   EXPECT_FLOAT_EQ(wgs84.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(wgs84.y(), p3.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, UtmToWgs84) */
-/* { */
-/*   // San Antonio International Airport */
-/*   tf2::Vector3 utm(551170, 3266454, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       swri_transform_util::_wgs84_frame, */
-/*       swri_transform_util::_utm_frame, */
-/*       transform)); */
-
-/*   tf2::Vector3 wgs84 = transform * utm; */
-
-/*   EXPECT_FLOAT_EQ(29.526667, wgs84.y()); */
-/*   EXPECT_FLOAT_EQ(-98.471944, wgs84.x()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * wgs84; */
-/*   EXPECT_FLOAT_EQ(utm.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(utm.y(), p3.y()); */
-/* } */
-
-/* TEST_F(TransformManagerTests, TfToUtm1) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 tf(0, 0, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       swri_transform_util::_utm_frame, */
-/*       "/far_field", */
-/*       transform)); */
-
-/*   tf2::Vector3 utm = transform * tf; */
-
-/*   EXPECT_FLOAT_EQ(537460.3372816057, utm.x()); */
-/*   EXPECT_FLOAT_EQ(3258123.434110421, utm.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * utm; */
-/*   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001); */
-/* } */
-
-/* TEST_F(TransformManagerTests, TfToUtm1NoSlash) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 tf(0, 0, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "utm", */
-/*       "far_field", */
-/*       transform)); */
-
-/*   tf2::Vector3 utm = transform * tf; */
-
-/*   EXPECT_FLOAT_EQ(537460.3372816057, utm.x()); */
-/*   EXPECT_FLOAT_EQ(3258123.434110421, utm.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * utm; */
-/*   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001); */
-/* } */
-
-/* TEST_F(TransformManagerTests, TfToUtm2) */
-/* { */
-/*   tf2::Vector3 tf(500, 500, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       swri_transform_util::_utm_frame, */
-/*       "/far_field", */
-/*       transform)); */
-
-/*   tf2::Vector3 utm = transform * tf; */
-
-/*   EXPECT_NEAR(537460.3372816057 + 500.0, utm.x(), 1.9); */
-/*   EXPECT_NEAR(3258123.434110421 + 500.0, utm.y(), 1.5); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * utm; */
-/*   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001); */
-/* } */
-
-/* TEST_F(TransformManagerTests, UtmToTf1) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/far_field", */
-/*       swri_transform_util::_utm_frame, */
-/*       transform)); */
-
-/*   tf2::Vector3 tf = transform * utm; */
-
-/*   EXPECT_NEAR(0, tf.x(), 0.0005); */
-/*   EXPECT_NEAR(0, tf.y(), 0.0005); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * tf; */
-/*   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001); */
-/* } */
-
-/* TEST_F(TransformManagerTests, UtmToTf2) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/near_field", */
-/*       swri_transform_util::_utm_frame, */
-/*       transform)); */
-
-/*   tf2::Vector3 tf = transform * utm; */
-
-/*   EXPECT_NEAR(-500, tf.x(), 0.0005); */
-/*   EXPECT_NEAR(-500, tf.y(), 0.0005); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * tf; */
-/*   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001); */
-/* } */
-
-/* TEST_F(TransformManagerTests, UtmToTf3) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 utm(537460.3372816057 - 500, 3258123.434110421 - 500, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/far_field", */
-/*       swri_transform_util::_utm_frame, */
-/*       transform)); */
-
-/*   tf2::Vector3 tf = transform * utm; */
-
-/*   EXPECT_NEAR(-500, tf.x(), 1.9); */
-/*   EXPECT_NEAR(-500, tf.y(), 1.5); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * tf; */
-/*   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001); */
-/* } */
-
-/* TEST_F(TransformManagerTests, UtmToTf4) */
-/* { */
-/*   // San Antonio International Airport */
-/*   tf2::Vector3 utm(551170, 3266454, 0); */
-
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "/far_field", */
-/*       swri_transform_util::_utm_frame, */
-/*       transform)); */
-
-/*   tf2::Vector3 tf = transform * utm; */
-
-/*   EXPECT_FLOAT_EQ(13752.988, tf.x()); */
-/*   EXPECT_FLOAT_EQ(8280.0176, tf.y()); */
-
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * tf; */
-/*   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001); */
-/* } */
+TEST_F(TransformManagerTests, IdentityNoSlash)
+{
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/near_field",
+      "near_field",
+      transform));
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "near_field",
+      "/near_field",
+      transform));
+}
+
+TEST_F(TransformManagerTests, Identity2)
+{
+  tf2::Vector3 p1(435, -900, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/some_frame",
+      "/some_frame",
+      transform));
+
+  tf2::Vector3 p2 = transform * p1;
+
+  EXPECT_FLOAT_EQ(p1.x(), p2.x());
+  EXPECT_FLOAT_EQ(p1.y(), p2.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * p2;
+  EXPECT_FLOAT_EQ(p1.x(), p3.x());
+  EXPECT_FLOAT_EQ(p1.y(), p3.y());
+}
+
+TEST_F(TransformManagerTests, TfToTf1)
+{
+  // Local Origin
+  tf2::Vector3 far_field(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/near_field",
+      "/far_field",
+      transform));
+
+  tf2::Vector3 near_field = transform * far_field;
+
+  EXPECT_FLOAT_EQ(-500, near_field.x());
+  EXPECT_FLOAT_EQ(-500, near_field.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * near_field;
+  EXPECT_FLOAT_EQ(far_field.x(), p3.x());
+  EXPECT_FLOAT_EQ(far_field.y(), p3.y());
+}
+
+TEST_F(TransformManagerTests, TfToTf1NoSlash)
+{
+  // Local Origin
+  tf2::Vector3 far_field(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/near_field",
+      "far_field",
+      transform));
+
+  tf2::Vector3 near_field = transform * far_field;
+
+  EXPECT_FLOAT_EQ(-500, near_field.x());
+  EXPECT_FLOAT_EQ(-500, near_field.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * near_field;
+  EXPECT_FLOAT_EQ(far_field.x(), p3.x());
+  EXPECT_FLOAT_EQ(far_field.y(), p3.y());
+}
+
+TEST_F(TransformManagerTests, TfToTf2)
+{
+  // Local Origin
+  tf2::Vector3 far_field(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/near_field",
+      "/far_field",
+      transform));
+
+  tf2::Vector3 near_field = transform * far_field;
+
+  EXPECT_FLOAT_EQ(-500, near_field.x());
+  EXPECT_FLOAT_EQ(-500, near_field.y());
+}
+
+TEST_F(TransformManagerTests, WgsToUtm)
+{
+  // San Antonio International Airport
+  tf2::Vector3 wgs84(-98.471944, 29.526667, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      swri_transform_util::_utm_frame,
+      swri_transform_util::_wgs84_frame,
+      transform));
+
+  tf2::Vector3 utm = transform * wgs84;
+
+  EXPECT_FLOAT_EQ(551170, utm.x());
+  EXPECT_FLOAT_EQ(3266454, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * utm;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
+}
+
+TEST_F(TransformManagerTests, WgsToUtmNoSlash)
+{
+  // San Antonio International Airport
+  tf2::Vector3 wgs84(-98.471944, 29.526667, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "utm",
+      "wgs84",
+      transform));
+
+  tf2::Vector3 utm = transform * wgs84;
+
+  EXPECT_FLOAT_EQ(551170, utm.x());
+  EXPECT_FLOAT_EQ(3266454, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * utm;
+  EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
+  EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
+}
+
+TEST_F(TransformManagerTests, UtmToWgs84)
+{
+  // San Antonio International Airport
+  tf2::Vector3 utm(551170, 3266454, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      swri_transform_util::_wgs84_frame,
+      swri_transform_util::_utm_frame,
+      transform));
+
+  tf2::Vector3 wgs84 = transform * utm;
+
+  EXPECT_FLOAT_EQ(29.526667, wgs84.y());
+  EXPECT_FLOAT_EQ(-98.471944, wgs84.x());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * wgs84;
+  EXPECT_FLOAT_EQ(utm.x(), p3.x());
+  EXPECT_FLOAT_EQ(utm.y(), p3.y());
+}
+
+TEST_F(TransformManagerTests, TfToUtm1)
+{
+  // Local Origin
+  tf2::Vector3 tf(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      swri_transform_util::_utm_frame,
+      "/far_field",
+      transform));
+
+  tf2::Vector3 utm = transform * tf;
+
+  EXPECT_FLOAT_EQ(537460.3372816057, utm.x());
+  EXPECT_FLOAT_EQ(3258123.434110421, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * utm;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
+}
+
+TEST_F(TransformManagerTests, TfToUtm1NoSlash)
+{
+  // Local Origin
+  tf2::Vector3 tf(0, 0, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "utm",
+      "far_field",
+      transform));
+
+  tf2::Vector3 utm = transform * tf;
+
+  EXPECT_FLOAT_EQ(537460.3372816057, utm.x());
+  EXPECT_FLOAT_EQ(3258123.434110421, utm.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * utm;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
+}
+
+TEST_F(TransformManagerTests, TfToUtm2)
+{
+  tf2::Vector3 tf(500, 500, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      swri_transform_util::_utm_frame,
+      "/far_field",
+      transform));
+
+  tf2::Vector3 utm = transform * tf;
+
+  EXPECT_NEAR(537460.3372816057 + 500.0, utm.x(), 1.9);
+  EXPECT_NEAR(3258123.434110421 + 500.0, utm.y(), 1.5);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * utm;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
+}
+
+TEST_F(TransformManagerTests, UtmToTf1)
+{
+  // Local Origin
+  tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/far_field",
+      swri_transform_util::_utm_frame,
+      transform));
+
+  tf2::Vector3 tf = transform * utm;
+
+  EXPECT_NEAR(0, tf.x(), 0.0005);
+  EXPECT_NEAR(0, tf.y(), 0.0005);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
+}
+
+TEST_F(TransformManagerTests, UtmToTf2)
+{
+  // Local Origin
+  tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/near_field",
+      swri_transform_util::_utm_frame,
+      transform));
+
+  tf2::Vector3 tf = transform * utm;
+
+  EXPECT_NEAR(-500, tf.x(), 0.0005);
+  EXPECT_NEAR(-500, tf.y(), 0.0005);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
+}
+
+TEST_F(TransformManagerTests, UtmToTf3)
+{
+  // Local Origin
+  tf2::Vector3 utm(537460.3372816057 - 500, 3258123.434110421 - 500, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/far_field",
+      swri_transform_util::_utm_frame,
+      transform));
+
+  tf2::Vector3 tf = transform * utm;
+
+  EXPECT_NEAR(-500, tf.x(), 1.9);
+  EXPECT_NEAR(-500, tf.y(), 1.5);
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
+}
+
+TEST_F(TransformManagerTests, UtmToTf4)
+{
+  // San Antonio International Airport
+  tf2::Vector3 utm(551170, 3266454, 0);
+
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "/far_field",
+      swri_transform_util::_utm_frame,
+      transform));
+
+  tf2::Vector3 tf = transform * utm;
+
+  EXPECT_FLOAT_EQ(13752.988, tf.x());
+  EXPECT_FLOAT_EQ(8280.0176, tf.y());
+
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * tf;
+  EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
+}
 
 TEST_F(TransformManagerTests, Wgs84ToTf1)
 {
@@ -466,70 +466,70 @@ TEST_F(TransformManagerTests, Wgs84ToTf2)
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-/* TEST_F(TransformManagerTests, TfToWgs84_1) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 tf(0, 0, 0); */
+TEST_F(TransformManagerTests, TfToWgs84_1)
+{
+  // Local Origin
+  tf2::Vector3 tf(0, 0, 0);
 
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       swri_transform_util::_wgs84_frame, */
-/*       "/far_field", */
-/*       transform)); */
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      swri_transform_util::_wgs84_frame,
+      "/far_field",
+      transform));
 
-/*   tf2::Vector3 wgs84 = transform * tf; */
+  tf2::Vector3 wgs84 = transform * tf;
 
-/*   EXPECT_FLOAT_EQ(-98.61370577, wgs84.x()); */
-/*   EXPECT_FLOAT_EQ(29.45196669, wgs84.y()); */
+  EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
+  EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
 
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * wgs84; */
-/*   EXPECT_FLOAT_EQ(tf.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(tf.y(), p3.y()); */
-/* } */
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * wgs84;
+  EXPECT_FLOAT_EQ(tf.x(), p3.x());
+  EXPECT_FLOAT_EQ(tf.y(), p3.y());
+}
 
-/* TEST_F(TransformManagerTests, TfToWgs84_1NoSlash) */
-/* { */
-/*   // Local Origin */
-/*   tf2::Vector3 tf(0, 0, 0); */
+TEST_F(TransformManagerTests, TfToWgs84_1NoSlash)
+{
+  // Local Origin
+  tf2::Vector3 tf(0, 0, 0);
 
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       "wgs84", */
-/*       "far_field", */
-/*       transform)); */
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      "wgs84",
+      "far_field",
+      transform));
 
-/*   tf2::Vector3 wgs84 = transform * tf; */
+  tf2::Vector3 wgs84 = transform * tf;
 
-/*   EXPECT_FLOAT_EQ(-98.61370577, wgs84.x()); */
-/*   EXPECT_FLOAT_EQ(29.45196669, wgs84.y()); */
+  EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
+  EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
 
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * wgs84; */
-/*   EXPECT_FLOAT_EQ(tf.x(), p3.x()); */
-/*   EXPECT_FLOAT_EQ(tf.y(), p3.y()); */
-/* } */
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * wgs84;
+  EXPECT_FLOAT_EQ(tf.x(), p3.x());
+  EXPECT_FLOAT_EQ(tf.y(), p3.y());
+}
 
-/* TEST_F(TransformManagerTests, TfToWgs84_2) */
-/* { */
-/*   tf2::Vector3 tf(0, 0, 0); */
+TEST_F(TransformManagerTests, TfToWgs84_2)
+{
+  tf2::Vector3 tf(0, 0, 0);
 
-/*   swri_transform_util::Transform transform; */
-/*   ASSERT_TRUE(_tf_manager->GetTransform( */
-/*       swri_transform_util::_wgs84_frame, */
-/*       "/near_field", */
-/*       transform)); */
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
+      swri_transform_util::_wgs84_frame,
+      "/near_field",
+      transform));
 
-/*   tf2::Vector3 wgs84 = transform * tf; */
+  tf2::Vector3 wgs84 = transform * tf;
 
-/*   EXPECT_FLOAT_EQ(-98.6085519577, wgs84.x()); */
-/*   EXPECT_FLOAT_EQ(29.4564773982, wgs84.y()); */
+  EXPECT_FLOAT_EQ(-98.6085519577, wgs84.x());
+  EXPECT_FLOAT_EQ(29.4564773982, wgs84.y());
 
-/*   swri_transform_util::Transform inverse = transform.Inverse(); */
-/*   tf2::Vector3 p3 = inverse * wgs84; */
-/*   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001); */
-/*   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001); */
-/* } */
+  swri_transform_util::Transform inverse = transform.Inverse();
+  tf2::Vector3 p3 = inverse * wgs84;
+  EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
+  EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
+}
 
 // Run all the tests that were declared with TEST_F()
 int main(int argc, char **argv)

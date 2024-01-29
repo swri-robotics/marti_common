@@ -65,7 +65,6 @@ def generate_test_description():
         }]
     )
 
-    # TODO static transform publisher tf1
     tf1 = Node(
         package="tf2_ros",
         name="tf1",
@@ -80,13 +79,41 @@ def generate_test_description():
             "--frame-id", "far_field",
             "--child-frame-id", "near_field"],
     )
-    # TODO static transform publisher tf2
-    # TODO static transform publisher tf3
+    tf2 = Node(
+        package="tf2_ros",
+        name="tf2",
+        executable="static_transform_publisher",
+        arguments=[
+            "--x", "1000.0",
+            "--y", "0.0",
+            "--z", "0.0",
+            "--roll", "0.0",
+            "--pitch", "0.0",
+            "--yaw", "0.0",
+            "--frame-id", "far_field",
+            "--child-frame-id", "veh_far_field"],
+    )
+    tf3 = Node(
+        package="tf2_ros",
+        name="tf3",
+        executable="static_transform_publisher",
+        arguments=[
+            "--x", "0.0",
+            "--y", "0.0",
+            "--z", "0.0",
+            "--roll", "0.0",
+            "--pitch", "0.0",
+            "--yaw", "0.0",
+            "--frame-id", "veh_far_field",
+            "--child-frame-id", "veh_near_field"],
+    )
 
     return launch.LaunchDescription(
             [
                 init_origin,
                 tf1,
+                tf2,
+                tf3,
                 launch_testing.util.KeepAliveProc(),
                 launch_testing.actions.ReadyToTest(),
             ]
