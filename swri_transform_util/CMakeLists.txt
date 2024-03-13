@@ -161,20 +161,21 @@ if(BUILD_TESTING)
   target_link_libraries(transform_manager_test ${PROJECT_NAME})
   ament_target_dependencies(transform_manager_test rclcpp tf2 tf2_ros)
 
-  # add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
-  # target_link_libraries(test_local_xy_util ${PROJECT_NAME})
+  ament_add_gtest(local_xy_util_test test/test_local_xy_util.cpp)
+  target_link_libraries(local_xy_util_test ${PROJECT_NAME})
+  ament_target_dependencies(local_xy_util_test rclcpp)
 
   ament_add_gtest(utm_util_test test/test_utm_util.cpp)
   target_link_libraries(utm_util_test ${PROJECT_NAME})
+  ament_target_dependencies(utm_util_test rclcpp)
 
-  # add_rostest_gtest(test_transform_manager launch/transform_manager.test test/test_transform_manager.cpp)
-  # target_link_libraries(test_transform_manager ${PROJECT_NAME})
+  ament_add_gtest(georeference_test test/test_georeference.cpp)
+  target_link_libraries(georeference_test ${PROJECT_NAME})
+  ament_target_dependencies(georeference_test rclcpp tf2 ament_index_cpp)
 
-  # add_rostest_gtest(test_georeference launch/georeference.test test/test_georeference.cpp)
-  # target_link_libraries(test_georeference ${PROJECT_NAME})
-
-  # add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
-  # target_link_libraries(test_transform_util ${PROJECT_NAME})
+  ament_add_gtest(transform_util_test test/test_transform_util.cpp)
+  target_link_libraries(transform_util_test ${PROJECT_NAME})
+  ament_target_dependencies(transform_util_test rclcpp tf2)
 
   # add_rostest(test/initialize_invalid_gps.test)
   # add_rostest(test/initialize_invalid_navsat.test)
@@ -183,10 +184,19 @@ if(BUILD_TESTING)
   # add_rostest(test/initialize_origin_auto_navsat.test)
   # add_rostest(test/initialize_origin_manual.test)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/local_xy_util.test.py)
 
   install(TARGETS
     transform_manager_test
+    utm_util_test
+    georeference_test
+    transform_util_test
+    local_xy_util_test
     DESTINATION lib/${PROJECT_NAME}
+  )
+
+  install(DIRECTORY test/data
+    DESTINATION share/${PROJECT_NAME}
   )
 
 endif()

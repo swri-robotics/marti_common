@@ -29,11 +29,11 @@
 
 #include <cstdlib>
 
-#include <array.hpp>
+#include <array>
 
 #include <gtest/gtest.h>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <swri_math_util/constants.h>
 #include <swri_math_util/math_util.h>
@@ -41,12 +41,12 @@
 
 TEST(TransformUtilTests, GetRelativeTransform)
 {
-  tf::Transform offset = swri_transform_util::GetRelativeTransform(
+  tf2::Transform offset = swri_transform_util::GetRelativeTransform(
                 29.441679990508018, -98.602031700252184, -1.2030287,
                 29.441609529848606, -98.601997698933161, -1.21015707397341
                 );
 
-  tf::Vector3 origin = offset.getOrigin();
+  tf2::Vector3 origin = offset.getOrigin();
   EXPECT_FLOAT_EQ(-8.47174665, origin.x());
   EXPECT_FLOAT_EQ(-0.3306987, origin.y());
   EXPECT_FLOAT_EQ(0.0, origin.z());
@@ -62,18 +62,18 @@ TEST(TransformUtilTests, GetBearing)
 
 TEST(TransformUtilTests, SnapToRightAngle1)
 {
-  tf::Quaternion identity = tf::Quaternion::getIdentity();
+  tf2::Quaternion identity = tf2::Quaternion::getIdentity();
 
   EXPECT_TRUE(identity == swri_transform_util::SnapToRightAngle(identity));
 
-  tf::Quaternion q1;
+  tf2::Quaternion q1;
   q1.setRPY(0.0, 0.0, swri_math_util::_half_pi);
   q1.normalize();
 
-  tf::Quaternion q2;
+  tf2::Quaternion q2;
   q2.setRPY(0.4, 0.3, 1.6);
 
-  tf::Quaternion q3 = swri_transform_util::SnapToRightAngle(q2);
+  tf2::Quaternion q3 = swri_transform_util::SnapToRightAngle(q2);
 
   EXPECT_FLOAT_EQ(q1.x(), q3.x());
   EXPECT_FLOAT_EQ(q1.y(), q3.y());
@@ -84,21 +84,21 @@ TEST(TransformUtilTests, SnapToRightAngle1)
 
 TEST(TransformUtilTests, SnapToRightAngle2)
 {
-  tf::Quaternion q1;
+  tf2::Quaternion q1;
   q1.setRPY(0.0, 0.0, swri_math_util::_half_pi);
 
   EXPECT_EQ(0, q1.angleShortestPath(swri_transform_util::SnapToRightAngle(q1)));
 
-  tf::Quaternion q2;
+  tf2::Quaternion q2;
   q2.setRPY(0.0, 0.0, swri_math_util::_pi);
 
   EXPECT_EQ(0, q2.angleShortestPath(swri_transform_util::SnapToRightAngle(q2)));
 
-  tf::Quaternion q3;
+  tf2::Quaternion q3;
   q3.setRPY(0.0, 0.0, swri_math_util::_pi + .34);
   EXPECT_EQ(0, q2.angleShortestPath(swri_transform_util::SnapToRightAngle(q3)));
 
-  tf::Quaternion q4;
+  tf2::Quaternion q4;
   q4.setRPY(-0.4, 0.23, swri_math_util::_pi + 0.34);
   EXPECT_EQ(0, q2.angleShortestPath(swri_transform_util::SnapToRightAngle(q4)));
 }
@@ -113,14 +113,14 @@ TEST(TransformUtilTests, SnapToRightAngleRandom)
     double p = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * swri_math_util::_half_pi;
     double r = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 2.0 - 1.0) * swri_math_util::_half_pi;
 
-    tf::Quaternion q1;
+    tf2::Quaternion q1;
     q1.setRPY(r, p, y);
 
     double dy = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
     double dp = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
     double dr = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
 
-    tf::Quaternion q2;
+    tf2::Quaternion q2;
     q2.setRPY(r + dr, p + dp, y + dy);
 
 
@@ -139,10 +139,10 @@ TEST(TransformUtilTests, SnapToRightAngleDegenerate1)
   double dp = 0.2254961365127778616379572440564516000449657440185546875;
   double dr = 0.38988573881896215755915591216762550175189971923828125;
 
-  tf::Quaternion q1;
+  tf2::Quaternion q1;
   q1.setRPY(r, p, y);
 
-  tf::Quaternion q2;
+  tf2::Quaternion q2;
   q2.setRPY(r + dr, p + dp, y + dy);
 
   EXPECT_NEAR(0, q1.angleShortestPath(swri_transform_util::SnapToRightAngle(q1)), 0.00000003);
@@ -159,10 +159,10 @@ TEST(TransformUtilTests, SnapToRightAngleDegenerate2)
   double dp = 0.363762144414233323796992181087261997163295745849609375;
   double dr = -0.38101948131676321995797707131714560091495513916015625;
 
-  tf::Quaternion q1;
+  tf2::Quaternion q1;
   q1.setRPY(r, p, y);
 
-  tf::Quaternion q2;
+  tf2::Quaternion q2;
   q2.setRPY(r + dr, p + dp, y + dy);
 
   EXPECT_NEAR(0, q1.angleShortestPath(swri_transform_util::SnapToRightAngle(q1)), 0.00000003);
@@ -171,16 +171,16 @@ TEST(TransformUtilTests, SnapToRightAngleDegenerate2)
 
 TEST(TransformUtilTests, TestUpperLeftLowerRight)
 {
-  tf::Matrix3x3 ul(1, 2, 3, 4, 5, 6, 7, 8, 9);
-  tf::Matrix3x3 lr(10, 11, 12, 13, 14, 15, 16, 17, 18);
+  tf2::Matrix3x3 ul(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  tf2::Matrix3x3 lr(10, 11, 12, 13, 14, 15, 16, 17, 18);
 
   std::array<double, 36> array;
 
   swri_transform_util::SetUpperLeft(ul, array);
   swri_transform_util::SetLowerRight(lr, array);
 
-  tf::Matrix3x3 ul2 = swri_transform_util::GetUpperLeft(array);
-  tf::Matrix3x3 lr2 = swri_transform_util::GetLowerRight(array);
+  tf2::Matrix3x3 ul2 = swri_transform_util::GetUpperLeft(array);
+  tf2::Matrix3x3 lr2 = swri_transform_util::GetLowerRight(array);
 
   EXPECT_EQ(ul, ul2);
   EXPECT_EQ(lr, lr2);
@@ -191,16 +191,16 @@ TEST(TransformUtilTests, TestUpperLeftLowerRight)
 
 TEST(TransformUtilTests, GetPrimaryAxis)
 {
-  tf::Vector3 v1(-1, 0, 0);
-  tf::Vector3 v2(-.7, .3, 0);
+  tf2::Vector3 v1(-1, 0, 0);
+  tf2::Vector3 v2(-.7, .3, 0);
 
-  tf::Vector3 v3(0, 1, 0);
-  tf::Vector3 v4(.6, .61, .3);
+  tf2::Vector3 v3(0, 1, 0);
+  tf2::Vector3 v4(.6, .61, .3);
 
-  tf::Vector3 v5(0, 0, 1);
-  tf::Vector3 v6(-.23, .3, .5);
+  tf2::Vector3 v5(0, 0, 1);
+  tf2::Vector3 v6(-.23, .3, .5);
 
-  tf::Vector3 v7(0, 0, 0);
+  tf2::Vector3 v7(0, 0, 0);
 
   EXPECT_EQ(v1, swri_transform_util::GetPrimaryAxis(v1));
   EXPECT_EQ(v1, swri_transform_util::GetPrimaryAxis(v2));
@@ -216,31 +216,31 @@ TEST(TransformUtilTests, GetPrimaryAxis)
 
 TEST(TransformUtilTests, ValidIsRotation)
 {
-  tf::Matrix3x3 valid_rotations[] = {
-  tf::Matrix3x3( 1,  0,  0,   0,  1,  0,   0,  0,  1),
-  tf::Matrix3x3( 0,  0,  1,   0,  1,  0,  -1,  0,  0),
-  tf::Matrix3x3(-1,  0,  0,   0,  1,  0,   0,  0, -1),
-  tf::Matrix3x3( 0,  0, -1,   0,  1,  0,   1,  0,  0),
-  tf::Matrix3x3( 0, -1,  0,   1,  0,  0,   0,  0,  1),
-  tf::Matrix3x3( 0,  0,  1,   1,  0,  0,   0,  1,  0),
-  tf::Matrix3x3( 0,  1,  0,   1,  0,  0,   0,  0, -1),
-  tf::Matrix3x3( 0,  0, -1,   1,  0,  0,   0, -1,  0),
-  tf::Matrix3x3( 0,  1,  0,  -1,  0,  0,   0,  0,  1),
-  tf::Matrix3x3( 0,  0,  1,  -1,  0,  0,   0, -1,  0),
-  tf::Matrix3x3( 0, -1,  0,  -1,  0,  0,   0,  0, -1),
-  tf::Matrix3x3( 0,  0, -1,  -1,  0,  0,   0,  1,  0),
-  tf::Matrix3x3( 1,  0,  0,   0,  0, -1,   0,  1,  0),
-  tf::Matrix3x3( 0,  1,  0,   0,  0, -1,  -1,  0,  0),
-  tf::Matrix3x3(-1,  0,  0,   0,  0, -1,   0, -1,  0),
-  tf::Matrix3x3( 0, -1,  0,   0,  0, -1,   1,  0,  0),
-  tf::Matrix3x3( 1,  0,  0,   0, -1,  0,   0,  0, -1),
-  tf::Matrix3x3( 0,  0, -1,   0, -1,  0,  -1,  0,  0),
-  tf::Matrix3x3(-1,  0,  0,   0, -1,  0,   0,  0,  1),
-  tf::Matrix3x3( 0,  0,  1,   0, -1,  0,   1,  0,  0),
-  tf::Matrix3x3( 1,  0,  0,   0,  0,  1,   0, -1,  0),
-  tf::Matrix3x3( 0, -1,  0,   0,  0,  1,  -1,  0,  0),
-  tf::Matrix3x3(-1,  0,  0,   0,  0,  1,   0,  1,  0),
-  tf::Matrix3x3( 0,  1,  0,   0,  0,  1,   1,  0,  0)};
+  tf2::Matrix3x3 valid_rotations[] = {
+  tf2::Matrix3x3( 1,  0,  0,   0,  1,  0,   0,  0,  1),
+  tf2::Matrix3x3( 0,  0,  1,   0,  1,  0,  -1,  0,  0),
+  tf2::Matrix3x3(-1,  0,  0,   0,  1,  0,   0,  0, -1),
+  tf2::Matrix3x3( 0,  0, -1,   0,  1,  0,   1,  0,  0),
+  tf2::Matrix3x3( 0, -1,  0,   1,  0,  0,   0,  0,  1),
+  tf2::Matrix3x3( 0,  0,  1,   1,  0,  0,   0,  1,  0),
+  tf2::Matrix3x3( 0,  1,  0,   1,  0,  0,   0,  0, -1),
+  tf2::Matrix3x3( 0,  0, -1,   1,  0,  0,   0, -1,  0),
+  tf2::Matrix3x3( 0,  1,  0,  -1,  0,  0,   0,  0,  1),
+  tf2::Matrix3x3( 0,  0,  1,  -1,  0,  0,   0, -1,  0),
+  tf2::Matrix3x3( 0, -1,  0,  -1,  0,  0,   0,  0, -1),
+  tf2::Matrix3x3( 0,  0, -1,  -1,  0,  0,   0,  1,  0),
+  tf2::Matrix3x3( 1,  0,  0,   0,  0, -1,   0,  1,  0),
+  tf2::Matrix3x3( 0,  1,  0,   0,  0, -1,  -1,  0,  0),
+  tf2::Matrix3x3(-1,  0,  0,   0,  0, -1,   0, -1,  0),
+  tf2::Matrix3x3( 0, -1,  0,   0,  0, -1,   1,  0,  0),
+  tf2::Matrix3x3( 1,  0,  0,   0, -1,  0,   0,  0, -1),
+  tf2::Matrix3x3( 0,  0, -1,   0, -1,  0,  -1,  0,  0),
+  tf2::Matrix3x3(-1,  0,  0,   0, -1,  0,   0,  0,  1),
+  tf2::Matrix3x3( 0,  0,  1,   0, -1,  0,   1,  0,  0),
+  tf2::Matrix3x3( 1,  0,  0,   0,  0,  1,   0, -1,  0),
+  tf2::Matrix3x3( 0, -1,  0,   0,  0,  1,  -1,  0,  0),
+  tf2::Matrix3x3(-1,  0,  0,   0,  0,  1,   0,  1,  0),
+  tf2::Matrix3x3( 0,  1,  0,   0,  0,  1,   1,  0,  0)};
 
   for (int i = 0; i < 24; i++)
   {
@@ -250,10 +250,10 @@ TEST(TransformUtilTests, ValidIsRotation)
 
 TEST(TransformUtilTests, InvalidIsRotation)
 {
-  tf::Matrix3x3 invalid_rotations[] = {
-  tf::Matrix3x3( 2,  0,  0,   0,  1,  0,   0,  0,  1),
-  tf::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
-  tf::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
+  tf2::Matrix3x3 invalid_rotations[] = {
+  tf2::Matrix3x3( 2,  0,  0,   0,  1,  0,   0,  0,  1),
+  tf2::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
+  tf2::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
 
   for (int i = 0; i < 24; i++)
   {
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
   testing::InitGoogleTest(&argc, argv);
 
   // Initialize the ROS core parameters can be loaded from the launch file
-  ros::init(argc, argv, "test_transform_util");
+  rclcpp::init(argc, argv);
 
   return RUN_ALL_TESTS();
 }

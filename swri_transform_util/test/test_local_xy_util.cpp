@@ -29,7 +29,7 @@
 
 #include <gtest/gtest.h>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <swri_transform_util/local_xy_util.h>
 
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
   testing::InitGoogleTest(&argc, argv);
 
   // Initialize the ROS core parameters can be loaded from the launch file
-  ros::init(argc, argv, "test_local_xy_util");
+  rclcpp::init(argc, argv);
 
   return RUN_ALL_TESTS();
 }
