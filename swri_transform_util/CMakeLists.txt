@@ -152,40 +152,45 @@ target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-  ament_add_gtest(utm_util_test test/test_utm_util)
+  find_package(launch_testing_ament_cmake)
+
+  # ament_add_gtest_executable(transform_manager_test test/test_transform_manager.cpp)
+  # target_include_directories(transform_manager_test PRIVATE
+  #   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  # )
+  # target_link_libraries(transform_manager_test ${PROJECT_NAME})
+  # ament_target_dependencies(transform_manager_test rclcpp tf2 tf2_ros)
+
+  # add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
+  # target_link_libraries(test_local_xy_util ${PROJECT_NAME})
+
+  ament_add_gtest(utm_util_test test/test_utm_util.cpp)
   target_link_libraries(utm_util_test ${PROJECT_NAME})
-  install(
-    TARGETS utm_util_test
+
+  # add_rostest_gtest(test_transform_manager launch/transform_manager.test test/test_transform_manager.cpp)
+  # target_link_libraries(test_transform_manager ${PROJECT_NAME})
+
+  # add_rostest_gtest(test_georeference launch/georeference.test test/test_georeference.cpp)
+  # target_link_libraries(test_georeference ${PROJECT_NAME})
+
+  # add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
+  # target_link_libraries(test_transform_util ${PROJECT_NAME})
+
+  # add_rostest(test/initialize_invalid_gps.test)
+  # add_rostest(test/initialize_invalid_navsat.test)
+  # add_rostest(test/initialize_origin_auto_custom.test)
+  # add_rostest(test/initialize_origin_auto_gps.test)
+  # add_rostest(test/initialize_origin_auto_navsat.test)
+  # add_rostest(test/initialize_origin_manual.test)
+  # add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
+
+  install(TARGETS
+    # transform_manager_test
+    utm_util_test
     DESTINATION lib/${PROJECT_NAME}
   )
-endif()
 
-# TODO pjr Convert unit tests
-# if(BUILD_TESTING)
-#   find_package(ament_cmake_gtest REQUIRED)
-#
-#  add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
-#  target_link_libraries(test_local_xy_util ${PROJECT_NAME})
-#
-#  add_rostest_gtest(test_utm_util launch/utm_util.test test/test_utm_util.cpp)
-#  target_link_libraries(test_utm_util ${PROJECT_NAME})
-#
-#  add_rostest_gtest(test_transform_manager launch/transform_manager.test test/test_transform_manager.cpp)
-#  target_link_libraries(test_transform_manager ${PROJECT_NAME})
-#
-#  add_rostest_gtest(test_georeference launch/georeference.test test/test_georeference.cpp)
-#  target_link_libraries(test_georeference ${PROJECT_NAME})
-#
-#  add_rostest_gtest(test_transform_util launch/transform_util.test test/test_transform_util.cpp)
-#  target_link_libraries(test_transform_util ${PROJECT_NAME})
-#
-#  add_rostest(test/initialize_invalid_gps.test)
-#  add_rostest(test/initialize_invalid_navsat.test)
-#  add_rostest(test/initialize_origin_auto_custom.test)
-#  add_rostest(test/initialize_origin_auto_gps.test)
-#  add_rostest(test/initialize_origin_auto_navsat.test)
-#  add_rostest(test/initialize_origin_manual.test)
-# endif()
+endif()
 
 install(DIRECTORY include/
   DESTINATION include
