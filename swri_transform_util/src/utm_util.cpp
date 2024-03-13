@@ -121,12 +121,10 @@ namespace swri_transform_util
     zone = GetZone(longitude);
     band = GetBand(latitude);
 
-    double x = longitude * swri_math_util::_deg_2_rad;
-    double y = latitude * swri_math_util::_deg_2_rad;
-
     // Get easting and northing values.
     PJ_COORD c, c_out;
-    c = proj_coord(x, y, 0, 0);
+    c.lp.lam = longitude;
+    c.lp.phi = latitude;
 
     // Get easting and northing values.
     if (band <= 'N')
@@ -164,11 +162,9 @@ namespace swri_transform_util
   {
     boost::unique_lock<boost::mutex> lock(mutex_);
 
-    double x = easting;
-    double y = northing;
-
     PJ_COORD c, c_out;
-    c = proj_coord(easting, northing, 0, 0);
+    c.enu.e = easting;
+    c.enu.n = northing;
 
     if (band <= 'N')
     {
@@ -179,8 +175,8 @@ namespace swri_transform_util
       c_out = proj_trans(P_ll_north_[zone - 1], PJ_INV, c);
     }
 
-    longitude = c_out.xyz.x * swri_math_util::_rad_2_deg;
-    latitude = c_out.xyz.y * swri_math_util::_rad_2_deg;
+    longitude = c_out.lp.lam;
+    latitude = c_out.lp.phi;
   }
 
   UtmUtil::UtmUtil() :

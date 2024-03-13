@@ -150,10 +150,20 @@ target_include_directories(lat_lon_tf_echo
 
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(utm_util_test test/test_utm_util)
+  target_link_libraries(utm_util_test ${PROJECT_NAME})
+  install(
+    TARGETS utm_util_test
+    DESTINATION lib/${PROJECT_NAME}
+  )
+endif()
+
 # TODO pjr Convert unit tests
 # if(BUILD_TESTING)
 #   find_package(ament_cmake_gtest REQUIRED)
-# 
+#
 #  add_rostest_gtest(test_local_xy_util launch/local_xy_util.test test/test_local_xy_util.cpp)
 #  target_link_libraries(test_local_xy_util ${PROJECT_NAME})
 #
