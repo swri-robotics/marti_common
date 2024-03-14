@@ -37,7 +37,7 @@
 TEST(GeoreferenceTests, Load)
 {
   std::string package = ament_index_cpp::get_package_share_directory("swri_transform_util");
-  std::string filename = package + "/data/test.geo";
+  std::string filename = package + "/test/data/test.geo";
   swri_transform_util::GeoReference georeference(filename);
   ASSERT_TRUE(georeference.Load());
 
@@ -52,7 +52,7 @@ TEST(GeoreferenceTests, Load)
 TEST(GeoreferenceTests, LoadExtension)
 {
   std::string package = ament_index_cpp::get_package_share_directory("swri_transform_util");
-  std::string filename = package + "/data/test_extension.geo";
+  std::string filename = package + "/test/data/test_extension.geo";
 
   swri_transform_util::GeoReference georeference(filename);
   ASSERT_TRUE(georeference.Load());

@@ -177,14 +177,14 @@ if(BUILD_TESTING)
   target_link_libraries(transform_util_test ${PROJECT_NAME})
   ament_target_dependencies(transform_util_test rclcpp tf2)
 
-  # add_rostest(test/initialize_invalid_gps.test)
-  # add_rostest(test/initialize_invalid_navsat.test)
-  # add_rostest(test/initialize_origin_auto_custom.test)
-  # add_rostest(test/initialize_origin_auto_gps.test)
-  # add_rostest(test/initialize_origin_auto_navsat.test)
-  # add_rostest(test/initialize_origin_manual.test)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/local_xy_util.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_gps.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_navsat.test.py)
+  # The "custom" functionality appears to be gone in ROS 2.
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_auto_gps.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_auto_navsat.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_manual.test.py)
 
   install(TARGETS
     transform_manager_test
@@ -195,7 +195,7 @@ if(BUILD_TESTING)
     DESTINATION lib/${PROJECT_NAME}
   )
 
-  install(DIRECTORY test/data
+  install(DIRECTORY test
     DESTINATION share/${PROJECT_NAME}
   )
 

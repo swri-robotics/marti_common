@@ -32,12 +32,13 @@ import unittest
 
 from geographic_msgs.msg import GeoPose, GeoPoseStamped
 from geometry_msgs.msg import PoseStamped
-from gps_common.msg import GPSFix, GPSStatus
+from gps_msgs.msg import GPSFix, GPSStatus
 from sensor_msgs.msg import NavSatFix, NavSatStatus
-import rospy
-import rostest
-import rostopic
-import tf.transformations
+import rclpy
+from rclpy.clock import ClockType
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy
+from ros2topic.api import get_msg_class
+import tf_transformations
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
@@ -45,30 +46,43 @@ NAME = 'test_initialize_origin'
 ORIGIN_TOPIC = '/local_xy_origin'
 ORIGIN_TYPES = [PoseStamped, GPSFix, GeoPose, GeoPoseStamped]
 
-msg_stamp = rospy.Time(1337, 0xDEADBEEF)
+msg_stamp = rclpy.time.Time(seconds=1337, clock_type=ClockType.ROS_TIME).to_msg()
 swri = {
     'latitude': 29.45196669,
     'longitude': -98.61370577,
     'altitude': 233.719,
-    'heading': 90
+    'heading': 90.0
 }
 
-
 class TestInitializeOrigin(unittest.TestCase):
+    def __init__(self):
+        super().__init__()
+        self.got_origin = False
+
     def subscribeToOrigin(self):
-        # This line blocks until initialize_origin is alive and has advertised the origin topic
-        origin_class = rostopic.get_topic_class(ORIGIN_TOPIC, blocking=True)[0]
-        rospy.loginfo("Origin is a " + origin_class._type + " message")
-        self.assertIsNotNone(origin_class, msg=ORIGIN_TOPIC+" was never advertised")
-        self.assertIn(origin_class, ORIGIN_TYPES)
+        self.assertIsNotNone(self.node)
+        self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC)
+        if self.origin_class is None:
+            self.node.get_logger().fatal(ORIGIN_TOPIC+" was never advertised")
+        self.assertIsNotNone(self.origin_class)
+        self.node.get_logger().info("Origin is a " + str(self.origin_class) + " message")
+        self.assertIn(self.origin_class, ORIGIN_TYPES)
         self.test_stamp = False  # Enable this for auto origin
         self.got_origin = False
-        return rospy.Subscriber(ORIGIN_TOPIC, origin_class, self.originCallback)
+        return self.node.create_subscription(
+            self.origin_class, ORIGIN_TOPIC,
+            self.originCallback,
+            QoSProfile(
+                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+                depth=10
+            )
+        )
 
     def originCallback(self, msg):
-        rospy.loginfo("Callback received a " + msg._type + " message.")
+        self.assertIsNotNone(self.node)
+        self.node.get_logger().info("Callback received a message.")
         self.got_origin = True
-        if msg._type == PoseStamped._type:
+        if self.origin_class == PoseStamped:
             latitude = msg.pose.position.y
             longitude = msg.pose.position.x
             altitude = msg.pose.position.z
@@ -76,65 +90,91 @@ class TestInitializeOrigin(unittest.TestCase):
                           msg.pose.orientation.y,
                           msg.pose.orientation.z,
                           msg.pose.orientation.w)
-            euler = tf.transformations.euler_from_quaternion(quaternion)
+            euler = tf_transformations.euler_from_quaternion(quaternion)
             yaw = euler[2]
             self.assertAlmostEqual(yaw, 0)
-        elif msg._type == GPSFix._type:
-            rospy.loginfo("Status: %d" % msg.status.status)
+        elif self.origin_class == GPSFix:
+            self.node.get_logger().info("Status: %d" % msg.status.status)
             self.assertEqual(msg.status.status, GPSStatus.STATUS_FIX)
             latitude = msg.latitude
             longitude = msg.longitude
             altitude = msg.altitude
             self.assertAlmostEqual(msg.track, swri['heading'])
-        elif msg._type == NavSatFix._type:
-            rospy.loginfo("Status: %d" % msg.status.status)
+        elif self.origin_class == NavSatFix:
+            self.node.get_logger().info("Status: %d" % msg.status.status)
             self.assertEqual(msg.status.status, NavSatStatus.STATUS_FIX)
             latitude = msg.latitude
             longitude = msg.longitude
             altitude = msg.altitude
-        else:  # msg._type == GeoPose._type:
+        else:  # self.origin_class == GeoPose:
             latitude = msg.position.latitude
             longitude = msg.position.longitude
             altitude = msg.position.altitude
-            quaternion = (msg.pose.orientation.x,
-                          msg.pose.orientation.y,
-                          msg.pose.orientation.z,
-                          msg.pose.orientation.w)
-            euler = tf.transformations.euler_from_quaternion(quaternion)
+            quaternion = [msg.pose.orientation.x,
+                        msg.pose.orientation.y,
+                        msg.pose.orientation.z,
+                        msg.pose.orientation.w]
+            (roll, pitch, yaw) = tf_transformations.euler_from_quaternion(quaternion)
             yaw = euler[2]
             self.assertAlmostEqual(yaw, 0)
         self.assertEqual(msg.header.frame_id, '/far_field')
         if self.test_stamp:
-            self.assertEqual(msg.header.stamp, msg_stamp)
+            self.assertEqual(
+                rclpy.time.Time.from_msg(msg.header.stamp).nanoseconds,
+                rclpy.time.Time.from_msg(msg_stamp).nanoseconds
+            )
         else:
-            self.assertEqual(msg.header.stamp, rospy.Time(0))
+            self.assertEqual(
+                rclpy.time.Time.from_msg(msg.header.stamp).nanoseconds,
+                0
+            )
         self.assertAlmostEqual(longitude, swri['longitude'])
         self.assertAlmostEqual(latitude, swri['latitude'])
         self.assertAlmostEqual(altitude, swri['altitude'])
-        rospy.signal_shutdown("Test complete")
+        self.node.destroy_node()
 
 
 class TestInvalidOrigin(unittest.TestCase):
-    def subscribeToOrigin(self):
-        # This line blocks until initialize_origin is alive and has advertised the origin topic
-        origin_class = rostopic.get_topic_class(ORIGIN_TOPIC, blocking=True)[0]
-        rospy.loginfo("Origin is a " + origin_class._type + " message")
-        self.assertIsNotNone(origin_class, msg=ORIGIN_TOPIC + " was never advertised")
-        self.assertIn(origin_class, ORIGIN_TYPES)
-        self.test_stamp = False  # Enable this for auto origin
+    def __init__(self):
+        super().__init__()
         self.got_message = False
-        return rospy.Subscriber(ORIGIN_TOPIC, origin_class, self.originCallback)
+
+    def subscribeToOrigin(self):
+        self.assertIsNotNone(self.node)
+        self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC)
+        if self.origin_class is None:
+            self.node.get_logger().fatal(ORIGIN_TOPIC+" was never advertised")
+        self.assertIsNotNone(self.origin_class)
+        self.node.get_logger().info("Origin is a " + str(self.origin_class) + " message")
+        self.assertIn(self.origin_class, ORIGIN_TYPES)
+        self.test_stamp = False  # Enable this for auto origin
+        self.got_origin = False
+        return self.node.create_subscription(
+            self.origin_class, ORIGIN_TOPIC,
+            self.originCallback,
+            QoSProfile(
+                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+                depth=10
+            )
+        )
 
     def originCallback(self, msg):
-        rospy.logerr("Callback received a " + msg._type + " message.")
+        self.assertIsNotNone(self.node)
         self.got_message = True
-        rospy.signal_shutdown("Test complete")
+        self.node.destroy_node()
 
 
 class TestAutoOriginFromGPSFix(TestInitializeOrigin):
-    def testAutoOriginFromGPSFix(self):
-        rospy.init_node('test_auto_origin_from_gps_fix')
-        gps_pub = rospy.Publisher('gps', GPSFix, queue_size=2, latch=True)
+    def __init__(self):
+        super().__init__()
+        self.node = rclpy.create_node('test_auto_origin_from_gps_fix')
+        gps_pub = self.node.create_publisher(
+            GPSFix, 'gps',
+            QoSProfile(
+                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+                depth=2
+            )
+        )
         origin_sub = self.subscribeToOrigin()
         self.test_stamp = True
         gps_msg = GPSFix()
@@ -145,14 +185,16 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
         gps_msg.track = swri['heading']
         gps_msg.header.stamp = msg_stamp
         gps_pub.publish(gps_msg)
-        rospy.spin()
-        self.assertTrue(self.got_origin)
+        while not self.got_origin:
+            rclpy.spin_once(self.node, timeout_sec=0.01)
+            time.sleep(0.01)
 
 
 class TestInvalidGPSFix(TestInvalidOrigin):
-    def testInvalidGPSFix(self):
-        rospy.init_node('test_invalid_gps_fix')
-        gps_pub = rospy.Publisher('gps', GPSFix, queue_size=2)
+    def __init__(self):
+        super().__init__()
+        self.node = rclpy.create_node('test_invalid_gps_fix')
+        gps_pub = self.node.create_publisher(GPSFix, 'gps', 2)
         origin_sub = self.subscribeToOrigin()
         self.test_stamp = True
         gps_msg = GPSFix()
@@ -168,27 +210,38 @@ class TestInvalidGPSFix(TestInvalidOrigin):
         # our subscriber will do if it gets an origin message, or if the number of
         # connections drops to zero, which means initialize_origin.py subscribed
         # but did not publish a message.
-        r = rospy.Rate(100.0)
         timeout = time.time() + 2  # time out after 2 seconds, which should be plenty
         node_attached = False
-        while not rospy.is_shutdown() and time.time() < timeout:
-            if not node_attached and gps_pub.get_num_connections() > 0:
+        count = 0
+        while not self.got_message and time.time() < timeout:
+            if not node_attached and gps_pub.get_subscription_count() > 0:
                 node_attached = True
-            if node_attached and gps_pub.get_num_connections() == 0:
+            if node_attached and gps_pub.get_subscription_count() == 0:
                 break
+            count = gps_pub.get_subscription_count()
             gps_pub.publish(gps_msg)
-            r.sleep()
+            rclpy.spin_once(self.node, timeout_sec=0.01)
+            time.sleep(0.01)
 
         self.assertFalse(self.got_message,
                          "initialize_origin should not have published an origin.")
-        self.assertFalse(node_attached and gps_pub.get_num_connections() == 0,
+        self.assertFalse(node_attached and count == 0,
                          "initialize_origin unsubscribed without getting a valid fix.")
+
+        self.node.destroy_node()
 
 
 class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
-    def testAutoOriginFromNavSatFix(self):
-        rospy.init_node('test_auto_origin_from_nav_sat_fix')
-        nsf_pub = rospy.Publisher('fix', NavSatFix, queue_size=2, latch=True)
+    def __init__(self):
+        super().__init__()
+        self.node = rclpy.create_node('test_auto_origin_from_nav_sat_fix')
+        nsf_pub = self.node.create_publisher(
+            NavSatFix, 'fix',
+            QoSProfile(
+                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+                depth=2
+            )
+        )
         origin_sub = self.subscribeToOrigin()
         self.test_stamp = True
         nsf_msg = NavSatFix()
@@ -199,14 +252,16 @@ class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
         nsf_msg.header.frame_id = "/far_field"
         nsf_msg.header.stamp = msg_stamp
         nsf_pub.publish(nsf_msg)
-        rospy.spin()
-        self.assertTrue(self.got_origin)
+        while not self.got_origin:
+            rclpy.spin_once(self.node, timeout_sec=0.01)
+            time.sleep(0.01)
 
 
 class TestInvalidNavSatFix(TestInvalidOrigin):
-    def testInvalidNavSatFix(self):
-        rospy.init_node('test_invalid_nav_sat_fix')
-        nsf_pub = rospy.Publisher('fix', NavSatFix, queue_size=2)
+    def __init__(self):
+        super().__init__()
+        self.node = rclpy.create_node('test_invalid_nav_sat_fix')
+        nsf_pub = self.node.create_publisher(NavSatFix, 'fix', 2)
         origin_sub = self.subscribeToOrigin()
         self.test_stamp = True
         nsf_msg = NavSatFix()
@@ -215,58 +270,48 @@ class TestInvalidNavSatFix(TestInvalidOrigin):
         nsf_msg.header.stamp = msg_stamp
 
         # See documentation in testInvalidGPSFix.
-        r = rospy.Rate(100.0)
         timeout = time.time() + 2  # time out after 2 seconds, which should be plenty
         node_attached = False
-        while not rospy.is_shutdown() and time.time() < timeout:
-            if not node_attached and nsf_pub.get_num_connections() > 0:
+        while not self.got_message and time.time() < timeout:
+            if not node_attached and nsf_pub.get_subscription_count() > 0:
                 node_attached = True
-            if node_attached and nsf_pub.get_num_connections() == 0:
+            if node_attached and nsf_pub.get_subscription_count() == 0:
                 break
             nsf_pub.publish(nsf_msg)
-            r.sleep()
+            rclpy.spin_once(self.node, timeout_sec=0.01)
+            time.sleep(0.01)
 
         self.assertFalse(self.got_message,
                          "initialize_origin should not have published an origin.")
-        self.assertFalse(node_attached and nsf_pub.get_num_connections() == 0,
+        self.assertFalse(node_attached and nsf_pub.get_subscription_count() == 0,
                          "initialize_origin unsubscribed without getting a valid fix.")
 
-
-class TestAutoOriginFromCustom(TestInitializeOrigin):
-    def testAutoOriginFromCustom(self):
-        rospy.init_node('test_auto_origin_from_custom')
-        custom_pub = rospy.Publisher('pose', GeoPoseStamped, queue_size=2, latch=True)
-        origin_sub = self.subscribeToOrigin()
-        self.test_stamp = True
-        custom_msg = GeoPoseStamped()
-        custom_msg.pose.position.latitude = swri['latitude']
-        custom_msg.pose.position.longitude = swri['longitude']
-        custom_msg.pose.position.altitude = swri['altitude']
-        custom_msg.header.frame_id = "/far_field"
-        custom_msg.header.stamp = msg_stamp
-        custom_pub.publish(custom_msg)
-        rospy.spin()
-        self.assertTrue(self.got_origin)
+        self.node.destroy_node()
 
 
 class TestManualOrigin(TestInitializeOrigin):
-    def testManualOrigin(self):
-        rospy.init_node('test_manual_origin')
+    def __init__(self):
+        super().__init__()
+        self.node = rclpy.create_node('test_manual_origin')
         origin_sub = self.subscribeToOrigin()
-        rospy.spin()
-        self.assertTrue(self.got_origin)
+        while not self.got_origin:
+            rclpy.spin_once(self.node, timeout_sec=0.01)
+            time.sleep(0.01)
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "auto_custom":
-        rostest.rosrun(PKG, NAME, TestAutoOriginFromCustom, sys.argv)
-    elif sys.argv[1] == "auto_gps":
-        rostest.rosrun(PKG, NAME, TestAutoOriginFromGPSFix, sys.argv)
+    time.sleep(5)
+    rclpy.init()
+
+    if sys.argv[1] == "auto_gps":
+        test = TestAutoOriginFromGPSFix()
     elif sys.argv[1] == "auto_navsat":
-        rostest.rosrun(PKG, NAME, TestAutoOriginFromNavSatFix, sys.argv)
+        test = TestAutoOriginFromNavSatFix()
     elif sys.argv[1] == "invalid_gps":
-        rostest.rosrun(PKG, NAME, TestInvalidGPSFix, sys.argv)
+        test = TestInvalidGPSFix()
     elif sys.argv[1] == "invalid_navsat":
-        rostest.rosrun(PKG, NAME, TestInvalidNavSatFix, sys.argv)
+        test = TestInvalidNavSatFix()
     elif sys.argv[1] == "manual":
-        rostest.rosrun(PKG, NAME, TestManualOrigin, sys.argv)
+        test = TestManualOrigin()
+
+    rclpy.shutdown()
