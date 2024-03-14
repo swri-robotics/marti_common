@@ -272,18 +272,20 @@ class TestInvalidNavSatFix(TestInvalidOrigin):
         # See documentation in testInvalidGPSFix.
         timeout = time.time() + 2  # time out after 2 seconds, which should be plenty
         node_attached = False
+        count = 0
         while not self.got_message and time.time() < timeout:
             if not node_attached and nsf_pub.get_subscription_count() > 0:
                 node_attached = True
             if node_attached and nsf_pub.get_subscription_count() == 0:
                 break
+            count = nsf_pub.get_subscription_count()
             nsf_pub.publish(nsf_msg)
             rclpy.spin_once(self.node, timeout_sec=0.01)
             time.sleep(0.01)
 
         self.assertFalse(self.got_message,
                          "initialize_origin should not have published an origin.")
-        self.assertFalse(node_attached and nsf_pub.get_subscription_count() == 0,
+        self.assertFalse(node_attached and count == 0,
                          "initialize_origin unsubscribed without getting a valid fix.")
 
         self.node.destroy_node()
