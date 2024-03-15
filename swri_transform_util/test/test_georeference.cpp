@@ -29,15 +29,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ros/ros.h>
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 #include <swri_transform_util/georeference.h>
 
 TEST(GeoreferenceTests, Load)
 {
-  std::string filename;
-  ASSERT_TRUE(ros::param::get("geo_file", filename));
-
+  std::string package = ament_index_cpp::get_package_share_directory("swri_transform_util");
+  std::string filename = package + "/test/data/test.geo";
   swri_transform_util::GeoReference georeference(filename);
   ASSERT_TRUE(georeference.Load());
 
@@ -51,8 +51,8 @@ TEST(GeoreferenceTests, Load)
 
 TEST(GeoreferenceTests, LoadExtension)
 {
-  std::string filename;
-  ASSERT_TRUE(ros::param::get("geo_file_extension", filename));
+  std::string package = ament_index_cpp::get_package_share_directory("swri_transform_util");
+  std::string filename = package + "/test/data/test_extension.geo";
 
   swri_transform_util::GeoReference georeference(filename);
   ASSERT_TRUE(georeference.Load());
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
   testing::InitGoogleTest(&argc, argv);
 
   // Initialize the ROS core parameters can be loaded from the launch file
-  ros::init(argc, argv, "test_georeference");
+  rclcpp::init(argc, argv);
 
   return RUN_ALL_TESTS();
 }

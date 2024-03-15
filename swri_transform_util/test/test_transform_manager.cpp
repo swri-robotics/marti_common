@@ -29,495 +29,539 @@
 
 #include <gtest/gtest.h>
 
-#include <ros/ros.h>
-#include <tf/transform_datatypes.h>
+#include <atomic>
+#include <memory>
+#include <thread>
+
+#include <rclcpp/rclcpp.hpp>
+#include <tf2/transform_datatypes.h>
 
 #include <swri_transform_util/transform_manager.h>
 #include <swri_transform_util/frames.h>
 
-swri_transform_util::TransformManager _tf_manager;
+static std::shared_ptr<rclcpp::Node> _node;
+static std::shared_ptr<tf2_ros::TransformListener> _tf_listener;
+static std::shared_ptr<tf2_ros::Buffer> _tf_buffer;
+static std::shared_ptr<swri_transform_util::TransformManager> _tf_manager;
 
-TEST(TransformManagerTests, Identity1)
+class TransformManagerTests : public ::testing::Test
 {
-  tf::Vector3 p1(56, 234, 0);
+public:
+  void SetUp() override
+  {
+    ASSERT_TRUE(_tf_manager != nullptr);
+    // Wait until the local_xy_origin is setup correctly
+    bool origin_init = false;
+    for (size_t i=0; i < 10; ++i)
+    {
+      if (_tf_manager->SupportsTransform("far_field", "far_field__identity"))
+      {
+        origin_init = true;
+        break;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    ASSERT_TRUE(origin_init);
+  }
+};
+
+TEST_F(TransformManagerTests, Identity1)
+{
+  tf2::Vector3 p1(56, 234, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       "/near_field",
       transform));
 
-  tf::Vector3 p2 = transform * p1;
+  tf2::Vector3 p2 = transform * p1;
 
   EXPECT_FLOAT_EQ(p1.x(), p2.x());
   EXPECT_FLOAT_EQ(p1.y(), p2.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * p2;
+  tf2::Vector3 p3 = inverse * p2;
   EXPECT_FLOAT_EQ(p1.x(), p3.x());
   EXPECT_FLOAT_EQ(p1.y(), p3.y());
 }
 
-TEST(TransformManagerTests, IdentityNoSlash)
+TEST_F(TransformManagerTests, IdentityNoSlash)
 {
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       "near_field",
       transform));
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "near_field",
       "/near_field",
       transform));
 }
 
-TEST(TransformManagerTests, Identity2)
+TEST_F(TransformManagerTests, Identity2)
 {
-  tf::Vector3 p1(435, -900, 0);
+  tf2::Vector3 p1(435, -900, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/some_frame",
       "/some_frame",
       transform));
 
-  tf::Vector3 p2 = transform * p1;
+  tf2::Vector3 p2 = transform * p1;
 
   EXPECT_FLOAT_EQ(p1.x(), p2.x());
   EXPECT_FLOAT_EQ(p1.y(), p2.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * p2;
+  tf2::Vector3 p3 = inverse * p2;
   EXPECT_FLOAT_EQ(p1.x(), p3.x());
   EXPECT_FLOAT_EQ(p1.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToTf1)
+TEST_F(TransformManagerTests, TfToTf1)
 {
   // Local Origin
-  tf::Vector3 far_field(0, 0, 0);
+  tf2::Vector3 far_field(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       "/far_field",
       transform));
 
-  tf::Vector3 near_field = transform * far_field;
+  tf2::Vector3 near_field = transform * far_field;
 
   EXPECT_FLOAT_EQ(-500, near_field.x());
   EXPECT_FLOAT_EQ(-500, near_field.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * near_field;
+  tf2::Vector3 p3 = inverse * near_field;
   EXPECT_FLOAT_EQ(far_field.x(), p3.x());
   EXPECT_FLOAT_EQ(far_field.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToTf1NoSlash)
+TEST_F(TransformManagerTests, TfToTf1NoSlash)
 {
   // Local Origin
-  tf::Vector3 far_field(0, 0, 0);
+  tf2::Vector3 far_field(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       "far_field",
       transform));
 
-  tf::Vector3 near_field = transform * far_field;
+  tf2::Vector3 near_field = transform * far_field;
 
   EXPECT_FLOAT_EQ(-500, near_field.x());
   EXPECT_FLOAT_EQ(-500, near_field.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * near_field;
+  tf2::Vector3 p3 = inverse * near_field;
   EXPECT_FLOAT_EQ(far_field.x(), p3.x());
   EXPECT_FLOAT_EQ(far_field.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToTf2)
+TEST_F(TransformManagerTests, TfToTf2)
 {
   // Local Origin
-  tf::Vector3 far_field(0, 0, 0);
+  tf2::Vector3 far_field(0, 0, 0);
 
-  tf::StampedTransform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  swri_transform_util::Transform transform;
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       "/far_field",
       transform));
 
-  tf::Vector3 near_field = transform * far_field;
+  tf2::Vector3 near_field = transform * far_field;
 
   EXPECT_FLOAT_EQ(-500, near_field.x());
   EXPECT_FLOAT_EQ(-500, near_field.y());
 }
 
-TEST(TransformManagerTests, WgsToUtm)
+TEST_F(TransformManagerTests, WgsToUtm)
 {
   // San Antonio International Airport
-  tf::Vector3 wgs84(-98.471944, 29.526667, 0);
+  tf2::Vector3 wgs84(-98.471944, 29.526667, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       swri_transform_util::_utm_frame,
       swri_transform_util::_wgs84_frame,
       transform));
 
-  tf::Vector3 utm = transform * wgs84;
+  tf2::Vector3 utm = transform * wgs84;
 
   EXPECT_FLOAT_EQ(551170, utm.x());
   EXPECT_FLOAT_EQ(3266454, utm.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * utm;
+  tf2::Vector3 p3 = inverse * utm;
   EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-TEST(TransformManagerTests, WgsToUtmNoSlash)
+TEST_F(TransformManagerTests, WgsToUtmNoSlash)
 {
   // San Antonio International Airport
-  tf::Vector3 wgs84(-98.471944, 29.526667, 0);
+  tf2::Vector3 wgs84(-98.471944, 29.526667, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "utm",
       "wgs84",
       transform));
 
-  tf::Vector3 utm = transform * wgs84;
+  tf2::Vector3 utm = transform * wgs84;
 
   EXPECT_FLOAT_EQ(551170, utm.x());
   EXPECT_FLOAT_EQ(3266454, utm.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * utm;
+  tf2::Vector3 p3 = inverse * utm;
   EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-TEST(TransformManagerTests, UtmToWgs84)
+TEST_F(TransformManagerTests, UtmToWgs84)
 {
   // San Antonio International Airport
-  tf::Vector3 utm(551170, 3266454, 0);
+  tf2::Vector3 utm(551170, 3266454, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       swri_transform_util::_wgs84_frame,
       swri_transform_util::_utm_frame,
       transform));
 
-  tf::Vector3 wgs84 = transform * utm;
+  tf2::Vector3 wgs84 = transform * utm;
 
   EXPECT_FLOAT_EQ(29.526667, wgs84.y());
   EXPECT_FLOAT_EQ(-98.471944, wgs84.x());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * wgs84;
+  tf2::Vector3 p3 = inverse * wgs84;
   EXPECT_FLOAT_EQ(utm.x(), p3.x());
   EXPECT_FLOAT_EQ(utm.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToUtm1)
+TEST_F(TransformManagerTests, TfToUtm1)
 {
   // Local Origin
-  tf::Vector3 tf(0, 0, 0);
+  tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       swri_transform_util::_utm_frame,
       "/far_field",
       transform));
 
-  tf::Vector3 utm = transform * tf;
+  tf2::Vector3 utm = transform * tf;
 
   EXPECT_FLOAT_EQ(537460.3372816057, utm.x());
   EXPECT_FLOAT_EQ(3258123.434110421, utm.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * utm;
+  tf2::Vector3 p3 = inverse * utm;
   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, TfToUtm1NoSlash)
+TEST_F(TransformManagerTests, TfToUtm1NoSlash)
 {
   // Local Origin
-  tf::Vector3 tf(0, 0, 0);
+  tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "utm",
       "far_field",
       transform));
 
-  tf::Vector3 utm = transform * tf;
+  tf2::Vector3 utm = transform * tf;
 
   EXPECT_FLOAT_EQ(537460.3372816057, utm.x());
   EXPECT_FLOAT_EQ(3258123.434110421, utm.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * utm;
+  tf2::Vector3 p3 = inverse * utm;
   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, TfToUtm2)
+TEST_F(TransformManagerTests, TfToUtm2)
 {
-  tf::Vector3 tf(500, 500, 0);
+  tf2::Vector3 tf(500, 500, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       swri_transform_util::_utm_frame,
       "/far_field",
       transform));
 
-  tf::Vector3 utm = transform * tf;
+  tf2::Vector3 utm = transform * tf;
 
   EXPECT_NEAR(537460.3372816057 + 500.0, utm.x(), 1.9);
   EXPECT_NEAR(3258123.434110421 + 500.0, utm.y(), 1.5);
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * utm;
+  tf2::Vector3 p3 = inverse * utm;
   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, UtmToTf1)
+TEST_F(TransformManagerTests, UtmToTf1)
 {
   // Local Origin
-  tf::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
+  tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_utm_frame,
       transform));
 
-  tf::Vector3 tf = transform * utm;
+  tf2::Vector3 tf = transform * utm;
 
   EXPECT_NEAR(0, tf.x(), 0.0005);
   EXPECT_NEAR(0, tf.y(), 0.0005);
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, UtmToTf2)
+TEST_F(TransformManagerTests, UtmToTf2)
 {
   // Local Origin
-  tf::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
+  tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       swri_transform_util::_utm_frame,
       transform));
 
-  tf::Vector3 tf = transform * utm;
+  tf2::Vector3 tf = transform * utm;
 
   EXPECT_NEAR(-500, tf.x(), 0.0005);
   EXPECT_NEAR(-500, tf.y(), 0.0005);
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, UtmToTf3)
+TEST_F(TransformManagerTests, UtmToTf3)
 {
   // Local Origin
-  tf::Vector3 utm(537460.3372816057 - 500, 3258123.434110421 - 500, 0);
+  tf2::Vector3 utm(537460.3372816057 - 500, 3258123.434110421 - 500, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_utm_frame,
       transform));
 
-  tf::Vector3 tf = transform * utm;
+  tf2::Vector3 tf = transform * utm;
 
   EXPECT_NEAR(-500, tf.x(), 1.9);
   EXPECT_NEAR(-500, tf.y(), 1.5);
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, UtmToTf4)
+TEST_F(TransformManagerTests, UtmToTf4)
 {
   // San Antonio International Airport
-  tf::Vector3 utm(551170, 3266454, 0);
+  tf2::Vector3 utm(551170, 3266454, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_utm_frame,
       transform));
 
-  tf::Vector3 tf = transform * utm;
+  tf2::Vector3 tf = transform * utm;
 
   EXPECT_FLOAT_EQ(13752.988, tf.x());
   EXPECT_FLOAT_EQ(8280.0176, tf.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_NEAR(utm.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(utm.y(), p3.y(), 0.00000001);
 }
 
-TEST(TransformManagerTests, Wgs84ToTf1)
+TEST_F(TransformManagerTests, Wgs84ToTf1)
 {
   // Local Origin
-  tf::Vector3 wgs84(-98.61370577, 29.45196669, 0);
+  tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_wgs84_frame,
       transform));
 
-  tf::Vector3 tf = transform * wgs84;
+  tf2::Vector3 tf = transform * wgs84;
 
   EXPECT_FLOAT_EQ(0, tf.x());
   EXPECT_FLOAT_EQ(0, tf.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-TEST(TransformManagerTests, Wgs84ToTf1NoSlash)
+TEST_F(TransformManagerTests, Wgs84ToTf1NoSlash)
 {
   // Local Origin
-  tf::Vector3 wgs84(-98.61370577, 29.45196669, 0);
+  tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "far_field",
       "wgs84",
       transform));
 
-  tf::Vector3 tf = transform * wgs84;
+  tf2::Vector3 tf = transform * wgs84;
 
   EXPECT_FLOAT_EQ(0, tf.x());
   EXPECT_FLOAT_EQ(0, tf.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-TEST(TransformManagerTests, Wgs84ToTf2)
+TEST_F(TransformManagerTests, Wgs84ToTf2)
 {
   // Local Origin
-  tf::Vector3 wgs84(-98.61370577, 29.45196669, 0);
+  tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "/near_field",
       swri_transform_util::_wgs84_frame,
       transform));
 
-  tf::Vector3 tf = transform * wgs84;
+  tf2::Vector3 tf = transform * wgs84;
 
   EXPECT_FLOAT_EQ(-500, tf.x());
   EXPECT_FLOAT_EQ(-500, tf.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * tf;
+  tf2::Vector3 p3 = inverse * tf;
   EXPECT_FLOAT_EQ(wgs84.x(), p3.x());
   EXPECT_FLOAT_EQ(wgs84.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToWgs84_1)
+TEST_F(TransformManagerTests, TfToWgs84_1)
 {
   // Local Origin
-  tf::Vector3 tf(0, 0, 0);
+  tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       swri_transform_util::_wgs84_frame,
       "/far_field",
       transform));
 
-  tf::Vector3 wgs84 = transform * tf;
+  tf2::Vector3 wgs84 = transform * tf;
 
   EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
   EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * wgs84;
+  tf2::Vector3 p3 = inverse * wgs84;
   EXPECT_FLOAT_EQ(tf.x(), p3.x());
   EXPECT_FLOAT_EQ(tf.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToWgs84_1NoSlash)
+TEST_F(TransformManagerTests, TfToWgs84_1NoSlash)
 {
   // Local Origin
-  tf::Vector3 tf(0, 0, 0);
+  tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       "wgs84",
       "far_field",
       transform));
 
-  tf::Vector3 wgs84 = transform * tf;
+  tf2::Vector3 wgs84 = transform * tf;
 
   EXPECT_FLOAT_EQ(-98.61370577, wgs84.x());
   EXPECT_FLOAT_EQ(29.45196669, wgs84.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * wgs84;
+  tf2::Vector3 p3 = inverse * wgs84;
   EXPECT_FLOAT_EQ(tf.x(), p3.x());
   EXPECT_FLOAT_EQ(tf.y(), p3.y());
 }
 
-TEST(TransformManagerTests, TfToWgs84_2)
+TEST_F(TransformManagerTests, TfToWgs84_2)
 {
-  tf::Vector3 tf(0, 0, 0);
+  tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager.GetTransform(
+  ASSERT_TRUE(_tf_manager->GetTransform(
       swri_transform_util::_wgs84_frame,
       "/near_field",
       transform));
 
-  tf::Vector3 wgs84 = transform * tf;
+  tf2::Vector3 wgs84 = transform * tf;
 
   EXPECT_FLOAT_EQ(-98.6085519577, wgs84.x());
   EXPECT_FLOAT_EQ(29.4564773982, wgs84.y());
 
   swri_transform_util::Transform inverse = transform.Inverse();
-  tf::Vector3 p3 = inverse * wgs84;
+  tf2::Vector3 p3 = inverse * wgs84;
   EXPECT_NEAR(tf.x(), p3.x(), 0.00000001);
   EXPECT_NEAR(tf.y(), p3.y(), 0.00000001);
 }
 
-// Run all the tests that were declared with TEST()
+// Run all the tests that were declared with TEST_F()
 int main(int argc, char **argv)
 {
+  rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
 
-  // Initialize the ROS core parameters can be loaded from the launch file
-  ros::init(argc, argv, "test_transform_manager");
+  _node = rclcpp::Node::make_shared("transform_manager_test");
+  _tf_buffer = std::make_shared<tf2_ros::Buffer>(_node->get_clock());
+  _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer, _node);
 
-  _tf_manager.Initialize();
+  _tf_manager = std::make_shared<swri_transform_util::TransformManager>(_node, _tf_buffer);
 
-  ros::AsyncSpinner spinner(1);
-  spinner.start();
-  sleep(10);
+  // background spinner thread using main executor
+  std::atomic<bool> tests_done = false;
+  std::thread spinner = std::thread([&tests_done]() {
+      while (not tests_done)
+      {
+        rclcpp::spin_some(_node);
+      }
+  });
 
-  bool result = RUN_ALL_TESTS();
-  spinner.stop();
+  int result = RUN_ALL_TESTS();
+  tests_done = true;
+  if (spinner.joinable())
+  {
+    spinner.join();
+  }
+  rclcpp::shutdown();
+  _tf_manager.reset();
+  _tf_listener.reset();
+  _tf_buffer.reset();
+  _node.reset();
   return result;
 }
