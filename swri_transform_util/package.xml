@@ -48,7 +48,7 @@
   <test_depend>launch_testing</test_depend>
   <test_depend>launch_testing_ament_cmake</test_depend>
   <test_depend>tf_transformations</test_depend>
-  <test_depend>python-transforms3d-pip</test_depend>
+  <test_depend>python3-transforms3d</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
