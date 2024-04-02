@@ -407,6 +407,115 @@ namespace swri
     }
   };  // class BindSubscriberImpl
 
+    template<class M , class T>
+  class TypedUniqueSubscriberImpl : public SubscriberImpl
+  {
+    T *obj_;
+    void (T::*callback_)(const std::unique_ptr< const M > &);
+
+  public:
+    TypedUniqueSubscriberImpl(
+        rclcpp::Node& nh,
+        const std::string &topic,
+        uint32_t queue_size,
+        void(T::*fp)(const std::unique_ptr<const M> &),
+        T *obj,
+        const rclcpp::QoS& transport_hints,
+        const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions())
+    {
+      unmapped_topic_ = topic;
+      // mapped_topic_ = nh->ResolveName(topic);
+      // nh_ = nh->nh_;
+      nh_ = &nh;
+
+      RCLCPP_INFO(nh_->get_logger(), "Subscribing to '%s'.", unmapped_topic_.c_str());
+
+      callback_ = fp;
+      obj_ = obj;
+      //transport_hints.depth = queue_size;
+
+      rclcpp::QoS hints = transport_hints;
+      hints.keep_last(queue_size);
+
+      sub_ = nh_->create_subscription<M>(unmapped_topic_,
+                                         hints,
+                                         std::bind(&TypedUniqueSubscriberImpl::handleMessage<const M>,
+                                                   this, std::placeholders::_1),
+                                         sub_options
+                                         );
+    }
+
+    // Handler for messages with headers
+    template <class M2 = M>
+    typename std::enable_if<(bool)has_header<M2>(), void>::type
+    handleMessage(const std::unique_ptr<const M> msg)
+    {
+      processHeader(msg->header.stamp);
+      (obj_->*callback_)(std::move(msg));
+    }
+
+    // Handler for messages without headers
+    template <class M2 = M>
+    typename std::enable_if< !(bool)has_header<M2>(), void>::type
+    handleMessage(const std::unique_ptr<const M> msg)
+    {
+      processHeader(nh_->now());
+      (obj_->*callback_)(std::move(msg));
+    }
+  };  // class TypedUniqueSubscriberImpl
+
+  template<class M>
+  class BindUniqueSubscriberImpl : public SubscriberImpl
+  {
+    std::function<void(const std::unique_ptr<const M>)> callback_;
+
+
+  public:
+    BindUniqueSubscriberImpl(
+        rclcpp::Node& nh,
+        const std::string &topic,
+        uint32_t queue_size,
+        const std::function<void(const std::unique_ptr<const M>)> &callback,
+        const rclcpp::QoS& transport_hints,
+        const rclcpp::SubscriptionOptions sub_options = rclcpp::SubscriptionOptions())
+    {
+      unmapped_topic_ = topic;
+      //mapped_topic_ = nh->ResolveName(topic);
+      nh_ = &nh;
+
+      RCLCPP_INFO(nh_->get_logger(), "Subscribing to '%s'.", unmapped_topic_.c_str());
+
+      callback_ = callback;
+
+      rclcpp::QoS hints = transport_hints;
+      hints.keep_last(queue_size);
+      sub_ = nh_->create_subscription<M>(unmapped_topic_,
+                                         hints,
+                                         std::bind(&BindUniqueSubscriberImpl::handleMessage<M>,
+                                                   this, std::placeholders::_1),
+                                         sub_options
+                                        );
+    }
+
+    // Handler for messages with headers
+    template <class M2 = M>
+    typename std::enable_if< (bool)has_header<M2>(), void>::type
+    handleMessage(const std::unique_ptr< const M > msg)
+    {
+      processHeader(msg->header.stamp);
+      callback_(std::move(msg));
+    }
+
+    // Handler for messages without headers
+    template <class M2 = M>
+    typename std::enable_if< !(bool)has_header<M2>(), void>::type
+    handleMessage(const std::unique_ptr< const M > msg)
+    {
+      processHeader(nh_->now());
+      callback_(std::move(msg));
+    }
+  };  // class BindUniqueSubscriberImpl
+
   template<class M>
   class StorageSubscriberImpl : public SubscriberImpl
   {

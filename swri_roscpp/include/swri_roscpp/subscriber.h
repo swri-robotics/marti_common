@@ -256,6 +256,33 @@ Subscriber::Subscriber(rclcpp::Node &nh,
       nh, topic, queue_size, callback, transport_hints, sub_options));
 }
 
+template<class M , class T >
+Subscriber::Subscriber(rclcpp::Node &nh,
+            const std::string &topic,
+            uint32_t queue_size,
+            void(T::*fp)(const std::unique_ptr< M const > &),
+            T *obj,
+            const rclcpp::QoS& transport_hints,
+            const rclcpp::SubscriptionOptions sub_options)
+{
+  impl_ = std::shared_ptr<SubscriberImpl>(
+    new TypedUniqueSubscriberImpl<M,T>(
+      nh, topic, queue_size, fp, obj, transport_hints, sub_options));
+}
+
+template<class M>
+Subscriber::Subscriber(rclcpp::Node &nh,
+            const std::string &topic,
+            uint32_t queue_size,
+            const std::function<void(const std::unique_ptr<M const> &)> &callback,
+            const rclcpp::QoS& transport_hints,
+            const rclcpp::SubscriptionOptions sub_options)
+{
+  impl_ = std::shared_ptr<SubscriberImpl>(
+    new BindUniqueSubscriberImpl<M>(
+      nh, topic, queue_size, callback, transport_hints, sub_options));
+}
+
 template<class M>
 inline
 Subscriber::Subscriber(rclcpp::Node &nh,
