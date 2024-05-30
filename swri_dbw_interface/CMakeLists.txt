@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.16)
 project(swri_dbw_interface)
 
 find_package(catkin REQUIRED)
