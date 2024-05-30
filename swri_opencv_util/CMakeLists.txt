@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.16)
 project(swri_opencv_util)
 
 find_package(catkin REQUIRED COMPONENTS cv_bridge swri_math_util)

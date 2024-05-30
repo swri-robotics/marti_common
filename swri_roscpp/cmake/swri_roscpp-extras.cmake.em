@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.16)
 
 set(swri_roscpp_SHARE ${swri_roscpp_PREFIX}/@CATKIN_PACKAGE_SHARE_DESTINATION@)
 
