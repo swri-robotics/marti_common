@@ -105,11 +105,11 @@ TEST(UtmUtilTests, ToUtm)
   utm_util.ToUtm(-34.945, 138.530556, zone, band, easting, northing);
   EXPECT_EQ(54, zone);
   EXPECT_EQ('H', band);
-  EXPECT_NEAR(274484, easting, 0.5);
+  EXPECT_FLOAT_EQ(274484, easting);
   EXPECT_FLOAT_EQ(6130272, northing);
 
   utm_util.ToUtm(-34.945, 138.530556, easting, northing);
-  EXPECT_NEAR(274484, easting, 0.5);
+  EXPECT_FLOAT_EQ(274484, easting);
   EXPECT_FLOAT_EQ(6130272, northing);
 }
 
