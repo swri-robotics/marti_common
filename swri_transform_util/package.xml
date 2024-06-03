@@ -47,6 +47,7 @@
   <test_depend>launch_ros</test_depend>
   <test_depend>launch_testing</test_depend>
   <test_depend>launch_testing_ament_cmake</test_depend>
+  <test_depend>ros2topic</test_depend>
   <test_depend>tf_transformations</test_depend>
   <test_depend>python3-transforms3d</test_depend>
 
