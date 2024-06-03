@@ -72,45 +72,45 @@ TEST(UtmUtilTests, ToUtm)
   utm_util.ToUtm(33.9425, -118.408056, zone, band, easting, northing);
   EXPECT_EQ(11, zone);
   EXPECT_EQ('S', band);
-  EXPECT_NEAR(369877, easting, 0.5);
-  EXPECT_FLOAT_EQ(3756673, northing);
+  EXPECT_NEAR(369877.0, easting, 0.5);
+  EXPECT_FLOAT_EQ(3756673.0, northing);
 
   utm_util.ToUtm(33.9425, -118.408056, easting, northing);
-  EXPECT_NEAR(369877, easting, 0.5);
-  EXPECT_FLOAT_EQ(3756673, northing);
+  EXPECT_NEAR(369877.0, easting, 0.5);
+  EXPECT_FLOAT_EQ(3756673.0, northing);
 
   // MIA
   utm_util.ToUtm(25.793333, -80.290556, zone, band, easting, northing);
   EXPECT_EQ(17, zone);
   EXPECT_EQ('R', band);
-  EXPECT_NEAR(571124, easting, 0.5);
-  EXPECT_FLOAT_EQ(2852989, northing);
+  EXPECT_NEAR(571124.0, easting, 0.5);
+  EXPECT_FLOAT_EQ(2852989.0, northing);
 
   utm_util.ToUtm(25.793333, -80.290556, easting, northing);
-  EXPECT_NEAR(571124, easting, 0.5);
-  EXPECT_FLOAT_EQ(2852989, northing);
+  EXPECT_NEAR(571124.0, easting, 0.5);
+  EXPECT_FLOAT_EQ(2852989.0, northing);
 
   // USH
   utm_util.ToUtm(-54.843333, -68.295556, zone, band, easting, northing);
   EXPECT_EQ(19, zone);
   EXPECT_EQ('F', band);
-  EXPECT_FLOAT_EQ(545237, easting);
-  EXPECT_FLOAT_EQ(3922415, northing);
+  EXPECT_FLOAT_EQ(545237.0, easting);
+  EXPECT_FLOAT_EQ(3922415.0, northing);
 
   utm_util.ToUtm(-54.843333, -68.295556, easting, northing);
-  EXPECT_FLOAT_EQ(545237, easting);
-  EXPECT_FLOAT_EQ(3922415, northing);
+  EXPECT_FLOAT_EQ(545237.0, easting);
+  EXPECT_FLOAT_EQ(3922415.0, northing);
 
-  // ADL 
+  // ADL
   utm_util.ToUtm(-34.945, 138.530556, zone, band, easting, northing);
   EXPECT_EQ(54, zone);
   EXPECT_EQ('H', band);
-  EXPECT_NEAR(274484, easting, 0.5);
-  EXPECT_FLOAT_EQ(6130272, northing);
+  EXPECT_NEAR(274484.0, easting, 0.5);
+  EXPECT_FLOAT_EQ(6130272.0, northing);
 
   utm_util.ToUtm(-34.945, 138.530556, easting, northing);
-  EXPECT_NEAR(274484, easting, 0.5);
-  EXPECT_FLOAT_EQ(6130272, northing);
+  EXPECT_NEAR(274484.0, easting, 0.5);
+  EXPECT_FLOAT_EQ(6130272.0, northing);
 }
 
 TEST(UtmUtilTests, ToWgs84)
@@ -120,22 +120,22 @@ TEST(UtmUtilTests, ToWgs84)
   double lat, lon;
 
   // LAX
-  utm_util.ToLatLon(11, 'S', 369877, 3756673, lat, lon);
+  utm_util.ToLatLon(11, 'S', 369877.0, 3756673.0, lat, lon);
   EXPECT_FLOAT_EQ(33.9425, lat);
   EXPECT_NEAR(-118.408056, lon, .000005);
 
   // MIA
-  utm_util.ToLatLon(17, 'R', 571124, 2852989, lat, lon);
+  utm_util.ToLatLon(17, 'R', 571124.0, 2852989.0, lat, lon);
   EXPECT_FLOAT_EQ(25.793333, lat);
   EXPECT_NEAR(-80.290556, lon, .000005);
 
   // USH
-  utm_util.ToLatLon(19, 'F', 545237, 3922415, lat, lon);
+  utm_util.ToLatLon(19, 'F', 545237.0, 3922415.0, lat, lon);
   EXPECT_FLOAT_EQ(-54.843333, lat);
   EXPECT_FLOAT_EQ(-68.295556, lon);
 
   // ADL
-  utm_util.ToLatLon(54, 'H', 274484, 6130272, lat, lon);
+  utm_util.ToLatLon(54, 'H', 274484.0, 6130272.0, lat, lon);
   EXPECT_FLOAT_EQ(-34.945, lat);
   EXPECT_FLOAT_EQ(138.530556, lon);
 }
@@ -145,8 +145,8 @@ TEST(UtmUtilTests, Continuity)
   swri_transform_util::UtmUtil utm_util;
 
   // (FOR) - Fortaleza International Airport
-  double easting = 551940;
-  double northing = 9582637;
+  double easting = 551940.0;
+  double northing = 9582637.0;
 
   double last_lon = 0;
 
