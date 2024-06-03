@@ -76,7 +76,8 @@ namespace swri
 
       message_count_++;
 
-      if (stamp.nanoseconds() != 0) {
+      // Check for out of order messages and messages that appear to come from the future
+      if ((stamp.nanoseconds() != 0) && (now >= stamp)) {
         rclcpp::Duration latency = now - stamp;
         if (message_count_ == 1) {
           min_latency_ = latency;
