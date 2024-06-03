@@ -29,7 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from gps_msgs.msg import GPSFix
-import yaml
 import rclpy
 import rclpy.exceptions
 import rclpy.node
