@@ -68,8 +68,9 @@ class SubscriberImpl
     // timeout count.
     checkTimeout(now);
 
-    // Do not use this message for statistics if it is arriving out of order
-    if (stamp >= last_header_stamp_) {
+    // Do not use this message for statistics if it is arriving out of order or time
+    // synchronization makes it appear that the new timestamp is from the future
+    if ((stamp >= last_header_stamp_) && (now >= stamp)) {
       message_count_++;
 
       if (!stamp.isZero() && !now.isZero()) {
