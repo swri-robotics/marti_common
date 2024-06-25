@@ -63,8 +63,8 @@ TEST(LocalXyUtilTests, TestOffset1)
   EXPECT_NE(local_xy_util.ReferenceLatitude(), lat);
   EXPECT_NE(local_xy_util.ReferenceLongitude(), lon);
 
-  EXPECT_FLOAT_EQ(29.4937686007, lat);
-  EXPECT_FLOAT_EQ(-98.6134341407, lon);
+  EXPECT_FLOAT_EQ(29.4937684617, lat);
+  EXPECT_FLOAT_EQ(-98.6134340294, lon);
 
   double x2, y2;
   local_xy_util.ToLocalXy(lat, lon, x2, y2);
@@ -83,8 +83,8 @@ TEST(LocalXyUtilTests, TestOffset2)
   local_xy_util.ToWgs84(x, y, lat, lon);
   EXPECT_NE(local_xy_util.ReferenceLatitude(), lat);
   EXPECT_NE(local_xy_util.ReferenceLongitude(), lon);
-  EXPECT_FLOAT_EQ(29.4510874304, lat);
-  EXPECT_FLOAT_EQ(-98.6613942088, lon);
+  EXPECT_FLOAT_EQ(29.4510788901, lat);
+  EXPECT_FLOAT_EQ(-98.6613937867, lon);
 
   double x2, y2;
   local_xy_util.ToLocalXy(lat, lon, x2, y2);
@@ -140,15 +140,15 @@ TEST(LocalXyUtilTests, LocalXyFromWgs84)
       29.4937686007, -98.6134341407,
       29.45196669, -98.61370577,
       x, y);
-  EXPECT_FLOAT_EQ(26.3513, x);
-  EXPECT_FLOAT_EQ(4633.46, y);
+  EXPECT_FLOAT_EQ(26.3405, x);
+  EXPECT_FLOAT_EQ(4633.4741, y);
 
   swri_transform_util::LocalXyFromWgs84(
       29.4510874304, -98.6613942088,
       29.45196669, -98.61370577,
       x, y);
-  EXPECT_FLOAT_EQ(-4626.3513, x);
-  EXPECT_FLOAT_EQ(-97.46, y);
+  EXPECT_FLOAT_EQ(-4626.3906, x);
+  EXPECT_FLOAT_EQ(-96.5133, y);
 }
 
 TEST(LocalXyUtilTests, Wgs84FromLocalXy)
@@ -158,15 +158,15 @@ TEST(LocalXyUtilTests, Wgs84FromLocalXy)
       26.3513, 4633.46,
       29.45196669, -98.61370577,
       lat, lon);
-  EXPECT_FLOAT_EQ(29.4937686007, lat);
-  EXPECT_FLOAT_EQ(-98.6134341407, lon);
+  EXPECT_FLOAT_EQ(29.4937684617, lat);
+  EXPECT_FLOAT_EQ(-98.6134340294, lon);
 
   swri_transform_util::Wgs84FromLocalXy(
       -4626.3513, -97.46,
       29.45196669, -98.61370577,
       lat, lon);
-  EXPECT_FLOAT_EQ(29.4510874304, lat);
-  EXPECT_FLOAT_EQ(-98.6613942088, lon);
+  EXPECT_FLOAT_EQ(29.4510788901, lat);
+  EXPECT_FLOAT_EQ(-98.6613937867, lon);
 }
 
 TEST(LocalXyUtilTests, Continuity)
@@ -190,7 +190,7 @@ TEST(LocalXyUtilTests, Continuity)
     local_xy_util.ToLocalXy(new_lat, new_lon, new_x, new_y);
 
     EXPECT_FLOAT_EQ(x + i * 1.11 / 100.0, new_x);
-    EXPECT_FLOAT_EQ(y, new_y);
+    EXPECT_NEAR(y, new_y, 1e-9);
 
     if (i > 0)
     {

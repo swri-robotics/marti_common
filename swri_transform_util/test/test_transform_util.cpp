@@ -47,8 +47,8 @@ TEST(TransformUtilTests, GetRelativeTransform)
                 );
 
   tf2::Vector3 origin = offset.getOrigin();
-  EXPECT_FLOAT_EQ(-8.47174665, origin.x());
-  EXPECT_FLOAT_EQ(-0.3306987, origin.y());
+  EXPECT_FLOAT_EQ(-8.47174634, origin.x());
+  EXPECT_FLOAT_EQ(-0.3306964, origin.y());
   EXPECT_FLOAT_EQ(0.0, origin.z());
 }
 

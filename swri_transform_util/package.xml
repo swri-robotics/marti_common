@@ -24,6 +24,7 @@
   <depend>diagnostic_updater</depend>
   <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>geographiclib</depend>
   <depend>gps_msgs</depend>
   <depend>geos</depend>
   <depend>marti_nav_msgs</depend>
