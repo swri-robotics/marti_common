@@ -161,7 +161,10 @@ namespace swri_transform_util
     if (!initialized_)
     {
       bool ignore_reference_angle = false;
-      node_->get_parameter_or("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
+      if (node_)
+      {
+        node_->get_parameter_or("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
+      }
 
       local_cartesian_.Reset(latitude, longitude, altitude);
 
@@ -193,7 +196,7 @@ namespace swri_transform_util
       cos_angle_ = std::cos(reference_angle_);
       sin_angle_ = std::sin(reference_angle_);
 
-      RCUTILS_LOG_WARN("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, altitude);
+      RCUTILS_LOG_INFO("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, altitude);
       
       pose_sub_.reset();
       initialized_ = true;

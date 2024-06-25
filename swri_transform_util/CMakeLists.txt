@@ -43,6 +43,7 @@ if(NOT "${PROJ_FOUND}")
   )
 endif()
 
+# Geographiclib installs FindGeographicLib.cmake to this non-standard location
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
 find_package(GeographicLib REQUIRED)
 
@@ -79,13 +80,13 @@ target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::filesystem
   Boost::thread
+  ${GeographicLib_LIBRARIES}
   opencv_calib3d
   opencv_core
   opencv_highgui
   opencv_imgproc
   opencv_video
   ${PROJ_LIBRARIES}
-  ${GeographicLib_LIBRARIES}
   yaml-cpp
 )
 ament_target_dependencies(${PROJECT_NAME}
