@@ -36,6 +36,8 @@
 #include <swri_transform_util/transform_util.h>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
+#include "GeographicLib/LocalCartesian.hpp"
+
 namespace swri_transform_util
 {
 /**
@@ -215,13 +217,10 @@ namespace swri_transform_util
   protected:
     rclcpp::Node::SharedPtr node_;
 
-    double reference_latitude_;   //< Reference latitude in radians.
-    double reference_longitude_;  //< Reference longitude in radians.
     double reference_angle_;      //< Reference angle in radians ENU.
-    double reference_altitude_;   //< Reference altitude in meters.
 
-    double rho_lat_;
-    double rho_lon_;
+    GeographicLib::LocalCartesian local_cartesian_;
+
     double cos_angle_;
     double sin_angle_;
 

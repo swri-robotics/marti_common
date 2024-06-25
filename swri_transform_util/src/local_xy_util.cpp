@@ -102,28 +102,20 @@ namespace swri_transform_util
       double reference_altitude,
       rclcpp::Node::SharedPtr node) :
     node_(node),
-    reference_latitude_(reference_latitude * swri_math_util::_deg_2_rad),
-    reference_longitude_(reference_longitude * swri_math_util::_deg_2_rad),
     reference_angle_(reference_angle * swri_math_util::_deg_2_rad),
-    reference_altitude_(reference_altitude),
-    rho_lat_(0),
-    rho_lon_(0),
+    local_cartesian_(),
     cos_angle_(0),
     sin_angle_(0),
     frame_("map"),
     initialized_(false)
   {
-    Initialize();
+    HandleOrigin(reference_latitude, reference_longitude, reference_altitude, reference_angle, "map");
   }
 
   LocalXyWgs84Util::LocalXyWgs84Util(rclcpp::Node::SharedPtr node) :
     node_(node),
-    reference_latitude_(0),
-    reference_longitude_(0),
     reference_angle_(0),
-    reference_altitude_(0),
-    rho_lat_(0),
-    rho_lon_(0),
+    local_cartesian_(),
     cos_angle_(0),
     sin_angle_(0),
     frame_("map"),
@@ -148,23 +140,7 @@ namespace swri_transform_util
 
   void LocalXyWgs84Util::Initialize()
   {
-    reference_angle_ = swri_math_util::WrapRadians(reference_angle_, 0);
 
-    cos_angle_ = std::cos(reference_angle_);
-    sin_angle_ = std::sin(reference_angle_);
-
-    double depth = -reference_altitude_;
-
-    double p = _earth_eccentricity * std::sin(reference_latitude_);
-    p = 1.0 - p * p;
-
-    double rho_e = _earth_equator_radius *
-        (1.0 - _earth_eccentricity * _earth_eccentricity) / (std::sqrt(p) * p);
-    double rho_n = _earth_equator_radius / std::sqrt(p);
-
-    rho_lat_ = rho_e - depth;
-    rho_lon_ = (rho_n - depth) * std::cos(reference_latitude_);
-    initialized_ = true;
   }
 
   void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
@@ -176,16 +152,18 @@ namespace swri_transform_util
         pose->header.frame_id);
   }
 
-  void LocalXyWgs84Util::HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id)
+  void LocalXyWgs84Util::HandleOrigin(double latitude,
+                                      double longitude,
+                                      double altitude,
+                                      double angle,
+                                      std::string const &frame_id)
   {
     if (!initialized_)
     {
       bool ignore_reference_angle = false;
       node_->get_parameter_or("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
 
-      reference_latitude_ = latitude * swri_math_util::_deg_2_rad;
-      reference_longitude_ = longitude * swri_math_util::_deg_2_rad;
-      reference_altitude_ = altitude;
+      local_cartesian_.Reset(latitude, longitude, altitude);
 
       if (!ignore_reference_angle)
       {
@@ -210,21 +188,26 @@ namespace swri_transform_util
       }
 
       frame_ = frame;
-      RCUTILS_LOG_WARN("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, reference_altitude_);
-      Initialize();
+      reference_angle_ = swri_math_util::WrapRadians(reference_angle_, 0);
+
+      cos_angle_ = std::cos(reference_angle_);
+      sin_angle_ = std::sin(reference_angle_);
+
+      RCUTILS_LOG_WARN("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, altitude);
+      
       pose_sub_.reset();
-      return;
+      initialized_ = true;
     }
   }
 
   double LocalXyWgs84Util::ReferenceLongitude() const
   {
-    return reference_longitude_ * swri_math_util::_rad_2_deg;
+    return local_cartesian_.LongitudeOrigin();
   }
 
   double LocalXyWgs84Util::ReferenceLatitude() const
   {
-    return reference_latitude_ * swri_math_util::_rad_2_deg;
+    return local_cartesian_.LatitudeOrigin();
   }
 
   double LocalXyWgs84Util::ReferenceAngle() const
@@ -234,7 +217,7 @@ namespace swri_transform_util
 
   double LocalXyWgs84Util::ReferenceAltitude() const
   {
-    return reference_altitude_;
+    return local_cartesian_.HeightOrigin();
   }
 
   bool LocalXyWgs84Util::ToLocalXy(
@@ -255,26 +238,12 @@ namespace swri_transform_util
         return false;
       }
 
-      double rlat = latitude * swri_math_util::_deg_2_rad;
-      double rlon = longitude * swri_math_util::_deg_2_rad;
-      double dLat = (rlat - reference_latitude_) * rho_lat_;
-      double dLon = (rlon - reference_longitude_);
-      // Check for case where the shortest distance crosses the antimeridian
-      if (dLon > swri_math_util::_pi)
-      {   
-        dLon -= swri_math_util::_2pi;
-      }   
-      
-      if (dLon < -swri_math_util::_pi)
-      {   
-        dLon += swri_math_util::_2pi;
-      }   
-        
-      dLon *= rho_lon_;
-  
+      double z, dLon, dLat;
+
+      local_cartesian_.Forward(latitude, longitude, 0, dLon, dLat, z);
+
       x =  cos_angle_ * dLon + sin_angle_ * dLat;
       y = -sin_angle_ * dLon + cos_angle_ * dLat;
-  
       return true;
     }
 
@@ -289,23 +258,12 @@ namespace swri_transform_util
   {
     if (initialized_)
     {
+      double alt;
       double dLon = cos_angle_ * x - sin_angle_ * y;
       double dLat = sin_angle_ * x + cos_angle_ * y;
-      double rlat = (dLat / rho_lat_) + reference_latitude_;
-      double rlon = (dLon / rho_lon_) + reference_longitude_;
 
-      latitude = rlat * swri_math_util::_rad_2_deg;
-      longitude = rlon * swri_math_util::_rad_2_deg;
-      // Constrain longitude in case it has wrapped across the date line
-      if (longitude >= 180.0)
-      {   
-        longitude -= 360.0;
-      }   
-        
-      if (longitude < -180.0)
-      {
-        longitude += 360.0;
-      }
+      local_cartesian_.Reverse(dLon, dLat, 0, latitude, longitude, alt);
+      return true;
     }
 
     return initialized_;
