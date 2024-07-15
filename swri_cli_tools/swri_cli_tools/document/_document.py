@@ -26,8 +26,8 @@
 from natsort import natsorted
 
 from swri_cli_tools.api._node_info import NodeInfo
-from swri_cli_tools.api._node_info import ParameterInfo
 from swri_cli_tools.api._node_info import print_node_infos
+from swri_cli_tools.api._parameter_info import ParameterInfo
 
 import rclpy
 

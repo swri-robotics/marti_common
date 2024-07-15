@@ -15,6 +15,9 @@
   <depend>rcl_interfaces</depend>
   <depend>rclpy</depend>
   <depend>ros2cli</depend>
+  <depend>ros2node</depend>
+  <depend>ros2param</depend>
+  <depend>ros2topic</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
