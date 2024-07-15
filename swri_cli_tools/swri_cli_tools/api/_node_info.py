@@ -23,59 +23,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from typing import List
-
 from rcl_interfaces.msg import ParameterType
 from ros2node.api import TopicInfo
 
-from swri_cli_tools.api._node_info import NodeInfo
 from swri_cli_tools.api._node_info import ParameterInfo
-
-
-def print_node_infos(nodes: List(NodeInfo)):
-    """Print information about nodes."""
-    for node in nodes:
-        print_node_info(node)
-
-
-def print_node_info(node: NodeInfo):
-    """Print information about single node."""
-    print('- {}:'.format(node.name))
-    print('    - Publishers:')
-    for p in node.publishers:
-        print('        - {}:'.format(p.name))
-        for t in p.types:
-            print('            {}'.format(t))
-    print('    - Subscribers:')
-    for s in node.subscribers:
-        print('        - {}:'.format(s.name))
-        for t in s.types:
-            print('            {}'.format(t))
-    print('    - Service Servers:')
-    for s in node.service_servers:
-        print('        - {}:'.format(s.name))
-        for t in s.types:
-            print('            {}'.format(t))
-    print('    - Service Clients:')
-    for c in node.service_clients:
-        print('        - {}:'.format(c.name))
-        for t in c.types:
-            print('            {}'.format(t))
-    print('    - Action Servers:')
-    for s in node.action_servers:
-        print('        - {}:'.format(s.name))
-        for t in s.types:
-            print('            {}'.format(t))
-    print('    - Action Clients:')
-    for c in node.action_clients:
-        print('        - {}:'.format(c.name))
-        for t in c.types:
-            print('            {}'.format(t))
-    print('    - Parameters:')
-    for p in node.parameters:
-        print('        - {}:'.format(p.param_name))
-        print('            - {}'.format(p.param_type))
-        print('            - {}'.format(p.param_value))
 
 
 class NodeInfo:
@@ -83,13 +34,13 @@ class NodeInfo:
 
     def __init__(self,
                  name: str = None,
-                 publishers: List(TopicInfo) = [],
-                 subscribers: List(TopicInfo) = [],
-                 service_servers: List(TopicInfo) = [],
-                 service_clients: List(TopicInfo) = [],
-                 action_servers: List(TopicInfo) = [],
-                 action_clients: List(TopicInfo) = [],
-                 parameters: List(ParameterInfo) = []) -> None:
+                 publishers: list[TopicInfo] = [],
+                 subscribers: list[TopicInfo] = [],
+                 service_servers: list[TopicInfo] = [],
+                 service_clients: list[TopicInfo] = [],
+                 action_servers: list[TopicInfo] = [],
+                 action_clients: list[TopicInfo] = [],
+                 parameters: list[ParameterInfo] = []) -> None:
         """Construct node information class."""
         self._name = name
         self._publishers = publishers
@@ -114,7 +65,7 @@ class NodeInfo:
         """Add publisher connection information to node."""
         self._publishers.append(connection)
 
-    def add_publishers(self, connections: List(TopicInfo)):
+    def add_publishers(self, connections: list[TopicInfo]):
         """Add publisher connection information to node."""
         self._publishers += connections
 
@@ -140,7 +91,7 @@ class NodeInfo:
         """Add service server information to node."""
         self._service_servers.append(connection)
 
-    def add_service_servers(self, connections: List(TopicInfo)):
+    def add_service_servers(self, connections: list[TopicInfo]):
         """Add service server information to node."""
         self._service_servers += connections
 
@@ -153,7 +104,7 @@ class NodeInfo:
         """Add service client information to node."""
         self._service_clients.append(connection)
 
-    def add_service_clients(self, connections: List(TopicInfo)):
+    def add_service_clients(self, connections: list[TopicInfo]):
         """Add service client information to node."""
         self._service_clients += connections
 
@@ -175,7 +126,7 @@ class NodeInfo:
         """Add action client information to node."""
         self._action_clients.append(connection)
 
-    def add_action_clients(self, connections: List(TopicInfo)):
+    def add_action_clients(self, connections: list[TopicInfo]):
         """Add action client information to node."""
         self._action_clients += connections
 
@@ -245,3 +196,49 @@ class ParameterInfo:
     def param_value(self):
         """Get parameter value."""
         return self._param_value
+
+
+def print_node_infos(nodes: list[NodeInfo]):
+    """Print information about nodes."""
+    for node in nodes:
+        print_node_info(node)
+
+
+def print_node_info(node: NodeInfo):
+    """Print information about single node."""
+    print('- {}:'.format(node.name))
+    print('    - Publishers:')
+    for p in node.publishers:
+        print('        - {}:'.format(p.name))
+        for t in p.types:
+            print('            {}'.format(t))
+    print('    - Subscribers:')
+    for s in node.subscribers:
+        print('        - {}:'.format(s.name))
+        for t in s.types:
+            print('            {}'.format(t))
+    print('    - Service Servers:')
+    for s in node.service_servers:
+        print('        - {}:'.format(s.name))
+        for t in s.types:
+            print('            {}'.format(t))
+    print('    - Service Clients:')
+    for c in node.service_clients:
+        print('        - {}:'.format(c.name))
+        for t in c.types:
+            print('            {}'.format(t))
+    print('    - Action Servers:')
+    for s in node.action_servers:
+        print('        - {}:'.format(s.name))
+        for t in s.types:
+            print('            {}'.format(t))
+    print('    - Action Clients:')
+    for c in node.action_clients:
+        print('        - {}:'.format(c.name))
+        for t in c.types:
+            print('            {}'.format(t))
+    print('    - Parameters:')
+    for p in node.parameters:
+        print('        - {}:'.format(p.param_name))
+        print('            - {}'.format(p.param_type))
+        print('            - {}'.format(p.param_value))
