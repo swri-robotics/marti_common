@@ -210,6 +210,7 @@ namespace swri_transform_util
     inverse_transform.setData(inverse_transform.inverse());
 
     geometry_msgs::msg::TransformStamped inverse_tf_msg;
+    tf2::convert(inverse_transform, inverse_tf_msg);
     inverse_tf_msg.header.frame_id = transform_.child_frame_id;
     inverse_tf_msg.child_frame_id = transform_.header.frame_id;
     TransformImplPtr inverse = std::make_shared<TfToUtmTransform>(
@@ -265,9 +266,10 @@ namespace swri_transform_util
     inverse_transform.setData(inverse_transform.inverse());
 
     geometry_msgs::msg::TransformStamped inverse_tf_msg;
-
+    tf2::convert(inverse_transform, inverse_tf_msg);
     inverse_tf_msg.header.frame_id = transform_.child_frame_id;
     inverse_tf_msg.child_frame_id = transform_.header.frame_id;
+
     TransformImplPtr inverse = std::make_shared<UtmToTfTransform>(
         inverse_tf_msg,
         utm_util_,
