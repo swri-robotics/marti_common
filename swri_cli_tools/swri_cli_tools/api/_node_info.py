@@ -23,10 +23,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from rcl_interfaces.msg import ParameterType
 from ros2node.api import TopicInfo
-
-from swri_cli_tools.api._node_info import ParameterInfo
+from swri_cli_tools.api._parameter_info import ParameterInfo
 
 
 class NodeInfo:
@@ -147,55 +145,6 @@ class NodeInfo:
     def parameters(self):
         """Get parameters associated with node."""
         return self._parameters
-
-
-class ParameterInfo:
-    """Hold information about node parameter."""
-
-    def __init__(self,
-                 param_name: str = None,
-                 param_type: ParameterType = None,
-                 param_value: str = None) -> None:
-
-        self._param_name = param_name
-        self._param_type = "Unknown"
-        if param_type == ParameterType.PARAMETER_BOOL:
-            self._param_type = "boolean"
-        elif param_type == ParameterType.PARAMETER_INTEGER:
-            self._param_type = "integer"
-        elif param_type == ParameterType.PARAMETER_DOUBLE:
-            self._param_type = "double"
-        elif param_type == ParameterType.PARAMETER_STRING:
-            self._param_type = "string"
-        elif param_type == ParameterType.PARAMETER_BYTE_ARRAY:
-            self._param_type = "byte array"
-        elif param_type == ParameterType.PARAMETER_BOOL_ARRAY:
-            self._param_type = "bool array"
-        elif param_type == ParameterType.PARAMETER_INTEGER_ARRAY:
-            self._param_type = "integer array"
-        elif param_type == ParameterType.PARAMETER_DOUBLE_ARRAY:
-            self._param_type = "double array"
-        elif param_type == ParameterType.PARAMETER_STRING_ARRAY:
-            self._param_type = "string array"
-        elif param_type == ParameterType.PARAMETER_NOT_SET:
-            self._param_type = "Not set"
-
-        self._param_value = param_value
-
-    @property
-    def param_name(self):
-        """Get parameter name."""
-        return self._param_name
-
-    @property
-    def param_type(self):
-        """Get parameter type."""
-        return self._param_type
-
-    @property
-    def param_value(self):
-        """Get parameter value."""
-        return self._param_value
 
 
 def print_node_infos(nodes: list[NodeInfo]):
