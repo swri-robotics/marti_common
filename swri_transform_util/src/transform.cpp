@@ -149,11 +149,6 @@ namespace swri_transform_util
     return transform_.getRotation();
   }
 
-  tf2::Vector3 TfTransform::GetOrigin() const
-  {
-    return transform_.getOrigin();
-  }
-
   TransformImplPtr TfTransform::Inverse() const
   {
     TransformImplPtr inverse = 

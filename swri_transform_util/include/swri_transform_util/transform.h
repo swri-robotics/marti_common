@@ -144,16 +144,6 @@ namespace swri_transform_util
       return tf2::Quaternion(cross.x(), cross.y(), cross.z(), w).normalized();
     }
 
-    /**
-     * Get the origin of this transform
-     * 
-     * @return The origin of component of the transform
-     */
-    virtual tf2::Vector3 GetOrigin() const
-    {
-      return tf2::Vector3(0.0, 0.0, 0.0);
-    }
-
     virtual std::shared_ptr<TransformImpl> Inverse() const = 0;
 
   protected:
@@ -340,11 +330,6 @@ namespace swri_transform_util
      * @return The orientation component of the transform
      */
     tf2::Quaternion GetOrientation() const override;
-    /**
-     * Get the origin component of this transform using TF
-     * @return The origin component of the transform
-     */
-    tf2::Vector3 GetOrigin() const override;
     TransformImplPtr Inverse() const override;
 
   protected:
