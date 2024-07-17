@@ -38,7 +38,7 @@ import rclpy
 from rclpy.clock import ClockType
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from ros2topic.api import get_msg_class
-import tf_transformations
+import transforms3d as t3d
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
@@ -86,11 +86,11 @@ class TestInitializeOrigin(unittest.TestCase):
             latitude = msg.pose.position.y
             longitude = msg.pose.position.x
             altitude = msg.pose.position.z
-            quaternion = (msg.pose.orientation.x,
+            quaternion = (msg.pose.orientation.w,
+                          msg.pose.orientation.x,
                           msg.pose.orientation.y,
-                          msg.pose.orientation.z,
-                          msg.pose.orientation.w)
-            euler = tf_transformations.euler_from_quaternion(quaternion)
+                          msg.pose.orientation.z)
+            euler = t3d.euler.quat2euler(quaternion)
             yaw = euler[2]
             self.assertAlmostEqual(yaw, 0)
         elif self.origin_class == GPSFix:
@@ -110,11 +110,11 @@ class TestInitializeOrigin(unittest.TestCase):
             latitude = msg.position.latitude
             longitude = msg.position.longitude
             altitude = msg.position.altitude
-            quaternion = [msg.pose.orientation.x,
+            quaternion = [msg.pose.orientation.w,
+                        msg.pose.orientation.x,
                         msg.pose.orientation.y,
-                        msg.pose.orientation.z,
-                        msg.pose.orientation.w]
-            (roll, pitch, yaw) = tf_transformations.euler_from_quaternion(quaternion)
+                        msg.pose.orientation.z]
+            euler = t3d.euler.quat2euler(quaternion)
             yaw = euler[2]
             self.assertAlmostEqual(yaw, 0)
         self.assertEqual(msg.header.frame_id, '/far_field')
