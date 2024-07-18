@@ -544,7 +544,7 @@ int main(int argc, char **argv)
   _tf_manager = std::make_shared<swri_transform_util::TransformManager>(_node, _tf_buffer);
 
   // background spinner thread using main executor
-  std::atomic<bool> tests_done = false;
+  std::atomic<bool> tests_done(false);
   std::thread spinner = std::thread([&tests_done]() {
       while (not tests_done)
       {
