@@ -61,7 +61,7 @@ class TestInitializeOrigin(unittest.TestCase):
 
     def subscribeToOrigin(self):
         self.assertIsNotNone(self.node)
-        self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC)
+        self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC, blocking=True)
         if self.origin_class is None:
             self.node.get_logger().fatal(ORIGIN_TOPIC+" was never advertised")
         self.assertIsNotNone(self.origin_class)
@@ -141,7 +141,7 @@ class TestInvalidOrigin(unittest.TestCase):
 
     def subscribeToOrigin(self):
         self.assertIsNotNone(self.node)
-        self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC)
+        self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC, blocking=True)
         if self.origin_class is None:
             self.node.get_logger().fatal(ORIGIN_TOPIC+" was never advertised")
         self.assertIsNotNone(self.origin_class)
