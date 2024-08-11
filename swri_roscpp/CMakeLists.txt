@@ -53,19 +53,11 @@ include(cmake/swri_roscpp-test.cmake)
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 target_include_directories(subscriber_test
   PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  ${diagnostic_updater_INCLUDE_DIRS}
   ${nav_msgs_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
 )
 target_link_libraries(subscriber_test
-  ${diagnostic_updater_LIBRARIES}
-  ${marti_common_msgs_LIBRARIES}
+  ${PROJECT_NAME}_library
   ${nav_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${std_srvs_LIBRARIES}
 )
 ### Install Test Node and Headers ###
 install(TARGETS subscriber_test
