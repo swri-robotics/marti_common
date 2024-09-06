@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.1 (2024-09-06)
+------------------
 * Remove transforms3d as dependency because of packaging problems (`#746 <https://github.com/swri-robotics/marti_common/issues/746>`_)
 * Contributors: David Anthony
 
