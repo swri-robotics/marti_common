@@ -2,6 +2,9 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.7.0 (2024-09-06)
 ------------------
 * Cleaning up package maintainer (`#721 <https://github.com/swri-robotics/marti_common/issues/721>`_)
