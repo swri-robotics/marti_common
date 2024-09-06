@@ -52,7 +52,7 @@ public:
     ASSERT_TRUE(_tf_manager != nullptr);
     // Wait until the local_xy_origin is setup correctly
     bool origin_init = false;
-    for (size_t i=0; i < 10; ++i)
+    for (size_t i=0; i < 100; ++i)
     {
       if (_tf_manager->SupportsTransform("far_field", "far_field__identity"))
       {

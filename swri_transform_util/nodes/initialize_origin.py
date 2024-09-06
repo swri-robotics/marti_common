@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from gps_msgs.msg import GPSFix
-import yaml
+from math import nan
 import rclpy
 import rclpy.exceptions
 import rclpy.node
@@ -68,6 +68,7 @@ class OriginInitializer(rclpy.node.Node):
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
+                                                             [nan, nan, nan],
                                                              descriptor=rclpy.node.ParameterDescriptor(
                                                                  name='local_xy_origins',
                                                                  type=rclpy.parameter.ParameterType.PARAMETER_DOUBLE_ARRAY
