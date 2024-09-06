@@ -13,6 +13,8 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
+    maintainer='Southwest Research Institute',
+    maintainer_email='swri-robotics@swri.org'
     author='P. J. Reed',
     author_email='preed@swri.org',
     keywords=['ROS'],

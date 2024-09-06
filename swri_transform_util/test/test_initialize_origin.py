@@ -25,7 +25,8 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+
+import math
 import sys
 import time
 import unittest
@@ -38,7 +39,6 @@ import rclpy
 from rclpy.clock import ClockType
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from ros2topic.api import get_msg_class
-import transforms3d as t3d
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
@@ -58,6 +58,12 @@ class TestInitializeOrigin(unittest.TestCase):
     def __init__(self):
         super().__init__()
         self.got_origin = False
+
+    def _yaw_from_quaternion(self, w, x, y, z):
+        sc = 2 * ((w * z) + (x * y))
+        cc = 1 - 2 * ((y * y) + (z * z))
+        yaw = math.atan2(sc, cc)
+        return yaw
 
     def subscribeToOrigin(self):
         self.assertIsNotNone(self.node)
@@ -86,12 +92,11 @@ class TestInitializeOrigin(unittest.TestCase):
             latitude = msg.pose.position.y
             longitude = msg.pose.position.x
             altitude = msg.pose.position.z
-            quaternion = (msg.pose.orientation.w,
-                          msg.pose.orientation.x,
-                          msg.pose.orientation.y,
-                          msg.pose.orientation.z)
-            euler = t3d.euler.quat2euler(quaternion)
-            yaw = euler[2]
+            yaw = self._yaw_from_quaternion(
+                msg.pose.orientation.w,
+                msg.pose.orientation.x,
+                msg.pose.orientation.y,
+                msg.pose.orientation.z)
             self.assertAlmostEqual(yaw, 0)
         elif self.origin_class == GPSFix:
             self.node.get_logger().info("Status: %d" % msg.status.status)
@@ -110,12 +115,11 @@ class TestInitializeOrigin(unittest.TestCase):
             latitude = msg.position.latitude
             longitude = msg.position.longitude
             altitude = msg.position.altitude
-            quaternion = [msg.pose.orientation.w,
-                        msg.pose.orientation.x,
-                        msg.pose.orientation.y,
-                        msg.pose.orientation.z]
-            euler = t3d.euler.quat2euler(quaternion)
-            yaw = euler[2]
+            yaw = self._yaw_from_quaternion(
+                msg.pose.orientation.w,
+                msg.pose.orientation.x,
+                msg.pose.orientation.y,
+                msg.pose.orientation.z)
             self.assertAlmostEqual(yaw, 0)
         self.assertEqual(msg.header.frame_id, '/far_field')
         if self.test_stamp:
