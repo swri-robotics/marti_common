@@ -2,6 +2,38 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix Test Failures (`#745 <https://github.com/swri-robotics/marti_common/issues/745>`_)
+  * Checking if increasing timeout value will fix test failure
+  * Making default origin all NaN
+* Updating Tests With New Error Bounds (`#741 <https://github.com/swri-robotics/marti_common/issues/741>`_)
+* Replaced local projection math with geographiclib (`#739 <https://github.com/swri-robotics/marti_common/issues/739>`_)
+  * Replaced local projection math with geographiclib
+  * Updated unit tests with new values
+* Fix Unit Test Failures (`#740 <https://github.com/swri-robotics/marti_common/issues/740>`_)
+  * Fixing inverse transform
+  * Fixing various CI build failures.
+* changed from python-transforms3d-pip dep to python3-transforms3d dep. (`#730 <https://github.com/swri-robotics/marti_common/issues/730>`_)
+* Fix UTM Utils and Get Tests to Build in ROS 2 (`#729 <https://github.com/swri-robotics/marti_common/issues/729>`_)
+  * Fix north and south projections
+  * Enable tests and fix coordinate types
+  * Updating test condition to match ROS 1 condition
+  * Format build files like on other in-progress branch
+  * Got a couple of the swri_transform_util unit tests working.
+  * Got a few more transform manager tests to work. Loss of precision somewhere causing existing test to fail.
+  * Uncommented all swri_transform_util::TransformManager tests.
+  * Update tests for ROS 2 except pytests
+  * Port python tests
+  * Update navsatfix test to match gpsfix test
+  ---------
+  Co-authored-by: robert.brothers <robert.brothers@swri.org>
+* Adding better initialization of origin (`#725 <https://github.com/swri-robotics/marti_common/issues/725>`_)
+* Adding Adelaide UTM <-> WGS84 test case (`#723 <https://github.com/swri-robotics/marti_common/issues/723>`_)
+* Fixing wrapping around negative/positive lat/lon changes (`#722 <https://github.com/swri-robotics/marti_common/issues/722>`_)
+* Cleaning up package maintainer (`#721 <https://github.com/swri-robotics/marti_common/issues/721>`_)
+* Contributors: David Anthony, JayHerpin, Robert Brothers, Veronica Knisley
+
 3.6.1 (2023-09-11)
 ------------------
 * Fixing Buildfarm Issues (`#716 <https://github.com/swri-robotics/marti_common/issues/716>`_)

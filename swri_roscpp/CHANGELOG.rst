@@ -2,6 +2,17 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Simplify Cmake by linking to the library target (`#742 <https://github.com/swri-robotics/marti_common/issues/742>`_)
+  By linking to the library target, we can reuse the include paths and libraries from it. This will
+  simplify the Cmake a bit.
+  It also fixes a bug when linking to the `ros2-jazzy` branch of `diagnostic_updater`.
+* Sanity checking time before performing duration calculation (`#735 <https://github.com/swri-robotics/marti_common/issues/735>`_)
+* Add definitions for subscribers with unique_ptr callback arguments (`#731 <https://github.com/swri-robotics/marti_common/issues/731>`_)
+* Cleaning up package maintainer (`#721 <https://github.com/swri-robotics/marti_common/issues/721>`_)
+* Contributors: David Anthony, Ramon Wijnands, Veronica Knisley
+
 3.6.1 (2023-09-11)
 ------------------
 * Fixing Buildfarm Issues (`#716 <https://github.com/swri-robotics/marti_common/issues/716>`_)

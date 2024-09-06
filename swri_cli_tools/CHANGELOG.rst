@@ -2,6 +2,13 @@
 Changelog for package swri_cli_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix Unit Test Failures (`#740 <https://github.com/swri-robotics/marti_common/issues/740>`_)
+  * Fixing inverse transform
+  * Fixing various CI build failures.
+* Contributors: David Anthony
+
 3.6.1 (2023-09-11)
 ------------------
 * Fixing Buildfarm Issues (`#716 <https://github.com/swri-robotics/marti_common/issues/716>`_)
