@@ -1,8 +1,6 @@
 name: CI
 
 on: [push, pull_request]
-env:
-  PIP_BREAK_SYSTEM_PACKAGES: 1
 
 jobs:
   industrial_ci:
@@ -20,5 +18,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: 'ros-industrial/industrial_ci@master'
+      - uses: 'swri-robotics/industrial_ci@break_system_packages'
         env: ${{matrix.env}}
