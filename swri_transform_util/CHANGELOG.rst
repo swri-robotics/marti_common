@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.0 (2024-09-06)
+------------------
 * Fix Test Failures (`#745 <https://github.com/swri-robotics/marti_common/issues/745>`_)
   * Checking if increasing timeout value will fix test failure
   * Making default origin all NaN

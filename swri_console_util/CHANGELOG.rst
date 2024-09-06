@@ -2,8 +2,8 @@
 Changelog for package swri_console_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.0 (2024-09-06)
+------------------
 * Cleaning up package maintainer (`#721 <https://github.com/swri-robotics/marti_common/issues/721>`_)
 * Fully specifying type to avoid warnings on Arm platforms (`#717 <https://github.com/swri-robotics/marti_common/issues/717>`_)
 * Contributors: David Anthony

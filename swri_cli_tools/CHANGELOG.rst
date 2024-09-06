@@ -2,8 +2,8 @@
 Changelog for package swri_cli_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.0 (2024-09-06)
+------------------
 * Fix Unit Test Failures (`#740 <https://github.com/swri-robotics/marti_common/issues/740>`_)
   * Fixing inverse transform
   * Fixing various CI build failures.
