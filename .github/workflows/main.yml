@@ -17,7 +17,7 @@ jobs:
           - {ROS_DISTRO: rolling, ROS_REPO: main}
     runs-on: ubuntu-latest
     steps:
-      - run: printf "[install]\nbreak-system-packages = true\n" | sudo tee -a /etc/pip.conf
       - uses: actions/checkout@v4
       - uses: 'ros-industrial/industrial_ci@master'
+        run: printf "[install]\nbreak-system-packages = true\n" | sudo tee -a /etc/pip.conf
         env: ${{matrix.env}}
