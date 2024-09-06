@@ -18,5 +18,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: 'danthony06/industrial_ci@break_system_packages'
+      - uses: 'swri-robotics/industrial_ci@break_system_packages'
         env: ${{matrix.env}}
