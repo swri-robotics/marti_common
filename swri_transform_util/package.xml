@@ -48,7 +48,6 @@
   <test_depend>launch_ros</test_depend>
   <test_depend>launch_testing</test_depend>
   <test_depend>launch_testing_ament_cmake</test_depend>
-  <test_depend>python-transforms3d-pip</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
