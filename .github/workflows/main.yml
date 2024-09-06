@@ -18,7 +18,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Configuring pip
-        run: printf "[install]\nbreak-system-packages = true\n" | sudo tee -a /etc/pip.conf
-      - uses: 'ros-industrial/industrial_ci@master'
+      - uses: 'swri-robotics/industrial_ci@master'
         env: ${{matrix.env}}
