@@ -2,6 +2,14 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update origin params (`#752 <https://github.com/swri-robotics/marti_common/issues/752>`_)
+  * Update origin publisher params
+  ---------
+  Co-authored-by: Ben <benjamin.andrew@swri.org>
+* Contributors: DangitBen
+
 3.7.2 (2024-09-16)
 ------------------
 
