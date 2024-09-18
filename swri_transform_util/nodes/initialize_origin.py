@@ -69,7 +69,7 @@ class OriginInitializer(rclpy.node.Node):
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
-                                                             [nan, nan, nan, nan],
+                                                             [nan, nan, nan],
                                                              descriptor=rclpy.node.ParameterDescriptor(
                                                                  name='local_xy_origins',
                                                                  dynamic_typing=True
