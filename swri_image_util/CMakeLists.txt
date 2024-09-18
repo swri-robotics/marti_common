@@ -109,7 +109,7 @@ ament_target_dependencies(${PROJECT_NAME}_nodes
 )
 
 # Iron and later switched some cv_bridge files to .hpp from .h
-if ("$ENV{ROS_DISTRO}" STRLESS "iron")
+if (ENV{ROS_DISTRO} STREQUAL "humble")
   target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_CVBRIDGE_H_FILES")
 endif()
 
