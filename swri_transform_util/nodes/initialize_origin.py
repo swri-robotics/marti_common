@@ -69,7 +69,7 @@ class OriginInitializer(rclpy.node.Node):
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
-                                                             [nan, nan, nan],
+                                                             [nan, nan, nan, nan],
                                                              descriptor=rclpy.node.ParameterDescriptor(
                                                                  name='local_xy_origins',
                                                                  dynamic_typing=True
@@ -92,10 +92,10 @@ class OriginInitializer(rclpy.node.Node):
                                                   self.navsat_callback, 2)
             self.subscribers = [gps_sub, navsat_sub]
         elif type(self.local_xy_origins_param.value) == list:
-            if (len(self.local_xy_origins_param.value) != 3):
-               self.get_logger().fatal(f'{self.local_xy_origins_param.name} should have len 3 [lat, lon, alt]')
+            if (len(self.local_xy_origins_param.value) != 4):
+               self.get_logger().fatal(f'{self.local_xy_origins_param.name} should have len 4 [lat, lon, alt, heading]')
                exit(1)
-            self.manager.set_origin("manual", *self.local_xy_origins_param.value)
+            self.manager.set_origin("manual", *self.local_xy_origins_param.value[0:3])
         elif type(self.local_xy_origins_param.value) == str:
             try:
                 origins_list = yaml.safe_load(self.local_xy_origins_param.value)

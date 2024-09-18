@@ -56,32 +56,32 @@ def get_tests(*, args=[]):
 
 @pytest.mark.launch_test
 def generate_test_description():
-    init_origin = Node(
+    init_origin_array = Node(
         package="swri_transform_util",
         name="origin",
         executable="initialize_origin.py",
         parameters=[{
             "local_xy_frame": "/far_field",
             "local_xy_origin": "swri",
-            "local_xy_origins": [29.45196669, -98.61370577, 233.719],
+            "local_xy_origins": [29.45196669, -98.61370577, 233.719, 0.0],
         }]
     )
 
-    init_origin2 = Node(
+    init_origin_dicitonary = Node(
         package="swri_transform_util",
         name="origin",
         executable="initialize_origin.py",
         parameters=[{
             "local_xy_frame": "/far_field",
             "local_xy_origin": "swri",
-            "local_xy_origins": "[{name: 'swri', latitude: 29.45196669, longitude: -98.61370577, altitude: 233.719}]",
+            "local_xy_origins": "[{name: 'swri', latitude: 29.45196669, longitude: -98.61370577, altitude: 233.719, heading: 0.0}]",
         }]
     )
 
     return launch.LaunchDescription(
             [
-                init_origin,
-                init_origin2,
+                init_origin_array,
+                init_origin_dicitonary,
                 launch_testing.util.KeepAliveProc(),
                 launch_testing.actions.ReadyToTest(),
             ]
