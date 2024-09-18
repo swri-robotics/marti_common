@@ -63,13 +63,25 @@ def generate_test_description():
         parameters=[{
             "local_xy_frame": "/far_field",
             "local_xy_origin": "swri",
-            "local_xy_origins": [29.45196669, -98.61370577, 233.719, 0.0],
+            "local_xy_origins": [29.45196669, -98.61370577, 233.719],
+        }]
+    )
+
+    init_origin2 = Node(
+        package="swri_transform_util",
+        name="origin",
+        executable="initialize_origin.py",
+        parameters=[{
+            "local_xy_frame": "/far_field",
+            "local_xy_origin": "swri",
+            "local_xy_origins": "[{name: 'swri', latitude: 29.45196669, longitude: -98.61370577, altitude: 233.719}]",
         }]
     )
 
     return launch.LaunchDescription(
             [
                 init_origin,
+                init_origin2,
                 launch_testing.util.KeepAliveProc(),
                 launch_testing.actions.ReadyToTest(),
             ]

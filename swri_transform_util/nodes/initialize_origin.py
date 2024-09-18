@@ -36,6 +36,7 @@ import rclpy.node
 from sensor_msgs.msg import NavSatFix
 from swri_transform_util.origin_manager import OriginManager, InvalidFixException
 import sys
+import yaml
 
 
 class OriginInitializer(rclpy.node.Node):
@@ -68,10 +69,10 @@ class OriginInitializer(rclpy.node.Node):
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
-                                                             [nan, nan, nan],
+                                                             [nan, nan, nan, nan],
                                                              descriptor=rclpy.node.ParameterDescriptor(
                                                                  name='local_xy_origins',
-                                                                 type=rclpy.parameter.ParameterType.PARAMETER_DOUBLE_ARRAY
+                                                                 dynamic_typing=True
                                                              ))
 
         self.get_logger().info("Origin: %s" % self.local_xy_origin_param.value)
@@ -90,25 +91,29 @@ class OriginInitializer(rclpy.node.Node):
                                                   local_xy_navsatfix_topic,
                                                   self.navsat_callback, 2)
             self.subscribers = [gps_sub, navsat_sub]
-        else:
+        elif type(self.local_xy_origins_param.value) == list:
+            if (len(self.local_xy_origins_param.value) != 3):
+               self.get_logger().fatal(f'{self.local_xy_origins_param.name} should have len 3 [lat, lon, alt]')
+               exit(1)
+            self.manager.set_origin("manual", *self.local_xy_origins_param.value)
+        elif type(self.local_xy_origins_param.value) == str:
             try:
-                self.get_logger().info("local_xy_origins_param[0]: %lf" % self.local_xy_origins_param.value[0]) 
-                self.get_logger().info("local_xy_origins_param[1]: %lf" % self.local_xy_origins_param.value[1]) 
-                origin_dict={'latitude': self.local_xy_origins_param.value[0],  
-                             'longitude':self.local_xy_origins_param.value[1],  
-                             'altitude':self.local_xy_origins_param.value[2],   
-                             'heading':self.local_xy_origins_param.value[3]}
-            except rclpy.exceptions.ParameterException:
-                message = 'local_xy_origin is "{}", but local_xy_origins is not specified'
-                self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
-                exit(1)
-            try:
-                self.manager.set_origin_from_dict(origin_dict)
+                origins_list = yaml.safe_load(self.local_xy_origins_param.value)
+                self.manager.set_origin_from_list(self.local_xy_origin_param.value, origins_list)
             except (TypeError, KeyError) as e:
-                message = 'local_xy_origins is malformed or does not contain the local_xy_origin "{}"'
-                self.get_logger().fatal(message.format(self.local_xy_origin_param.value))
-                self.get_logger().fatal("%s" % str(e))
+                message = '{} is malformed or does not contain the {} "{}"'
+                self.get_logger().fatal(message.format(self.local_xy_origins_param.name,
+                                                       self.local_xy_origin_param.name,
+                                                       self.local_xy_origin_param.value))
+                self.get_logger().fatal(str(e))
                 exit(1)
+            except (yaml.parser.ParserError) as e:
+                self.get_logger().fatal(f"'{self.local_xy_origins_param.name}' string value is malformed")
+                self.get_logger().fatal(f"yaml error: {str(e)}")
+                exit(1)
+        else:
+            self.get_logger().fatal(f"Parameter '{self.local_xy_origins_param.name}' has incorrect type. Expected: string or double array")
+            exit(1)
         self.manager.start()
 
     def navsat_callback(self, msg):

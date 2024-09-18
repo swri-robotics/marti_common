@@ -61,7 +61,7 @@ def generate_test_description():
         parameters=[{
             "local_xy_frame": "/far_field",
             "local_xy_origin": "swri",
-            "local_xy_origins": [29.45196669, -98.61370577, 233.719, 0.0],
+            "local_xy_origins": [29.45196669, -98.61370577, 233.719],
         }]
     )
 

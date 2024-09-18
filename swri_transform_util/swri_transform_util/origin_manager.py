@@ -127,7 +127,7 @@ class OriginManager(object):
             local_xy_frame_identity = local_xy_frame + "__identity"
         self.local_xy_frame_identity = local_xy_frame_identity
         qos = rclpy.node.QoSProfile(depth=1,
-                                    durability=rclpy.qos.QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
+                                    durability=rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL)
         self.origin_pub = node.create_publisher(PoseStamped, '/local_xy_origin', qos_profile=qos)
         self.diagnostic_pub = node.create_publisher(DiagnosticArray, '/diagnostics', 2)
         self.tf_broadcaster = TransformBroadcaster(self.node)
