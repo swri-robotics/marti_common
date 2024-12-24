@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.30.0")
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 set(swri_nodelet_SHARE ${swri_nodelet_PREFIX}/@CATKIN_PACKAGE_SHARE_DESTINATION@)
 
 macro(swri_nodelet_add_node NODELET_NODENAME NODELET_NS NODELET_CLASS)
