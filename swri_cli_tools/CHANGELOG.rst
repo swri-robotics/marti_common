@@ -2,6 +2,13 @@
 Changelog for package rosman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
+  Co-authored-by: Daniel D'Souza <daniel.dsouza@swri.org>
+* Fall back to distutils.core.setup for swri_cli_tools setup.py (`#687 <https://github.com/swri-robotics/marti_common/issues/687>`_)
+* Contributors: Daniel D'Souza, Robert Brothers
+
 2.15.2 (2022-09-01)
 -------------------
 * Renamed rosman package to swri_cli_tools. (`#682 <https://github.com/swri-robotics/marti_common/issues/682>`_)

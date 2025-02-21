@@ -2,6 +2,19 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixing possible problem with calculating duration when time is misbehaving (`#734 <https://github.com/swri-robotics/marti_common/issues/734>`_)
+* Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
+  Co-authored-by: Daniel D'Souza <daniel.dsouza@swri.org>
+* Update Package Maintainers (`#719 <https://github.com/swri-robotics/marti_common/issues/719>`_)
+* 683 add advertise apis to swri nodehandle (`#684 <https://github.com/swri-robotics/marti_common/issues/684>`_)
+  * Added a connection cb advertise overload for swri::NodeHandle and lightly tested that it works.
+  * Refactored swri nodehandle test a bit. Tested for topic documentation with new advertise API.
+  * Added advertise options API to swri::NodeHandle
+  Co-authored-by: David Anthony <djanthony@gmail.com>
+* Contributors: Daniel D'Souza, David Anthony, Robert Brothers
+
 2.15.2 (2022-09-01)
 -------------------
 

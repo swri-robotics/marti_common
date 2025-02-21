@@ -2,6 +2,13 @@
 Changelog for package swri_rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
+  Co-authored-by: Daniel D'Souza <daniel.dsouza@swri.org>
+* Update Package Maintainers (`#719 <https://github.com/swri-robotics/marti_common/issues/719>`_)
+* Contributors: Daniel D'Souza, David Anthony
+
 2.15.2 (2022-09-01)
 -------------------
 

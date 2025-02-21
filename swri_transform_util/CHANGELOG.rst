@@ -2,6 +2,15 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updating for New Proj Versions (`#733 <https://github.com/swri-robotics/marti_common/issues/733>`_)
+  Updated using changes from the ros2-devel branch to support new PROJ versions.
+* Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
+  Co-authored-by: Daniel D'Souza <daniel.dsouza@swri.org>
+* Adding Adelaide test case for UTM coordinate conversion (`#724 <https://github.com/swri-robotics/marti_common/issues/724>`_)
+* Contributors: Daniel D'Souza, David Anthony
+
 2.15.2 (2022-09-01)
 -------------------
 

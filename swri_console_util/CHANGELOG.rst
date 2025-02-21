@@ -2,6 +2,14 @@
 Changelog for package swri_console_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
+  Co-authored-by: Daniel D'Souza <daniel.dsouza@swri.org>
+* Fully specifying return type (`#718 <https://github.com/swri-robotics/marti_common/issues/718>`_)
+  Fixes build warnings with Arm.
+* Contributors: Daniel D'Souza, David Anthony
+
 2.15.2 (2022-09-01)
 -------------------
 
