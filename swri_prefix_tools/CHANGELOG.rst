@@ -2,8 +2,8 @@
 Changelog for package swri_prefix_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.15.3 (2025-02-21)
+-------------------
 * Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
   Co-authored-by: Daniel D'Souza <daniel.dsouza@swri.org>
 * Updating psutil call for new API (`#726 <https://github.com/swri-robotics/marti_common/issues/726>`_)

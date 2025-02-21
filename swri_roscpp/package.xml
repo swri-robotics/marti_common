@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <package format="2">
   <name>swri_roscpp</name>
-  <version>2.15.2</version>
+  <version>2.15.3</version>
   <description>
     Enhancements to roscpp functionality to reduce boilerplate code and implement common patterns.
   </description>

@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.15.3 (2025-02-21)
+-------------------
 * Updating for New Proj Versions (`#733 <https://github.com/swri-robotics/marti_common/issues/733>`_)
   Updated using changes from the ros2-devel branch to support new PROJ versions.
 * Increase minimum CMake version to 3.16 to satisfy the compatiblity check in newer CMake versions (`#732 <https://github.com/swri-robotics/marti_common/issues/732>`_)
