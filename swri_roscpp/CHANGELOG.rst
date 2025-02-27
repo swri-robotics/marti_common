@@ -2,6 +2,11 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Removing version check on Kinetic for C++ standard (`#760 <https://github.com/swri-robotics/marti_common/issues/760>`_)
+* Contributors: David Anthony
+
 2.15.3 (2025-02-21)
 -------------------
 * Fixing possible problem with calculating duration when time is misbehaving (`#734 <https://github.com/swri-robotics/marti_common/issues/734>`_)

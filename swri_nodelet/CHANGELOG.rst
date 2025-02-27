@@ -2,6 +2,9 @@
 Changelog for package swri_nodelet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.15.3 (2025-02-21)
 -------------------
 * 757: Configure CMP0167 (`#758 <https://github.com/swri-robotics/marti_common/issues/758>`_)

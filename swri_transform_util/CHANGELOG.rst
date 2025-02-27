@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Removing version check on Kinetic for C++ standard (`#760 <https://github.com/swri-robotics/marti_common/issues/760>`_)
+* Contributors: David Anthony
+
 2.15.3 (2025-02-21)
 -------------------
 * Updating for New Proj Versions (`#733 <https://github.com/swri-robotics/marti_common/issues/733>`_)
