@@ -71,11 +71,7 @@ include_directories(SYSTEM
 )
 
 function(set_cxx_props targ)
-  if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-    set_target_properties(${targ} PROPERTIES
-      CXX_STANDARD 11
-      CXX_STANDARD_REQUIRED ON)
-  endif()
+  target_compile_features(${targ} PUBLIC cxx_std_14)
 endfunction()
 
 add_library(${PROJECT_NAME}

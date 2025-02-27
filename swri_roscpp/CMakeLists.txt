@@ -60,12 +60,7 @@ target_link_libraries(dynamic_parameters_test_node
   ${YamlCpp_LIBRARIES}
   Boost::thread
 )
-if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-  set_target_properties(dynamic_parameters_test_node PROPERTIES 
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-  )
-endif()
+target_compile_features(dynamic_parameters_test_node PUBLIC cxx_std_14)
 
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
 target_link_libraries(subscriber_test ${catkin_LIBRARIES})
@@ -99,11 +94,7 @@ if (CATKIN_ENABLE_TESTING)
     test/test_dynamic_parameters.test
     test/test_dynamic_parameters.cpp)
   target_link_libraries(test_dynamic_parameters ${catkin_LIBRARIES} ${YamlCpp_LIBRARIES})
-  if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-    set_target_properties(test_dynamic_parameters PROPERTIES 
-      CXX_STANDARD 11
-      CXX_STANDARD_REQUIRED ON)
-  endif()
+  target_compile_features(test_dynamic_parameters PUBLIC cxx_std_14)
 
   ### Test the TopicService server and client ###
   # This is a little different from the way tests are normally declared because we
@@ -125,12 +116,7 @@ if (CATKIN_ENABLE_TESTING)
     test/swri_node_handle_test.cpp
   )
   target_link_libraries(test_swri_node_handle ${catkin_LIBRARIES})
-  if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-    set_target_properties(test_swri_node_handle PROPERTIES 
-      CXX_STANDARD 11
-      CXX_STANDARD_REQUIRED ON
-    )
-  endif()
+  target_compile_features(test_swri_node_handle PUBLIC cxx_std_14)
 endif()
 
 ### Install Test Node and Headers ###
