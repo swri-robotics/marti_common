@@ -39,12 +39,7 @@ add_library(${PROJECT_NAME}
   src/util.cpp
   src/visualization.cpp
   )
-if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-  set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-  )
-endif()
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${PROJECT_NAME}_boost

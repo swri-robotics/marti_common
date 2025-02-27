@@ -38,15 +38,13 @@ include_directories(SYSTEM
 add_library(${PROJECT_NAME}
   src/yaml_util.cpp
 )
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
+
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${YamlCpp_LIBRARIES}
 )
-if ($ENV{ROS_DISTRO} STREQUAL "kinetic")
-  set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON)
-endif()
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
