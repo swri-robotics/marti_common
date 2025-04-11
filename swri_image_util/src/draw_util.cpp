@@ -31,6 +31,7 @@
 
 #include <cstdlib>
 #include <algorithm>
+#include <random>
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -41,11 +42,12 @@ namespace swri_image_util
 {
   void RandomColor(int32_t seed, double& r, double& g, double& b)
   {
-    std::srand(seed);
+    std::mt19937 mt_entropy(seed);
+    std::uniform_real_distribution<double> rand_num_gen(0.0, 1.0);
 
-    r = static_cast<double>(std::rand()) / RAND_MAX;
-    g = static_cast<double>(std::rand()) / RAND_MAX;
-    b = static_cast<double>(std::rand()) / RAND_MAX;
+    r = rand_num_gen(mt_entropy);
+    g = rand_num_gen(mt_entropy);
+    b = rand_num_gen(mt_entropy);
   }
 
   void JetColorMap(
