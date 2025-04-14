@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.4 (2025-04-14)
+------------------
 * use random library (`#762 <https://github.com/swri-robotics/marti_common/issues/762>`_)
 * Contributors: dfranklin-swri
 
