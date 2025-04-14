@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use random library (`#762 <https://github.com/swri-robotics/marti_common/issues/762>`_)
+* Contributors: dfranklin-swri
+
 3.7.3 (2024-09-18)
 ------------------
 * Removing ros_environment usage in favor of directly checking package versions (`#754 <https://github.com/swri-robotics/marti_common/issues/754>`_)
