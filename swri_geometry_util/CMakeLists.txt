@@ -31,15 +31,13 @@ target_include_directories(${PROJECT_NAME}
   $<INSTALL_INTERFACE:include>
   ${GEOS_INCLUDE_DIRS}
 )
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC
   geos_c
   Eigen3::Eigen
   opencv_core
-)
-ament_target_dependencies(${PROJECT_NAME}
-  "cv_bridge"
-  "rclcpp"
-  "tf2"
+  cv_bridge::cv_bridge
+  rclcpp::rclcpp
+  tf2::tf2
 )
 
 if(BUILD_TESTING)
@@ -57,11 +55,13 @@ install(DIRECTORY include/
 )
 
 install(TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
+ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(cv_bridge)
