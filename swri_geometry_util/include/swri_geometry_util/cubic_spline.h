@@ -32,8 +32,8 @@
 
 #include <vector>
 #include <opencv2/core/core.hpp>
-#include <tf2/transform_datatypes.h>
-#include <tf2/LinearMath/Vector3.h>
+#include <tf2/transform_datatypes.hpp>
+#include <tf2/LinearMath/Vector3.hpp>
 
 namespace swri_geometry_util
 {
