@@ -35,7 +35,7 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <tf2/transform_datatypes.h>
+#include <tf2/transform_datatypes.hpp>
 
 #include <swri_math_util/constants.h>
 #include <swri_image_util/geometry_util.h>

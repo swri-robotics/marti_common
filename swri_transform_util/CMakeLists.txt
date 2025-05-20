@@ -58,18 +58,17 @@ add_library(${PROJECT_NAME} SHARED
   src/tf2_util.cpp
   src/utm_transformer.cpp
   src/wgs84_transformer.cpp)
+
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-target_include_directories(${PROJECT_NAME}
-  SYSTEM
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    ${swri_math_util_INCLUDE_DIRS}
+    ${tf2_geometry_msgs_INCLUDE_DIRS}
   INTERFACE
-  ${PROJ_INCLUDE_DIRS}
+    ${PROJ_INCLUDE_DIRS}
 )
-set_property(TARGET ${PROJECT_NAME}
-  PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
@@ -114,21 +113,21 @@ target_include_directories(${PROJECT_NAME}_nodes
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
+
 target_include_directories(${PROJECT_NAME}_nodes
   SYSTEM
   INTERFACE
-  ${PROJ_INCLUDE_DIRS}
-)
+  ${PROJ_INCLUDE_DIRS})
 
 target_compile_definitions(${PROJECT_NAME}
-  PUBLIC "${TF_UTIL_DEFINITIONS}"
-  )
+  PUBLIC "${TF_UTIL_DEFINITIONS}")
+
 target_compile_definitions(${PROJECT_NAME}_nodes
-  PRIVATE "${TF_UTIL_DEFINITIONS}"
-  )
+  PRIVATE "${TF_UTIL_DEFINITIONS}")
 
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
+
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::GpsTransformPublisher")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::ObstacleTransformer")
@@ -144,14 +143,10 @@ target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_include_directories(lat_lon_tf_echo
   PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-target_include_directories(lat_lon_tf_echo
-  SYSTEM
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
   INTERFACE
-  ${PROJ_INCLUDE_DIRS}
-)
+  ${PROJ_INCLUDE_DIRS})
 
 target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
 

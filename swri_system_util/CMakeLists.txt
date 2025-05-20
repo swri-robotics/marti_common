@@ -25,12 +25,13 @@ if(BUILD_TESTING)
 
   include_directories(${ament_index_cpp_INCLUDE_DIRS})
   ament_add_gtest(test_file_util test/test_file_util.cpp)
-  target_link_libraries(test_file_util ${PROJECT_NAME} ament_index_cpp::ament_index_cpp)
-endif()
+  target_link_libraries(test_file_util
+    ament_index_cpp::ament_index_cpp
+    ${PROJECT_NAME})
 
 install(DIRECTORY include/
-  DESTINATION include
-)
+  DESTINATION include)
+endif()
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin

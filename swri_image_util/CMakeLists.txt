@@ -5,13 +5,16 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem system random)
 find_package(camera_calibration_parsers REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(image_geometry REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core stitching)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclpy REQUIRED)
@@ -40,17 +43,28 @@ add_library(${PROJECT_NAME} SHARED
 )
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-set_property(TARGET ${PROJECT_NAME}
-  PROPERTY POSITION_INDEPENDENT_CODE ON)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    ${swri_geometry_util_INCLUDE_DIRS}
+    ${swri_opencv_util_INCLUDE_DIRS})
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
+  ${geometry_msgs_TARGETS}
+  ${nav_msgs_TARGETS}
+  ${std_msgs_TARGETS}
+  ${swri_geometry_util_LIBRARIES}
+  ${swri_opencv_util_LIBRARIES}
+  ${swri_roscpp_LIBRARIES}
   Boost::boost
   Boost::filesystem
   Boost::random
   Boost::system
+  camera_calibration_parsers::camera_calibration_parsers
+  cv_bridge::cv_bridge
   Eigen3::Eigen
+  image_geometry::image_geometry
+  image_transport::image_transport
+  message_filters::message_filters
   opencv_core
   opencv_stitching
   ${geometry_msgs_TARGETS}
