@@ -27,14 +27,11 @@
 //
 // *****************************************************************************
 
+#include <algorithm>
+#include <chrono>
+#include <rclcpp/logging.hpp>
 #include <swri_image_util/image_warp_util.h>
 #include <swri_opencv_util/model_fit.h>
-
-#include <algorithm>
-
-#include <rclcpp/logging.hpp>
-
-#include <chrono>
 
 namespace swri_image_util
 {

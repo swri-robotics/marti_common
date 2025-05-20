@@ -165,9 +165,9 @@ namespace swri_system_util
     boost::filesystem::recursive_directory_iterator end_it;
     while (it != end_it)
     {
-      if (max_depth >= 0 && it.level() >= max_depth)
+      if (max_depth >= 0 && it.depth() >= max_depth)
       {
-        it.no_push();
+        it.disable_recursion_pending();
       }
 
       boost::smatch what;

@@ -16,7 +16,7 @@ find_package(GEOS REQUIRED)
 
 find_package(OpenCV REQUIRED core)
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_library(${PROJECT_NAME} SHARED
   src/cubic_spline.cpp
@@ -31,16 +31,14 @@ target_include_directories(${PROJECT_NAME}
   $<INSTALL_INTERFACE:include>
   ${GEOS_INCLUDE_DIRS}
 )
-target_link_libraries(${PROJECT_NAME}
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  cv_bridge::cv_bridge
   geos_c
   Eigen3::Eigen
   opencv_core
-)
-ament_target_dependencies(${PROJECT_NAME}
-  "cv_bridge"
-  "rclcpp"
-  "tf2"
-)
+  rclcpp::rclcpp
+  tf2::tf2)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)

@@ -20,16 +20,12 @@ set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::random
-)
-ament_target_dependencies(${PROJECT_NAME}
-  rclcpp
-)
+  rclcpp::rclcpp)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
