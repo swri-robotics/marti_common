@@ -24,7 +24,7 @@ find_package(tf2 REQUIRED)
 
 find_package(OpenCV REQUIRED COMPONENTS core stitching)
 
-find_package(Boost REQUIRED COMPONENTS filesystem system random)
+find_package(Boost REQUIRED COMPONENTS filesystem system random serialization thread)
 
 find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN3_DEFINITIONS})
@@ -45,7 +45,7 @@ target_include_directories(${PROJECT_NAME}
 )
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Boost::boost
   Boost::filesystem
   Boost::random
@@ -53,25 +53,23 @@ target_link_libraries(${PROJECT_NAME}
   Eigen3::Eigen
   opencv_core
   opencv_stitching
+  ${geometry_msgs_TARGETS}
+  ${nav_msgs_TARGETS}
+  ${std_msgs_TARGETS}
+  camera_calibration_parsers::camera_calibration_parsers
+  cv_bridge::cv_bridge
+  image_geometry::image_geometry
+  image_transport::image_transport
+  message_filters::message_filters
+  rclcpp::rclcpp
+  rclcpp_components::component
+  rclcpp_components::component_manager
+  swri_roscpp::swri_roscpp_library
+  swri_geometry_util::swri_geometry_util
+  swri_opencv_util::swri_opencv_util
+  tf2::tf2
 )
 
-ament_target_dependencies(${PROJECT_NAME}
-  camera_calibration_parsers
-  cv_bridge
-  geometry_msgs
-  image_geometry
-  image_transport
-  message_filters
-  nav_msgs
-  rclcpp
-  rclcpp_components
-  std_msgs
-  swri_geometry_util
-  swri_math_util
-  swri_opencv_util
-  swri_roscpp
-  tf2
-)
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/blend_images_node.cpp
@@ -103,9 +101,9 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::Normali
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")
-target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
-ament_target_dependencies(${PROJECT_NAME}_nodes
-  ament_index_cpp
+target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
+  ${PROJECT_NAME}
+  ament_index_cpp::ament_index_cpp
 )
 
 # Iron and later switched some cv_bridge files to .hpp from .h
@@ -125,11 +123,13 @@ install(DIRECTORY include/
 
 install(TARGETS ${PROJECT_NAME}
     ${PROJECT_NAME}_nodes
+  EXPORT export_${PROJECT_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
+ament_export_targets(export_${PROJECT_NAME} export_${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
