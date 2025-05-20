@@ -40,6 +40,7 @@ target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
+    ${swri_geometry_util_INCLUDE_DIRS}
     ${swri_opencv_util_INCLUDE_DIRS})
 
 set_property(TARGET ${PROJECT_NAME}
@@ -49,6 +50,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
   ${nav_msgs_TARGETS}
   ${std_msgs_TARGETS}
+  ${swri_geometry_util_TARGETS}
   ${swri_opencv_util_TARGETS}
   ${swri_roscpp_TARGETS}
   Boost::boost
