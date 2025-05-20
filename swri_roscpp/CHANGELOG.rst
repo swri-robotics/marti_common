@@ -2,6 +2,15 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rolling Updates (`#767 <https://github.com/swri-robotics/marti_common/issues/767>`_)
+  * Updating with new header file names
+  * Removing deprecated ament calls
+  ---------
+  Co-authored-by: David V. Lu!! <davidvlu@gmail.com>
+* Contributors: David Anthony
+
 3.7.4 (2025-04-14)
 ------------------
 

@@ -2,6 +2,16 @@
 Changelog for package swri_system_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rolling Updates (`#767 <https://github.com/swri-robotics/marti_common/issues/767>`_)
+  * Updating with new header file names
+  * Removing deprecated ament calls
+  ---------
+  Co-authored-by: David V. Lu!! <davidvlu@gmail.com>
+* [kilted] Update deprecated calls to ament_target_dependencies (`#763 <https://github.com/swri-robotics/marti_common/issues/763>`_)
+* Contributors: David Anthony, David V. Lu!!
+
 3.7.4 (2025-04-14)
 ------------------
 
