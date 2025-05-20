@@ -2,8 +2,8 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.5 (2025-05-20)
+------------------
 * [kilted] Update deprecated calls to ament_target_dependencies (`#763 <https://github.com/swri-robotics/marti_common/issues/763>`_)
 * Contributors: David V. Lu!!
 

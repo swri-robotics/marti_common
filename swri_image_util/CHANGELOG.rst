@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.5 (2025-05-20)
+------------------
 * Rolling Updates (`#767 <https://github.com/swri-robotics/marti_common/issues/767>`_)
   * Updating with new header file names
   * Removing deprecated ament calls
