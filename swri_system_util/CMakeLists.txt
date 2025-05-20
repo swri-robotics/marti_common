@@ -28,7 +28,6 @@ if(BUILD_TESTING)
   target_link_libraries(test_file_util
     ament_index_cpp::ament_index_cpp
     ${PROJECT_NAME})
-endif()
 
 install(DIRECTORY include/
   DESTINATION include
