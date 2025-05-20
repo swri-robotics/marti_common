@@ -145,7 +145,6 @@ target_include_directories(lat_lon_tf_echo
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-  SYSTEM
   INTERFACE
   ${PROJ_INCLUDE_DIRS})
 
