@@ -28,7 +28,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   cv_bridge::cv_bridge
   opencv_core
   opencv_imgproc
-  opencv_highgui)
+  opencv_highgui
+  ${swri_math_util_LIBRARIES})
 
 #ament_target_dependencies(${PROJECT_NAME}
 #  cv_bridge
