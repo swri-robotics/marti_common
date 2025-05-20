@@ -30,8 +30,8 @@ if(BUILD_TESTING)
     ${PROJECT_NAME})
 
 install(DIRECTORY include/
-  DESTINATION include
-)
+  DESTINATION include)
+endif()
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin
