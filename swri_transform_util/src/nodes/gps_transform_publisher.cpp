@@ -37,7 +37,7 @@
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 #include <swri_transform_util/transform_manager.h>
-#include <tf2/transform_datatypes.h>
+#include <tf2/transform_datatypes.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 
 namespace swri_transform_util

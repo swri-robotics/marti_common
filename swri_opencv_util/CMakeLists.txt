@@ -31,10 +31,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_highgui
   ${swri_math_util_LIBRARIES})
 
-#ament_target_dependencies(${PROJECT_NAME}
-#  cv_bridge
-#  swri_math_util)
-
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
 
