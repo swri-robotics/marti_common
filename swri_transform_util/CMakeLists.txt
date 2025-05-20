@@ -132,9 +132,9 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::Obs
 target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
   ${PROJECT_NAME}
   ${marti_nav_msgs_LIBRARIES}
-  rcl_interfaces::rcl_interfaces
+  rcl_interfaces
   ${swri_roscpp_LIBRARIES}
-  rclcpp_components::rclcpp_components)
+  rclcpp_components)
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_include_directories(lat_lon_tf_echo
@@ -153,36 +153,36 @@ if(BUILD_TESTING)
 
   ament_add_gtest_executable(transform_manager_test test/test_transform_manager.cpp)
   target_include_directories(transform_manager_test PRIVATE
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  )
-  target_link_libraries(transform_manager_test PUBLIC
-    ${PROJECT_NAME}
-    rclcpp::rclcpp
-    tf2::tf2
-    tf2_ros::tf2_ros)
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+
+#  target_link_libraries(transform_manager_test PUBLIC
+#    ${PROJECT_NAME}
+#    rclcpp::rclcpp
+#    tf2::tf2
+#    tf2_ros::tf2_ros)
 
   ament_add_gtest(local_xy_util_test test/test_local_xy_util.cpp)
-  target_link_libraries(local_xy_util_test PUBLIC
-    ${PROJECT_NAME}
-    rclcpp::rclcpp)
+#  target_link_libraries(local_xy_util_test PUBLIC
+#    ${PROJECT_NAME}
+#    rclcpp::rclcpp)
 
   ament_add_gtest(utm_util_test test/test_utm_util.cpp)
-  target_link_libraries(utm_util_test PUBLIC
-    ${PROJECT_NAME}
-    rclcpp::rclcpp)
-
+#  target_link_libraries(utm_util_test PUBLIC
+#    ${PROJECT_NAME}
+#    rclcpp::rclcpp)
+#
   ament_add_gtest(georeference_test test/test_georeference.cpp)
-  target_link_libraries(georeference_test PUBLIC
-    ${PROJECT_NAME}
-    rclcpp::rclcpp
-    tf2::tf2
-    ament_idnex_cpp::ament_index_cpp)
+#  target_link_libraries(georeference_test PUBLIC
+#    ${PROJECT_NAME}
+#    rclcpp::rclcpp
+#    tf2::tf2
+#    ament_idnex_cpp::ament_index_cpp)
 
   ament_add_gtest(transform_util_test test/test_transform_util.cpp)
-  target_link_libraries(transform_util_test PUBLIC
-    ${PROJECT_NAME}
-    rclcpp::rclcpp
-    tf2::tf2)
+#  target_link_libraries(transform_util_test PUBLIC
+#    ${PROJECT_NAME}
+#    rclcpp::rclcpp
+#    tf2::tf2)
 
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/local_xy_util.test.py)
