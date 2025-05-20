@@ -36,9 +36,9 @@
 #include <cv_bridge/cv_bridge.hpp>
 #endif
 #include <image_transport/image_transport.hpp>
-#include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
-#include <message_filters/sync_policies/approximate_time.h>
+#include <message_filters/subscriber.hpp>
+#include <message_filters/time_synchronizer.hpp>
+#include <message_filters/sync_policies/approximate_time.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <swri_opencv_util/blend.h>
 
