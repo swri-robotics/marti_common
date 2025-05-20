@@ -7,7 +7,8 @@ find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS serialization thread) 
 find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED core imgproc highgui)
-find_package(swri_math_util REQUIRED)
+
+find_package(Boost REQUIRED COMPONENTS serialization thread random)
   
 add_library(${PROJECT_NAME} SHARED
   src/blend.cpp
@@ -17,10 +18,9 @@ add_library(${PROJECT_NAME} SHARED
   src/convert.cpp)
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    ${swri_math_util_INCLUDE_DIRS})
-
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(${PROJECT_NAME} PUBLIC
   Boost::boost
   Boost::serialization
@@ -29,7 +29,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_core
   opencv_imgproc
   opencv_highgui
-  ${swri_math_util_LIBRARIES})
+  cv_bridge::cv_bridge
+  swri_math_util::swri_math_util
+)
 
 set_property(TARGET ${PROJECT_NAME}
   PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -39,11 +41,13 @@ install(DIRECTORY include/
 )
 
 install(TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
+ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(cv_bridge)
 ament_export_dependencies(swri_math_util)
