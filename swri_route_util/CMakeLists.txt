@@ -4,6 +4,7 @@ project(swri_route_util)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
+find_package(geometry_msgs)
 find_package(marti_common_msgs REQUIRED)
 find_package(marti_nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -20,42 +21,42 @@ add_library(${PROJECT_NAME} SHARED
   src/route_point.cpp
   src/route_speeds.cpp
   src/util.cpp
-  src/visualization.cpp
-)
+  src/visualization.cpp)
+
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+  $<INSTALL_INTERFACE:include>)
 
-ament_target_dependencies(${PROJECT_NAME}
-  PUBLIC
-  ament_cmake
-  marti_common_msgs
-  marti_nav_msgs
-  rclcpp
-  swri_geometry_util
-  swri_math_util
-  swri_roscpp
-  swri_transform_util
-  tf2_geometry_msgs
-  visualization_msgs
-)
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  ${geometry_msgs_TARGETS}
+  ${marti_common_msgs_TARGETS}
+  ${marti_nav_msgs_TARGETS}
+  ${swri_math_util_TARGETS}
+  ${swri_transform_util_TARGETS}
+  ${visualization_msgs_TARGETS}
+  rclcpp::rclcpp
+  swri_geometry_util::swri_geometry_util
+  swri_roscpp::swri_roscpp_library
+  swri_transform_util::swri_transform_util
+  tf2_geometry_msgs::tf2_geometry_msgs)
 
 ### Install Libraries and Executables ###
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
+  RUNTIME DESTINATION bin)
 
 ### Install Header Files ###
 install(DIRECTORY include/
-  DESTINATION include
-)
+  DESTINATION include)
 
 ament_export_dependencies(ament_cmake)
+ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(swri_math_util)
+ament_export_dependencies(swri_transform_util)
+ament_export_dependencies(tf2)
+ament_export_dependencies(tf2_geometry_msgs)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_package()

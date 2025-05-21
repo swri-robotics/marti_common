@@ -42,9 +42,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
   ${nav_msgs_TARGETS}
   ${std_msgs_TARGETS}
-  ${swri_geometry_util_LIBRARIES}
-  ${swri_opencv_util_LIBRARIES}
-  ${swri_roscpp_LIBRARIES}
+  ${swri_geometry_util_TARGETS}
+  ${swri_opencv_util_TARGETS}
+  ${swri_roscpp_TARGETS}
   camera_calibration_parsers::camera_calibration_parsers
   cv_bridge::cv_bridge
   Eigen3::Eigen
@@ -85,10 +85,10 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::Normali
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")
-target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
-ament_target_dependencies(${PROJECT_NAME}_nodes
-  ament_index_cpp
-)
+
+target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
+  ${PROJECT_NAME}
+  ament_index_cpp::ament_index_cpp)
 
 # Iron and later switched some cv_bridge files to .hpp from .h
 if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")

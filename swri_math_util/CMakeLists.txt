@@ -4,12 +4,8 @@ project(swri_math_util)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
-
-find_package(rclcpp REQUIRED)
-
-# The Boost Random library headers and namespaces changed between version
-# 1.46 and 1.47
 find_package(Boost COMPONENTS random)
+find_package(rclcpp REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
   src/math_util.cpp

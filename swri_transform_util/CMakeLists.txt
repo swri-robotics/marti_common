@@ -5,12 +5,14 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(Boost REQUIRED filesystem thread random)
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
 find_package(marti_nav_msgs REQUIRED)
+find_package(OpenCV REQUIRED calib3d core highgui imgproc video)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -18,20 +20,17 @@ find_package(sensor_msgs REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # tf2_geometry_msgs 0.12.1 broke API compatibility, so check which version
 # we need to use
-find_package(tf2_geometry_msgs REQUIRED)
 if("${tf2_geometry_msgs_VERSION}" VERSION_GREATER "0.12.0")
   set(USE_NEW_TF2_TOMSG 1)
 else()
   set(USE_NEW_TF2_TOMSG 0)
 endif()
-
-find_package(yaml-cpp REQUIRED)
-find_package(OpenCV REQUIRED calib3d core highgui imgproc video)
-find_package(Boost REQUIRED filesystem thread)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROJ proj)
@@ -60,20 +59,14 @@ add_library(${PROJECT_NAME} SHARED
   src/wgs84_transformer.cpp)
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-target_include_directories(${PROJECT_NAME}
-  SYSTEM
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
   INTERFACE
-  ${PROJ_INCLUDE_DIRS}
-)
-set_property(TARGET ${PROJECT_NAME}
-  PROPERTY POSITION_INDEPENDENT_CODE ON)
+    ${PROJ_INCLUDE_DIRS})
+
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
-    USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
-)
+    USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG})
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
@@ -232,10 +225,16 @@ ament_python_install_package(${PROJECT_NAME})
 ament_export_definitions("${TF_UTIL_DEFINITIONS}")
 ament_export_dependencies(
   ament_cmake
+  Boost
   geographic_msgs
+  geometry_msgs
   gps_msgs
+  OpenCV
+  rclcpp
+  tf2
   tf2_geometry_msgs
-)
+  tf2_ros
+  yaml-cpp)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
   ${PROJ_LIBRARIES}
