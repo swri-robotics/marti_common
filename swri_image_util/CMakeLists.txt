@@ -112,6 +112,7 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
 )
 
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(OpenCV)
 ament_export_dependencies(rclcpp)
