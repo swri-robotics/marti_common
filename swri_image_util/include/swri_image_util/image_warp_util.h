@@ -42,7 +42,6 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/stitching/detail/warpers.hpp>
 
-// RANGER Libraries
 #include <swri_image_util/image_matching.h>
 
 #include <rclcpp/logger.hpp>
