@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(Boost REQUIRED COMPONENTS filesystem system random)
+find_package(Boost REQUIRED COMPONENTS filesystem system random serialization thread)
 find_package(camera_calibration_parsers REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -25,11 +25,6 @@ find_package(swri_opencv_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
 
-find_package(OpenCV REQUIRED COMPONENTS core stitching)
-
-find_package(Boost REQUIRED COMPONENTS filesystem system random serialization thread)
-
-find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN3_DEFINITIONS})
 
 add_library(${PROJECT_NAME} SHARED
@@ -44,21 +39,21 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    ${swri_geometry_util_INCLUDE_DIRS}
-    ${swri_opencv_util_INCLUDE_DIRS})
+    $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
   ${nav_msgs_TARGETS}
   ${std_msgs_TARGETS}
-  ${swri_geometry_util_LIBRARIES}
-  ${swri_opencv_util_LIBRARIES}
-  ${swri_roscpp_LIBRARIES}
+  ${swri_geometry_util_TARGETS}
+  ${swri_opencv_util_TARGETS}
+  ${swri_roscpp_TARGETS}
   Boost::boost
   Boost::filesystem
   Boost::random
+  Boost::serialization
   Boost::system
+  Boost:thread:
   camera_calibration_parsers::camera_calibration_parsers
   cv_bridge::cv_bridge
   Eigen3::Eigen
@@ -67,23 +62,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   message_filters::message_filters
   opencv_core
   opencv_stitching
-  ${geometry_msgs_TARGETS}
-  ${nav_msgs_TARGETS}
-  ${std_msgs_TARGETS}
-  camera_calibration_parsers::camera_calibration_parsers
-  cv_bridge::cv_bridge
-  image_geometry::image_geometry
-  image_transport::image_transport
-  message_filters::message_filters
   rclcpp::rclcpp
   rclcpp_components::component
   rclcpp_components::component_manager
-  swri_roscpp::swri_roscpp_library
-  swri_geometry_util::swri_geometry_util
-  swri_opencv_util::swri_opencv_util
-  tf2::tf2
-)
-
+  tf2::tf2)
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/blend_images_node.cpp
@@ -145,6 +127,9 @@ install(TARGETS ${PROJECT_NAME}
 
 ament_export_targets(export_${PROJECT_NAME} export_${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
+ament_export_dependencies(OpenCV)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(tf2)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_nodes)
