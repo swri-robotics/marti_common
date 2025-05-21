@@ -35,7 +35,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${swri_geometry_util_TARGETS}
   ${swri_math_util_TARGETS}
   ${swri_roscpp_TARGETS}
-  ${swri_transform_util_TARGETS}
+  swri_transform_util::swri_transform_util
   ${visualization_msgs_TARGETS}
   rclcpp::rclcpp
   tf2_geometry_msgs::tf2_geometry_msgs)
