@@ -33,13 +33,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
   ${marti_common_msgs_TARGETS}
   ${marti_nav_msgs_TARGETS}
+  ${swri_geometry_util_TARGETS}
   ${swri_math_util_TARGETS}
+  ${swri_roscpp_TARGETS}
   ${swri_transform_util_TARGETS}
   ${visualization_msgs_TARGETS}
   rclcpp::rclcpp
-  swri_geometry_util::swri_geometry_util
-  swri_roscpp::swri_roscpp_library
-  swri_transform_util::swri_transform_util
   tf2_geometry_msgs::tf2_geometry_msgs)
 
 ### Install Libraries and Executables ###
