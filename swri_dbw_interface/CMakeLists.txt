@@ -10,6 +10,5 @@ install(DIRECTORY include/
 )
 
 ament_export_dependencies(ament_cmake)
-ament_export_include_directories(include)
 
 ament_package()

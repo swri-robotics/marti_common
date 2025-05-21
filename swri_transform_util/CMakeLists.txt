@@ -242,9 +242,5 @@ ament_export_dependencies(
   tf2_geometry_msgs
   tf2_ros
   yaml-cpp)
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME}
-  ${PROJ_LIBRARIES}
-)
 ament_package()
 

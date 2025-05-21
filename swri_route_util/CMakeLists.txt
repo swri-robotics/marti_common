@@ -56,7 +56,4 @@ ament_export_dependencies(swri_math_util)
 ament_export_dependencies(swri_transform_util)
 ament_export_dependencies(tf2)
 ament_export_dependencies(tf2_geometry_msgs)
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
 ament_package()
-
