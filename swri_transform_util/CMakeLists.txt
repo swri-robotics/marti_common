@@ -143,7 +143,8 @@ target_include_directories(lat_lon_tf_echo
   INTERFACE
   ${PROJ_INCLUDE_DIRS})
 
-target_link_libraries(lat_lon_tf_echo ${PROJECT_NAME})
+target_link_libraries(lat_lon_tf_echo PUBLIC
+  ${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -202,19 +203,23 @@ install(DIRECTORY launch
 install(TARGETS
   ${PROJECT_NAME}
   ${PROJECT_NAME}_nodes
-  lat_lon_tf_echo
   EXPORT export_${PROJECT_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
+
+install(TARGETS
+  lat_lon_tf_echo
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
 ### Install Python Nodes/Scripts ###
 install(PROGRAMS nodes/initialize_origin.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_export_targets(export_${PROJECT_NAME} export_${PROJECT_NAME})
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_python_install_package(${PROJECT_NAME})
 ament_export_definitions("${TF_UTIL_DEFINITIONS}")
 ament_export_dependencies(
