@@ -40,7 +40,5 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 ament_export_dependencies(ament_cmake)
-ament_export_include_directories(include ${Boost_INCLUDE_DIRECTORIES})
-ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

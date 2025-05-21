@@ -79,6 +79,4 @@ ament_export_dependencies(rclcpp)
 ament_export_dependencies(std_msgs)
 ament_export_dependencies(std_srvs)
 
-ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
-
 ament_package(CONFIG_EXTRAS cmake/swri_roscpp-extras.cmake )

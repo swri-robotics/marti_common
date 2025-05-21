@@ -130,8 +130,4 @@ ament_export_dependencies(ament_cmake)
 ament_export_dependencies(OpenCV)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(tf2)
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME}
-  ${PROJECT_NAME}_nodes)
-
 ament_package()

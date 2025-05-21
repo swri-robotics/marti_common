@@ -66,7 +66,5 @@ ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(cv_bridge)
 ament_export_dependencies(tf2)
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} geos_c) 
 
 ament_package()
