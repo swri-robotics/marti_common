@@ -71,8 +71,8 @@ install(DIRECTORY launch/
 )
 
 ament_export_dependencies(ament_cmake)
-ament_export_dependencies(diagnostic_updater)
 ament_export_dependencies(diagnostic_msgs)
+ament_export_dependencies(diagnostic_updater)
 ament_export_dependencies(marti_common_msgs)
 ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rclcpp)
