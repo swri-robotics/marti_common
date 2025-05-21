@@ -29,7 +29,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_core
   opencv_imgproc
   opencv_highgui
-  ${swri_math_util_LIBRARIES})
+  ${swri_math_util_TARGETS})
 
 install(DIRECTORY include/
   DESTINATION include)
@@ -43,6 +43,7 @@ install(TARGETS ${PROJECT_NAME}
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(cv_bridge)
+ament_export_dependencies(OpenCV)
 ament_export_dependencies(swri_math_util)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})

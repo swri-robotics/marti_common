@@ -16,12 +16,13 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>boost</depend>
+  <depend>geometry_msgs</depend>
   <depend>marti_common_msgs</depend>
   <depend>marti_nav_msgs</depend>
   <depend>rclcpp</depend>
-  <depend>swri_transform_util</depend>
-  <depend>swri_math_util</depend>
   <depend>swri_geometry_util</depend>
+  <depend>swri_math_util</depend>
+  <depend>swri_transform_util</depend>
   <depend>swri_roscpp</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>visualization_msgs</depend>

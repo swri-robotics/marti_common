@@ -53,7 +53,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Boost::random
   Boost::serialization
   Boost::system
-  Boost:thread:
+  Boost::thread
   camera_calibration_parsers::camera_calibration_parsers
   cv_bridge::cv_bridge
   Eigen3::Eigen
@@ -97,10 +97,10 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::Normali
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")
+
 target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
   ${PROJECT_NAME}
-  ament_index_cpp::ament_index_cpp
-)
+  ament_index_cpp::ament_index_cpp)
 
 # Iron and later switched some cv_bridge files to .hpp from .h
 if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")

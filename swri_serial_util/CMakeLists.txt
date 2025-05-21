@@ -14,11 +14,9 @@ target_include_directories(${PROJECT_NAME}
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-set_property(TARGET ${PROJECT_NAME}
-  PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 target_link_libraries(${PROJECT_NAME}
-  Boost::boost
-)
+  Boost::boost)
 
 install(DIRECTORY include/
   DESTINATION include
