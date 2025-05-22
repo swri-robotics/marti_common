@@ -2,6 +2,11 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Reverting changes back to 3.7.4 (`#770 <https://github.com/swri-robotics/marti_common/issues/770>`_)
+* Contributors: David Anthony
+
 3.7.5 (2025-05-20)
 ------------------
 * Rolling Updates (`#767 <https://github.com/swri-robotics/marti_common/issues/767>`_)
