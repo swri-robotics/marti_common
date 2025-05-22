@@ -24,8 +24,8 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <tf2/transform_datatypes.hpp>
-#include <tf2/LinearMath/Vector3.hpp>
+#include <tf2/transform_datatypes.h>
+#include <tf2/LinearMath/Vector3.h>
 
 namespace swri_image_util
 {

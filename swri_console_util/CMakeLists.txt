@@ -8,9 +8,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED src/progress_bar.cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC
-  rclcpp::rclcpp)
-
+ament_target_dependencies(${PROJECT_NAME}
+  "rclcpp"
+)
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

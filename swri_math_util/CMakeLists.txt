@@ -23,10 +23,12 @@ target_include_directories(${PROJECT_NAME}
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(${PROJECT_NAME}
   Boost::boost
   Boost::random
-  rclcpp::rclcpp
+)
+ament_target_dependencies(${PROJECT_NAME}
+  rclcpp
 )
 
 if(BUILD_TESTING)
@@ -47,13 +49,11 @@ install(DIRECTORY include/
 )
 
 install(TARGETS ${PROJECT_NAME}
-        EXPORT export_${PROJECT_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
-ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})

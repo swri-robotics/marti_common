@@ -36,10 +36,9 @@
 #include <cv_bridge/cv_bridge.hpp>
 #endif
 #include <image_transport/image_transport.hpp>
-#include <image_transport/subscriber_filter.hpp>
-#include <message_filters/subscriber.hpp>
-#include <message_filters/time_synchronizer.hpp>
-#include <message_filters/sync_policies/approximate_time.hpp>
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 #include <sensor_msgs/msg/image.hpp>
 #include <swri_opencv_util/blend.h>
 
@@ -71,8 +70,8 @@ namespace swri_image_util
     // Publishes the blended image
     image_transport::Publisher image_pub_;
     // The subscribers for the base and top image
-    image_transport::SubscriberFilter base_image_sub_;
-    image_transport::SubscriberFilter top_image_sub_;
+    message_filters::Subscriber<sensor_msgs::msg::Image> base_image_sub_;
+    message_filters::Subscriber<sensor_msgs::msg::Image> top_image_sub_;
     // Synchronization object for the two images we need for the blending
     // process
     std::shared_ptr<ApproximateTimeSync> image_sync_;
@@ -114,22 +113,8 @@ namespace swri_image_util
     this->declare_parameter("mask_b", -1.0, rgbDesc);
 
     image_pub_ = image_transport::create_publisher(this, "blended_image");
-    const auto sensor_data_qos = rclcpp::SensorDataQoS();
-    image_transport::TransportHints hints(this);
-    auto sub_opts = rclcpp::SubscriptionOptions();
-    sub_opts.qos_overriding_options = rclcpp::QosOverridingOptions::with_default_policies();
-    base_image_sub_.subscribe(
-      this,
-      "base_image",
-      hints.getTransport(),
-      sensor_data_qos.get_rmw_qos_profile(),
-      sub_opts);
-    top_image_sub_.subscribe(
-      this,
-      "top_image",
-      hints.getTransport(),
-      sensor_data_qos.get_rmw_qos_profile(),
-      sub_opts);
+    base_image_sub_.subscribe(this, "base_image");
+    top_image_sub_.subscribe(this, "top_image");
     image_sync_.reset(new ApproximateTimeSync(
         ApproximateTimePolicy(10),
         base_image_sub_,
