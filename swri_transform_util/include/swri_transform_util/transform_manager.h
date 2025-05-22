@@ -35,9 +35,6 @@
 
 #include <rclcpp/logger.hpp>
 
-#include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include <tf2/transform_datatypes.hpp>

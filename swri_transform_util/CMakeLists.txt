@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(swri_transform_util)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-find_package(Boost REQUIRED filesystem thread random)
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geographic_msgs REQUIRED)
@@ -71,9 +70,6 @@ target_compile_definitions(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-  Boost::boost
-  Boost::filesystem
-  Boost::thread
   ${GeographicLib_LIBRARIES}
   opencv_calib3d
   opencv_core
@@ -82,12 +78,10 @@ target_link_libraries(${PROJECT_NAME}
   opencv_video
   ${PROJ_LIBRARIES}
   yaml-cpp
-  ${diagnostic_msgs_TARGETS}
   ${geographic_msgs_TARGETS}
   ${geometry_msgs_TARGETS}
   ${gps_msgs_TARGETS}
   ${sensor_msgs_TARGETS}
-  diagnostic_updater::diagnostic_updater
   geographic_msgs::validation
   rclcpp::rclcpp
   sensor_msgs::sensor_msgs_library
@@ -224,7 +218,6 @@ ament_python_install_package(${PROJECT_NAME})
 ament_export_definitions("${TF_UTIL_DEFINITIONS}")
 ament_export_dependencies(
   ament_cmake
-  Boost
   geographic_msgs
   geometry_msgs
   gps_msgs

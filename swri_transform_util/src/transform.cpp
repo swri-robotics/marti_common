@@ -29,8 +29,6 @@
 
 #include <swri_transform_util/transform.h>
 
-#include <boost/make_shared.hpp>
-
 namespace swri_transform_util
 {
   Transform::Transform() :

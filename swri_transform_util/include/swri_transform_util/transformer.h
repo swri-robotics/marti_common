@@ -34,8 +34,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
-
 #include <rclcpp/rclcpp.hpp>
 
 #include <tf2/transform_datatypes.hpp>

@@ -30,9 +30,8 @@
 #include <swri_transform_util/georeference.h>
 
 // C++ standard libraries
+#include <filesystem>
 #include <fstream>
-
-#include <boost/filesystem.hpp>
 
 #include <opencv2/calib3d.hpp>
 
@@ -103,14 +102,14 @@ namespace swri_transform_util
       }
       image_path_ = doc["image_path"].as<std::string>();
 
-      boost::filesystem::path imagePath(image_path_);
+      std::filesystem::path imagePath(image_path_);
 
       // If we have an absolute path, we don't need to change it
       // Otherwise, we want to create a relative path from the .geo file
       // location
       if (imagePath.is_absolute() == false)
       {
-        boost::filesystem::path geoPath(path_);
+        std::filesystem::path geoPath(path_);
         image_path_ = (geoPath.parent_path() / imagePath.relative_path()).lexically_normal().string();
 
         RCLCPP_INFO(logger_, "georeference: Image path is %s", image_path_.c_str());
