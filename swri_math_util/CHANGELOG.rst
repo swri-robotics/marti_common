@@ -2,8 +2,8 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.7.6 (2025-05-22)
+------------------
 * Reverting changes back to 3.7.4 (`#770 <https://github.com/swri-robotics/marti_common/issues/770>`_)
 * Contributors: David Anthony
 
