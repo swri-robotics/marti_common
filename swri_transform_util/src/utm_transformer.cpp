@@ -29,8 +29,6 @@
 
 #include <swri_transform_util/utm_transformer.h>
 
-#include <boost/make_shared.hpp>
-
 #include <swri_math_util/trig_util.h>
 #include <swri_transform_util/frames.h>
 

@@ -30,8 +30,6 @@
 #ifndef TRANSFORM_UTIL_TRANSFORM_H_
 #define TRANSFORM_UTIL_TRANSFORM_H_
 
-#include <boost/shared_ptr.hpp>
-
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
