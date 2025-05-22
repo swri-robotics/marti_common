@@ -13,7 +13,6 @@ find_package(swri_roscpp REQUIRED)
 find_package(swri_transform_util REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
-find_package(Boost COMPONENTS filesystem random thread)
 
 ### Build Library ###
 add_library(${PROJECT_NAME} SHARED
@@ -30,16 +29,18 @@ target_include_directories(${PROJECT_NAME}
 )
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-target_link_libraries(${PROJECT_NAME}
+ament_target_dependencies(${PROJECT_NAME}
   PUBLIC
-  ${marti_common_msgs_TARGETS}
-  ${marti_nav_msgs_TARGETS}
-  ${visualization_msgs_TARGETS}
-  rclcpp::rclcpp
-  swri_geometry_util::swri_geometry_util
-  swri_roscpp::swri_roscpp_library
-  swri_transform_util::swri_transform_util
-  tf2_geometry_msgs::tf2_geometry_msgs
+  ament_cmake
+  marti_common_msgs
+  marti_nav_msgs
+  rclcpp
+  swri_geometry_util
+  swri_math_util
+  swri_roscpp
+  swri_transform_util
+  tf2_geometry_msgs
+  visualization_msgs
 )
 
 ### Install Libraries and Executables ###

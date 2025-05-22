@@ -31,7 +31,7 @@
 #include <cmath>
 #include <functional>
 
-#include <tf2/utils.hpp>
+#include <tf2/utils.h>
 #include <rcutils/logging_macros.h>
 
 #include <swri_math_util/constants.h>

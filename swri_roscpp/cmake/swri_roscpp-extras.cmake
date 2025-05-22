@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.0.2)
 
 set(swri_roscpp_BIN "${swri_roscpp_DIR}/../../../bin/")
 
