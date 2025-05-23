@@ -29,8 +29,6 @@
 
 #include <algorithm>
 
-#include <boost/make_shared.hpp>
-
 #ifdef USE_CVBRIDGE_H_FILES
 #include <cv_bridge/cv_bridge.h>
 #else
