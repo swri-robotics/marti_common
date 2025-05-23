@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2014-2025, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,8 @@
 #include <swri_opencv_util/show.h>
 
 #include <map>
+#include <memory>
 #include <string>
-
-#include <boost/serialization/singleton.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -43,11 +41,17 @@ namespace swri_opencv_util
   class CvWindows
   {
   public:
+    static CvWindows& getInstance()
+    {
+      static CvWindows instance;
+      return instance;
+    }
+
     ~CvWindows() {}
 
     void RegisterWindow(const std::string& name)
     {
-      boost::unique_lock<boost::mutex> lock(mutex_);
+      std::unique_lock<std::mutex> lock(mutex_);
 
       if (windows_.empty())
       {
@@ -62,17 +66,16 @@ namespace swri_opencv_util
       }
     }
 
-#if (BOOST_VERSION / 100 % 1000) >= 65 && (BOOST_VERSION / 100 % 1000) < 69
-    friend class boost::serialization::singleton<CvWindows>;
-#else
-    friend class boost::serialization::detail::singleton_wrapper<CvWindows>;
-#endif
   private:
     CvWindows() {}
-    boost::mutex mutex_;
+    /* Delete the copy and move constructors to enforce the singleton pattern */
+    CvWindows(const CvWindows&) = delete;
+    CvWindows& operator=(const CvWindows&) = delete;
+    CvWindows(CvWindows&&) = delete;
+    CvWindows& operator=(CvWindows&&) = delete;
+    std::mutex mutex_;
     std::map<std::string, std::string> windows_;
   };
-  typedef boost::serialization::singleton<CvWindows> CvWindowsSingleton;
 
   void ShowScaled(
       const std::string& name,
@@ -86,7 +89,7 @@ namespace swri_opencv_util
       return;
     }
 
-    CvWindowsSingleton::get_mutable_instance().RegisterWindow(name);
+    CvWindows::getInstance().RegisterWindow(name);
 
     cv::Mat scaled;
 
@@ -136,4 +139,3 @@ namespace swri_opencv_util
     cv::imshow(name, scaled);
   }
 }
-
