@@ -13,6 +13,7 @@ find_package(image_geometry REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(OpenCV REQUIRED core highgui imgproc stitching)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclpy REQUIRED)
@@ -50,6 +51,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   cv_bridge::cv_bridge
   Eigen3::Eigen
   opencv_core
+  opencv_highgui
+  opencv_imgproc
   opencv_stitching
   rclcpp::rclcpp
   rclcpp_components::component

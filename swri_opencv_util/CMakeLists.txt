@@ -8,7 +8,6 @@ find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED core imgproc highgui)
 find_package(swri_math_util REQUIRED)
 
-
 add_library(${PROJECT_NAME} SHARED
   src/blend.cpp
   src/models.cpp
@@ -22,8 +21,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_core
-  opencv_imgproc
   opencv_highgui
+  opencv_imgproc
   ${swri_math_util_TARGETS})
 
 install(DIRECTORY include/
