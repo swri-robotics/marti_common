@@ -30,6 +30,7 @@
 #include <swri_transform_util/utm_util.h>
 
 #include <cmath>
+#include <cstdio>
 #include <mutex>
 
 #include <swri_math_util/constants.h>
