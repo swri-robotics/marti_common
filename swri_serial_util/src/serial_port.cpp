@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2014-2025, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,6 @@
 #include <termios.h>
 #include <linux/serial.h>
 #include <cstring>
-
-#include <boost/lexical_cast.hpp>
 
 namespace swri_serial_util
 {
@@ -98,19 +96,19 @@ namespace swri_serial_util
     int32_t baud = ParseBaudRate(config.baud);
     if (baud == -1)
     {
-      error_msg_ = "Invalid baud rate: " + boost::lexical_cast<std::string>(config.baud);
+      error_msg_ = "Invalid baud rate: " + std::to_string(config.baud);
       return false;
     }
 
     if (config.stop_bits != 1 && config.stop_bits != 2)
     {
-      error_msg_ = "Invalid stop bits: " + boost::lexical_cast<std::string>(config.stop_bits);
+      error_msg_ = "Invalid stop bits: " + std::to_string(config.stop_bits);
       return false;
     }
 
     if (config.data_bits != 7 && config.data_bits != 8)
     {
-      error_msg_ = "Invalid data bits: " + boost::lexical_cast<std::string>(config.data_bits);
+      error_msg_ = "Invalid data bits: " + std::to_string(config.data_bits);
       return false;
     }
 
@@ -177,7 +175,7 @@ namespace swri_serial_util
 
     if (cfsetspeed(&term, config.baud) < 0)
     {
-      error_msg_ = "Invalid baud rate: " + boost::lexical_cast<std::string>(config.baud);
+      error_msg_ = "Invalid baud rate: " + std::to_string(config.baud);
       Close();
       return false;
     }
