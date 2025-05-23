@@ -116,12 +116,6 @@ class RoutePoint
   // property does not exist.
   std::string getProperty(const std::string &name) const;
 
-  // Get the value of a property, lexically cast to a known type.
-  // Returns the lexical cast of an empty string if the property does
-  // not exist..
-  template <typename T>
-  T getTypedProperty(const std::string &name) const;
-
   // Determine if the specified property is defined for the route
   // point.
   bool hasProperty(const std::string &name) const;

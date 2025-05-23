@@ -400,7 +400,7 @@ void speedsForObstacles(
     if (point.hasProperty("vehicle_width_override"))
     {
       RCLCPP_DEBUG(logger, "Speeds for obstacle found vehicle_width_override property");
-      double width = point.getTypedProperty<double>("vehicle_width_override");
+      double width = std::atof(point.getProperty("vehicle_width_override").c_str());
 
       // Pick the smaller of the radii
       if (veh_r >= width/2.0)

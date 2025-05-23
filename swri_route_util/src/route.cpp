@@ -28,7 +28,6 @@
 // *****************************************************************************
 #include <swri_route_util/route.h>
 #include <swri_route_util/route_point.h>
-#include <boost/make_shared.hpp>
 
 namespace mnm = marti_nav_msgs;
 

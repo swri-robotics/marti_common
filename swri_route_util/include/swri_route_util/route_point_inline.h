@@ -29,8 +29,6 @@
 #ifndef SWRI_ROUTE_UTIL_ROUTE_POINT_INLINE_H_
 #define SWRI_ROUTE_UTIL_ROUTE_POINT_INLINE_H_
 
-#include <boost/lexical_cast.hpp>
-
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 namespace swri_route_util
@@ -104,22 +102,6 @@ const geometry_msgs::msg::Quaternion RoutePoint::orientationMsg() const
   return q;
 }
 
-/*inline
-void RoutePoint::setPose(const tf2::Pose &pose)
-{
-  setPosition(pose.getOrigin());
-  setOrientation(pose.getRotation());
-}
-
-inline
-tf2::Pose RoutePoint::pose() const
-{
-  tf2::Pose pose;
-  pose.setOrigin(position_);
-  pose.setRotation(orientation_);
-  return pose;
-}*/
-
 inline
 void RoutePoint::setPose(const geometry_msgs::msg::Pose &pose)
 {
@@ -181,11 +163,5 @@ void RoutePoint::setStopPointDelay(double delay)
   stop_point_delay_ = delay;
 }
 
-template <typename T>
-inline
-T RoutePoint::getTypedProperty(const std::string &name) const
-{
-  return boost::lexical_cast<T>(getProperty(name));
-}
 } // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_ROUTE_POINT_INLINE_H_

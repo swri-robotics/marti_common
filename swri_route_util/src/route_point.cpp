@@ -56,7 +56,7 @@ std::string RoutePoint::getProperty(const std::string &name) const
   }
 
   if (name == "stop_point_delay") {
-    return boost::lexical_cast<std::string>(stop_point_delay_);
+    return std::to_string(stop_point_delay_);
   }
 
   if (properties_.count(name)) {
@@ -78,7 +78,7 @@ void RoutePoint::setProperty(const std::string &name, const std::string &value)
   if (name == "stop_point") {
     stop_point_ = (value == "1") || (value == "true");
   } else if (name == "stop_point_delay") {
-    stop_point_delay_ = boost::lexical_cast<double>(value);
+    stop_point_delay_ = std::atof(value.c_str());
   } else {
     properties_[name] = value;
   }

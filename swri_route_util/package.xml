@@ -15,7 +15,6 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>boost</depend>
   <depend>geometry_msgs</depend>
   <depend>marti_common_msgs</depend>
   <depend>marti_nav_msgs</depend>
