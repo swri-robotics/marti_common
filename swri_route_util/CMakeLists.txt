@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(swri_route_util)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs)
