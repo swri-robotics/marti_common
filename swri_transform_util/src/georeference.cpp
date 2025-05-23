@@ -107,7 +107,7 @@ namespace swri_transform_util
       // If we have an absolute path, we don't need to change it
       // Otherwise, we want to create a relative path from the .geo file
       // location
-      if (imagePath.is_complete() == false)
+      if (imagePath.is_absolute() == false)
       {
         std::filesystem::path geoPath(path_);
         image_path_ = (geoPath.parent_path() / imagePath.relative_path()).lexically_normal().string();

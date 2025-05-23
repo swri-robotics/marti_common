@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(swri_image_util)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
@@ -89,7 +89,8 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpIma
 
 target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
   ${PROJECT_NAME}
-  ament_index_cpp::ament_index_cpp)
+  ament_index_cpp::ament_index_cpp
+  image_transport::image_transport)
 
 # Iron and later switched some cv_bridge files to .hpp from .h
 if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
