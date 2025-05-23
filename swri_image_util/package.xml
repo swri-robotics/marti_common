@@ -23,6 +23,7 @@
   <depend>image_transport</depend>
   <depend>message_filters</depend>
   <depend>nav_msgs</depend>
+  <depend>rcl_interfaces</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>rclpy</depend>

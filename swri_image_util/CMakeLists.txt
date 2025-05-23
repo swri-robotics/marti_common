@@ -14,6 +14,7 @@ find_package(image_transport REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(OpenCV REQUIRED core highgui imgproc stitching)
+find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclpy REQUIRED)
@@ -54,6 +55,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_highgui
   opencv_imgproc
   opencv_stitching
+  ${rcl_interfaces_TARGETS}
   rclcpp::rclcpp
   rclcpp_components::component
   rclcpp_components::component_manager
