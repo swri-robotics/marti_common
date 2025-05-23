@@ -255,7 +255,7 @@ TEST(TransformUtilTests, InvalidIsRotation)
   tf2::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
   tf2::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
 
-  for (int i = 0; i < 24; i++)
+  for (int i = 0; i < 3; i++)
   {
     EXPECT_FALSE(swri_transform_util::IsRotation(invalid_rotations[i]));
   }
