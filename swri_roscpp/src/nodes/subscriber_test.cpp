@@ -28,7 +28,6 @@
 // *****************************************************************************
 #include <rclcpp/rclcpp.hpp>
 #include <swri_roscpp/subscriber.h>
-#include <boost/bind/bind.hpp>
 
 #include <diagnostic_updater/diagnostic_updater.hpp>
 
@@ -67,11 +66,11 @@ class SubscriberTest : public rclcpp::Node
     // Example to subscribe to a class method.
     sub_ = swri::Subscriber(*this, "odom", 100, &SubscriberTest::handleMessage, this);
 
-    // Example to subscribe using a boost function.  I am unable to
+    // Example to subscribe using a function.  I am unable to
     // figure out how to get the compiler to infer the type, so I have
     // to declare the function first and then pass that.
     std::function<void(const nav_msgs::msg::Odometry::ConstSharedPtr &)> callback =
-      boost::bind(&SubscriberTest::handleMessage, this, boost::placeholders::_1);
+      std::bind(&SubscriberTest::handleMessage, this, std::placeholders::_1);
     sub_ = swri::Subscriber(*this, "odom", 100, callback);
 
     sub_.setTimeout(rclcpp::Duration(1, 0));

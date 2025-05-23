@@ -31,10 +31,9 @@
 #include <swri_opencv_util/model_fit.h>
 
 #include <algorithm>
+#include <chrono>
 
 #include <rclcpp/logging.hpp>
-
-#include <chrono>
 
 namespace swri_image_util
 {
@@ -456,7 +455,9 @@ namespace swri_image_util
   // PitchAndRollEstimatorQueue()
   //
   //////////////////////////////////////////////////////////////////////////////
-  PitchAndRollEstimatorQueue::PitchAndRollEstimatorQueue()
+  PitchAndRollEstimatorQueue::PitchAndRollEstimatorQueue() :
+    filter_idx_(0),
+    num_elements_(0)
   {
     SetBufferSize();
     ComputeStats();
@@ -467,10 +468,12 @@ namespace swri_image_util
   // SetBufferSize()
   //
   //////////////////////////////////////////////////////////////////////////////
-  void PitchAndRollEstimatorQueue::SetBufferSize(int32_t buff_size)
+  void PitchAndRollEstimatorQueue::SetBufferSize(size_t buff_size)
   {
-    pitches_.set_capacity(buff_size);
-    rolls_.set_capacity(buff_size);
+    pitches_.reserve(buff_size);
+    rolls_.reserve(buff_size);
+    filter_idx_ = std::min(filter_idx_, buff_size - 1);
+    num_elements_ = std::min(num_elements_, buff_size);
   }
 
 
@@ -507,6 +510,8 @@ namespace swri_image_util
   {
     pitches_.clear();
     rolls_.clear();
+    filter_idx_ = 0;
+    num_elements_ = 0;
     ComputeStats();
   }
 
@@ -547,7 +552,7 @@ namespace swri_image_util
     pitch = mean_pitch_;
     roll = mean_roll_;
 
-    return pitches_.size() > 0;
+    return num_elements_ > 0;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -561,7 +566,7 @@ namespace swri_image_util
     pitch = median_pitch_;
     roll = median_roll_;
 
-    return pitches_.size() > 0;
+    return num_elements_ > 0;
   }
 
 
@@ -573,8 +578,12 @@ namespace swri_image_util
   void PitchAndRollEstimatorQueue::LoadNewData(double new_pitch,
                                                double new_roll)
   {
-    pitches_.push_back(new_pitch);
-    rolls_.push_back(new_roll);
+    pitches_[filter_idx_] = new_pitch;
+    rolls_[filter_idx_] = new_roll;
+    filter_idx_ = (filter_idx_ + 1) % pitches_.size();
+    num_elements_ += 1;
+    num_elements_ = std::min(num_elements_, pitches_.size());
+
     ComputeStats();
   }
 
@@ -590,15 +599,13 @@ namespace swri_image_util
     median_pitch_ = 0.0;
     median_roll_ = 0.0;
 
-    if (pitches_.empty())
+    if (num_elements_ == 0)
     {
       return;
     }
 
-    std::vector<double> temp_pitch;
-    std::vector<double> temp_roll;
-    temp_pitch.assign(pitches_.begin(), pitches_.end());
-    temp_roll.assign(rolls_.begin(), rolls_.end());
+    std::vector<double> temp_pitch(pitches_.begin(), pitches_.begin() + (num_elements_ - 1));
+    std::vector<double> temp_roll(rolls_.begin(), rolls_.begin() + (num_elements_ - 1));
 
     std::sort(temp_pitch.begin(), temp_pitch.end());
     std::sort(temp_roll.begin(), temp_roll.end());

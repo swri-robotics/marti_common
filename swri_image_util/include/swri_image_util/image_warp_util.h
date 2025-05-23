@@ -32,9 +32,6 @@
 
 #include <vector>
 
-// Boost Libraries
-#include <boost/circular_buffer.hpp>
-
 // OpenCV Libraries
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -224,7 +221,7 @@ namespace swri_image_util
      *
      * @param[in]  buff_size    The desired size of the buffer
      */
-    void SetBufferSize(int32_t buff_size = 50);
+    void SetBufferSize(size_t buff_size = 50);
 
     /**
      * @brief      Clears the buffer
@@ -294,8 +291,10 @@ namespace swri_image_util
                                double& roll);
 
   private:
-    boost::circular_buffer<double> pitches_;
-    boost::circular_buffer<double> rolls_;
+    std::vector<double> pitches_;
+    std::vector<double> rolls_;
+    size_t filter_idx_;
+    size_t num_elements_;
 
     double mean_pitch_;
     double mean_roll_;

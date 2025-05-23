@@ -1,6 +1,5 @@
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-  find_package(Boost REQUIRED COMPONENTS system)
   ## Storing subscriber test case
   add_executable(storing_subscriber_test src/nodes/storing_subscriber_test.cpp)
   target_include_directories(storing_subscriber_test
@@ -58,16 +57,14 @@ if(BUILD_TESTING)
   ament_add_gtest(topic_service_test_server test/topic_service_test.cpp)
   rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}_test" "rosidl_typesupport_cpp")
   target_link_libraries(topic_service_test_server
-    Boost::system
     "${cpp_typesupport_target}"
     ${marti_common_msgs_TARGETS}
     rclcpp::rclcpp)
 
   target_include_directories(topic_service_test_server
     PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:include>)
 
-  ament_export_dependencies(Boost)
   ament_export_dependencies(rosidl_default_runtime)
 endif()
