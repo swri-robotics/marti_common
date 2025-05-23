@@ -34,18 +34,56 @@
 
 #include <swri_system_util/file_util.h>
 
-TEST(FileUtilTests, Uncomplete)
+TEST(FileUtilTests, Uncomplete_0)
+{
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
+
+  EXPECT_EQ(std::filesystem::path("./"), swri_system_util::NaiveUncomplete(path1, path1));
+}
+
+TEST(FileUtilTests, Uncomplete_1)
 {
   std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
   std::string path2 = path1 + "/src";
+
+  EXPECT_EQ(std::filesystem::path("src"), swri_system_util::NaiveUncomplete(path2, path1));
+}
+
+TEST(FileUtilTests, Uncomplete_2)
+{
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
   std::string path3 = path1 + "/include/swri_system_util";
 
-  EXPECT_EQ(std::filesystem::path("./"), swri_system_util::NaiveUncomplete(path1, path1));
-  EXPECT_EQ(std::filesystem::path("src"), swri_system_util::NaiveUncomplete(path2, path1));
   EXPECT_EQ(std::filesystem::path("include/swri_system_util"), swri_system_util::NaiveUncomplete(path3, path1));
+}
+
+TEST(FileUtilTests, Uncomplete_3)
+{
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
+  std::string path2 = path1 + "/src";
+
   EXPECT_EQ(std::filesystem::path("../"), swri_system_util::NaiveUncomplete(path1, path2));
+}
+
+TEST(FileUtilTests, Uncomplete_4)
+{
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
+  std::string path3 = path1 + "/include/swri_system_util";
+
   EXPECT_EQ(std::filesystem::path("../../"), swri_system_util::NaiveUncomplete(path1, path3));
+}
+
+TEST(FileUtilTests, Uncomplete_5)
+{
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
+
   EXPECT_EQ(std::filesystem::path(""), swri_system_util::NaiveUncomplete(std::filesystem::path(""), path1));
+}
+
+TEST(FileUtilTests, Uncomplete_6)
+{
+  std::string path1 = ament_index_cpp::get_package_prefix("swri_system_util");
+
   EXPECT_EQ(std::filesystem::path(""), swri_system_util::NaiveUncomplete(path1, std::filesystem::path("")));
 }
 
