@@ -329,4 +329,3 @@ namespace swri_transform_util
     RCLCPP_INFO(logger_, "georeference:             %8lf, %8lf, %8lf", 0.0, 0.0, 1.0);
   }
 }
-

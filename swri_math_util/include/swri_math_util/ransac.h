@@ -32,9 +32,9 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <vector>
 
-#include <boost/make_shared.hpp>
 #include <swri_math_util/random.h>
 
 namespace swri_math_util
@@ -69,7 +69,7 @@ namespace swri_math_util
       
       if (!rng_)
       {
-        rng_ = boost::make_shared<RandomGenerator>();
+        rng_ = std::make_shared<RandomGenerator>();
       }
       
       std::vector<int32_t> indices;
@@ -151,7 +151,7 @@ namespace swri_math_util
 
       if (!rng_)
       {
-        rng_ = boost::make_shared<RandomGenerator>();
+        rng_ = std::make_shared<RandomGenerator>();
       }
 
       std::vector<int32_t> indices;

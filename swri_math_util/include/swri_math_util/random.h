@@ -30,27 +30,13 @@
 #ifndef MATH_UTIL_RANDOM_H_
 #define MATH_UTIL_RANDOM_H_
 
+#include <memory>
+#include <mutex>
+#include <random>
 #include <vector>
-
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-
-#ifdef BOOST_1_46
-  #include <boost/nondet_random.hpp>
-#else
-  #include <boost/random/random_device.hpp>
-#endif
 
 namespace swri_math_util
 {
-  #ifdef BOOST_1_46
-  namespace boost_random = boost;
-  #else
-  namespace boost_random = boost::random;
-  #endif
-
   class RandomGenerator
   {
     public:
@@ -63,11 +49,11 @@ namespace swri_math_util
         std::vector<int32_t>& sample);
       
     private:
-      boost_random::random_device seed_;
-      boost_random::mt19937 rng_;
-      boost::mutex mutex_;
+      std::random_device seed_;
+      std::mt19937 rng_;
+      std::mutex mutex_;
   };
-  typedef boost::shared_ptr<RandomGenerator> RandomGeneratorPtr;
+  typedef std::shared_ptr<RandomGenerator> RandomGeneratorPtr;
 
   /**
    * Gets a uniform random sample of integers without repeats for a given range.
@@ -114,7 +100,7 @@ namespace swri_math_util
 
     sample.resize(count);
       
-    boost::uniform_int<> dist(min, max);
+    std::uniform_int_distribution<> dist(min, max);
     for (int32_t i = 0; i < count; i++)
     {
       bool has_sample = false;

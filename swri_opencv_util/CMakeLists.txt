@@ -1,46 +1,38 @@
 cmake_minimum_required(VERSION 3.10)
 project(swri_opencv_util)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
-
 find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED core imgproc highgui)
 find_package(swri_math_util REQUIRED)
 
-find_package(OpenCV REQUIRED core imgproc highgui)
 
-find_package(Boost REQUIRED COMPONENTS serialization thread) 
-  
 add_library(${PROJECT_NAME} SHARED
   src/blend.cpp
   src/models.cpp
   src/model_fit.cpp
   src/show.cpp
   src/convert.cpp)
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
+
+target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-target_link_libraries(${PROJECT_NAME}
-  Boost::boost
-  Boost::serialization
-  Boost::thread
+  $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_core
   opencv_imgproc
   opencv_highgui
   ${swri_math_util_TARGETS})
 
 install(DIRECTORY include/
-  DESTINATION include
-)
+  DESTINATION include)
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
+  ARCHIVE DESTINATION lib)
 
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(cv_bridge)
