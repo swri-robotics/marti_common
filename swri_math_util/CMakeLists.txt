@@ -42,8 +42,8 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 
-ament_export_dependencies(ament_cmake)
 ament_export_targets(export_${PROJECT_NAME})
+ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
 ament_export_libraries(${PROJECT_NAME})
