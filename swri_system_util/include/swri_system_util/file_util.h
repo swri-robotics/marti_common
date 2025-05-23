@@ -30,21 +30,12 @@
 #ifndef SYSTEM_UTIL_FILE_UTIL_H_
 #define SYSTEM_UTIL_FILE_UTIL_H_
 
+#include <filesystem>
+#include <string>
 #include <vector>
-
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 namespace swri_system_util
 {
-
-  #if BOOST_FILESYSTEM_VERSION == 2
-    typedef boost::filesystem::basic_filesystem_error<boost::filesystem::path> PathException;
-  #else
-    typedef boost::filesystem::filesystem_error PathException;
-  #endif
-
   /**
    * Generate a relative file path between two absolute paths.
    *
@@ -53,9 +44,9 @@ namespace swri_system_util
    *
    * @returns The relative path if valid and an empty path otherwise.
    */
-  boost::filesystem::path NaiveUncomplete(
-    const boost::filesystem::path& path,
-    const boost::filesystem::path& base);
+  std::filesystem::path NaiveUncomplete(
+    const std::filesystem::path& path,
+    const std::filesystem::path& base);
 
   /**
    * Return a list of all file names within a directory (handles wildcard character "*").

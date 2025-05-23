@@ -27,8 +27,7 @@
 //
 // *****************************************************************************
 
-#include <boost/filesystem/path.hpp>
-
+#include <filesystem>
 #include <gtest/gtest.h>
 
 #include <ament_index_cpp/get_package_prefix.hpp>
@@ -41,13 +40,13 @@ TEST(FileUtilTests, Uncomplete)
   std::string path2 = path1 + "/src";
   std::string path3 = path1 + "/include/swri_system_util";
 
-  EXPECT_EQ(boost::filesystem::path("./"), swri_system_util::NaiveUncomplete(path1, path1));
-  EXPECT_EQ(boost::filesystem::path("src"), swri_system_util::NaiveUncomplete(path2, path1));
-  EXPECT_EQ(boost::filesystem::path("include/swri_system_util"), swri_system_util::NaiveUncomplete(path3, path1));
-  EXPECT_EQ(boost::filesystem::path("../"), swri_system_util::NaiveUncomplete(path1, path2));
-  EXPECT_EQ(boost::filesystem::path("../../"), swri_system_util::NaiveUncomplete(path1, path3));
-  EXPECT_EQ(boost::filesystem::path(""), swri_system_util::NaiveUncomplete(boost::filesystem::path(""), path1));
-  EXPECT_EQ(boost::filesystem::path(""), swri_system_util::NaiveUncomplete(path1, boost::filesystem::path("")));
+  EXPECT_EQ(std::filesystem::path("./"), swri_system_util::NaiveUncomplete(path1, path1));
+  EXPECT_EQ(std::filesystem::path("src"), swri_system_util::NaiveUncomplete(path2, path1));
+  EXPECT_EQ(std::filesystem::path("include/swri_system_util"), swri_system_util::NaiveUncomplete(path3, path1));
+  EXPECT_EQ(std::filesystem::path("../"), swri_system_util::NaiveUncomplete(path1, path2));
+  EXPECT_EQ(std::filesystem::path("../../"), swri_system_util::NaiveUncomplete(path1, path3));
+  EXPECT_EQ(std::filesystem::path(""), swri_system_util::NaiveUncomplete(std::filesystem::path(""), path1));
+  EXPECT_EQ(std::filesystem::path(""), swri_system_util::NaiveUncomplete(path1, std::filesystem::path("")));
 }
 
 // Run all the tests that were declared with TEST()
