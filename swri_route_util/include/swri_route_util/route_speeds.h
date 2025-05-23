@@ -37,7 +37,7 @@
 #include <swri_math_util/interpolation_1d.h>
 #include <swri_route_util/route.h>
 #include <swri_transform_util/transform.h>
-#include <tf2/LinearMath/Vector3.h>
+#include <tf2/LinearMath/Vector3.hpp>
 
 namespace swri_route_util
 {
