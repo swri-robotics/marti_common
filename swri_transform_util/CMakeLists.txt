@@ -96,48 +96,44 @@ add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/gps_transform_publisher.cpp
   src/nodes/obstacle_transformer.cpp
 )
-target_include_directories(${PROJECT_NAME}_nodes
-  PUBLIC
+target_include_directories(${PROJECT_NAME}_nodes PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+  $<INSTALL_INTERFACE:include>)
+
 target_include_directories(${PROJECT_NAME}_nodes
   SYSTEM
   INTERFACE
-  ${PROJ_INCLUDE_DIRS}
-)
+  ${PROJ_INCLUDE_DIRS})
 
 target_compile_definitions(${PROJECT_NAME}
-  PUBLIC "${TF_UTIL_DEFINITIONS}"
-  )
+  PUBLIC "${TF_UTIL_DEFINITIONS}")
+
 target_compile_definitions(${PROJECT_NAME}_nodes
-  PRIVATE "${TF_UTIL_DEFINITIONS}"
-  )
+  PRIVATE "${TF_UTIL_DEFINITIONS}")
 
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
+
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::DynamicTransformPublisher")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::GpsTransformPublisher")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::ObstacleTransformer")
-target_link_libraries(${PROJECT_NAME}_nodes ${PROJECT_NAME})
-ament_target_dependencies(${PROJECT_NAME}_nodes
-  marti_nav_msgs
-  rcl_interfaces
-  swri_roscpp
-  rclcpp_components
-)
+target_link_libraries(${PROJECT_NAME}_nodes
+  ${PROJECT_NAME}
+  ${marti_nav_msgs_TARGETS}
+  ${swri_roscpp_TARGETS}
+  rcl_interfaces::rcl_interfaces
+  rclcpp_components::rclcpp_components)
 
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_include_directories(lat_lon_tf_echo
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+  $<INSTALL_INTERFACE:include>)
+
 target_include_directories(lat_lon_tf_echo
   SYSTEM
   INTERFACE
-  ${PROJ_INCLUDE_DIRS}
-)
+  ${PROJ_INCLUDE_DIRS})
 
 target_link_libraries(lat_lon_tf_echo PUBLIC
   ${PROJECT_NAME})
@@ -148,26 +144,36 @@ if(BUILD_TESTING)
 
   ament_add_gtest_executable(transform_manager_test test/test_transform_manager.cpp)
   target_include_directories(transform_manager_test PRIVATE
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  )
-  target_link_libraries(transform_manager_test ${PROJECT_NAME})
-  ament_target_dependencies(transform_manager_test rclcpp tf2 tf2_ros)
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+
+  target_link_libraries(transform_manager_test
+    ${PROJECT_NAME}
+    rclcpp::rclcpp
+    tf2::tf2
+    tf2_ros::tf2_ros)
 
   ament_add_gtest(local_xy_util_test test/test_local_xy_util.cpp)
-  target_link_libraries(local_xy_util_test ${PROJECT_NAME})
-  ament_target_dependencies(local_xy_util_test rclcpp)
+  target_link_libraries(local_xy_util_test
+    ${PROJECT_NAME}
+    rclcpp::rclcpp)
 
   ament_add_gtest(utm_util_test test/test_utm_util.cpp)
-  target_link_libraries(utm_util_test ${PROJECT_NAME})
-  ament_target_dependencies(utm_util_test rclcpp)
+  target_link_libraries(utm_util_test
+    ${PROJECT_NAME}
+    rclcpp::rclcpp)
 
   ament_add_gtest(georeference_test test/test_georeference.cpp)
-  target_link_libraries(georeference_test ${PROJECT_NAME})
-  ament_target_dependencies(georeference_test rclcpp tf2 ament_index_cpp)
+  target_link_libraries(georeference_test
+    ${PROJECT_NAME}
+    ament_index_cpp::ament_index_cpp
+    rclcpp::rclcpp
+    tf2::tf2)
 
   ament_add_gtest(transform_util_test test/test_transform_util.cpp)
-  target_link_libraries(transform_util_test ${PROJECT_NAME})
-  ament_target_dependencies(transform_util_test rclcpp tf2)
+  target_link_libraries(transform_util_test
+    ${PROJECT_NAME}
+    rclcpp::rclcpp
+    tf2::tf2)
 
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/local_xy_util.test.py)
