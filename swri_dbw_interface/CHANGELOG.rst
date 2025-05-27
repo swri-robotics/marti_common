@@ -2,6 +2,14 @@
 Changelog for package swri_dbw_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Updates for Rolling (`#771 <https://github.com/swri-robotics/marti_common/issues/771>`_)
+  * Removed obsolete ament macros
+  * Removed boost in favor of standard library functionality
+  * Deprecated swri_system_util
+* Contributors: David Anthony
+
 3.7.6 (2025-05-22)
 ------------------
 
