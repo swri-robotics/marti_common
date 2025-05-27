@@ -2,8 +2,8 @@
 Changelog for package swri_opencv_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.0 (2025-05-27)
+------------------
 * Updates for Rolling (`#771 <https://github.com/swri-robotics/marti_common/issues/771>`_)
   * Removed obsolete ament macros
   * Removed boost in favor of standard library functionality
