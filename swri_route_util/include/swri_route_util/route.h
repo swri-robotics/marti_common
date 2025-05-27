@@ -33,8 +33,6 @@
 #include <map>
 #include <vector>
 
-#include <boost/lexical_cast.hpp>
-
 #include <marti_nav_msgs/msg/route.hpp>
 #include <swri_route_util/route_point.h>
 
@@ -133,12 +131,6 @@ class Route
   // Get the value of a property.  Returns an empty string if the
   // property does not exist.
   std::string getProperty(const std::string &name) const;
-  template <typename T>
-
-  // Get the value of a property, lexically cast to a known type.
-  // Returns the lexical cast of an empty string if the property does
-  // not exist..
-  T getTypedProperty(const std::string &name) const;
 
   // Determine if the specified property is defined for the route.
   bool hasProperty(const std::string &name) const;
@@ -170,12 +162,6 @@ class Route
 typedef std::shared_ptr<Route> RoutePtr;
 typedef std::shared_ptr<Route const> RouteConstPtr;
 
-template<typename T>
-inline
-T Route::getTypedProperty(const std::string &name) const
-{
-  return boost::lexical_cast<T>(getProperty(name));
-}
 } // namespace swri_route_util
 
 // #include "route_serializer.h"

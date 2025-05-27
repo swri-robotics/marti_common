@@ -29,8 +29,6 @@
 #ifndef SWRI_ROSCPP_SERVICE_SERVER_IMPL_H_
 #define SWRI_ROSCPP_SERVICE_SERVER_IMPL_H_
 
-#include <boost/lexical_cast.hpp>
-
 #include <rclcpp/service.hpp>
 
 #include <swri_roscpp/service_server_statistics.h>
@@ -144,7 +142,12 @@ class TypedServiceServerImpl : public ServiceServerImpl
   bool handleService(const std::shared_ptr<rmw_request_id_t> request_header,
                      const MReq req, const MRes res)
   {
-    std::string caller = boost::lexical_cast<std::string>(request_header->writer_guid);
+    std::string caller = "";
+    size_t array_len = sizeof(request_header->writer_guid) / sizeof(*request_header->writer_guid);
+    for (size_t idx = 0; idx < array_len; idx++)
+    {
+      caller += std::to_string(request_header->writer_guid[idx]);
+    }
     if (logCalls()) {
       RCLCPP_INFO(nh_->get_logger(), "Service '%s' called by '%s'",
                unmapped_service_.c_str(),

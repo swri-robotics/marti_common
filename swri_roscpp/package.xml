@@ -16,12 +16,8 @@
   <build_depend>rosidl_cmake</build_depend>
   <build_depend>ros_environment</build_depend>
 
-  <depend>boost</depend>
   <depend>diagnostic_updater</depend>
-  <!--
-  TODO pjr Is rcl_interfaces the replacement for dynamic reconfig now?
-  <depend>dynamic_reconfigure</depend>
-  -->
+  <depend>diagnostic_msgs</depend>
   <depend>marti_common_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>rclcpp</depend>

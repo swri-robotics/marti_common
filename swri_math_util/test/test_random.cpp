@@ -27,26 +27,20 @@
 //
 // *****************************************************************************
 
-#include <boost/random/mersenne_twister.hpp>
+#include <random>
 #include <gtest/gtest.h>
 #include <swri_math_util/random.h>
 
-#ifdef BOOST_1_46
-namespace boost_random = boost;
-#else
-namespace boost_random = boost::random;
-#endif
-
 TEST(RandomTests, GetUniformRandomSample)
 {
-  boost_random::mt19937 gen;
+  std::mt19937 gen;
 
   std::vector<int32_t> sample;
-  swri_math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 10, sample);
+  swri_math_util::GetUniformRandomSample<std::mt19937>(gen, 0, 100, 10, sample);
   
   EXPECT_EQ(10, sample.size());
   
-  swri_math_util::GetUniformRandomSample<boost_random::mt19937>(gen, 0, 100, 90, sample);
+  swri_math_util::GetUniformRandomSample<std::mt19937>(gen, 0, 100, 90, sample);
   EXPECT_EQ(90, sample.size());
 }
 

@@ -28,6 +28,7 @@
 // *****************************************************************************
 #include <swri_route_util/route_speeds.h>
 
+#include <cstdlib>
 #include <unordered_map>
 
 #include <swri_geometry_util/geometry_util.h>
@@ -86,21 +87,21 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &
   }
 
   if (config_map.count("curvature_filter_size")) {
-    curvature_filter_size_ = boost::lexical_cast<double>(config_map.at("curvature_filter_size"));
+    curvature_filter_size_ = std::atof(config_map.at("curvature_filter_size").c_str());
     RCLCPP_INFO(node_->get_logger(), "Setting curvature_filter_size to %lf", curvature_filter_size_);
     config_map.erase("curvature_filter_size");
   }
 
   if (config_map.count("lateral_acceleration_mode")) {
     use_speed_from_accel_constant_ =
-      boost::lexical_cast<int>(config_map.at("lateral_acceleration_mode"));
+      (std::atoi(config_map.at("lateral_acceleration_mode").c_str()) > 0);
     RCLCPP_INFO(node_->get_logger(), "Setting lateral acceleration mode to %s",
              use_speed_from_accel_constant_ ? "true" : "false");
     config_map.erase("lateral_acceleration_mode");
   }
 
   if (config_map.count("max_lateral_acceleration")) {
-    max_lateral_accel_mss_ = boost::lexical_cast<double>(config_map.at("max_lateral_acceleration"));
+    max_lateral_accel_mss_ = std::atof(config_map.at("max_lateral_acceleration").c_str());
     RCLCPP_INFO(node_->get_logger(), "Setting max_lateral_acceleration to %lf", max_lateral_accel_mss_);
     config_map.erase("max_lateral_acceleration");
   }
@@ -132,9 +133,9 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &
     const std::string y_key = std::string(base_key) + "/1";
 
     if (config_map.count(x_key) && config_map.count(y_key)) {
-      x.push_back(boost::lexical_cast<double>(config_map.at(x_key)));
+      x.push_back(std::atof(config_map.at(x_key).c_str()));
       config_map.erase(x_key);
-      y.push_back(boost::lexical_cast<double>(config_map.at(y_key)));
+      y.push_back(std::atof(config_map.at(y_key).c_str()));
       config_map.erase(y_key);
     } else {
       break;
@@ -165,11 +166,11 @@ void SpeedForCurvatureParameters::readToConfig(mcm::msg::KeyValueArray &config) 
   config.header.stamp = rclcpp::Clock().now();
 
   addItem(config, "curvature_filter_size",
-          boost::lexical_cast<std::string>(curvature_filter_size_));
+          std::to_string(curvature_filter_size_));
   addItem(config, "lateral_acceleration_mode",
           use_speed_from_accel_constant_ ? "1" : "0");
   addItem(config, "max_lateral_acceleration",
-          boost::lexical_cast<std::string>(max_lateral_accel_mss_));
+          std::to_string(max_lateral_accel_mss_));
   addItem(config, "curvature_vs_speed/interpolation_type",
           speed_curve_.interpolationTypeString());
 
@@ -178,9 +179,9 @@ void SpeedForCurvatureParameters::readToConfig(mcm::msg::KeyValueArray &config) 
     snprintf(base_key, sizeof(base_key), "curvature_vs_speed/values/%zu", i);
 
     addItem(config, std::string(base_key) + "/0",
-            boost::lexical_cast<std::string>(speed_curve_.getPoint(i).first));
+            std::to_string(speed_curve_.getPoint(i).first));
     addItem(config, std::string(base_key) + "/1",
-            boost::lexical_cast<std::string>(speed_curve_.getPoint(i).second));
+            std::to_string(speed_curve_.getPoint(i).second));
   }
 }
 
@@ -399,7 +400,7 @@ void speedsForObstacles(
     if (point.hasProperty("vehicle_width_override"))
     {
       RCLCPP_DEBUG(logger, "Speeds for obstacle found vehicle_width_override property");
-      double width = point.getTypedProperty<double>("vehicle_width_override");
+      double width = std::atof(point.getProperty("vehicle_width_override").c_str());
 
       // Pick the smaller of the radii
       if (veh_r >= width/2.0)

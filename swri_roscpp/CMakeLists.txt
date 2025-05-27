@@ -11,6 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(marti_common_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
@@ -23,16 +24,13 @@ find_package(std_srvs REQUIRED)
 add_library(${PROJECT_NAME}_library INTERFACE)
 
 target_link_libraries(${PROJECT_NAME}_library INTERFACE
-  ${diagnostic_updater_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${std_msgs_LIBRARIES}
+  ${diagnostic_updater_TARGETS}
+  ${rclcpp_TARGETS}
+  ${std_msgs_TARGETS}
 )
 target_include_directories(${PROJECT_NAME}_library INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-  ${diagnostic_updater_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-  ${std_msgs_INCLUDE_DIRS}
 )
 
 install(DIRECTORY include/
@@ -73,6 +71,7 @@ install(DIRECTORY launch/
 )
 
 ament_export_dependencies(ament_cmake)
+ament_export_dependencies(diagnostic_msgs)
 ament_export_dependencies(diagnostic_updater)
 ament_export_dependencies(marti_common_msgs)
 ament_export_dependencies(nav_msgs)

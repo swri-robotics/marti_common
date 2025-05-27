@@ -18,7 +18,6 @@
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
-  <depend>boost</depend>
   <depend>cv_bridge</depend>
   <depend>diagnostic_msgs</depend>
   <depend>diagnostic_updater</depend>
@@ -29,9 +28,9 @@
   <depend>geos</depend>
   <depend>marti_nav_msgs</depend>
   <depend>proj</depend>
+  <depend>rcl_interfaces</depend>
   <depend>rclcpp_components</depend>
   <depend>rclcpp</depend>
-  <depend>rcl_interfaces</depend>
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
   <depend>swri_math_util</depend>

@@ -37,10 +37,10 @@
 #include <rcl_interfaces/msg/parameter_descriptor.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_ros/transform_broadcaster.h>
-#include <tf2/transform_datatypes.h>
-#include <tf2/LinearMath/Transform.h>
-#include <tf2/LinearMath/Vector3.h>
-#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/transform_datatypes.hpp>
+#include <tf2/LinearMath/Transform.hpp>
+#include <tf2/LinearMath/Vector3.hpp>
+#include <tf2/LinearMath/Quaternion.hpp>
 
 namespace swri_transform_util
 {

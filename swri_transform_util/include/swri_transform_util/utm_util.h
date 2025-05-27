@@ -30,10 +30,8 @@
 #ifndef TRANSFORM_UTIL_UTM_UTIL_H_
 #define TRANSFORM_UTIL_UTM_UTIL_H_
 
-#include <stdint.h>
-
-#include <boost/serialization/singleton.hpp>
-#include <boost/thread/mutex.hpp>
+#include <cstdint>
+#include <mutex>
 
 #include <proj.h>
 
@@ -119,6 +117,21 @@ namespace swri_transform_util
         ~UtmData();
 
         /**
+         * Get singleton instance of class
+         */
+        static UtmData& GetInstance()
+        {
+          static UtmData instance;
+          return instance;
+        }
+
+        /* Using a singleton, so remove copy, move, and copy assignment constructors*/
+        UtmData(const UtmData&) = delete;
+        UtmData& operator=(const UtmData&) = delete;
+        UtmData(UtmData&&) = delete;
+        UtmData& operator=(UtmData&&) = delete;
+
+        /**
          * Convert WGS84 latitude and longitude to UTM.
          *
          * @param[in]  latitude   Latitude value in degrees.
@@ -158,20 +171,14 @@ namespace swri_transform_util
           int zone, char band, double easting, double northing,
           double& latitude, double& longitude) const;
 
-#if (BOOST_VERSION / 100 % 1000) >= 65 && (BOOST_VERSION / 100 % 1000) < 69
-        friend class boost::serialization::singleton<swri_transform_util::UtmUtil::UtmData>;
-#else
-        friend class boost::serialization::detail::singleton_wrapper<swri_transform_util::UtmUtil::UtmData>;
-#endif
       private:
         UtmData();
 
         PJ *P_ll_north_[60];
         PJ *P_ll_south_[60];
 
-        mutable boost::mutex mutex_;
+        mutable std::mutex mutex_;
     };
-    typedef boost::serialization::singleton<UtmData> UtmDataSingleton;
 
     const UtmData& utm_data_;
   };

@@ -30,6 +30,8 @@
 #include <swri_transform_util/utm_util.h>
 
 #include <cmath>
+#include <cstdio>
+#include <mutex>
 
 #include <swri_math_util/constants.h>
 
@@ -116,7 +118,7 @@ namespace swri_transform_util
       double& easting,
       double& northing) const
   {
-    boost::unique_lock<boost::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex_);
 
     zone = GetZone(longitude);
     band = GetBand(latitude);
@@ -160,7 +162,7 @@ namespace swri_transform_util
       double& latitude,
       double& longitude) const
   {
-    boost::unique_lock<boost::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex_);
 
     PJ_COORD c, c_out;
     c.enu.e = easting;
@@ -180,7 +182,7 @@ namespace swri_transform_util
   }
 
   UtmUtil::UtmUtil() :
-    utm_data_(UtmDataSingleton::get_const_instance())
+    utm_data_(UtmData::GetInstance())
   {
   }
 

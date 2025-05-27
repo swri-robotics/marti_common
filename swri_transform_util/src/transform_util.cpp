@@ -35,8 +35,6 @@
 #include <utility>
 #include <vector>
 
-#include <boost/math/special_functions/sign.hpp>
-
 #include <swri_transform_util/earth_constants.h>
 #include <swri_transform_util/local_xy_util.h>
 #include <swri_math_util/constants.h>
@@ -250,7 +248,8 @@ namespace swri_transform_util
       {
         if (i == index)
         {
-          vector_out[i] = 1.0 * boost::math::sign<double>(vector[i]);
+          vector_out[i] = (vector[i] == 0 ? 0 :
+            (vector[i] < 0 ? -1 : 1));
         }
         else
         {

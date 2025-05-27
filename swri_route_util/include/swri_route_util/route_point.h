@@ -32,8 +32,8 @@
 #include <string>
 #include <map>
 
-#include <tf2/LinearMath/Vector3.h>
-#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Vector3.hpp>
+#include <tf2/LinearMath/Quaternion.hpp>
 
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/pose.hpp>
@@ -115,12 +115,6 @@ class RoutePoint
   // Get the value of a property.  Returns an empty string if the
   // property does not exist.
   std::string getProperty(const std::string &name) const;
-
-  // Get the value of a property, lexically cast to a known type.
-  // Returns the lexical cast of an empty string if the property does
-  // not exist..
-  template <typename T>
-  T getTypedProperty(const std::string &name) const;
 
   // Determine if the specified property is defined for the route
   // point.

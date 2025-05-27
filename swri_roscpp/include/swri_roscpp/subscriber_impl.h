@@ -29,11 +29,11 @@
 #ifndef SWRI_ROSCPP_SUBSCRIBER_IMPL_H_
 #define SWRI_ROSCPP_SUBSCRIBER_IMPL_H_
 
+#include <chrono>
+
 #include <std_msgs/msg/header.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-#include <chrono>
-#include <boost/utility/enable_if.hpp>
 
 namespace swri
 {

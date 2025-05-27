@@ -42,7 +42,7 @@ namespace swri_math_util
     int32_t count,
     std::vector<int32_t>& sample)
   {
-    boost::unique_lock<boost::mutex> lock(mutex_);
-    swri_math_util::GetUniformRandomSample<boost_random::mt19937>(rng_, min, max, count, sample);
+    std::unique_lock<std::mutex> lock(mutex_);
+    swri_math_util::GetUniformRandomSample<std::mt19937>(rng_, min, max, count, sample);
   }
 }
