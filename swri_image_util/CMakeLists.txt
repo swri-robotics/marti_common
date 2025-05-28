@@ -39,7 +39,10 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+  PRIVATE
+    ${swri_roscpp_TARGETS}
+)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
@@ -47,7 +50,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${std_msgs_TARGETS}
   ${swri_geometry_util_TARGETS}
   ${swri_opencv_util_TARGETS}
-  ${swri_roscpp_TARGETS}
   camera_calibration_parsers::camera_calibration_parsers
   cv_bridge::cv_bridge
   Eigen3::Eigen
@@ -109,7 +111,7 @@ if(BUILD_TESTING)
 endif()
 
 install(DIRECTORY include/
-  DESTINATION include)
+  DESTINATION include/${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
@@ -123,8 +125,11 @@ install(TARGETS ${PROJECT_NAME}_nodes
   ARCHIVE DESTINATION lib)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(OpenCV)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(tf2)
+ament_export_dependencies(ament_cmake
+  camera_calibration_parsers
+  OpenCV
+  rclcpp
+  swri_opencv_util
+  tf2
+)
 ament_package()

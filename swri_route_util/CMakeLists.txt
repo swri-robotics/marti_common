@@ -26,7 +26,10 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+  PRIVATE
+   ${swri_roscpp_TARGETS}
+)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
@@ -34,7 +37,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${marti_nav_msgs_TARGETS}
   ${swri_geometry_util_TARGETS}
   ${swri_math_util_TARGETS}
-  ${swri_roscpp_TARGETS}
   ${swri_transform_util_TARGETS}
   ${visualization_msgs_TARGETS}
   rclcpp::rclcpp
@@ -42,18 +44,24 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 
 ### Install Libraries and Executables ###
 install(TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
 ### Install Header Files ###
 install(DIRECTORY include/
-  DESTINATION include)
+  DESTINATION include/${PROJECT_NAME})
 
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(swri_math_util)
-ament_export_dependencies(swri_transform_util)
-ament_export_dependencies(tf2)
-ament_export_dependencies(tf2_geometry_msgs)
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(ament_cmake
+  geometry_msgs
+  marti_nav_msgs
+  swri_geometry_util
+  swri_math_util
+  swri_transform_util
+  tf2
+  tf2_geometry_msgs
+  visualization_msgs
+)
 ament_package()
