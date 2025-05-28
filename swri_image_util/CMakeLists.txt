@@ -76,8 +76,8 @@ add_library(${PROJECT_NAME}_nodes SHARED
   #src/nodes/replace_colors_node.cpp
   src/nodes/rotate_image_node.cpp
   src/nodes/scale_image_node.cpp
-  src/nodes/warp_image_node.cpp
-)
+  src/nodes/warp_image_node.cpp)
+
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::BlendImagesNode")
@@ -94,10 +94,13 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateI
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")
 
-target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
-  ${PROJECT_NAME}
-  ament_index_cpp::ament_index_cpp
-  image_transport::image_transport)
+target_link_libraries(${PROJECT_NAME}_nodes
+  PUBLIC
+    ${PROJECT_NAME}
+    ament_index_cpp::ament_index_cpp
+    image_transport::image_transport
+  PRIVATE
+    message_filters::message_filters)
 
 # Iron and later switched some cv_bridge files to .hpp from .h
 if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
