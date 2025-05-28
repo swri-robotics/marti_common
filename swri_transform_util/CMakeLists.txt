@@ -59,9 +59,11 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
   INTERFACE
-    ${PROJ_INCLUDE_DIRS})
+    ${PROJ_INCLUDE_DIRS}
+  PRIVATE
+    ${swri_roscpp_TARGETS})
 
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
@@ -84,7 +86,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   rclcpp::rclcpp
   sensor_msgs::sensor_msgs_library
   swri_math_util::swri_math_util
-  swri_roscpp::swri_roscpp_library
   tf2::tf2
   tf2_geometry_msgs::tf2_geometry_msgs
   tf2_ros::tf2_ros)
@@ -96,7 +97,7 @@ add_library(${PROJECT_NAME}_nodes SHARED
 
 target_include_directories(${PROJECT_NAME}_nodes PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 target_include_directories(${PROJECT_NAME}_nodes
   SYSTEM
@@ -125,7 +126,7 @@ target_link_libraries(${PROJECT_NAME}_nodes
 add_executable(lat_lon_tf_echo src/nodes/lat_lon_tf_echo.cpp)
 target_include_directories(lat_lon_tf_echo PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 target_include_directories(lat_lon_tf_echo
   SYSTEM
@@ -197,7 +198,7 @@ if(BUILD_TESTING)
 endif()
 
 install(DIRECTORY include/
-  DESTINATION include
+  DESTINATION include/${PROJECT_NAME}
 )
 
 install(DIRECTORY launch
@@ -233,6 +234,7 @@ ament_export_dependencies(
   gps_msgs
   OpenCV
   rclcpp
+  swri_math_util
   tf2
   tf2_geometry_msgs
   tf2_ros
