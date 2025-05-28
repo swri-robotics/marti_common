@@ -49,13 +49,9 @@ ament_export_targets(export_${PROJECT_NAME})
 include(cmake/swri_roscpp-test.cmake)
 
 add_executable(subscriber_test src/nodes/subscriber_test.cpp)
-target_include_directories(subscriber_test
-  PUBLIC
-  ${nav_msgs_INCLUDE_DIRS}
-)
 target_link_libraries(subscriber_test
   ${PROJECT_NAME}_library
-  ${nav_msgs_LIBRARIES}
+  ${nav_msgs_TARGETS}
 )
 ### Install Test Node and Headers ###
 install(TARGETS subscriber_test
@@ -70,13 +66,14 @@ install(DIRECTORY launch/
   DESTINATION launch
 )
 
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(diagnostic_msgs)
-ament_export_dependencies(diagnostic_updater)
-ament_export_dependencies(marti_common_msgs)
-ament_export_dependencies(nav_msgs)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(std_msgs)
-ament_export_dependencies(std_srvs)
+ament_export_dependencies(ament_cmake
+  diagnostic_msgs
+  diagnostic_updater
+  marti_common_msgs
+  nav_msgs
+  rclcpp
+  std_msgs
+  std_srvs
+)
 
 ament_package(CONFIG_EXTRAS cmake/swri_roscpp-extras.cmake )
