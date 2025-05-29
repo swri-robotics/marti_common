@@ -2,6 +2,9 @@
 Changelog for package swri_serial_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.8.0 (2025-05-27)
 ------------------
 * Updates for Rolling (`#771 <https://github.com/swri-robotics/marti_common/issues/771>`_)

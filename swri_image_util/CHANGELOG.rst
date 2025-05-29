@@ -2,6 +2,12 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Finding message_filters package (`#773 <https://github.com/swri-robotics/marti_common/issues/773>`_)
+* Modernize cmake targets and exporting (`#772 <https://github.com/swri-robotics/marti_common/issues/772>`_)
+* Contributors: David Anthony, Ben Andrew
+
 3.8.0 (2025-05-27)
 ------------------
 * Updates for Rolling (`#771 <https://github.com/swri-robotics/marti_common/issues/771>`_)
