@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.1 (2025-05-29)
+------------------
 * modernize cmake targets and exporting (`#772 <https://github.com/swri-robotics/marti_common/issues/772>`_)
 * Contributors: David Anthony, Ben Andrew
 
