@@ -2,8 +2,8 @@
 Changelog for package swri_dbw_interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.2 (2025-06-02)
+------------------
 * Dependency cleanup (`#774 <https://github.com/swri-robotics/marti_common/issues/774>`_)
 * Contributors: DangitBen
 
