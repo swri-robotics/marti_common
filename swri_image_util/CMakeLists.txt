@@ -76,17 +76,16 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateI
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")
 
-target_link_libraries(${PROJECT_NAME}_nodes
-  PUBLIC
+target_link_libraries(${PROJECT_NAME}_nodes PRIVATE
     ${PROJECT_NAME}
     ament_index_cpp::ament_index_cpp
     cv_bridge::cv_bridge
     image_transport::image_transport
+    message_filters::message_filters
     rclcpp_components::component
     rclcpp_components::component_manager
     ${rcl_interfaces_TARGETS}
-  PRIVATE
-    message_filters::message_filters)
+)
 
 # Iron and later switched some cv_bridge files to .hpp from .h
 if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
@@ -114,8 +113,7 @@ install(TARGETS ${PROJECT_NAME}_nodes
   ARCHIVE DESTINATION lib)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(ament_cmake
-  OpenCV
+ament_export_dependencies(OpenCV
   rclcpp
   swri_opencv_util
   tf2
