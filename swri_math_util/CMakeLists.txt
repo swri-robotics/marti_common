@@ -15,7 +15,7 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   rclcpp::rclcpp)
@@ -34,7 +34,7 @@ if(BUILD_TESTING)
 endif()
 
 install(DIRECTORY include/
-  DESTINATION include)
+  DESTINATION include/${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
