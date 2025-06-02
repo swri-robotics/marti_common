@@ -18,10 +18,8 @@
   TODO pjr Is there a ROS2 equivalent for this?  Do we still need it?
   <depend>cmake_modules</depend>
   -->
-  <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>geos</depend>
-  <depend>rclcpp</depend>
   <depend>tf2</depend>
 
   <test_depend>ament_cmake_gtest</test_depend>

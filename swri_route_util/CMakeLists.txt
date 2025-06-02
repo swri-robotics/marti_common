@@ -10,7 +10,6 @@ find_package(marti_nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(swri_geometry_util REQUIRED)
 find_package(swri_math_util REQUIRED)
-find_package(swri_roscpp REQUIRED)
 find_package(swri_transform_util REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
@@ -27,20 +26,18 @@ target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
-  PRIVATE
-   ${swri_roscpp_TARGETS}
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
   ${marti_common_msgs_TARGETS}
   ${marti_nav_msgs_TARGETS}
-  ${swri_geometry_util_TARGETS}
   ${swri_math_util_TARGETS}
   ${swri_transform_util_TARGETS}
   ${visualization_msgs_TARGETS}
   rclcpp::rclcpp
   tf2_geometry_msgs::tf2_geometry_msgs)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${swri_geometry_util_TARGETS})
 
 ### Install Libraries and Executables ###
 install(TARGETS ${PROJECT_NAME}
@@ -57,7 +54,6 @@ ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake
   geometry_msgs
   marti_nav_msgs
-  swri_geometry_util
   swri_math_util
   swri_transform_util
   tf2

@@ -38,6 +38,9 @@ install(DIRECTORY include/
 )
 install(TARGETS ${PROJECT_NAME}_library
   EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 # Export old-style CMake variables
@@ -69,11 +72,8 @@ install(DIRECTORY launch/
 ament_export_dependencies(ament_cmake
   diagnostic_msgs
   diagnostic_updater
-  marti_common_msgs
-  nav_msgs
   rclcpp
   std_msgs
-  std_srvs
 )
 
 ament_package(CONFIG_EXTRAS cmake/swri_roscpp-extras.cmake )

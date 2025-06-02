@@ -5,14 +5,10 @@ project(swri_geometry_util)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
-find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(GEOS REQUIRED)
 find_package(OpenCV REQUIRED core)
-find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
-
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${PROJECT_NAME} SHARED
   src/cubic_spline.cpp
@@ -22,15 +18,13 @@ add_library(${PROJECT_NAME} SHARED
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  cv_bridge::cv_bridge
   geos_c
-  Eigen3::Eigen
   opencv_core
-  rclcpp::rclcpp
   tf2::tf2)
+target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -43,7 +37,7 @@ if(BUILD_TESTING)
 endif()
 
 install(DIRECTORY include/
-  DESTINATION include)
+  DESTINATION include/${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
@@ -51,10 +45,7 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 
-ament_export_targets(export_${PROJECT_NAME})
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(cv_bridge)
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(tf2)
 
 ament_package()
