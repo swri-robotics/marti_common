@@ -15,7 +15,6 @@ find_package(OpenCV REQUIRED calib3d core highgui imgproc video)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
@@ -78,13 +77,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_video
   ${PROJ_LIBRARIES}
   yaml-cpp
-  ${geographic_msgs_TARGETS}
   ${geometry_msgs_TARGETS}
-  ${gps_msgs_TARGETS}
-  ${sensor_msgs_TARGETS}
-  geographic_msgs::validation
   rclcpp::rclcpp
-  sensor_msgs::sensor_msgs_library
   swri_math_util::swri_math_util
   tf2::tf2
   tf2_geometry_msgs::tf2_geometry_msgs
@@ -118,6 +112,8 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::Gps
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_transform_util::ObstacleTransformer")
 target_link_libraries(${PROJECT_NAME}_nodes
   ${PROJECT_NAME}
+  ${geographic_msgs_TARGETS}
+  ${gps_msgs_TARGETS}
   ${rcl_interfaces_TARGETS}
   ${rclcpp_components_TARGETS}
   ${marti_nav_msgs_TARGETS}
@@ -134,7 +130,9 @@ target_include_directories(lat_lon_tf_echo
   ${PROJ_INCLUDE_DIRS})
 
 target_link_libraries(lat_lon_tf_echo PUBLIC
-  ${PROJECT_NAME})
+  ${PROJECT_NAME}
+  ${geographic_msgs_TARGETS}
+  ${gps_msgs_TARGETS})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -229,9 +227,7 @@ ament_python_install_package(${PROJECT_NAME})
 ament_export_definitions("${TF_UTIL_DEFINITIONS}")
 ament_export_dependencies(
   ament_cmake
-  geographic_msgs
   geometry_msgs
-  gps_msgs
   OpenCV
   rclcpp
   swri_math_util
