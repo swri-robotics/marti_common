@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Dependency cleanup (`#774 <https://github.com/swri-robotics/marti_common/issues/774>`_)
+* Contributors: DangitBen
+
 3.8.1 (2025-05-29)
 ------------------
 * Finding message_filters package (`#773 <https://github.com/swri-robotics/marti_common/issues/773>`_)
