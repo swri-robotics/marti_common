@@ -21,7 +21,6 @@
   <depend>cv_bridge</depend>
   <depend>eigen</depend>
   <depend>geos</depend>
-  <depend>rclcpp</depend>
   <depend>tf2</depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
