@@ -5,24 +5,17 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(camera_calibration_parsers REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(image_geometry REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(nav_msgs REQUIRED)
 find_package(OpenCV REQUIRED core highgui imgproc stitching)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(swri_geometry_util REQUIRED)
-find_package(swri_math_util REQUIRED)
 find_package(swri_opencv_util REQUIRED)
-find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
 
 add_definitions(${EIGEN3_DEFINITIONS})
@@ -40,28 +33,17 @@ target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
-  PRIVATE
-    ${swri_roscpp_TARGETS}
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  ${geometry_msgs_TARGETS}
-  ${nav_msgs_TARGETS}
-  ${std_msgs_TARGETS}
-  ${swri_geometry_util_TARGETS}
   ${swri_opencv_util_TARGETS}
-  camera_calibration_parsers::camera_calibration_parsers
-  cv_bridge::cv_bridge
-  Eigen3::Eigen
   opencv_core
   opencv_highgui
   opencv_imgproc
   opencv_stitching
-  ${rcl_interfaces_TARGETS}
   rclcpp::rclcpp
-  rclcpp_components::component
-  rclcpp_components::component_manager
   tf2::tf2)
+target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen ${swri_geometry_util_TARGETS})
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/blend_images_node.cpp
@@ -98,7 +80,11 @@ target_link_libraries(${PROJECT_NAME}_nodes
   PUBLIC
     ${PROJECT_NAME}
     ament_index_cpp::ament_index_cpp
+    cv_bridge::cv_bridge
     image_transport::image_transport
+    rclcpp_components::component
+    rclcpp_components::component_manager
+    ${rcl_interfaces_TARGETS}
   PRIVATE
     message_filters::message_filters)
 
@@ -129,7 +115,6 @@ install(TARGETS ${PROJECT_NAME}_nodes
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake
-  camera_calibration_parsers
   OpenCV
   rclcpp
   swri_opencv_util
