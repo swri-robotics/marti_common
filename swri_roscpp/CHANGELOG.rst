@@ -2,8 +2,8 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.3 (2025-06-03)
+------------------
 * Make generate_topic_service_files installation location match ROS 2 Convention  (`#775 <https://github.com/swri-robotics/marti_common/issues/775>`_)
 * Contributors: DangitBen
 
