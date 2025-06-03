@@ -44,7 +44,7 @@ macro(generate_topic_service_files generated_files_list)
 
     # install the header
     install(FILES ${TMP_INCLUDE_DIR}/${headerName}
-      DESTINATION include/${PROJECT_NAME}/srv
+      DESTINATION include/${PROJECT_NAME}/${PROJECT_NAME}/srv
     )
 
   endforeach()
