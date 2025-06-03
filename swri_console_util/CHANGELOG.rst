@@ -2,6 +2,9 @@
 Changelog for package swri_console_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.8.2 (2025-06-02)
 ------------------
 * Dependency cleanup (`#774 <https://github.com/swri-robotics/marti_common/issues/774>`_)
