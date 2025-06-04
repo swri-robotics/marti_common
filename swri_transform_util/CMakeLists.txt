@@ -42,9 +42,31 @@ endif()
 
 # Geographiclib installs FindGeographicLib.cmake to this non-standard location
 find_package(GeographicLib REQUIRED)
+
 if(NOT "${GeographicLib_FOUND}")
+  message(STATUS "Could not find GeographicLib, manually searching paths")
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
   find_package(GeographicLib REQUIRED)
+endif()
+
+if(${GeographicLib_FOUND})
+  message(STATUS "Found GeographicLib")
+  if(DEFINED GeographicLib_CONFIG)
+    message(STATUS "Found GeographicLib Config")
+    set(GEOGRAPHICLIB_LOC "${GeographicLib_CONFIG}")
+  elseif(DEFINED GeographicLib_DIR)
+    if(EXISTS "${GeographicLib_DIR}/GeographicLibConfig.cmake")
+      message(STATUS "Found GeographicLib Directory")
+      set(GEOGRAPHICLIB_LOC "${GeographicLib_DIR}/GeographicLibConfig.cmake)")
+    elseif(EXISTS "${GeographicLib_DIR}/geographiclib-config.cmake")
+      message(STATUS "Found GeographicLib Config Directory")
+      set(GEOGRAPHICLIB_LOC "${GeographicLib_DIR}/geographiclib-config.cmake)")
+    endif()
+  else()
+    message(STATUS "GeographicLib was found, but its _CONFIG or _DIR variable is not set. It might have been found using a Find module.")
+  endif()
+else()
+    message(FATAL_ERROR "GeographicLib not found.")
 endif()
 
 add_library(${PROJECT_NAME} SHARED
@@ -63,6 +85,7 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
   INTERFACE
+    ${GeographicLib_INCLUDE_DIRS}
     ${PROJ_INCLUDE_DIRS}
   PRIVATE
     ${swri_roscpp_TARGETS})
@@ -72,7 +95,7 @@ target_compile_definitions(${PROJECT_NAME}
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  ${GeographicLib_LIBRARIES}
+  ${GeographicLib_TARGETS}
   opencv_calib3d
   opencv_core
   opencv_highgui
@@ -239,5 +262,6 @@ ament_export_dependencies(
   tf2_geometry_msgs
   tf2_ros
   yaml-cpp)
-ament_package()
+
+ament_package(CONFIG_EXTRAS ${GEOGRAPHICLIB_LOC})
 
