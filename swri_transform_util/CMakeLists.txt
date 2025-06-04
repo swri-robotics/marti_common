@@ -41,8 +41,11 @@ if(NOT "${PROJ_FOUND}")
 endif()
 
 # Geographiclib installs FindGeographicLib.cmake to this non-standard location
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
 find_package(GeographicLib REQUIRED)
+if(NOT "${GeographicLib_FOUND}")
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
+  find_package(GeographicLib REQUIRED)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   src/georeference.cpp
@@ -61,7 +64,6 @@ target_include_directories(${PROJECT_NAME}
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
   INTERFACE
     ${PROJ_INCLUDE_DIRS}
-    ${GeographicLib_INCLUDE_DIRS}
   PRIVATE
     ${swri_roscpp_TARGETS})
 
