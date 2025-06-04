@@ -22,15 +22,18 @@ setup(
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD 3 Clause',
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
+    license='BSD-3-Clause',
     description='SwRI CLI tools provide additional command line tools for introspecting ROS systems.',
     long_description="""\
 swri_cli_tools provides command line tools for introspecting and documenting ROS systems""",
-    license='BSD 3 Clause',
-    tests_require=['pytest'],
+    extras_require={
+        'test': [
+            'pytest',
+        ],
+    },
     entry_points={
         'ros2cli.command': [
             'swri = swri_cli_tools.command.swri:SwriCommand',
