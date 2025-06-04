@@ -34,7 +34,9 @@ macro(generate_topic_service_files generated_files_list)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${TMP_TOPIC_SRV_DIR}/${_file})
 
     set(headerName ${_file})
-    string(REPLACE ".srv" ".h" headerName ${headerName})
+    string(REPLACE ".srv" ".hpp" headerName ${headerName})
+    string(REGEX REPLACE "([a-z])([A-Z])" "\\1_\\2" headerName "${headerName}")
+    string(TOLOWER "${headerName}" headerName)
     execute_process(
       COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${swri_roscpp_BIN}service_splitter.py ${_file} ${TMP_MSG_DIR}/${current_ReqOut} ${TMP_MSG_DIR}/${current_ResOut} ${PROJECT_NAME} ${_file} ${TMP_INCLUDE_DIR}/${headerName}
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${TMP_TOPIC_SRV_DIR}"
