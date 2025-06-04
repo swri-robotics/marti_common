@@ -61,6 +61,7 @@ target_include_directories(${PROJECT_NAME}
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
   INTERFACE
     ${PROJ_INCLUDE_DIRS}
+    ${GeographicLib_INCLUDE_DIRS}
   PRIVATE
     ${swri_roscpp_TARGETS})
 
@@ -227,6 +228,7 @@ ament_python_install_package(${PROJECT_NAME})
 ament_export_definitions("${TF_UTIL_DEFINITIONS}")
 ament_export_dependencies(
   ament_cmake
+  GeographicLib
   geometry_msgs
   OpenCV
   rclcpp
