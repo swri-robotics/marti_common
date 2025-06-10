@@ -2,8 +2,8 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.4 (2025-06-10)
+------------------
 * Add dependency on libopencv-dev for pkgs directly using OpenCV (`#781 <https://github.com/swri-robotics/marti_common/issues/781>`_)
 * Contributors: Christophe Bedard
 
