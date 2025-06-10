@@ -2,6 +2,15 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix swri roscpp srv to topic (`#776 <https://github.com/swri-robotics/marti_common/issues/776>`_)
+  * Change generate_topic_service_files install location to match ROS 2 conventions
+  * update generate_topic_service_files to match ROS 2 conventions (snake_case and .hpp)
+  ---------
+  Co-authored-by: Ben Andrew <benjamin.andrew@swri.org>
+* Contributors: DangitBen
+
 3.8.3 (2025-06-03)
 ------------------
 * Make generate_topic_service_files installation location match ROS 2 Convention  (`#775 <https://github.com/swri-robotics/marti_common/issues/775>`_)

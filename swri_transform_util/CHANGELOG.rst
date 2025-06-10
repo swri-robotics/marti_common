@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add dependency on libopencv-dev for pkgs directly using OpenCV (`#781 <https://github.com/swri-robotics/marti_common/issues/781>`_)
+* Updating setup.py to remove deprecated features (`#779 <https://github.com/swri-robotics/marti_common/issues/779>`_)
+* Contributors: Christophe Bedard, David Anthony
+
 3.8.3 (2025-06-03)
 ------------------
 
