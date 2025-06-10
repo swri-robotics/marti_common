@@ -26,6 +26,7 @@
   <depend>geographiclib</depend>
   <depend>gps_msgs</depend>
   <depend>geos</depend>
+  <depend>libopencv-dev</depend>
   <depend>marti_nav_msgs</depend>
   <depend>proj</depend>
   <depend>rcl_interfaces</depend>
