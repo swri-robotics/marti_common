@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>swri_roscpp</name>
-  <version>3.8.4</version>
+  <version>3.8.5</version>
   <description>
     A package that extends rclcpp with some commonly used functionality to reduce boilerplate code.
   </description>

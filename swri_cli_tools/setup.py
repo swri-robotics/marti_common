@@ -5,7 +5,7 @@ package_name = 'swri_cli_tools'
 
 setup(
     name=package_name,
-    version='3.8.4',
+    version='3.8.5',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),

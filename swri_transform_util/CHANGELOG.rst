@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.5 (2025-06-25)
+------------------
 * Improved GeographicLib Package Finding
 * Contributors: DangitBen
 
