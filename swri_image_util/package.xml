@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>swri_image_util</name>
-  <version>3.8.2</version>
+  <version>3.8.4</version>
   <description>
     A package of commonly image manipulation utilities.
   </description>
@@ -20,6 +20,7 @@
   <depend>eigen</depend>
   <depend>image_geometry</depend>
   <depend>image_transport</depend>
+  <depend>libopencv-dev</depend>
   <depend>message_filters</depend>
   <depend>rcl_interfaces</depend>
   <depend>rclcpp</depend>

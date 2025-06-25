@@ -2,6 +2,14 @@
 Changelog for package swri_cli_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.8.4 (2025-06-10)
+------------------
+* Updating setup.py to remove deprecated features (`#779 <https://github.com/swri-robotics/marti_common/issues/779>`_)
+* Contributors: David Anthony
+
+3.8.3 (2025-06-03)
+------------------
+
 3.8.2 (2025-06-02)
 ------------------
 

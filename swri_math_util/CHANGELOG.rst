@@ -2,6 +2,12 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.8.4 (2025-06-10)
+------------------
+
+3.8.3 (2025-06-03)
+------------------
+
 3.8.2 (2025-06-02)
 ------------------
 * Dependency cleanup (`#774 <https://github.com/swri-robotics/marti_common/issues/774>`_)

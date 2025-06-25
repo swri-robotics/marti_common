@@ -12,6 +12,13 @@ setup(
         ('share/' + package_name, ['package.xml'])
     ],
     install_requires=['setuptools'],
+    classifiers=[
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python',
+        'Topic :: Software Development',
+    ],
+    license='BSD-3-Clause',
     zip_safe=True,
     maintainer='Southwest Research Institute',
     maintainer_email='swri-robotics@swri.org'
