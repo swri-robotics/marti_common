@@ -235,5 +235,5 @@ ament_export_dependencies(
   tf2_geometry_msgs
   tf2_ros
   yaml-cpp)
-ament_package()
+ament_package(CONFIG_EXTRAS cmake/swri_transform_util-extras.cmake)
 
