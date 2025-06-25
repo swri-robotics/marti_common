@@ -2,6 +2,9 @@
 Changelog for package swri_roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.8.4 (2025-06-10)
 ------------------
 * Fix swri roscpp srv to topic (`#776 <https://github.com/swri-robotics/marti_common/issues/776>`_)
