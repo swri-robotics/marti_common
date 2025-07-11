@@ -36,6 +36,7 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <cstdint>
 #include <map>
 
 namespace swri
@@ -50,16 +51,13 @@ public:
   ros::Publisher request_pub_;
   boost::shared_ptr<MRes> response_;
 
-  ros::Duration timeout_;
+  std::uint32_t sequence_{0};
+  ros::Duration timeout_{ros::Duration(4.0)};
   std::string name_;
   std::string service_name_;
 
-  int sequence_;
 
-  TopicServiceClientImpl() : sequence_(0), timeout_(ros::Duration(4.0))
-  {
-
-  }
+  TopicServiceClientImpl() = default;
 
   void initialize(ros::NodeHandle &nh,
                 const std::string &service,
