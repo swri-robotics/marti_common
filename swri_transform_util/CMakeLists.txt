@@ -20,6 +20,7 @@ find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 # tf2_geometry_msgs 0.12.1 broke API compatibility, so check which version
@@ -76,7 +77,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_imgproc
   opencv_video
   ${PROJ_LIBRARIES}
-  yaml-cpp
+  yaml-cpp::yaml-cpp
   ${geometry_msgs_TARGETS}
   rclcpp::rclcpp
   swri_math_util::swri_math_util
