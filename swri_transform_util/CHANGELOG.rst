@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.8.6 (2025-07-17)
+------------------
 * Switch to using yaml_cpp_vendor (`#784 <https://github.com/swri-robotics/marti_common/issues/784>`_)
   * switch to yaml_cpp_vendor to ensure that the version that is used is the same as is used in core ros packages
   ---------
