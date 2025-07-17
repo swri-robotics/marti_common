@@ -20,7 +20,7 @@ find_package(swri_roscpp REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(yaml-cpp REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
 
 # tf2_geometry_msgs 0.12.1 broke API compatibility, so check which version
 # we need to use
@@ -76,13 +76,13 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_imgproc
   opencv_video
   ${PROJ_LIBRARIES}
-  yaml-cpp
   ${geometry_msgs_TARGETS}
   rclcpp::rclcpp
   swri_math_util::swri_math_util
   tf2::tf2
   tf2_geometry_msgs::tf2_geometry_msgs
-  tf2_ros::tf2_ros)
+  tf2_ros::tf2_ros
+  yaml-cpp)
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/dynamic_transform_publisher.cpp
@@ -96,7 +96,7 @@ target_include_directories(${PROJECT_NAME}_nodes PUBLIC
 target_include_directories(${PROJECT_NAME}_nodes
   SYSTEM
   INTERFACE
-  ${PROJ_INCLUDE_DIRS})
+    ${PROJ_INCLUDE_DIRS})
 
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC "${TF_UTIL_DEFINITIONS}")
@@ -219,8 +219,7 @@ install(TARGETS
 
 ### Install Python Nodes/Scripts ###
 install(PROGRAMS nodes/initialize_origin.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_python_install_package(${PROJECT_NAME})
@@ -234,6 +233,6 @@ ament_export_dependencies(
   tf2
   tf2_geometry_msgs
   tf2_ros
-  yaml-cpp)
+  yaml_cpp_vendor)
 ament_package(CONFIG_EXTRAS cmake/swri_transform_util-extras.cmake)
 
