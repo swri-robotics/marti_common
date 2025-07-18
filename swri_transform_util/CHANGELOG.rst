@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add a check for the modern CMake yaml-cpp target - if it does not exist, fall back to YAML_CPP_LIBRARIES (`#785 <https://github.com/swri-robotics/marti_common/issues/785>`_)
+  Co-authored-by: Mark B. Allan <Mark.B.Allan@nasa.gov>
+* Contributors: Mark B. Allan
+
 3.8.6 (2025-07-17)
 ------------------
 * Switch to using yaml_cpp_vendor (`#784 <https://github.com/swri-robotics/marti_common/issues/784>`_)
