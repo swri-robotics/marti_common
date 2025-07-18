@@ -21,6 +21,15 @@ find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(yaml-cpp REQUIRED)
+
+# check for modern yaml-cpp target - if not found,
+# fall back to YAML_CPP_LIBRARIES
+if(TARGET yaml-cpp::yaml-cpp)
+  set(YAML_CPP_TARGET "yaml-cpp::yaml-cpp")
+else()
+  set(YAML_CPP_TARGET ${YAML_CPP_LIBRARIES})
+endif()
 
 # tf2_geometry_msgs 0.12.1 broke API compatibility, so check which version
 # we need to use
@@ -82,7 +91,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   tf2::tf2
   tf2_geometry_msgs::tf2_geometry_msgs
   tf2_ros::tf2_ros
-  yaml-cpp)
+  ${YAML_CPP_TARGET})
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/dynamic_transform_publisher.cpp
@@ -233,6 +242,7 @@ ament_export_dependencies(
   tf2
   tf2_geometry_msgs
   tf2_ros
-  yaml_cpp_vendor)
+  yaml_cpp_vendor
+  yaml-cpp)
 ament_package(CONFIG_EXTRAS cmake/swri_transform_util-extras.cmake)
 
