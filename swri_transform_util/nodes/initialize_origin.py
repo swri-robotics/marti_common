@@ -144,4 +144,10 @@ class OriginInitializer(rclpy.node.Node):
 if __name__ == "__main__":
     rclpy.init(args=sys.argv)
     node = OriginInitializer()
-    rclpy.spin(node)
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.try_shutdown()
