@@ -30,10 +30,6 @@
 #ifndef MATH_UTIL_STAT_BUFFER_H_
 #define MATH_UTIL_STAT_BUFFER_H_
 
-#ifndef PI
-#define PI 3.14159265358979
-#endif
-
 #include <cmath>
 #include <algorithm>
 

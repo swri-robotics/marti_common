@@ -35,7 +35,7 @@
 #include <vector>
 
 #include <tf2/transform_datatypes.hpp>
-#include <tf2_ros/buffer.h>
+#include <tf2_ros/buffer.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include <swri_transform_util/local_xy_util.h>

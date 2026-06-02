@@ -37,8 +37,8 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <tf2/transform_datatypes.hpp>
-#include <tf2_ros/buffer.h>
-#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.hpp>
+#include <tf2_ros/transform_listener.hpp>
 
 #include <swri_transform_util/transform.h>
 #include <swri_transform_util/local_xy_util.h>
