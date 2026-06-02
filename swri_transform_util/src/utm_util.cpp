@@ -37,6 +37,40 @@
 
 namespace swri_transform_util
 {
+  namespace
+  {
+    PJ* CreateNormalizedUtmTransform(int zone, bool south)
+    {
+      char dst_args[96];
+      snprintf(
+          dst_args,
+          sizeof(dst_args),
+          "+proj=utm +datum=WGS84 +zone=%d%s +type=crs",
+          zone,
+          south ? " +south" : "");
+
+      PJ* transform = proj_create_crs_to_crs(
+          PJ_DEFAULT_CTX,
+          "+proj=longlat +datum=WGS84 +type=crs",
+          dst_args,
+          NULL);
+
+      if (transform == nullptr)
+      {
+        return nullptr;
+      }
+
+      PJ* normalized = proj_normalize_for_visualization(PJ_DEFAULT_CTX, transform);
+      if (normalized != nullptr)
+      {
+        proj_destroy(transform);
+        transform = normalized;
+      }
+
+      return transform;
+    }
+  }
+
   uint32_t GetZone(double longitude)
   {
     int32_t zone = static_cast<int32_t>((longitude + 180.0) / 6.0) + 1;
@@ -83,21 +117,17 @@ namespace swri_transform_util
 
   UtmUtil::UtmData::UtmData()
   {
-    // Initialize projection for each UTM zone.
-    char args[64];
     for (int i = 0; i < 60; i++)
     {
-      snprintf(args, sizeof(args), "+proj=utm +ellps=WGS84 +zone=%d", i + 1);
-      P_ll_north_[i] = proj_create_crs_to_crs(PJ_DEFAULT_CTX,
-                               "+proj=latlong +ellps=WGS84",
-                               args,
-                               NULL);
+      P_ll_north_[i] = nullptr;
+      P_ll_south_[i] = nullptr;
+    }
 
-      snprintf(args, sizeof(args), "+proj=utm +ellps=WGS84 +zone=%d +south", i + 1);
-      P_ll_south_[i] = proj_create_crs_to_crs(PJ_DEFAULT_CTX,
-                               "+proj=latlong +ellps=WGS84",
-                               args,
-                               NULL);
+    // Initialize projection for each UTM zone.
+    for (int i = 0; i < 60; i++)
+    {
+      P_ll_north_[i] = CreateNormalizedUtmTransform(i + 1, false);
+      P_ll_south_[i] = CreateNormalizedUtmTransform(i + 1, true);
     }
   }
 
@@ -124,19 +154,19 @@ namespace swri_transform_util
     band = GetBand(latitude);
 
     // Get easting and northing values.
-    PJ_COORD c, c_out;
-    c.lp.lam = longitude;
-    c.lp.phi = latitude;
+    PJ_COORD c = proj_coord(longitude, latitude, 0.0, 0.0);
+    PJ_COORD c_out;
 
     // Get easting and northing values.
-    if (band <= 'N')
+    PJ* projection = (band <= 'N') ? P_ll_south_[zone - 1] : P_ll_north_[zone - 1];
+    if (projection == nullptr)
     {
-      c_out = proj_trans(P_ll_south_[zone - 1], PJ_FWD, c);
+      easting = NAN;
+      northing = NAN;
+      return;
     }
-    else
-    {
-      c_out = proj_trans(P_ll_north_[zone - 1], PJ_FWD, c);
-    }
+
+    c_out = proj_trans(projection, PJ_FWD, c);
 
     easting = c_out.enu.e;
     northing = c_out.enu.n;
@@ -164,18 +194,18 @@ namespace swri_transform_util
   {
     std::unique_lock<std::mutex> lock(mutex_);
 
-    PJ_COORD c, c_out;
-    c.enu.e = easting;
-    c.enu.n = northing;
+    PJ_COORD c = proj_coord(easting, northing, 0.0, 0.0);
+    PJ_COORD c_out;
 
-    if (band <= 'N')
+    PJ* projection = (band <= 'N') ? P_ll_south_[zone - 1] : P_ll_north_[zone - 1];
+    if (projection == nullptr)
     {
-      c_out = proj_trans(P_ll_south_[zone - 1], PJ_INV, c);
+      latitude = NAN;
+      longitude = NAN;
+      return;
     }
-    else
-    {
-      c_out = proj_trans(P_ll_north_[zone - 1], PJ_INV, c);
-    }
+
+    c_out = proj_trans(projection, PJ_INV, c);
 
     longitude = c_out.lp.lam;
     latitude = c_out.lp.phi;

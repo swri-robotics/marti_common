@@ -175,6 +175,39 @@ TEST(UtmUtilTests, Continuity)
   }
 }
 
+TEST(UtmUtilTests, ContinuityNoNaNRegression)
+{
+  swri_transform_util::UtmUtil utm_util;
+
+  // (FOR) - Fortaleza International Airport
+  const double easting = 551940.0;
+  const double northing = 9582637.0;
+
+  for (int i = 0; i < 1000; i++)
+  {
+    const double input_easting = easting + i * 1.11 / 100.0;
+
+    double lat;
+    double lon;
+    utm_util.ToLatLon(24, 'M', input_easting, northing, lat, lon);
+    EXPECT_FALSE(std::isnan(lat));
+    EXPECT_FALSE(std::isnan(lon));
+
+    int zone;
+    char band;
+    double new_easting;
+    double new_northing;
+    utm_util.ToUtm(lat, lon, zone, band, new_easting, new_northing);
+    EXPECT_FALSE(std::isnan(new_easting));
+    EXPECT_FALSE(std::isnan(new_northing));
+
+    EXPECT_EQ(24, zone);
+    EXPECT_EQ('M', band);
+    EXPECT_FLOAT_EQ(input_easting, new_easting);
+    EXPECT_FLOAT_EQ(northing, new_northing);
+  }
+}
+
 TEST(UtmUtilTests, Random)
 {
   swri_transform_util::UtmUtil utm_util;
