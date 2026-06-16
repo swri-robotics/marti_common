@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@ namespace swri_image_util
       desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
       desc.read_only = true;
       this->declare_parameter("rate", 10.0, desc);
+      image_transport::ImageTransport it_(shared_from_this());
 
       auto publisher = [this]() -> void
       {
@@ -73,16 +74,13 @@ namespace swri_image_util
         image_pub_.publish(std::move(image));
       };
 
-      rmw_qos_profile_t qos;
-      qos.depth = 100;
-      image_pub_ = image_transport::create_publisher(this, "image", qos);
-
+      image_pub_ = it_.advertise("image", 1);
       timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / this->get_parameter("rate").as_double()), publisher);
     }
 
   private:
     image_transport::Publisher image_pub_;
-
+    image_transport::ImageTransport it_;
     rclcpp::TimerBase::SharedPtr timer_;
   };
 }
