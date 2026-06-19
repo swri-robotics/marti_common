@@ -50,7 +50,8 @@ class NormalizeResponseNodelet : public rclcpp::Node
   {
   public:
     explicit NormalizeResponseNodelet(const rclcpp::NodeOptions& options) :
-      rclcpp::Node("normalize_response", options)
+      rclcpp::Node("normalize_response", options),
+      it_(image_transport::RequiredInterfaces{*this})
     {
       this->declare_parameter("filter_size", 9);
       this->declare_parameter("filter_cap", 31);
@@ -80,14 +81,15 @@ class NormalizeResponseNodelet : public rclcpp::Node
         }
       };
 
-      image_pub_ = image_transport::create_publisher(this, "normalized_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+      image_pub_ = it_.advertise("normalized_image", 1);
+      image_sub_ = it_.subscribe("image", 1, callback);
     }
 
   private:
     cv::Mat normalized_;
     cv::Mat buffer_;
 
+    image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };

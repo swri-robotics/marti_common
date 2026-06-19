@@ -48,9 +48,10 @@ namespace swri_image_util
   {
   public:
     explicit CrosshairsNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("crosshairs", options)
+        rclcpp::Node("crosshairs", options),
+        it_(image_transport::RequiredInterfaces{*this})
     {
-      image_pub_ = image_transport::create_publisher(this, "crosshairs_image");
+      image_pub_ = it_.advertise("crosshairs_image", 1);
 
       auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
       {
@@ -70,10 +71,11 @@ namespace swri_image_util
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+      image_sub_ = it_.subscribe("image", 1, callback);
     }
 
   private:
+    image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };

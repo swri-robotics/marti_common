@@ -40,7 +40,8 @@ namespace swri_image_util
   {
   public:
     DummyImagePublisherNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("dummy_image_publisher", options)
+        rclcpp::Node("dummy_image_publisher", options),
+        it_(image_transport::RequiredInterfaces{*this})
     {
       rcl_interfaces::msg::ParameterDescriptor desc;
       desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
@@ -56,7 +57,7 @@ namespace swri_image_util
       desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
       desc.read_only = true;
       this->declare_parameter("rate", 10.0, desc);
-      image_transport::ImageTransport it_(shared_from_this());
+      image_pub_ = it_.advertise("image", 1);
 
       auto publisher = [this]() -> void
       {
@@ -74,7 +75,6 @@ namespace swri_image_util
         image_pub_.publish(std::move(image));
       };
 
-      image_pub_ = it_.advertise("image", 1);
       timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / this->get_parameter("rate").as_double()), publisher);
     }
 

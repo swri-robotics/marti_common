@@ -49,6 +49,7 @@ namespace swri_image_util
   public:
     explicit RotateImageNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("rotate_image", options),
+        it_(image_transport::RequiredInterfaces{*this}),
         operations_(0),
         flip_axis_(false)
     {
@@ -78,14 +79,15 @@ namespace swri_image_util
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_pub_ = image_transport::create_publisher(this, "rotated_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+      image_pub_ = it_.advertise("rotated_image", 1);
+      image_sub_ = it_.subscribe("image", 1, callback);
     }
 
   private:
     int32_t operations_;
     bool flip_axis_;
 
+    image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
 

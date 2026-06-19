@@ -45,7 +45,8 @@ namespace swri_image_util
   {
   public:
     explicit DrawPolygonNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("draw_polygon", options)
+        rclcpp::Node("draw_polygon", options),
+        it_(image_transport::RequiredInterfaces{*this})
     {
       rcl_interfaces::msg::ParameterDescriptor desc;
       desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
@@ -116,14 +117,14 @@ namespace swri_image_util
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_pub_ = image_transport::create_publisher(this, "image_out");
-      image_sub_ = image_transport::create_subscription(this, "image_in", callback, "raw");
+      image_pub_ = it_.advertise("image_out", 1);
+      image_sub_ = it_.subscribe("image_in", 1, callback);
     }
 
   private:
 
     std::vector<cv::Point> polygon_;
-
+    image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };

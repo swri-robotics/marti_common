@@ -140,7 +140,7 @@ class ReplaceColorsNodelet : public rclcpp::Node
     }
 
     // Set up the ROS interface
-    image_transport::ImageTransport it(shared_from_this());
+    image_transport::ImageTransport it(image_transport::RequiredInterfaces{*this});
     image_pub_ = it.advertise("modified_image", 1);
     image_sub_ = it.subscribe(
       "image",

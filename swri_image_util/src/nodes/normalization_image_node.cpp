@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -59,8 +59,7 @@ namespace swri_image_util
         image_written_(false)
     {
       this->declare_parameter("num_to_skip", 20);
-      this->declare_parameter("filename", ament_index_cpp::get_package_prefix("ranger_common") +
-                                          "/normalization_image.png");
+      this->declare_parameter("filename", "normalization_image.png");
       this->declare_parameter("max_num_to_average", 100);
 
       subscribe_to_topics();
@@ -121,14 +120,12 @@ namespace swri_image_util
           }
         }
       };
-      rmw_qos_profile_t qos = rmw_qos_profile_default;
-      qos.depth = 2;
       image_sub_ = image_transport::create_subscription(
-          this,
+          image_transport::RequiredInterfaces{*this},
           "image",
           callback,
           "raw",
-          qos);
+          rclcpp::QoS(2));
     }
 
     void generate_and_write_image()

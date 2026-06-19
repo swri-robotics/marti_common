@@ -48,7 +48,8 @@ namespace swri_image_util
   {
   public:
     explicit DrawTextNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("draw_text", options)
+        rclcpp::Node("draw_text", options),
+        it_(image_transport::RequiredInterfaces{*this})
     {
       rcl_interfaces::msg::ParameterDescriptor desc;
       desc.name = "text";
@@ -84,12 +85,12 @@ namespace swri_image_util
         image_pub_.publish(cv_image->toImageMsg());
       };
 
-      image_pub_ = image_transport::create_publisher(this, "stamped_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+      image_pub_ = it_.advertise("stamped_image", 1);
+      image_sub_ = it_.subscribe("image", 1, callback);
     }
 
   private:
-
+    image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };
