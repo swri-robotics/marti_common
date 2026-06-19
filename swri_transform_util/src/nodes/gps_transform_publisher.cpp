@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2018, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 #include <swri_transform_util/frames.h>
 #include <swri_transform_util/transform_manager.h>
 #include <tf2/transform_datatypes.hpp>
-#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.hpp>
 
 namespace swri_transform_util
 {
