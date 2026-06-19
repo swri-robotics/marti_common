@@ -544,11 +544,13 @@ int main(int argc, char **argv)
   _tf_manager = std::make_shared<swri_transform_util::TransformManager>(_node, _tf_buffer);
 
   // background spinner thread using main executor
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(_node);
   std::atomic<bool> tests_done(false);
-  std::thread spinner = std::thread([&tests_done]() {
+  std::thread spinner = std::thread([&tests_done, &executor]() {
       while (not tests_done)
       {
-        rclcpp::spin_some(_node);
+        executor.spin_some();
       }
   });
 
@@ -558,6 +560,7 @@ int main(int argc, char **argv)
   {
     spinner.join();
   }
+  executor.remove_node(_node);
   rclcpp::shutdown();
   _tf_manager.reset();
   _tf_listener.reset();
