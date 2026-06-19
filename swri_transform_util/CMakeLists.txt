@@ -143,6 +143,7 @@ target_link_libraries(lat_lon_tf_echo PUBLIC
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_index_cpp REQUIRED)
   find_package(launch_testing_ament_cmake)
 
   ament_add_gtest_executable(transform_manager_test test/test_transform_manager.cpp)

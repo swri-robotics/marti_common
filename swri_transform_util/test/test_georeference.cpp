@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2014, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,15 +29,18 @@
 
 #include <gtest/gtest.h>
 
-#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <filesystem>
+#include <ament_index_cpp/get_package_share_path.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <swri_transform_util/georeference.h>
 
 TEST(GeoreferenceTests, Load)
 {
-  std::string package = ament_index_cpp::get_package_share_directory("swri_transform_util");
-  std::string filename = package + "/test/data/test.geo";
+  std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
+  std::filesystem::path data_filename = package / "test" / "data" / "test.geo";
+  std::string filename = data_filename.string();
+
   swri_transform_util::GeoReference georeference(filename);
   ASSERT_TRUE(georeference.Load());
 
@@ -51,8 +54,9 @@ TEST(GeoreferenceTests, Load)
 
 TEST(GeoreferenceTests, LoadExtension)
 {
-  std::string package = ament_index_cpp::get_package_share_directory("swri_transform_util");
-  std::string filename = package + "/test/data/test_extension.geo";
+  std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
+  std::filesystem::path data_filename = package / "test" / "data" / "test_extension.geo";
+  std::string filename = data_filename.string();
 
   swri_transform_util::GeoReference georeference(filename);
   ASSERT_TRUE(georeference.Load());
