@@ -390,6 +390,64 @@ TEST(IntersectionTests, GetOverlappingArea_7)
   swri_geometry_util::ReleaseContext(ctx);
 }
 
+TEST(IntersectionTests, GetOverlappingArea_SelfIntersecting)
+{
+  // A "bowtie" polygon whose edges cross itself. GEOS throws a
+  // geos::util::TopologyException while computing the intersection of an
+  // invalid polygon; PolygonIntersectionArea must handle it and return 0
+  // rather than letting the exception propagate.
+  std::vector<cv::Vec2d> bowtie = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(2, 2),
+    cv::Vec2d(2, 0),
+    cv::Vec2d(0, 2)};
+
+  std::vector<cv::Vec2d> square = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  EXPECT_NO_THROW({
+    swri_geometry_util::PolygonIntersectionArea(bowtie, square);
+  });
+  EXPECT_NO_THROW({
+    swri_geometry_util::PolygonIntersectionArea(square, bowtie);
+  });
+  EXPECT_NO_THROW({
+    swri_geometry_util::PolygonIntersectionArea(bowtie, bowtie);
+  });
+}
+
+TEST(IntersectionTests, GetOverlappingArea_SelfIntersecting_Reentrant)
+{
+  auto ctx = swri_geometry_util::GetContext();
+
+  std::vector<cv::Vec2d> bowtie = {
+    cv::Vec2d(0, 0),
+    cv::Vec2d(2, 2),
+    cv::Vec2d(2, 0),
+    cv::Vec2d(0, 2)};
+
+  std::vector<cv::Vec2d> square = {
+    cv::Vec2d(-5, -5),
+    cv::Vec2d(-5, 5),
+    cv::Vec2d(5, 5),
+    cv::Vec2d(5, -5)};
+
+  EXPECT_NO_THROW({
+    swri_geometry_util::PolygonIntersectionArea(bowtie, square, ctx);
+  });
+  EXPECT_NO_THROW({
+    swri_geometry_util::PolygonIntersectionArea(square, bowtie, ctx);
+  });
+  EXPECT_NO_THROW({
+    swri_geometry_util::PolygonIntersectionArea(bowtie, bowtie, ctx);
+  });
+
+  swri_geometry_util::ReleaseContext(ctx);
+}
+
 TEST(IntersectionTests, Intersects)
 {
   cv::Vec2d c;

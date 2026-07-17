@@ -31,6 +31,8 @@
 #include <stdio.h>  /* for printf */
 #include <stdarg.h> /* for va_list */
 
+#include <exception>
+
 #include <swri_geometry_util/geometry_util.h>
 #include <swri_geometry_util/intersection.h>
 #include "util.hpp"
@@ -256,17 +258,30 @@ namespace swri_geometry_util
     GEOSNormalize(a_polygon);
     GEOSGeometry* b_polygon = VectorToPolygon(b);
     GEOSNormalize(b_polygon);
+    GEOSGeometry* intersection = 0;
 
-    GEOSGeometry* intersection = GEOSIntersection(a_polygon, b_polygon);
-
-    if (intersection != 0)
+    try
     {
-      // Returns 1 on success, 0 on exception
-      if (GEOSArea(intersection, &area) == 0)
+      intersection = GEOSIntersection(a_polygon, b_polygon);
+
+      if (intersection != 0)
       {
-        area = 0;
+        // Returns 1 on success, 0 on exception
+        if (GEOSArea(intersection, &area) == 0)
+        {
+          area = 0;
+        }
       }
     }
+    catch (const std::exception& e)
+    {
+      // GEOS throws a geos::util::TopologyException (derived from
+      // std::exception) when the input polygons are self-intersecting or
+      // otherwise invalid. Treat these as having no overlapping area rather
+      // than letting the exception propagate.
+      area = 0;
+    }
+
     // Free polygon objects
     GEOSGeom_destroy(a_polygon);
     GEOSGeom_destroy(b_polygon);
@@ -291,17 +306,30 @@ namespace swri_geometry_util
     GEOSNormalize_r(ctx, a_polygon);
     GEOSGeometry* b_polygon = VectorToPolygon(b, ctx);
     GEOSNormalize_r(ctx, b_polygon);
+    GEOSGeometry* intersection = 0;
 
-    GEOSGeometry* intersection = GEOSIntersection_r(ctx, a_polygon, b_polygon);
-
-    if (intersection != 0)
+    try
     {
-      // Returns 1 on success, 0 on exception
-      if (GEOSArea_r(ctx, intersection, &area) == 0)
+      intersection = GEOSIntersection_r(ctx, a_polygon, b_polygon);
+
+      if (intersection != 0)
       {
-        area = 0;
+        // Returns 1 on success, 0 on exception
+        if (GEOSArea_r(ctx, intersection, &area) == 0)
+        {
+          area = 0;
+        }
       }
     }
+    catch (const std::exception& e)
+    {
+      // GEOS throws a geos::util::TopologyException (derived from
+      // std::exception) when the input polygons are self-intersecting or
+      // otherwise invalid. Treat these as having no overlapping area rather
+      // than letting the exception propagate.
+      area = 0;
+    }
+
     // Free polygon objects
     GEOSGeom_destroy_r(ctx, a_polygon);
     GEOSGeom_destroy_r(ctx, b_polygon);
