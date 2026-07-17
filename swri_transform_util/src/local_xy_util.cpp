@@ -30,6 +30,9 @@
 
 #include <cmath>
 #include <functional>
+#include <memory>
+
+#include "GeographicLib/LocalCartesian.hpp"
 
 #include <tf2/utils.hpp>
 #include <rcutils/logging_macros.h>
@@ -103,7 +106,7 @@ namespace swri_transform_util
       rclcpp::Node::SharedPtr node) :
     node_(node),
     reference_angle_(reference_angle * swri_math_util::_deg_2_rad),
-    local_cartesian_(),
+    local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>()),
     cos_angle_(0),
     sin_angle_(0),
     frame_("map"),
@@ -115,7 +118,7 @@ namespace swri_transform_util
   LocalXyWgs84Util::LocalXyWgs84Util(rclcpp::Node::SharedPtr node) :
     node_(node),
     reference_angle_(0),
-    local_cartesian_(),
+    local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>()),
     cos_angle_(0),
     sin_angle_(0),
     frame_("map"),
@@ -125,6 +128,8 @@ namespace swri_transform_util
 
     ResetInitialization();
   }
+
+  LocalXyWgs84Util::~LocalXyWgs84Util() = default;
 
   void LocalXyWgs84Util::ResetInitialization()
   {
@@ -166,7 +171,7 @@ namespace swri_transform_util
         node_->get_parameter_or("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
       }
 
-      local_cartesian_.Reset(latitude, longitude, altitude);
+      local_cartesian_->Reset(latitude, longitude, altitude);
 
       if (!ignore_reference_angle)
       {
@@ -205,12 +210,12 @@ namespace swri_transform_util
 
   double LocalXyWgs84Util::ReferenceLongitude() const
   {
-    return local_cartesian_.LongitudeOrigin();
+    return local_cartesian_->LongitudeOrigin();
   }
 
   double LocalXyWgs84Util::ReferenceLatitude() const
   {
-    return local_cartesian_.LatitudeOrigin();
+    return local_cartesian_->LatitudeOrigin();
   }
 
   double LocalXyWgs84Util::ReferenceAngle() const
@@ -220,7 +225,7 @@ namespace swri_transform_util
 
   double LocalXyWgs84Util::ReferenceAltitude() const
   {
-    return local_cartesian_.HeightOrigin();
+    return local_cartesian_->HeightOrigin();
   }
 
   bool LocalXyWgs84Util::ToLocalXy(
@@ -243,7 +248,7 @@ namespace swri_transform_util
 
       double z, dLon, dLat;
 
-      local_cartesian_.Forward(latitude, longitude, 0, dLon, dLat, z);
+      local_cartesian_->Forward(latitude, longitude, 0, dLon, dLat, z);
 
       x =  cos_angle_ * dLon + sin_angle_ * dLat;
       y = -sin_angle_ * dLon + cos_angle_ * dLat;
@@ -265,7 +270,7 @@ namespace swri_transform_util
       double dLon = cos_angle_ * x - sin_angle_ * y;
       double dLat = sin_angle_ * x + cos_angle_ * y;
 
-      local_cartesian_.Reverse(dLon, dLat, 0, latitude, longitude, alt);
+      local_cartesian_->Reverse(dLon, dLat, 0, latitude, longitude, alt);
       return true;
     }
 

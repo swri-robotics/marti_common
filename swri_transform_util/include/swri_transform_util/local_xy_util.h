@@ -30,13 +30,20 @@
 #ifndef TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
 #define TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
 
+#include <memory>
 #include <string>
 
 #include <rclcpp/rclcpp.hpp>
 #include <swri_transform_util/transform_util.h>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
-#include "GeographicLib/LocalCartesian.hpp"
+// Forward declaration to keep GeographicLib out of this package's exported
+// interface. The concrete type is only used in local_xy_util.cpp, so downstream
+// consumers neither compile against nor link to GeographicLib.
+namespace GeographicLib
+{
+  class LocalCartesian;
+}
 
 namespace swri_transform_util
 {
@@ -125,6 +132,15 @@ namespace swri_transform_util
      * that require a zero-argument constructor.
      */
     explicit LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
+
+    /**
+     * Destructor.
+     *
+     * Declared and defined out-of-line in the .cpp so that the unique_ptr to
+     * the forward-declared GeographicLib::LocalCartesian is destroyed where the
+     * complete type is visible.
+     */
+    ~LocalXyWgs84Util();
 
     /**
      * Return whether the object has been initialized
@@ -219,7 +235,7 @@ namespace swri_transform_util
 
     double reference_angle_;      //< Reference angle in radians ENU.
 
-    GeographicLib::LocalCartesian local_cartesian_;
+    std::unique_ptr<GeographicLib::LocalCartesian> local_cartesian_;
 
     double cos_angle_;
     double sin_angle_;

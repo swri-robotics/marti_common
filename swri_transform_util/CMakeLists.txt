@@ -48,7 +48,10 @@ if(NOT "${PROJ_FOUND}")
   )
 endif()
 
-# Geographiclib installs FindGeographicLib.cmake to this non-standard location
+# Geographiclib installs FindGeographicLib.cmake to this non-standard location.
+# This is needed only to build swri_transform_util itself; GeographicLib is
+# linked PRIVATE and hidden from the exported interface, so downstream packages
+# no longer need this module-path workaround.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
 find_package(GeographicLib REQUIRED)
 
@@ -76,7 +79,6 @@ target_compile_definitions(${PROJECT_NAME}
     USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  ${GeographicLib_LIBRARIES}
   opencv_calib3d
   opencv_core
   opencv_highgui
@@ -90,6 +92,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   tf2_geometry_msgs::tf2_geometry_msgs
   tf2_ros::tf2_ros
   ${YAML_CPP_TARGET})
+
+# GeographicLib is an implementation detail (hidden behind a forward declaration
+# in local_xy_util.h), so link it PRIVATE. Downstream consumers no longer need
+# GeographicLib's headers or its non-standard CMake config location.
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  ${GeographicLib_LIBRARIES})
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/dynamic_transform_publisher.cpp
@@ -251,5 +259,5 @@ ament_export_dependencies(
   tf2_ros
   yaml_cpp_vendor
   yaml-cpp)
-ament_package(CONFIG_EXTRAS cmake/swri_transform_util-extras.cmake)
+ament_package()
 
