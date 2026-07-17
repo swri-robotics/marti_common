@@ -51,8 +51,10 @@ namespace swri_image_util
   {
   public:
     explicit ContrastStretchNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("contrast_stretch", options),
-        it_(image_transport::RequiredInterfaces{*this})
+        rclcpp::Node("contrast_stretch", options)
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
+        , it_(image_transport::RequiredInterfaces{*this})
+#endif
     {
       rcl_interfaces::msg::ParameterDescriptor desc;
       desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
@@ -128,13 +130,20 @@ namespace swri_image_util
         image_pub_.publish(cv_image->toImageMsg());
       };
 
+#ifdef USE_LEGACY_IMAGE_TRANSPORT_API
+      image_pub_ = image_transport::create_publisher(this, "normalized_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+#else
       image_pub_ = it_.advertise("normalized_image", 1);
       image_sub_ = it_.subscribe("image", 1, callback);
+#endif
     }
 
   private:
     cv::Mat mask_;
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
     image_transport::ImageTransport it_;
+#endif
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };

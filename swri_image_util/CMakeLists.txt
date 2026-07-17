@@ -92,6 +92,14 @@ if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
   target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_CVBRIDGE_H_FILES")
 endif()
 
+# image_transport 6.x (Kilted/Lyrical and newer) replaced the
+# (rclcpp::Node *, rmw_qos_profile_t) API with a
+# (image_transport::RequiredInterfaces, rclcpp::QoS) API. Distributions that
+# predate that change (e.g. Humble) only provide the legacy node-pointer API.
+if ("$ENV{ROS_DISTRO}" STREQUAL "humble")
+  target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_LEGACY_IMAGE_TRANSPORT_API")
+endif()
+
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_geometry_util test/test_geometry_util.cpp)

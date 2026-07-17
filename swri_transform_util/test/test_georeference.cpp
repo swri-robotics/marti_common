@@ -30,14 +30,22 @@
 #include <gtest/gtest.h>
 
 #include <filesystem>
+#ifdef USE_LEGACY_AMENT_INDEX_API
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#else
 #include <ament_index_cpp/get_package_share_path.hpp>
+#endif
 #include <rclcpp/rclcpp.hpp>
 
 #include <swri_transform_util/georeference.h>
 
 TEST(GeoreferenceTests, Load)
 {
+#ifdef USE_LEGACY_AMENT_INDEX_API
+  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
+#else
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
+#endif
   std::filesystem::path data_filename = package / "test" / "data" / "test.geo";
   std::string filename = data_filename.string();
 
@@ -54,7 +62,11 @@ TEST(GeoreferenceTests, Load)
 
 TEST(GeoreferenceTests, LoadExtension)
 {
+#ifdef USE_LEGACY_AMENT_INDEX_API
+  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
+#else
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
+#endif
   std::filesystem::path data_filename = package / "test" / "data" / "test_extension.geo";
   std::string filename = data_filename.string();
 

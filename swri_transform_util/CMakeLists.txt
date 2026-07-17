@@ -172,6 +172,12 @@ if(BUILD_TESTING)
     ament_index_cpp::ament_index_cpp
     rclcpp::rclcpp
     tf2::tf2)
+  # ament_index_cpp::get_package_share_path (returns std::filesystem::path) was
+  # added after Humble, which only provides get_package_share_directory
+  # (returns std::string).
+  if ("$ENV{ROS_DISTRO}" STREQUAL "humble")
+    target_compile_definitions(georeference_test PRIVATE "-DUSE_LEGACY_AMENT_INDEX_API")
+  endif()
 
   ament_add_gtest(transform_util_test test/test_transform_util.cpp)
   target_link_libraries(transform_util_test

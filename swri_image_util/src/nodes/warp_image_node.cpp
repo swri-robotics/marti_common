@@ -47,7 +47,9 @@ namespace swri_image_util
   public:
     explicit WarpImageNode(const rclcpp::NodeOptions& options) :
         rclcpp::Node("warp_image", options),
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
         it_(image_transport::RequiredInterfaces{*this}),
+#endif
         use_input_size_(false)
     {
       this->declare_parameter("width", 0);
@@ -97,12 +99,19 @@ namespace swri_image_util
         image_pub_.publish(cv_warped->toImageMsg());
       };
 
+#ifdef USE_LEGACY_IMAGE_TRANSPORT_API
+      image_pub_ = image_transport::create_publisher(this, "warped_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+#else
       image_pub_ = it_.advertise("warped_image", 1);
       image_sub_ = it_.subscribe("image", 1, callback);
+#endif
     }
 
   private:
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
     image_transport::ImageTransport it_;
+#endif
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
     cv::Mat m_;

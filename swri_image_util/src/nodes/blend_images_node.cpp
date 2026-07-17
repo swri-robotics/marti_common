@@ -67,7 +67,9 @@ namespace swri_image_util
         const sensor_msgs::msg::Image::ConstSharedPtr& base_image,
         const sensor_msgs::msg::Image::ConstSharedPtr& top_image);
 
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
     image_transport::ImageTransport it_;
+#endif
     // Publishes the blended image
     image_transport::Publisher image_pub_;
     // The subscribers for the base and top image
@@ -81,8 +83,10 @@ namespace swri_image_util
 
 
   BlendImagesNode::BlendImagesNode(const rclcpp::NodeOptions& options) :
-      Node("blend_images", options),
-      it_(image_transport::RequiredInterfaces{*this})
+      Node("blend_images", options)
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
+      , it_(image_transport::RequiredInterfaces{*this})
+#endif
   {
     rcl_interfaces::msg::ParameterDescriptor alphaDesc;
     alphaDesc.name = "alpha";
@@ -114,9 +118,15 @@ namespace swri_image_util
     rgbDesc.description = "Blue value of color to mask; 0.0 to 255.0, or -1.0 to to mask a color.";
     this->declare_parameter("mask_b", -1.0, rgbDesc);
 
+#ifdef USE_LEGACY_IMAGE_TRANSPORT_API
+    image_pub_ = image_transport::create_publisher(this, "blended_image");
+    base_image_sub_.subscribe(this, "base_image", "raw", rclcpp::QoS(10).get_rmw_qos_profile());
+    top_image_sub_.subscribe(this, "top_image", "raw", rclcpp::QoS(10).get_rmw_qos_profile());
+#else
     image_pub_ = it_.advertise("blended_image", 1);
     base_image_sub_.subscribe(image_transport::RequiredInterfaces{*this}, "base_image", "raw", rclcpp::QoS(10));
     top_image_sub_.subscribe(image_transport::RequiredInterfaces{*this}, "top_image", "raw", rclcpp::QoS(10));
+#endif
 
     image_sync_.reset(new ApproximateTimeSync(
         ApproximateTimePolicy(10),

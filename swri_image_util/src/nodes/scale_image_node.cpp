@@ -48,8 +48,10 @@ namespace swri_image_util
   {
   public:
     explicit ScaleImageNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("scale_image", options),
-        it_(image_transport::RequiredInterfaces{*this})
+        rclcpp::Node("scale_image", options)
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
+        , it_(image_transport::RequiredInterfaces{*this})
+#endif
     {
       this->declare_parameter("scale", 1.0);
 
@@ -78,12 +80,19 @@ namespace swri_image_util
         image_pub_.publish(cv_scaled->toImageMsg());
       };
 
+#ifdef USE_LEGACY_IMAGE_TRANSPORT_API
+      image_pub_ = image_transport::create_publisher(this, "scaled_image");
+      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+#else
       image_pub_ = it_.advertise("scaled_image", 1);
       image_sub_ = it_.subscribe("image", 1, callback);
+#endif
     }
 
   private:
+#ifndef USE_LEGACY_IMAGE_TRANSPORT_API
     image_transport::ImageTransport it_;
+#endif
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
   };

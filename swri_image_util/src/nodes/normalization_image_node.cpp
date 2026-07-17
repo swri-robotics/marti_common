@@ -120,12 +120,23 @@ namespace swri_image_util
           }
         }
       };
+#ifdef USE_LEGACY_IMAGE_TRANSPORT_API
+      rmw_qos_profile_t qos = rmw_qos_profile_default;
+      qos.depth = 2;
+      image_sub_ = image_transport::create_subscription(
+          this,
+          "image",
+          callback,
+          "raw",
+          qos);
+#else
       image_sub_ = image_transport::create_subscription(
           image_transport::RequiredInterfaces{*this},
           "image",
           callback,
           "raw",
           rclcpp::QoS(2));
+#endif
     }
 
     void generate_and_write_image()

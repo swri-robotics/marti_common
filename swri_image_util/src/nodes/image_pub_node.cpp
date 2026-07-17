@@ -74,9 +74,16 @@ namespace swri_image_util
 
       if (!cv_image.image.empty())
       {
+#ifdef USE_LEGACY_IMAGE_TRANSPORT_API
+        rmw_qos_profile_t qos = rmw_qos_profile_default;
+        qos.depth = 2;
+        qos.durability = rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+        image_pub_ = image_transport::create_publisher(this, "image", qos);
+#else
         rclcpp::QoS qos(2);
         qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
         image_pub_ = image_transport::create_publisher(image_transport::RequiredInterfaces{*this}, "image", qos);
+#endif
         pub_timer_ = this->create_wall_timer(
             std::chrono::duration<float>(1.0 / rate),
             std::bind(&ImagePubNode::publish, this));
