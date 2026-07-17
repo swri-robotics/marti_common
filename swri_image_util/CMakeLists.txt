@@ -92,11 +92,15 @@ if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
   target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_CVBRIDGE_H_FILES")
 endif()
 
-# image_transport 6.x (Kilted/Lyrical and newer) replaced the
-# (rclcpp::Node *, rmw_qos_profile_t) API with a
-# (image_transport::RequiredInterfaces, rclcpp::QoS) API. Distributions that
-# predate that change (e.g. Humble) only provide the legacy node-pointer API.
-if ("$ENV{ROS_DISTRO}" STREQUAL "humble")
+# The image_transport::RequiredInterfaces (NodeInterfaces) + rclcpp::QoS API was
+# introduced in image_transport 6.x (Rolling and Lyrical). Older distributions
+# only provide the legacy (rclcpp::Node *, rmw_qos_profile_t) API, so compile the
+# legacy code path for them. Newer distributions fall through to the default
+# path and use the current, non-deprecated API.
+if ("$ENV{ROS_DISTRO}" STREQUAL "humble" OR
+    "$ENV{ROS_DISTRO}" STREQUAL "iron" OR
+    "$ENV{ROS_DISTRO}" STREQUAL "jazzy" OR
+    "$ENV{ROS_DISTRO}" STREQUAL "kilted")
   target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_LEGACY_IMAGE_TRANSPORT_API")
 endif()
 

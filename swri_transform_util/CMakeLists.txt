@@ -172,9 +172,11 @@ if(BUILD_TESTING)
     ament_index_cpp::ament_index_cpp
     rclcpp::rclcpp
     tf2::tf2)
-  # ament_index_cpp::get_package_share_path (returns std::filesystem::path) was
-  # added after Humble, which only provides get_package_share_directory
-  # (returns std::string).
+  # ament_index_cpp::get_package_share_path (returns std::filesystem::path) is
+  # not available in Humble, which only provides get_package_share_directory
+  # (returns std::string). Newer distributions fall through to the default path
+  # and use get_package_share_path, avoiding the now-deprecated
+  # get_package_share_directory.
   if ("$ENV{ROS_DISTRO}" STREQUAL "humble")
     target_compile_definitions(georeference_test PRIVATE "-DUSE_LEGACY_AMENT_INDEX_API")
   endif()
