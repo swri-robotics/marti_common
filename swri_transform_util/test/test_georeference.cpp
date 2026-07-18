@@ -30,10 +30,14 @@
 #include <gtest/gtest.h>
 
 #include <filesystem>
-#ifdef USE_LEGACY_AMENT_INDEX_API
-#include <ament_index_cpp/get_package_share_directory.hpp>
-#else
+// ament_index_cpp::get_package_share_path (returns std::filesystem::path) was
+// added in ament_index_cpp 1.13.0; older versions only provide
+// get_package_share_directory (returns std::string).
+#include <ament_index_cpp/version.h>
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
 #include <ament_index_cpp/get_package_share_path.hpp>
+#else
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #endif
 #include <rclcpp/rclcpp.hpp>
 
@@ -41,10 +45,10 @@
 
 TEST(GeoreferenceTests, Load)
 {
-#ifdef USE_LEGACY_AMENT_INDEX_API
-  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
-#else
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
+#else
+  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
 #endif
   std::filesystem::path data_filename = package / "test" / "data" / "test.geo";
   std::string filename = data_filename.string();
@@ -62,10 +66,10 @@ TEST(GeoreferenceTests, Load)
 
 TEST(GeoreferenceTests, LoadExtension)
 {
-#ifdef USE_LEGACY_AMENT_INDEX_API
-  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
-#else
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
+#else
+  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
 #endif
   std::filesystem::path data_filename = package / "test" / "data" / "test_extension.geo";
   std::string filename = data_filename.string();
