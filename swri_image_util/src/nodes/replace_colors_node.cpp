@@ -139,8 +139,8 @@ namespace swri_image_util
     }
     else if (!colormap_specified)
     {
-      RCLCPP_ERROR(this->get_logger(), "Color transformation was not specified. Images will ");
-      RCLCPP_ERROR(this->get_logger(), "only be converted to their grayscale equivalents");
+      RCLCPP_ERROR(this->get_logger(),
+        "Color transformation was not specified. Images will only be converted to their grayscale equivalents");
     }
 
     // Set up the ROS interface
