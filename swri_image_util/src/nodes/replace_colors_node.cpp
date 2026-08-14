@@ -49,10 +49,10 @@ namespace swri_image_util
   // This constant defines how large our lookup and transform tables are.
   // Currently assumes 8 bit mono encoded images, so there are 256 gray colors
   // to potentially replace with a different color
-  constexpr int NUM_GRAY_VALUES = 256;
+  const int32_t NUM_GRAY_VALUES = 256;
   // The output is an RGB8 image. This constant checks that the user passes
   // in a valid RGB value to replace a gray level with
-  constexpr int MAX_RGB_VALUE = 255;
+  const int32_t MAX_RGB_VALUE = 255;
 
   // ROS node for replacing colors in an image
   class ReplaceColorsNode : public rclcpp::Node
@@ -71,8 +71,8 @@ namespace swri_image_util
     void readUserLut(const std::vector<int64_t>& colors);
 
     // Lookup table defining color replacement strategy. The row indices 
-    // correspond to the gray scale values, and the values in the rows are RGB
-    // values to replace the gray scale values with
+    // correspond to the grayscale values, and the values in the rows are RGB
+    // values to replace the grayscale values with
     cv::Mat color_lut_;
     // Publishes the modified image
     image_transport::Publisher image_pub_;
@@ -111,13 +111,13 @@ namespace swri_image_util
     colormap_names_["parula"] = cv::COLORMAP_PARULA;
     
     // Lookup table to replace colors with. By default will just convert the
-    // gray scale values to their RGB equivalents. If this node is ever extended
-    // to more than gray scale, this will have to be changed
+    // grayscale values to their RGB equivalents. If this node is ever extended
+    // to more than grayscale, this will have to be changed
     color_lut_ = cv::Mat::zeros(1, NUM_GRAY_VALUES, CV_8UC3);
     initLut();
 
-    // This node has two different methods of changing gray scale values to
-    // color imagery. The first maps the gray scale values to OpenCV colormaps.
+    // This node has two different methods of changing grayscale values to
+    // color imagery. The first maps the grayscale values to OpenCV colormaps.
     this->declare_parameter<std::string>("colormap", "");
     this->declare_parameter<int64_t>("num_colors", NUM_GRAY_VALUES);
     const std::string colormap = this->get_parameter("colormap").as_string();
@@ -140,7 +140,7 @@ namespace swri_image_util
     else if (!colormap_specified)
     {
       RCLCPP_ERROR(this->get_logger(), "Color transformation was not specified. Images will ");
-      RCLCPP_ERROR(this->get_logger(), "only be converted to their gray scale equivalents");
+      RCLCPP_ERROR(this->get_logger(), "only be converted to their grayscale equivalents");
     }
 
     // Set up the ROS interface
@@ -168,7 +168,7 @@ namespace swri_image_util
       return;
     }
 
-    // This node currently only supports changing gray scale images. Display an
+    // This node currently only supports changing grayscale images. Display an
     // error message if this is not the case, but limit the error reporting rate
     // to once every minute avoid spamming the user with redundant warnings
     if (image_msg->encoding != sensor_msgs::image_encodings::MONO8)
@@ -292,7 +292,7 @@ namespace swri_image_util
       if ((gray_index >= NUM_GRAY_VALUES) || (gray_index < 0))
       {
         RCLCPP_ERROR(this->get_logger(),
-          "Gray scale value for LUT entry %zu was %ld, but must be between 0 and %d",
+          "Grayscale value for LUT entry %zu was %ld, but must be between 0 and %d",
           lut_idx / 4, gray_index, NUM_GRAY_VALUES - 1);
         return;
       }
