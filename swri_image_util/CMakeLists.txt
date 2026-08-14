@@ -55,7 +55,7 @@ add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/image_pub_node.cpp
   src/nodes/normalization_image_node.cpp
   src/nodes/normalize_response_node.cpp
-  #src/nodes/replace_colors_node.cpp
+  src/nodes/replace_colors_node.cpp
   src/nodes/rotate_image_node.cpp
   src/nodes/scale_image_node.cpp
   src/nodes/warp_image_node.cpp)
@@ -71,7 +71,7 @@ rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::DummyIm
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ImagePubNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::NormalizationImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::NormalizeResponseNode")
-# rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ReplaceColorsNode")
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ReplaceColorsNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::RotateImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::ScaleImageNode")
 rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_image_util::WarpImageNode")

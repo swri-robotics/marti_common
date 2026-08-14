@@ -12,29 +12,6 @@ ROS2 Distro | Branch | Build status | Released packages
 **Kilted** | [`kilted`](https://github.com/swri-robotics/marti_common/tree/ros2-devel) | [![CI](https://github.com/swri-robotics/marti_common/actions/workflows/main.yml/badge.svg?branch=ros2-devel)](https://github.com/swri-robotics/marti_common/blob/ros2-devel/.github/workflows/main.yml?branch=ros2-devel) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Kdev__marti_common__ubuntu_noble_amd64)](https://build.ros2.org/job/Kdev__marti_common__ubuntu_noble_amd64/) | [swri_cli_tools](https://index.ros.org/p/swri_cli_tools/#kilted) <br /> [swri_console_util](https://index.ros.org/p/kiltedswri_console_util/#kilted) <br /> [swri_dbw_interface](https://index.ros.org/p/swri_dbw_interface/#kilted) <br /> [swri_geometry_util](https://index.ros.org/p/swri_geometry_util/#kilted) <br /> [swri_image_util](https://index.ros.org/p/swri_image_util/#kilted) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/#kilted) <br /> [swri_opencv_util](https://index.ros.org/p/swri_opencv_util/#kilted) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/#kilted) <br /> [swri_roscpp](https://index.ros.org/p/swri_roscpp/#kilted) <br /> [swri_route_util](https://index.ros.org/p/swri_route_util/#kilted) <br /> [swri_serial_util](https://index.ros.org/p/swri_serial_util/#kilted) <br /> [swri_transform_util](https://index.ros.org/p/swri_transform_util/#kilted)
 **Lyrical** | [`lyrical`](https://github.com/swri-robotics/marti_common/tree/ros2-devel) | [![CI](https://github.com/swri-robotics/marti_common/actions/workflows/main.yml/badge.svg?branch=ros2-devel)](https://github.com/swri-robotics/marti_common/blob/ros2-devel/.github/workflows/main.yml?branch=ros2-devel) <br /> [![ROS2 Build Farm](http://build.ros2.org/buildStatus/icon?job=Ldev__marti_common__ubuntu_resolute_amd64)](https://build.ros2.org/job/Ldev__marti_common__ubuntu_resolute_amd64/) | [swri_cli_tools](https://index.ros.org/p/swri_cli_tools/#lyrical) <br /> [swri_console_util](https://index.ros.org/p/swri_console_util/#lyrical) <br /> [swri_dbw_interface](https://index.ros.org/p/swri_dbw_interface/#lyrical) <br /> [swri_geometry_util](https://index.ros.org/p/swri_geometry_util/#lyrical) <br /> [swri_image_util](https://index.ros.org/p/swri_image_util/#lyrical) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/#lyrical) <br /> [swri_opencv_util](https://index.ros.org/p/swri_opencv_util/#lyrical) <br /> [swri_math_util](https://index.ros.org/p/swri_math_util/#lyrical) <br /> [swri_roscpp](https://index.ros.org/p/swri_roscpp/#lyrical) <br /> [swri_route_util](https://index.ros.org/p/swri_route_util/#lyrical) <br /> [swri_serial_util](https://index.ros.org/p/swri_serial_util/lyrical) <br /> [swri_transform_util](https://index.ros.org/p/swri_transform_util/#lyrical)
 
-Overview
---------
-
-What's changed in the ROS 2 port?
-
-Removed packages:
-1. `marti_data_structures`  
-    Nothing used this and it only contained a linked list
-2. `swri_nodelet`  
-    Obsolete due to ROS 2's component mechanism
-3. `swri_rospy`  
-    Unnecessary in ROS 2
-4. `swri_string_util`  
-    Equivalent functionality is provided by boost
-5. `swri_yaml_util`  
-    This package only existed in order to bridge nodes between ROS Hydro and ROS Indigo; use `yaml-cpp` directly now
-6. `swri_system_util`
-    This package was not being used and was deprecated to reduce the maintenance overhead
-
-Package migration notes:
-1. `swri_image_util`  
-    `replace_colors_node` has not been ported from ROS 1 yet due to extensive changes in how ROS parameters work
-
 Installation (ROS 2 Humble, Jazzy, Kilted, Lyrical)
 ------------
 
