@@ -12,12 +12,7 @@
   <url>https://github.com/swri-robotics/marti_common</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>pkg-config</buildtool_depend>
 
-  <!--
-  TODO pjr Is there a ROS2 equivalent for this?  Do we still need it?
-  <depend>cmake_modules</depend>
-  -->
   <depend>eigen</depend>
   <depend>geos</depend>
   <depend>libopencv-dev</depend>
