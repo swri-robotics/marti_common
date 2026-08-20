@@ -39,6 +39,7 @@
 #include <swri_transform_util/transform_manager.h>
 #include <tf2/transform_datatypes.hpp>
 #include <tf2_ros/transform_broadcaster.hpp>
+#include <tf2_ros/version.h>
 
 namespace swri_transform_util
 {
@@ -80,13 +81,23 @@ namespace swri_transform_util
     tf_manager_ = std::make_shared<swri_transform_util::TransformManager>(shared_from_this());
     tf_buf_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
     tf_buf_->setUsingDedicatedThread(true);
+    // tf2_ros 0.46.1 removed the deprecated constructor overload that accepted a
+    // Node::SharedPtr, requiring a bare node reference instead.
+#if TF2_ROS_VERSION_GTE(0, 46, 1)
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_, *this, false);
+#else
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_, shared_from_this(), false);
+#endif
     tf_manager_->Initialize(tf_buf_);
   }
 
   void GpsTransformPublisher::InitTransformBroadcaster()
   {
+#if TF2_ROS_VERSION_GTE(0, 46, 1)
+    tf_ = std::make_shared<tf2_ros::TransformBroadcaster>(*this);
+#else
     tf_ = std::make_shared<tf2_ros::TransformBroadcaster>(shared_from_this());
+#endif
   }
 
   void GpsTransformPublisher::HandleGps(const gps_msgs::msg::GPSFix::UniquePtr gps_fix)
