@@ -35,7 +35,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/transform_datatypes.hpp>
-#include <tf2_ros/version.h>
 
 #include <swri_transform_util/transform_manager.h>
 #include <swri_transform_util/frames.h>
@@ -542,7 +541,7 @@ int main(int argc, char **argv)
   _tf_buffer = std::make_shared<tf2_ros::Buffer>(_node->get_clock());
   // tf2_ros 0.46.1 removed the deprecated constructor overload that accepted a
   // Node::SharedPtr, requiring a bare node reference instead.
-#if TF2_ROS_VERSION_GTE(0, 46, 1)
+#if USE_NEW_TF2_ROS_CTORS
   _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer, *_node);
 #else
   _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer, _node);

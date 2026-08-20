@@ -38,6 +38,17 @@ else()
   set(USE_NEW_TF2_TOMSG 0)
 endif()
 
+# tf2_ros 0.46.1 removed the deprecated TransformListener/TransformBroadcaster
+# constructor overloads that accepted a Node::SharedPtr, requiring a bare node
+# reference instead. Older tf2_ros releases (e.g. on Kilted) don't provide
+# tf2_ros/version.h at all, so this has to be a CMake-time check rather than a
+# runtime TF2_ROS_VERSION_GTE macro.
+if("${tf2_ros_VERSION}" VERSION_GREATER_EQUAL "0.46.1")
+  set(USE_NEW_TF2_ROS_CTORS 1)
+else()
+  set(USE_NEW_TF2_ROS_CTORS 0)
+endif()
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PROJ proj)
 if(NOT "${PROJ_FOUND}")
@@ -76,7 +87,8 @@ target_include_directories(${PROJECT_NAME}
 
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
-    USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG})
+    USE_NEW_TF2_TOMSG=${USE_NEW_TF2_TOMSG}
+    USE_NEW_TF2_ROS_CTORS=${USE_NEW_TF2_ROS_CTORS})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_calib3d
