@@ -176,6 +176,12 @@ if(BUILD_TESTING)
     tf2::tf2
     tf2_ros::tf2_ros)
 
+  ament_add_gtest(transform_test test/test_transform.cpp)
+  target_link_libraries(transform_test
+    ${PROJECT_NAME}
+    rclcpp::rclcpp
+    tf2::tf2)
+
   ament_add_gtest(local_xy_util_test test/test_local_xy_util.cpp)
   target_link_libraries(local_xy_util_test
     ${PROJECT_NAME}

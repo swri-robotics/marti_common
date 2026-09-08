@@ -135,6 +135,19 @@ namespace swri_transform_util
 
     TransformImplPtr Inverse() const override;
 
+    /**
+     * Determine whether this transform is equivalent to another one.
+     *
+     * Equivalent means the same kind of transform, over the same local XY
+     * origin and the same TF geometry. The TF timestamp is ignored; only the
+     * frames and the transform itself change where points land.
+     *
+     * @param[in] other The implementation to compare against.
+     *
+     * @returns True if the two implementations transform points identically.
+     */
+    bool Equals(const TransformImpl& other) const override;
+
   protected:
     std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
@@ -186,6 +199,20 @@ namespace swri_transform_util
      */
     tf2::Quaternion GetOrientation() const override;
     TransformImplPtr Inverse() const override;
+
+    /**
+     * Determine whether this transform is equivalent to another one.
+     *
+     * Equivalent means the same kind of transform, over the same local XY
+     * origin and the same TF geometry. The TF timestamp is ignored; only the
+     * frames and the transform itself change where points land.
+     *
+     * @param[in] other The implementation to compare against.
+     *
+     * @returns True if the two implementations transform points identically.
+     */
+    bool Equals(const TransformImpl& other) const override;
+
   protected:
     std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
   };
