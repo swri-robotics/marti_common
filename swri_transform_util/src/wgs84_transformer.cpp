@@ -35,6 +35,23 @@
 
 namespace swri_transform_util
 {
+  namespace
+  {
+    /**
+     * Compare the geometry of two TF transforms, ignoring their timestamps.
+     * Only the frames and the transform itself change where points land, so a
+     * transform that was looked up again but has not moved compares equal.
+     */
+    bool GeometryEquals(
+      const geometry_msgs::msg::TransformStamped& lhs,
+      const geometry_msgs::msg::TransformStamped& rhs)
+    {
+      return lhs.header.frame_id == rhs.header.frame_id &&
+          lhs.child_frame_id == rhs.child_frame_id &&
+          lhs.transform == rhs.transform;
+    }
+  }
+
   Wgs84Transformer::Wgs84Transformer(LocalXyWgs84UtilPtr local_xy_util)
   {
     local_xy_util_ = local_xy_util;
@@ -151,6 +168,15 @@ namespace swri_transform_util
     return tf.getRotation() * reference_angle;
   }
 
+  bool TfToWgs84Transform::Equals(const TransformImpl& other) const
+  {
+    auto other_transform = dynamic_cast<const TfToWgs84Transform*>(&other);
+
+    return other_transform != nullptr &&
+        AreEquivalent(local_xy_util_, other_transform->local_xy_util_) &&
+        GeometryEquals(transform_, other_transform->transform_);
+  }
+
   TransformImplPtr TfToWgs84Transform::Inverse() const
   {
     tf2::Stamped<tf2::Transform> inverse_transform = GetStampedTransform();
@@ -192,6 +218,15 @@ namespace swri_transform_util
     tf2::Stamped<tf2::Transform> tf = GetStampedTransform();
       
     return GetStampedTransform().getRotation() * reference_angle.inverse();
+  }
+
+  bool Wgs84ToTfTransform::Equals(const TransformImpl& other) const
+  {
+    auto other_transform = dynamic_cast<const Wgs84ToTfTransform*>(&other);
+
+    return other_transform != nullptr &&
+        AreEquivalent(local_xy_util_, other_transform->local_xy_util_) &&
+        GeometryEquals(transform_, other_transform->transform_);
   }
 
   TransformImplPtr Wgs84ToTfTransform::Inverse() const

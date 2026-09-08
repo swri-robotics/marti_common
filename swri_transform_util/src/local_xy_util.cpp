@@ -208,6 +208,26 @@ namespace swri_transform_util
     }
   }
 
+  bool AreEquivalent(const LocalXyWgs84UtilPtr& lhs, const LocalXyWgs84UtilPtr& rhs)
+  {
+    if (lhs == rhs)
+    {
+      return true;
+    }
+
+    if (!lhs || !rhs)
+    {
+      return false;
+    }
+
+    return lhs->Initialized() && rhs->Initialized() &&
+        lhs->ReferenceLatitude() == rhs->ReferenceLatitude() &&
+        lhs->ReferenceLongitude() == rhs->ReferenceLongitude() &&
+        lhs->ReferenceAltitude() == rhs->ReferenceAltitude() &&
+        lhs->ReferenceAngle() == rhs->ReferenceAngle() &&
+        lhs->Frame() == rhs->Frame();
+  }
+
   double LocalXyWgs84Util::ReferenceLongitude() const
   {
     return local_cartesian_->LongitudeOrigin();

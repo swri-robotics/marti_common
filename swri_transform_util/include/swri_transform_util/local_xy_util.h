@@ -252,6 +252,22 @@ namespace swri_transform_util
     void HandlePoseStamped(geometry_msgs::msg::PoseStamped::UniquePtr pose);
   };
   typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
+
+  /**
+   * Determine whether two local XY origins are interchangeable.
+   *
+   * They are interchangeable if they convert between WGS84 and local XY
+   * coordinates identically: either they are the same object, or both are
+   * initialized to the same reference point, angle and frame. Two distinct
+   * uninitialized origins are reported as not interchangeable, since neither
+   * can convert anything yet and either may still be given a different origin.
+   *
+   * @param[in] lhs The first origin, which may be null.
+   * @param[in] rhs The second origin, which may be null.
+   *
+   * @returns True if the two origins convert coordinates identically.
+   */
+  bool AreEquivalent(const LocalXyWgs84UtilPtr& lhs, const LocalXyWgs84UtilPtr& rhs);
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
