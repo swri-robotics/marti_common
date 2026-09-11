@@ -192,7 +192,7 @@ namespace swri_image_util
     return ellipse;
   }
 
-  std::vector<tf2::Vector3> GetEllipsePoints(
+  std::vector<tf2::Vector3> GetEllipsePointsWithZ(
       const cv::Mat& ellipse,
       const tf2::Vector3& center,
       double scale,
@@ -241,7 +241,28 @@ namespace swri_image_util
       {
         perimeter[i].setX(Xell(i, 0) + center.x());
         perimeter[i].setY(Xell(i, 1) + center.y());
+        perimeter[i].setZ(center.z());
       }
+    }
+
+    return perimeter;
+  }
+
+  std::vector<tf2::Vector3> GetEllipsePoints(
+      const cv::Mat& ellipse,
+      const tf2::Vector3& center,
+      double scale,
+      int32_t num_points)
+  {
+    // This has always flattened the perimeter onto the XY-plane, so keep doing
+    // that for callers that expect it; GetEllipsePointsWithZ() keeps the
+    // center's Z.
+    std::vector<tf2::Vector3> perimeter =
+        GetEllipsePointsWithZ(ellipse, center, scale, num_points);
+
+    for (tf2::Vector3& point : perimeter)
+    {
+      point.setZ(0.0);
     }
 
     return perimeter;

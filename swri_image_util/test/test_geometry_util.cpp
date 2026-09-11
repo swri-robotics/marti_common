@@ -505,6 +505,41 @@ TEST(GeometryUtilTests, TestGetEllipsePoints_0)
   EXPECT_NEAR(-0.7071067811865475243818940365, points[7].y(),  0.000000001);
 }
 
+TEST(GeometryUtilTests, TestGetEllipsePointsWithZ)
+{
+  cv::Mat ellipse(2, 2, CV_32FC1);
+  ellipse.at<float>(0,0) = 1;
+  ellipse.at<float>(0,1) = 0;
+  ellipse.at<float>(1,0) = 0;
+  ellipse.at<float>(1,1) = 1;
+
+  tf2::Vector3 center(1, 2, 3);
+
+  std::vector<tf2::Vector3> points = swri_image_util::GetEllipsePointsWithZ(
+      ellipse, center, 1, 8);
+  ASSERT_EQ(8, points.size());
+
+  // Only the Z coordinate differs from GetEllipsePoints(), which flattens the
+  // perimeter onto the XY-plane.
+  std::vector<tf2::Vector3> flattened = swri_image_util::GetEllipsePoints(
+      ellipse, center, 1, 8);
+  ASSERT_EQ(8, flattened.size());
+
+  for (size_t i = 0; i < points.size(); i++)
+  {
+    EXPECT_FLOAT_EQ(center.z(), points[i].z());
+    EXPECT_FLOAT_EQ(0, flattened[i].z());
+
+    EXPECT_FLOAT_EQ(flattened[i].x(), points[i].x());
+    EXPECT_FLOAT_EQ(flattened[i].y(), points[i].y());
+
+    // The unit ellipse puts every point one unit from the center.
+    double dx = points[i].x() - center.x();
+    double dy = points[i].y() - center.y();
+    EXPECT_NEAR(1.0, dx * dx + dy * dy, 0.000000001);
+  }
+}
+
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
 {
