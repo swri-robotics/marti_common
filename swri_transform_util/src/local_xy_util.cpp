@@ -112,7 +112,11 @@ namespace swri_transform_util
     frame_("map"),
     initialized_(false)
   {
-    HandleOrigin(reference_latitude, reference_longitude, reference_altitude, reference_angle, "map");
+    // HandleOrigin() takes its angle in radians, matching the yaw it is given
+    // when an origin arrives over a topic, while this constructor documents its
+    // own angle in degrees.
+    HandleOrigin(reference_latitude, reference_longitude, reference_altitude,
+        reference_angle * swri_math_util::_deg_2_rad, "map");
   }
 
   LocalXyWgs84Util::LocalXyWgs84Util(rclcpp::Node::SharedPtr node) :

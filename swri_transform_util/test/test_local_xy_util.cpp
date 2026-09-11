@@ -27,11 +27,85 @@
 //
 // *****************************************************************************
 
+#include <string>
+
 #include <gtest/gtest.h>
 
 #include <rclcpp/rclcpp.hpp>
 
 #include <swri_transform_util/local_xy_util.h>
+
+/// The initializing constructor documents its reference angle in degrees, but
+/// passed it to HandleOrigin(), which takes radians, so a degree value was
+/// stored as though it were radians and wrapped into (-180, 180] from there.
+TEST(LocalXyUtilTests, TestReferenceAngleIsInDegrees)
+{
+  EXPECT_FLOAT_EQ(0.0,
+      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 0.0).ReferenceAngle());
+  EXPECT_FLOAT_EQ(30.0,
+      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 30.0).ReferenceAngle());
+  EXPECT_FLOAT_EQ(-45.5,
+      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, -45.5).ReferenceAngle());
+  EXPECT_FLOAT_EQ(180.0,
+      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 180.0).ReferenceAngle());
+
+  // Angles outside (-180, 180] are wrapped into it.
+  EXPECT_FLOAT_EQ(-90.0,
+      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 270.0).ReferenceAngle());
+}
+
+/// The reference angle rotates the local XY frame, so getting its scale wrong
+/// puts points in the wrong direction, not merely in the wrong accessor.
+TEST(LocalXyUtilTests, TestReferenceAngleRotatesLocalXy)
+{
+  swri_transform_util::LocalXyWgs84Util unrotated(29.45, -98.61);
+
+  // Points 100 m due east and 100 m due north of the origin.
+  double east_lat, east_lon, north_lat, north_lon;
+  ASSERT_TRUE(unrotated.ToWgs84(100.0, 0.0, east_lat, east_lon));
+  ASSERT_TRUE(unrotated.ToWgs84(0.0, 100.0, north_lat, north_lon));
+
+  // A quarter turn puts east along -Y and north along +X.
+  swri_transform_util::LocalXyWgs84Util quarter_turn(29.45, -98.61, 90.0);
+
+  double x, y;
+  ASSERT_TRUE(quarter_turn.ToLocalXy(east_lat, east_lon, x, y));
+  EXPECT_NEAR(0.0, x, 1e-6);
+  EXPECT_NEAR(-100.0, y, 1e-6);
+
+  ASSERT_TRUE(quarter_turn.ToLocalXy(north_lat, north_lon, x, y));
+  EXPECT_NEAR(100.0, x, 1e-6);
+  EXPECT_NEAR(0.0, y, 1e-6);
+
+  // Half of that splits the eastward point evenly between the two axes.
+  swri_transform_util::LocalXyWgs84Util eighth_turn(29.45, -98.61, 45.0);
+
+  ASSERT_TRUE(eighth_turn.ToLocalXy(east_lat, east_lon, x, y));
+  EXPECT_NEAR(70.7106781, x, 1e-6);
+  EXPECT_NEAR(-70.7106781, y, 1e-6);
+}
+
+/// Whatever the reference angle is, a point has to survive the trip out and
+/// back. This holds for any consistent pair of angle conventions, so it guards
+/// cos_angle_ and sin_angle_ against drifting apart rather than pinning units.
+TEST(LocalXyUtilTests, TestRotatedFrameRoundTrips)
+{
+  for (double angle : {0.0, 30.0, 90.0, -45.5, 180.0, 270.0})
+  {
+    SCOPED_TRACE("reference angle " + std::to_string(angle));
+    swri_transform_util::LocalXyWgs84Util local_xy_util(29.45, -98.61, angle);
+
+    double lat, lon;
+    ASSERT_TRUE(local_xy_util.ToWgs84(123.25, -456.75, lat, lon));
+
+    // Compared the way the other round trips in this file are, since the trip
+    // through the ellipsoid carries a micron or so of error at this range.
+    double x, y;
+    ASSERT_TRUE(local_xy_util.ToLocalXy(lat, lon, x, y));
+    EXPECT_FLOAT_EQ(123.25, x);
+    EXPECT_FLOAT_EQ(-456.75, y);
+  }
+}
 
 TEST(LocalXyUtilTests, TestOrigin)
 {
