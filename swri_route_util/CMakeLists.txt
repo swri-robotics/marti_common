@@ -55,7 +55,12 @@ target_include_directories(${PROJECT_NAME}_nodes
 target_compile_definitions(${PROJECT_NAME}_nodes
   PRIVATE "COMPOSITION_BUILDING_DLL")
 
-rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_route_util::ObstacleMarkerNode")
+# This registers the component and also generates and installs a
+# standalone executable that loads it, so the node can be composed
+# into a container or run directly with 'ros2 run'.
+rclcpp_components_register_node(${PROJECT_NAME}_nodes
+  PLUGIN "swri_route_util::ObstacleMarkerNode"
+  EXECUTABLE obstacle_marker_node)
 
 target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
   ${PROJECT_NAME}
@@ -65,11 +70,6 @@ target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
   rclcpp::rclcpp)
 target_link_libraries(${PROJECT_NAME}_nodes PRIVATE
   ${rclcpp_components_TARGETS})
-
-add_executable(obstacle_marker_node src/nodes/obstacle_marker_main.cpp)
-target_link_libraries(obstacle_marker_node PUBLIC
-  ${PROJECT_NAME}_nodes
-  rclcpp::rclcpp)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -89,9 +89,6 @@ install(TARGETS ${PROJECT_NAME}_nodes
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-
-install(TARGETS obstacle_marker_node
-  DESTINATION lib/${PROJECT_NAME})
 
 ### Install Header Files ###
 install(DIRECTORY include/
