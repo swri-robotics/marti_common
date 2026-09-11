@@ -209,6 +209,8 @@ if(BUILD_TESTING)
 
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/local_xy_util.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo_unsupported_origin.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_gps.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_navsat.test.py)
   # The "custom" functionality appears to be gone in ROS 2.
