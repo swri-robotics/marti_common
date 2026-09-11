@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.10.0 (2026-09-11)
+-------------------
 * Fixing reference angle in the LocalXyWgs84Util constructor being read as radians (`#802 <https://github.com/swri-robotics/marti_common/issues/802>`_)
 * Adding Transform equality so callers can detect when a transform changes (`#800 <https://github.com/swri-robotics/marti_common/issues/800>`_)
 * Contributors: David Anthony
