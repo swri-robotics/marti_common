@@ -27,6 +27,10 @@
 //
 // *****************************************************************************
 
+#include <cmath>
+#include <set>
+#include <string>
+
 #include <rclcpp/rclcpp.hpp>
 
 #include <geographic_msgs/msg/geo_pose.hpp>
@@ -60,11 +64,13 @@
  * <b>Subscribed Topics</b>
  * - \e /tf [geometry_msgs::Transform] - The transform from fixed_frame_id to
  *        target_frame_id must be published
- * - \e /local_xy_origin [geometry_msgs::PoseStamped] - This topic is used to 
- *        initialize the WGS84 transformer. Once it is initialized, the subscriber
- *        disconnects.
- *        The fields of this message should be filled as follows:
- *        - pose.position.y - longitude in degrees east of the prime meridian
+ * - \e /local_xy_origin [gps_msgs::GPSFix, geographic_msgs::GeoPose, or
+ *        geometry_msgs::PoseStamped] - This topic is used to initialize the
+ *        WGS84 transformer. The node subscribes with whichever of these types
+ *        the first publisher it discovers uses, and disconnects once it is
+ *        initialized.
+ *        The fields of a PoseStamped should be filled as follows:
+ *        - pose.position.x - longitude in degrees east of the prime meridian
  *        - pose.position.y - lattitude in degrees north of the equator.
  *        - pose.position.z - altitude in meters above the WGS84 ellipsoid
  *        All other fields in the message are ignored.
@@ -82,67 +88,118 @@ public:
       frame_id_(frame_id),
       fixed_frame_(fixed_frame)
   {
-    auto gps_callback = [this](const gps_msgs::msg::GPSFix::UniquePtr msg) -> void
-    {
-      xy_wgs84_util_.reset(
-          new swri_transform_util::LocalXyWgs84Util(
-              msg->latitude,
-              msg->longitude,
-              msg->track,
-              msg->altitude));
-      Unsubscribe();
-    };
-    gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
-        "/local_xy_origin",
-        1,
-        gps_callback);
-
-    auto geopose_callback = [this](const geographic_msgs::msg::GeoPose::UniquePtr msg) -> void
-    {
-      xy_wgs84_util_.reset(
-          new swri_transform_util::LocalXyWgs84Util(
-              msg->position.latitude,
-              msg->position.longitude,
-              // The constructor takes degrees; getYaw() returns radians.
-              tf2::getYaw(msg->orientation) * swri_math_util::_rad_2_deg,
-              msg->position.altitude));
-      Unsubscribe();
-    };
-    geopose_sub_ = this->create_subscription<geographic_msgs::msg::GeoPose>(
-        "/local_xy_origin",
-        1,
-        geopose_callback);
-
-    auto posestamped_callback = [this](const geometry_msgs::msg::PoseStamped::UniquePtr msg) -> void
-    {
-      xy_wgs84_util_.reset(
-          new swri_transform_util::LocalXyWgs84Util(
-              msg->pose.position.y,    // Latitude
-              msg->pose.position.x,    // Longitude
-              0.0,                        // Heading
-              msg->pose.position.z));  // Altitude
-      Unsubscribe();
-    };
-    posestamped_sub_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
-        "/local_xy_origin",
-        1,
-        posestamped_callback
-    );
+    // /local_xy_origin may carry any of several message types, but DDS allows
+    // only one type per topic within a process, so wait for a publisher to
+    // show which type it uses before subscribing.
+    origin_discovery_timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(250),
+        std::bind(&LatLonTFEchoNode::SubscribeToOrigin, this));
 
     timer_ = this->create_wall_timer(std::chrono::seconds(1),
                                      std::bind(&LatLonTFEchoNode::TimerCallback, this));
   }
 
 private:
+  static constexpr const char* kOriginTopic = "/local_xy_origin";
+
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener tf_listener_;
   rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::TimerBase::SharedPtr origin_discovery_timer_;
+  std::set<std::string> unsupported_origin_types_;  // Already warned about.
   std::shared_ptr<swri_transform_util::LocalXyWgs84Util> xy_wgs84_util_;
   rclcpp::Subscription<gps_msgs::msg::GPSFix>::SharedPtr gps_sub_;
   rclcpp::Subscription<geographic_msgs::msg::GeoPose>::SharedPtr geopose_sub_;
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr posestamped_sub_;
   std::string frame_id_;
   std::string fixed_frame_;
+
+  void SubscribeToOrigin()
+  {
+    for (const auto& info : this->get_publishers_info_by_topic(kOriginTopic))
+    {
+      // Match the publisher's reliability and durability so that the
+      // subscription is compatible with it, and so that a latched origin
+      // published before this node started is still delivered.
+      const rmw_qos_profile_t& publisher_qos = info.qos_profile().get_rmw_qos_profile();
+      rclcpp::QoS qos(1);
+      qos.reliability(publisher_qos.reliability);
+      qos.durability(publisher_qos.durability);
+
+      const std::string& type = info.topic_type();
+      if (type == "gps_msgs/msg/GPSFix")
+      {
+        gps_sub_ = this->create_subscription<gps_msgs::msg::GPSFix>(
+            kOriginTopic, qos,
+            std::bind(&LatLonTFEchoNode::HandleGpsFix, this, std::placeholders::_1));
+      }
+      else if (type == "geographic_msgs/msg/GeoPose")
+      {
+        geopose_sub_ = this->create_subscription<geographic_msgs::msg::GeoPose>(
+            kOriginTopic, qos,
+            std::bind(&LatLonTFEchoNode::HandleGeoPose, this, std::placeholders::_1));
+      }
+      else if (type == "geometry_msgs/msg/PoseStamped")
+      {
+        posestamped_sub_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
+            kOriginTopic, qos,
+            std::bind(&LatLonTFEchoNode::HandlePoseStamped, this, std::placeholders::_1));
+      }
+      else
+      {
+        // Keep polling in case a supported publisher appears, but say why the
+        // node is still waiting. Once per type, since this runs every poll.
+        if (unsupported_origin_types_.insert(type).second)
+        {
+          RCLCPP_WARN(this->get_logger(),
+              "%s is published as %s; expected gps_msgs/msg/GPSFix, "
+              "geographic_msgs/msg/GeoPose or geometry_msgs/msg/PoseStamped",
+              kOriginTopic, type.c_str());
+        }
+        continue;
+      }
+
+      RCLCPP_INFO(this->get_logger(), "Subscribing to %s as %s", kOriginTopic, type.c_str());
+      origin_discovery_timer_->cancel();
+      return;
+    }
+  }
+
+  void HandleGpsFix(const gps_msgs::msg::GPSFix::UniquePtr msg)
+  {
+    xy_wgs84_util_.reset(
+        new swri_transform_util::LocalXyWgs84Util(
+            msg->latitude,
+            msg->longitude,
+            // The constructor takes degrees ENU (counter-clockwise from
+            // east); track is a compass heading (clockwise from north).
+            90.0 - msg->track,
+            msg->altitude));
+    Unsubscribe();
+  }
+
+  void HandleGeoPose(const geographic_msgs::msg::GeoPose::UniquePtr msg)
+  {
+    xy_wgs84_util_.reset(
+        new swri_transform_util::LocalXyWgs84Util(
+            msg->position.latitude,
+            msg->position.longitude,
+            // The constructor takes degrees; getYaw() returns radians.
+            tf2::getYaw(msg->orientation) * swri_math_util::_rad_2_deg,
+            msg->position.altitude));
+    Unsubscribe();
+  }
+
+  void HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr msg)
+  {
+    xy_wgs84_util_.reset(
+        new swri_transform_util::LocalXyWgs84Util(
+            msg->pose.position.y,    // Latitude
+            msg->pose.position.x,    // Longitude
+            0.0,                        // Heading
+            msg->pose.position.z));  // Altitude
+    Unsubscribe();
+  }
 
   void Unsubscribe()
   {
@@ -178,12 +235,12 @@ private:
     xy_wgs84_util_->ToWgs84(
         transform.getOrigin().x(), transform.getOrigin().y(),
         lat, lon);
-    tf2::Quaternion q = transform.getRotation();
-    q.setY(0);
-    q.setX(0);
-    q.normalize();
-    double heading = -q.getAngle() * swri_math_util::_rad_2_deg + 90;
-    while (heading < 0)
+    // The yaw is counter-clockwise from the fixed frame's X axis, which lies
+    // ReferenceAngle() degrees counter-clockwise from east, while a compass
+    // heading is clockwise from north.
+    double yaw = tf2::getYaw(transform.getRotation()) * swri_math_util::_rad_2_deg;
+    double heading = std::fmod(90.0 - (yaw + xy_wgs84_util_->ReferenceAngle()), 360.0);
+    if (heading < 0)
     {
       heading += 360;
     }
