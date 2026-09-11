@@ -144,6 +144,29 @@ namespace swri_transform_util
 
     virtual std::shared_ptr<TransformImpl> Inverse() const = 0;
 
+    /**
+     * Determine whether this implementation is equivalent to another one.
+     *
+     * Two implementations are equivalent if they map every point the same way,
+     * which lets a caller reuse work it has already done with one of them in
+     * place of the other. Timestamps are deliberately not considered: a
+     * transform that has been looked up again but has not moved invalidates
+     * nothing.
+     *
+     * The default only reports equivalence for the very same object, so an
+     * implementation that does not override this is never mistaken for a
+     * different one. Override it to let callers skip redundant work. Erring
+     * towards inequality is always safe; erring towards equality is not.
+     *
+     * @param[in] other The implementation to compare against.
+     *
+     * @returns True if the two implementations transform points identically.
+     */
+    virtual bool Equals(const TransformImpl& other) const
+    {
+      return this == &other;
+    }
+
   protected:
 
     rclcpp::Logger logger_;
@@ -233,6 +256,30 @@ namespace swri_transform_util
     tf2::Quaternion operator*(const tf2::Quaternion& q) const;
 
     /**
+     * Determine whether this transform is equivalent to another one.
+     *
+     * Equivalent transforms map every point the same way; see
+     * TransformImpl::Equals(). Note that a transform is free to report itself
+     * unequal to one that happens to behave identically, so this answers "is it
+     * safe to reuse the result of the other transform", not "are these the same
+     * mapping".
+     *
+     * @param[in] other The transform to compare against.
+     *
+     * @returns True if the two transforms transform points identically.
+     */
+    bool operator==(const Transform& other) const;
+
+    /**
+     * The negation of operator==().
+     *
+     * @param[in] other The transform to compare against.
+     *
+     * @returns True if the two transforms may transform points differently.
+     */
+    bool operator!=(const Transform& other) const;
+
+    /**
      * Return a TF transform equivalent to this transform
      *
      * @return The equivalent tf2::Transform
@@ -294,6 +341,7 @@ namespace swri_transform_util
      */
     void Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const override;
     TransformImplPtr Inverse() const override;
+    bool Equals(const TransformImpl& other) const override;
   };
 
   /**
@@ -329,6 +377,7 @@ namespace swri_transform_util
      */
     tf2::Quaternion GetOrientation() const override;
     TransformImplPtr Inverse() const override;
+    bool Equals(const TransformImpl& other) const override;
 
   protected:
     tf2::Transform transform_;

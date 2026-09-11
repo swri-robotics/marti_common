@@ -2,6 +2,29 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.10.0 (2026-09-11)
+-------------------
+* Fixing reference angle in the LocalXyWgs84Util constructor being read as radians (`#802 <https://github.com/swri-robotics/marti_common/issues/802>`_)
+* Adding Transform equality so callers can detect when a transform changes (`#800 <https://github.com/swri-robotics/marti_common/issues/800>`_)
+* Contributors: David Anthony
+
+3.9.1 (2026-08-19)
+------------------
+* Updating node interface APIs to new format for recent ROS 2 distros (`#799 <https://github.com/swri-robotics/marti_common/issues/799>`_)
+* Adding more robust package version compatibility checks (`#795 <https://github.com/swri-robotics/marti_common/issues/795>`_)
+* Forward declaring geographic lib pointer so we do not need to export it via CMake (`#792 <https://github.com/swri-robotics/marti_common/issues/792>`_)
+* Lyrical Update (`#790 <https://github.com/swri-robotics/marti_common/issues/790>`_)
+  * Deprecating swri_roscpp
+  * Removing deprecated calls
+  * Updating for new image transport interface
+  * Updating filenames for deprecated files
+  * Updating references to deprecated files
+  * Updating to spin executor
+  * Updating to use new ament_idnex_cpp function
+  * Removing pre-lyrical releases from testing
+  * Adding dual compatibility with older APIs
+* Contributors: David Anthony
+
 3.9.0 (2026-06-02)
 ------------------
 * Lyrical Update (`#789 <https://github.com/swri-robotics/marti_common/issues/789>`_)

@@ -107,6 +107,26 @@ namespace swri_transform_util
     return Transform(transform_->Inverse());
   }
 
+  bool Transform::operator==(const Transform& other) const
+  {
+    if (transform_ == other.transform_)
+    {
+      return true;
+    }
+
+    if (!transform_ || !other.transform_)
+    {
+      return false;
+    }
+
+    return transform_->Equals(*other.transform_);
+  }
+
+  bool Transform::operator!=(const Transform& other) const
+  {
+    return !(*this == other);
+  }
+
   tf2::Transform Transform::GetTF() const
   {
     return tf2::Transform(GetOrientation(),GetOrigin());
@@ -117,6 +137,13 @@ namespace swri_transform_util
     v_out = v_in;
   }
   
+  bool IdentityTransform::Equals(const TransformImpl& other) const
+  {
+    // Every identity transform maps points the same way, so the type is the
+    // only thing worth checking.
+    return dynamic_cast<const IdentityTransform*>(&other) != nullptr;
+  }
+
   std::shared_ptr<TransformImpl> IdentityTransform::Inverse() const
   {
     TransformImplPtr inverse = 
@@ -142,6 +169,18 @@ namespace swri_transform_util
     v_out = transform_ * v_in;
   }
   
+  bool TfTransform::Equals(const TransformImpl& other) const
+  {
+    auto tf_other = dynamic_cast<const TfTransform*>(&other);
+
+    // Rotations are compared component-wise, so a quaternion and its negation
+    // -- the same rotation -- are reported unequal. That is the safe way to
+    // be wrong: a caller redoes work it could have skipped.
+    return tf_other != nullptr &&
+        transform_.getOrigin() == tf_other->transform_.getOrigin() &&
+        transform_.getRotation() == tf_other->transform_.getRotation();
+  }
+
   tf2::Quaternion TfTransform::GetOrientation() const
   {
     return transform_.getRotation();

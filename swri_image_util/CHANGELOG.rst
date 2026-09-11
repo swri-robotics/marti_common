@@ -2,6 +2,26 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.10.0 (2026-09-11)
+-------------------
+
+3.9.1 (2026-08-19)
+------------------
+* Removing unnecessary dependency on pkg-config (`#797 <https://github.com/swri-robotics/marti_common/issues/797>`_)
+* Adding replace colors node for ROS 2 (`#796 <https://github.com/swri-robotics/marti_common/issues/796>`_)
+* Adding more robust package version compatibility checks (`#795 <https://github.com/swri-robotics/marti_common/issues/795>`_)
+* Lyrical Update (`#790 <https://github.com/swri-robotics/marti_common/issues/790>`_)
+  * Deprecating swri_roscpp
+  * Removing deprecated calls
+  * Updating for new image transport interface
+  * Updating filenames for deprecated files
+  * Updating references to deprecated files
+  * Updating to spin executor
+  * Updating to use new ament_idnex_cpp function
+  * Removing pre-lyrical releases from testing
+  * Adding dual compatibility with older APIs
+* Contributors: David Anthony
+
 3.9.0 (2026-06-02)
 ------------------
 

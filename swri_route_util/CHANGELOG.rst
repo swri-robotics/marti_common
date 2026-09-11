@@ -2,6 +2,14 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.10.0 (2026-09-11)
+-------------------
+
+3.9.1 (2026-08-19)
+------------------
+* Handling improper normalization in projectOntoRoute when a point is past the end of the route (`#794 <https://github.com/swri-robotics/marti_common/issues/794>`_)
+* Contributors: David Anthony
+
 3.9.0 (2026-06-02)
 ------------------
 

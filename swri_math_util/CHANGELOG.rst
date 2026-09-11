@@ -2,6 +2,12 @@
 Changelog for package swri_math_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.10.0 (2026-09-11)
+-------------------
+
+3.9.1 (2026-08-19)
+------------------
+
 3.9.0 (2026-06-02)
 ------------------
 * Lyrical Update (`#789 <https://github.com/swri-robotics/marti_common/issues/789>`_)

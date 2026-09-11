@@ -103,7 +103,8 @@ public:
           new swri_transform_util::LocalXyWgs84Util(
               msg->position.latitude,
               msg->position.longitude,
-              tf2::getYaw(msg->orientation),
+              // The constructor takes degrees; getYaw() returns radians.
+              tf2::getYaw(msg->orientation) * swri_math_util::_rad_2_deg,
               msg->position.altitude));
       Unsubscribe();
     };
