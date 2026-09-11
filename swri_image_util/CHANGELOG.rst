@@ -2,6 +2,9 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 3.9.1 (2026-08-19)
 ------------------
 * Removing unnecessary dependency on pkg-config (`#797 <https://github.com/swri-robotics/marti_common/issues/797>`_)

@@ -2,6 +2,12 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixing reference angle in the LocalXyWgs84Util constructor being read as radians (`#802 <https://github.com/swri-robotics/marti_common/issues/802>`_)
+* Adding Transform equality so callers can detect when a transform changes (`#800 <https://github.com/swri-robotics/marti_common/issues/800>`_)
+* Contributors: David Anthony
+
 3.9.1 (2026-08-19)
 ------------------
 * Updating node interface APIs to new format for recent ROS 2 distros (`#799 <https://github.com/swri-robotics/marti_common/issues/799>`_)
