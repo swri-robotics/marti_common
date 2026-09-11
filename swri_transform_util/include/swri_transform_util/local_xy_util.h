@@ -134,6 +134,23 @@ namespace swri_transform_util
     explicit LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
 
     /**
+     * Copy constructor.
+     *
+     * Performs a deep copy of the GeographicLib::LocalCartesian. If the source
+     * is still waiting on /local_xy_origin, the copy creates its own
+     * subscription so that the callback is bound to the copy rather than the
+     * source.
+     */
+    LocalXyWgs84Util(const LocalXyWgs84Util& other);
+
+    /**
+     * Copy assignment operator.
+     *
+     * See the copy constructor for semantics.
+     */
+    LocalXyWgs84Util& operator=(const LocalXyWgs84Util& other);
+
+    /**
      * Destructor.
      *
      * Declared and defined out-of-line in the .cpp so that the unique_ptr to

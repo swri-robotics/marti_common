@@ -125,6 +125,38 @@ TEST(LocalXyUtilTests, TestOrigin)
   EXPECT_FLOAT_EQ(-98.61370577, lon);
 }
 
+TEST(LocalXyUtilTests, TestCopy)
+{
+  auto original = std::make_unique<swri_transform_util::LocalXyWgs84Util>(
+      29.45196669, -98.61370577, 30.0, 100.0);
+
+  swri_transform_util::LocalXyWgs84Util copy(*original);
+  swri_transform_util::LocalXyWgs84Util assigned(0, 0);
+  assigned = *original;
+
+  double x, y;
+  original->ToLocalXy(29.4937684617, -98.6134340294, x, y);
+  const double angle = original->ReferenceAngle();
+
+  // The copies must remain valid after the original is destroyed.
+  original.reset();
+
+  for (const auto* util : {&copy, &assigned})
+  {
+    EXPECT_TRUE(util->Initialized());
+    EXPECT_FLOAT_EQ(29.45196669, util->ReferenceLatitude());
+    EXPECT_FLOAT_EQ(-98.61370577, util->ReferenceLongitude());
+    EXPECT_FLOAT_EQ(angle, util->ReferenceAngle());
+    EXPECT_FLOAT_EQ(100.0, util->ReferenceAltitude());
+    EXPECT_EQ("map", util->Frame());
+
+    double x2, y2;
+    util->ToLocalXy(29.4937684617, -98.6134340294, x2, y2);
+    EXPECT_FLOAT_EQ(x, x2);
+    EXPECT_FLOAT_EQ(y, y2);
+  }
+}
+
 TEST(LocalXyUtilTests, TestOffset1)
 {
   swri_transform_util::LocalXyWgs84Util local_xy_util(29.45196669, -98.61370577);
