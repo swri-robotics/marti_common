@@ -73,6 +73,8 @@
  *        - pose.position.x - longitude in degrees east of the prime meridian
  *        - pose.position.y - lattitude in degrees north of the equator.
  *        - pose.position.z - altitude in meters above the WGS84 ellipsoid
+ *        - pose.orientation - its yaw is the direction of the local X axis,
+ *          counter-clockwise from east
  *        All other fields in the message are ignored.
  */
 
@@ -196,7 +198,9 @@ private:
         new swri_transform_util::LocalXyWgs84Util(
             msg->pose.position.y,    // Latitude
             msg->pose.position.x,    // Longitude
-            0.0,                        // Heading
+            // The orientation's yaw is the heading in radians ENU; the
+            // constructor takes degrees.
+            tf2::getYaw(msg->pose.orientation) * swri_math_util::_rad_2_deg,
             msg->pose.position.z));  // Altitude
     Unsubscribe();
   }

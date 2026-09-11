@@ -32,6 +32,7 @@
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from geometry_msgs.msg import PoseStamped, TransformStamped
 from gps_msgs.msg import GPSStatus
+import math
 import rclpy.node
 import rclpy.qos
 from sensor_msgs.msg import NavSatStatus
@@ -122,6 +123,7 @@ class OriginManager(object):
         self.timer = None
         self.origin = None
         self.origin_source = None
+        self.origin_heading = None
         self.local_xy_frame = local_xy_frame
         if local_xy_frame_identity is None:
             local_xy_frame_identity = local_xy_frame + "__identity"
@@ -132,7 +134,7 @@ class OriginManager(object):
         self.diagnostic_pub = node.create_publisher(DiagnosticArray, '/diagnostics', 2)
         self.tf_broadcaster = TransformBroadcaster(self.node)
 
-    def set_origin(self, source, latitude, longitude, altitude, stamp=None):
+    def set_origin(self, source, latitude, longitude, altitude, stamp=None, heading=0.0):
         """
         Set the origin to the position described by the arguments and publish it.
 
@@ -147,6 +149,9 @@ class OriginManager(object):
             stamp (rospy.Time): The time to use for the origin's header.stamp field.
                 If the argument is `None`, the stamp is not set and defaults to
                 `rospy.Time(0)`. (default None).
+            heading (float): The direction of the local X axis in degrees ENU, i.e.
+                counter-clockwise from east. It is published as the yaw of the
+                origin's orientation. (default 0.0).
         """
         if self.origin is not None:
             return
@@ -157,15 +162,17 @@ class OriginManager(object):
         origin.pose.position.y = latitude
         origin.pose.position.x = longitude
         origin.pose.position.z = altitude
-        # Heading is always 0
+        # The heading is a rotation about the vertical axis only.
+        yaw = math.radians(heading)
         origin.pose.orientation.x = 0.0
         origin.pose.orientation.y = 0.0
-        origin.pose.orientation.z = 0.0
-        origin.pose.orientation.w = 1.0
+        origin.pose.orientation.z = math.sin(yaw / 2.0)
+        origin.pose.orientation.w = math.cos(yaw / 2.0)
         self.origin_source = source
+        self.origin_heading = heading
         self.origin = origin
-        self.node.get_logger().info("Origin from '{}' source set to {}, {}, {}".format(
-            source, latitude, longitude, altitude))
+        self.node.get_logger().info("Origin from '{}' source set to {}, {}, {}, heading {}".format(
+            source, latitude, longitude, altitude, heading))
         self._publish_origin()
 
     def _publish_origin(self):
@@ -178,14 +185,16 @@ class OriginManager(object):
 
         Args:
             origin_dict (dict): A dictionary containing the keys "latitude", "longitude", and
-                "altitude" with appropriate float values
+                "altitude" with appropriate float values, and optionally "heading" in degrees
+                ENU (default 0.0)
 
         Raises:
             KeyError: If `origin_dict` does not contain all of the required keys.
         """
         self.set_origin("manual", origin_dict["latitude"],
                         origin_dict["longitude"],
-                        origin_dict["altitude"])
+                        origin_dict["altitude"],
+                        heading=origin_dict.get("heading", 0.0))
 
     def set_origin_from_list(self, origin_name, origin_list):
         """
@@ -209,12 +218,15 @@ class OriginManager(object):
                 origin_name, origins_list_str)
             raise KeyError(message)
 
-    def set_origin_from_gps(self, msg):
+    def set_origin_from_gps(self, msg, use_track=False):
         """
         Set the local origin from a gps_common.msg.GPSFix object.
 
         Args:
             msg (gps_common.msg.GPSFix): A GPSFix message with the local origin
+            use_track (bool): If True, point the local X axis along the GPS track, provided
+                that the track is finite and its uncertainty is finite and positive;
+                otherwise the heading is 0, pointing the X axis east. (default False).
 
         Raises:
             InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
@@ -222,7 +234,22 @@ class OriginManager(object):
         if msg.status.status == GPSStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid GPSFix. Waiting for a valid one...'
             raise InvalidFixException(message)
-        self.set_origin("gpsfix", msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
+        heading = 0.0
+        if use_track:
+            # An uncertainty of 0 is what a driver that never fills it in leaves,
+            # so it is not taken as a sign that the track is trustworthy.
+            if (math.isfinite(msg.track) and math.isfinite(msg.err_track)
+                    and msg.err_track > 0.0):
+                # The track is a compass heading, clockwise from north, while the
+                # origin's heading is ENU, counter-clockwise from east.
+                heading = 90.0 - msg.track
+            else:
+                self.node.get_logger().warning(
+                    'GPSFix track {} with uncertainty {} is not usable, since the track must '
+                    'be finite and its uncertainty finite and positive; using a heading of 0 '
+                    'for the origin'.format(msg.track, msg.err_track))
+        self.set_origin("gpsfix", msg.latitude, msg.longitude, msg.altitude, msg.header.stamp,
+                        heading)
 
     def set_origin_from_navsat(self, msg):
         """
@@ -284,6 +311,9 @@ class OriginManager(object):
 
             altitude = "%f" % self.origin.pose.position.z
             status.values.append(KeyValue(key="Altitude", value=altitude))
+
+            heading = "%f" % self.origin_heading
+            status.values.append(KeyValue(key="Heading", value=heading))
 
             diagnostic.status.append(status)
             self.diagnostic_pub.publish(diagnostic)

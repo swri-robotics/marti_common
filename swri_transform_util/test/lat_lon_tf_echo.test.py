@@ -40,14 +40,16 @@ import ament_index_python
 import launch
 import launch_testing
 import rclpy
+from geometry_msgs.msg import PoseStamped
 from gps_msgs.msg import GPSFix
 from launch_ros.actions import Node
 
 ORIGIN_LAT = 29.45
 ORIGIN_LON = -98.61
-# Compass heading, clockwise from north. 30 degrees keeps the correct
-# conversion (90 - track), passing track through unconverted, and 90 + track
-# all distinguishable, which 0 and 45 do not.
+# The compass bearing of the local X axis, clockwise from north. 30 degrees
+# keeps the correct conversion from a GPSFix track (90 - track), passing track
+# through unconverted, and 90 + track all distinguishable, which 0 and 45 do
+# not.
 TRACK = 30.0
 # How far along the local X axis the target frame sits.
 DISTANCE = 100.0
@@ -61,8 +63,32 @@ OUTPUT_RE = re.compile(
     r'Latitude: (-?\d+\.\d+)°, Longitude: (-?\d+\.\d+)°, Heading: (-?\d+\.\d+)°')
 
 
+def gps_fix_origin():
+    fix = GPSFix()
+    fix.latitude = ORIGIN_LAT
+    fix.longitude = ORIGIN_LON
+    fix.altitude = 0.0
+    fix.track = TRACK
+    return fix
+
+
+def pose_stamped_origin():
+    pose = PoseStamped()
+    pose.pose.position.y = ORIGIN_LAT
+    pose.pose.position.x = ORIGIN_LON
+    pose.pose.position.z = 0.0
+    # The yaw is ENU, counter-clockwise from east.
+    yaw = math.radians(90.0 - TRACK)
+    pose.pose.orientation.z = math.sin(yaw / 2.0)
+    pose.pose.orientation.w = math.cos(yaw / 2.0)
+    return pose
+
+
+# Both origins describe the same local frame, so the node's report must be the
+# same for each.
 @pytest.mark.launch_test
-def generate_test_description():
+@launch_testing.parametrize('origin', [gps_fix_origin(), pose_stamped_origin()])
+def generate_test_description(origin):
     # lat_lon_tf_echo is installed to bin/ rather than lib/<package>, so it is
     # launched by path instead of as a launch_ros Node.
     echo = launch.actions.ExecuteProcess(
@@ -94,10 +120,10 @@ def generate_test_description():
         echo,
         target_tf,
         launch_testing.actions.ReadyToTest(),
-    ]), {'echo': echo}
+    ]), {'echo': echo, 'origin': origin}
 
 
-class LatLonTfEchoGpsFixTest(unittest.TestCase):
+class LatLonTfEchoOriginTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -113,21 +139,16 @@ class LatLonTfEchoGpsFixTest(unittest.TestCase):
     def tearDown(self):
         self.node.destroy_node()
 
-    def reported_position(self, proc_output, echo):
-        """Publish a GPSFix origin until the node reports, and return the report."""
-        publisher = self.node.create_publisher(GPSFix, '/local_xy_origin', 1)
-        fix = GPSFix()
-        fix.latitude = ORIGIN_LAT
-        fix.longitude = ORIGIN_LON
-        fix.altitude = 0.0
-        fix.track = TRACK
+    def reported_position(self, proc_output, echo, origin):
+        """Publish the origin until the node reports, and return the report."""
+        publisher = self.node.create_publisher(type(origin), '/local_xy_origin', 1)
 
         # The node only subscribes once it has discovered a publisher, so keep
         # publishing until it reports a position.
         deadline = time.monotonic() + 30.0
         reported = False
         while not reported and time.monotonic() < deadline:
-            publisher.publish(fix)
+            publisher.publish(origin)
             # waitFor() searches stderr unless told otherwise, and the node
             # reports on stdout.
             reported = proc_output.waitFor(
@@ -140,8 +161,8 @@ class LatLonTfEchoGpsFixTest(unittest.TestCase):
         self.assertIsNotNone(match, text)
         return tuple(float(group) for group in match.groups())
 
-    def test_position_follows_gps_track(self, proc_output, echo):
-        lat, lon, _ = self.reported_position(proc_output, echo)
+    def test_position_follows_origin_heading(self, proc_output, echo, origin):
+        lat, lon, _ = self.reported_position(proc_output, echo, origin)
 
         # Metres per degree at the origin's latitude, which is ample precision
         # for the 100 m offset and six decimal places the node prints.
@@ -153,15 +174,16 @@ class LatLonTfEchoGpsFixTest(unittest.TestCase):
         north = (lat - ORIGIN_LAT) * metres_per_deg_lat
         east = (lon - ORIGIN_LON) * metres_per_deg_lon
 
-        # The local X axis points along the GPS track, so the target lies
-        # DISTANCE metres away on a compass bearing of TRACK.
+        # The local X axis points along a compass bearing of TRACK, so the
+        # target lies DISTANCE metres away in that direction.
         self.assertAlmostEqual(DISTANCE, math.hypot(north, east), delta=0.5)
         self.assertAlmostEqual(
             TRACK, math.degrees(math.atan2(east, north)), delta=0.5)
 
-    def test_heading_is_compass_bearing(self, proc_output, echo):
-        _, _, heading = self.reported_position(proc_output, echo)
+    def test_heading_is_compass_bearing(self, proc_output, echo, origin):
+        _, _, heading = self.reported_position(proc_output, echo, origin)
 
-        # The local X axis points along the GPS track, and a counter-clockwise
-        # yaw from it turns the heading anticlockwise on the compass.
+        # The local X axis points along a compass bearing of TRACK, and a
+        # counter-clockwise yaw from it turns the heading anticlockwise on the
+        # compass.
         self.assertAlmostEqual((TRACK - TARGET_YAW) % 360.0, heading, delta=0.01)

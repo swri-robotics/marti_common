@@ -68,6 +68,16 @@ class OriginInitializer(rclpy.node.Node):
                                                                 name='local_xy_navsatfix_topic',
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
+        self.use_gpsfix_track_param = self.declare_parameter('local_xy_use_gpsfix_track',
+                                                             False,
+                                                             descriptor=rclpy.node.ParameterDescriptor(
+                                                                 name='local_xy_use_gpsfix_track',
+                                                                 type=rclpy.parameter.ParameterType.PARAMETER_BOOL,
+                                                                 description='Point the local X axis along the '
+                                                                             'GPSFix track when the track is finite '
+                                                                             'and its uncertainty is finite and '
+                                                                             'positive, rather than east'
+                                                             ))
         self.local_xy_origins_param = self.declare_parameter('local_xy_origins',
                                                              [nan, nan, nan, nan],
                                                              descriptor=rclpy.node.ParameterDescriptor(
@@ -77,6 +87,7 @@ class OriginInitializer(rclpy.node.Node):
 
         self.get_logger().info("Origin: %s" % self.local_xy_origin_param.value)
         self.get_logger().info("Frame: %s" % self.local_xy_frame_param.value)
+        self.get_logger().info("Use GPSFix track: %s" % self.use_gpsfix_track_param.value)
 
         self.manager = OriginManager(self, self.local_xy_frame_param.value)
         if self.local_xy_origin_param.value == 'auto':
@@ -93,9 +104,11 @@ class OriginInitializer(rclpy.node.Node):
             self.subscribers = [gps_sub, navsat_sub]
         elif type(self.local_xy_origins_param.value) == list:
             if (len(self.local_xy_origins_param.value) != 4):
-               self.get_logger().fatal(f'{self.local_xy_origins_param.name} should have len 4 [lat, lon, alt, heading]')
+               self.get_logger().fatal(f'{self.local_xy_origins_param.name} should have len 4 [lat, lon, alt, heading], '
+                                       'with heading in degrees ENU')
                exit(1)
-            self.manager.set_origin("manual", *self.local_xy_origins_param.value[0:3])
+            latitude, longitude, altitude, heading = self.local_xy_origins_param.value
+            self.manager.set_origin("manual", latitude, longitude, altitude, heading=heading)
         elif type(self.local_xy_origins_param.value) == str:
             try:
                 origins_list = yaml.safe_load(self.local_xy_origins_param.value)
@@ -131,7 +144,7 @@ class OriginInitializer(rclpy.node.Node):
     def gps_callback(self, msg):
         try:
             self.get_logger().info('Got GPSFix message.')
-            self.manager.set_origin_from_gps(msg)
+            self.manager.set_origin_from_gps(msg, use_track=self.use_gpsfix_track_param.value)
             self.get_logger().info('Successfully set origin; unsubscribing.')
             while self.subscribers:
                 sub = self.subscribers.pop()
