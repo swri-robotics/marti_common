@@ -209,14 +209,16 @@ if(BUILD_TESTING)
 
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/transform_manager.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/launch/local_xy_util.test.py)
-  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo.test.py)
+  # The parametrized launch tests run one launch per case, so they are given
+  # more than the 60 second default that add_launch_test() applies per test.
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo.test.py TIMEOUT 180)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo_unsupported_origin.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_gps.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_navsat.test.py)
   # The "custom" functionality appears to be gone in ROS 2.
-  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_auto_gps.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_auto_gps.test.py TIMEOUT 180)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_auto_navsat.test.py)
-  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_manual.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_origin_manual.test.py TIMEOUT 180)
 
   install(TARGETS
     transform_manager_test

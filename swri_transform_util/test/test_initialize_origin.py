@@ -324,7 +324,9 @@ class TestManualOrigin(TestInitializeOrigin):
 
 
 if __name__ == "__main__":
-    time.sleep(5)
+    # No wait for the node under test here: subscribeToOrigin() blocks until it
+    # advertises /local_xy_origin, and the fixes these tests publish are either
+    # latched or published in a loop until they are picked up.
     rclpy.init()
 
     # Any arguments after the mode are floats passed on to the test's constructor.
