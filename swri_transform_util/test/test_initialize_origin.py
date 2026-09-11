@@ -71,6 +71,24 @@ class TestInitializeOrigin(unittest.TestCase):
         yaw = math.atan2(sc, cc)
         return yaw
 
+    def waitForOrigin(self, publisher=None, msg=None, timeout=30.0):
+        """
+        Spin until an origin arrives, republishing msg while waiting.
+
+        initialize_origin subscribes to the fix topics with volatile durability, so a
+        fix published before its subscription is matched is never delivered. Publishing
+        again while waiting covers that without relying on a fixed startup delay.
+        """
+        deadline = time.time() + timeout
+        next_publish = 0.0
+        while not self.got_origin and time.time() < deadline:
+            if publisher is not None and time.time() >= next_publish:
+                publisher.publish(msg)
+                next_publish = time.time() + 0.5
+            rclpy.spin_once(self.node, timeout_sec=0.01)
+            time.sleep(0.01)
+        self.assertTrue(self.got_origin, "never received an origin on " + ORIGIN_TOPIC)
+
     def subscribeToOrigin(self):
         self.assertIsNotNone(self.node)
         self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC, blocking=True)
@@ -206,10 +224,7 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
         gps_msg.track = track
         gps_msg.err_track = err_track
         gps_msg.header.stamp = msg_stamp
-        gps_pub.publish(gps_msg)
-        while not self.got_origin:
-            rclpy.spin_once(self.node, timeout_sec=0.01)
-            time.sleep(0.01)
+        self.waitForOrigin(gps_pub, gps_msg)
 
 
 class TestInvalidGPSFix(TestInvalidOrigin):
@@ -273,10 +288,7 @@ class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
         nsf_msg.altitude = swri['altitude']
         nsf_msg.header.frame_id = "/far_field"
         nsf_msg.header.stamp = msg_stamp
-        nsf_pub.publish(nsf_msg)
-        while not self.got_origin:
-            rclpy.spin_once(self.node, timeout_sec=0.01)
-            time.sleep(0.01)
+        self.waitForOrigin(nsf_pub, nsf_msg)
 
 
 class TestInvalidNavSatFix(TestInvalidOrigin):
@@ -318,13 +330,13 @@ class TestManualOrigin(TestInitializeOrigin):
         super().__init__(expected_heading)
         self.node = rclpy.create_node('test_manual_origin')
         origin_sub = self.subscribeToOrigin()
-        while not self.got_origin:
-            rclpy.spin_once(self.node, timeout_sec=0.01)
-            time.sleep(0.01)
+        self.waitForOrigin()
 
 
 if __name__ == "__main__":
-    time.sleep(5)
+    # No wait for the node under test here: subscribeToOrigin() blocks until it
+    # advertises /local_xy_origin, and the fixes these tests publish are either
+    # latched or published in a loop until they are picked up.
     rclpy.init()
 
     # Any arguments after the mode are floats passed on to the test's constructor.
