@@ -27,6 +27,7 @@
 //
 // *****************************************************************************
 #include <chrono>
+#include <string>
 
 #include <swri_route_util/visualization.h>
 #include <swri_route_util/util.h>
@@ -89,6 +90,57 @@ void markerForRouteSpeeds(
 
     m.points.push_back(makePoint(p1.x(), p1.y()));
     m.points.push_back(makePoint(p2.x(), p2.y()));
+  }
+}
+
+void markerArrayForObstacles(
+  visualization_msgs::msg::MarkerArray &markers,
+  const marti_nav_msgs::msg::ObstacleArray &obstacles,
+  const std::string &ns,
+  const std_msgs::msg::ColorRGBA &color,
+  double line_width)
+{
+  markers.markers.clear();
+  markers.markers.reserve(obstacles.obstacles.size());
+
+  for (auto const &obstacle : obstacles.obstacles) {
+    // A line strip needs at least two points to draw anything.
+    if (obstacle.polygon.size() < 2) {
+      continue;
+    }
+
+    visualization_msgs::msg::Marker m;
+    m.header = obstacles.header;
+    m.ns = ns;
+    m.id = static_cast<int>(markers.markers.size());
+    m.type = visualization_msgs::msg::Marker::LINE_STRIP;
+    m.action = visualization_msgs::msg::Marker::ADD;
+    // The obstacle's polygon is defined relative to the obstacle's
+    // pose, so the marker is placed at that pose and the polygon
+    // points are used without modification.
+    m.pose = obstacle.pose;
+    // Messages default to the identity rotation, but a publisher that
+    // builds the pose from raw data can leave the quaternion zeroed
+    // out, which is not a valid rotation and can not be rendered.
+    if (m.pose.orientation.x == 0.0 &&
+        m.pose.orientation.y == 0.0 &&
+        m.pose.orientation.z == 0.0 &&
+        m.pose.orientation.w == 0.0) {
+      m.pose.orientation.w = 1.0;
+    }
+    m.scale.x = line_width;
+    m.scale.y = 1.0;
+    m.scale.z = 1.0;
+    m.color = color;
+    m.lifetime = rclcpp::Duration(std::chrono::nanoseconds::zero());
+    m.frame_locked = false;
+
+    m.points = obstacle.polygon;
+    // The polygon is implicitly closed by a segment between the last
+    // and first points.
+    m.points.push_back(obstacle.polygon.front());
+
+    markers.markers.push_back(m);
   }
 }
 }  // namespace swri_route_util

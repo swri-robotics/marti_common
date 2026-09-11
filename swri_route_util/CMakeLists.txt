@@ -8,6 +8,8 @@ find_package(geometry_msgs)
 find_package(marti_common_msgs REQUIRED)
 find_package(marti_nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(swri_geometry_util REQUIRED)
 find_package(swri_math_util REQUIRED)
 find_package(swri_transform_util REQUIRED)
@@ -32,6 +34,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   ${geometry_msgs_TARGETS}
   ${marti_common_msgs_TARGETS}
   ${marti_nav_msgs_TARGETS}
+  ${std_msgs_TARGETS}
   ${swri_math_util_TARGETS}
   ${swri_transform_util_TARGETS}
   ${visualization_msgs_TARGETS}
@@ -39,12 +42,56 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   tf2_geometry_msgs::tf2_geometry_msgs)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${swri_geometry_util_TARGETS})
 
+### Build Nodes ###
+add_library(${PROJECT_NAME}_nodes SHARED
+  src/nodes/obstacle_marker_node.cpp)
+
+target_include_directories(${PROJECT_NAME}_nodes
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+)
+
+target_compile_definitions(${PROJECT_NAME}_nodes
+  PRIVATE "COMPOSITION_BUILDING_DLL")
+
+rclcpp_components_register_nodes(${PROJECT_NAME}_nodes "swri_route_util::ObstacleMarkerNode")
+
+target_link_libraries(${PROJECT_NAME}_nodes PUBLIC
+  ${PROJECT_NAME}
+  ${marti_nav_msgs_TARGETS}
+  ${std_msgs_TARGETS}
+  ${visualization_msgs_TARGETS}
+  rclcpp::rclcpp)
+target_link_libraries(${PROJECT_NAME}_nodes PRIVATE
+  ${rclcpp_components_TARGETS})
+
+add_executable(obstacle_marker_node src/nodes/obstacle_marker_main.cpp)
+target_link_libraries(obstacle_marker_node PUBLIC
+  ${PROJECT_NAME}_nodes
+  rclcpp::rclcpp)
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(test_visualization test/test_visualization.cpp)
+  target_link_libraries(test_visualization ${PROJECT_NAME})
+endif()
+
 ### Install Libraries and Executables ###
 install(TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
+
+install(TARGETS ${PROJECT_NAME}_nodes
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+install(TARGETS obstacle_marker_node
+  DESTINATION lib/${PROJECT_NAME})
 
 ### Install Header Files ###
 install(DIRECTORY include/
@@ -54,6 +101,8 @@ ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake
   geometry_msgs
   marti_nav_msgs
+  rclcpp_components
+  std_msgs
   swri_math_util
   swri_transform_util
   tf2

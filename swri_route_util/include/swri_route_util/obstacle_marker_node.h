@@ -1,6 +1,6 @@
 // *****************************************************************************
 //
-// Copyright (c) 2017, Southwest Research Institute® (SwRI®)
+// Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,43 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_VISUALIZATION_H_
-#define SWRI_ROUTE_UTIL_VISUALIZATION_H_
+#ifndef SWRI_ROUTE_UTIL_OBSTACLE_MARKER_NODE_H_
+#define SWRI_ROUTE_UTIL_OBSTACLE_MARKER_NODE_H_
 
+#include <cstddef>
 #include <string>
 
-#include <swri_route_util/route.h>
 #include <marti_nav_msgs/msg/obstacle_array.hpp>
-#include <marti_nav_msgs/msg/route_speed_array.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/color_rgba.hpp>
-#include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
 namespace swri_route_util
 {
-// Create a marker for a set of speeds along a route.  Each speed will
-// be drawn as a line that starts at the speed's location and extends
-// perpendicular to the route.  The length of the line corresponds to
-// the speed.  The scale parameter sets the length per m/s scale.  The
-// marker's namespace and id will still need to be filled out. The
-// line colors defaults to black but can be changed after the marker
-// has been built.
-void markerForRouteSpeeds(
-  visualization_msgs::msg::Marker &marker,
-  const Route &route,
-    const marti_nav_msgs::msg::RouteSpeedArray &speeds,
-    double scale);
+// Converts obstacles into markers so that they can be displayed by
+// tools such as RViz.  Subscribes to 'obstacles'
+// (marti_nav_msgs/ObstacleArray) and publishes 'obstacle_markers'
+// (visualization_msgs/MarkerArray).
+class ObstacleMarkerNode : public rclcpp::Node
+{
+public:
+  explicit ObstacleMarkerNode(const rclcpp::NodeOptions &options);
 
-// Create markers that outline a set of obstacles.  Each obstacle is
-// drawn as a closed line strip, using the obstacle's pose as the
-// marker's pose so that the obstacle's polygon can be used as-is.
-// The markers are all created in the namespace 'ns' and are numbered
-// sequentially starting at zero.  Obstacles that do not have enough
-// points to draw a line are skipped, so the number of markers is not
-// necessarily the number of obstacles.  Any markers already in the
-// array are removed.
-void markerArrayForObstacles(
-  visualization_msgs::msg::MarkerArray &markers,
-  const marti_nav_msgs::msg::ObstacleArray &obstacles,
-  const std::string &ns,
-  const std_msgs::msg::ColorRGBA &color,
-  double line_width);
+private:
+  void handleObstacles(
+    const marti_nav_msgs::msg::ObstacleArray::ConstSharedPtr obstacles);
+
+  std::string marker_ns_;
+  std_msgs::msg::ColorRGBA color_;
+  double line_width_;
+
+  // Number of markers published for the previous message.  Markers
+  // that are no longer needed are explicitly deleted so that stale
+  // obstacles do not linger in the display.
+  size_t marker_count_;
+
+  rclcpp::Subscription<marti_nav_msgs::msg::ObstacleArray>::SharedPtr obstacles_sub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr markers_pub_;
+};
 }  // namespace swri_route_util
-#endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_
+#endif  // SWRI_ROUTE_UTIL_OBSTACLE_MARKER_NODE_H_
