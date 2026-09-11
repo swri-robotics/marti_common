@@ -129,6 +129,45 @@ namespace swri_transform_util
     ResetInitialization();
   }
 
+  LocalXyWgs84Util::LocalXyWgs84Util(const LocalXyWgs84Util& other) :
+    node_(other.node_),
+    reference_angle_(other.reference_angle_),
+    local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>(*other.local_cartesian_)),
+    cos_angle_(other.cos_angle_),
+    sin_angle_(other.sin_angle_),
+    frame_(other.frame_),
+    initialized_(other.initialized_)
+  {
+    // The source's subscription callback is bound to the source's this
+    // pointer, so sharing it would leave this copy uninitialized forever and
+    // dangling if the source is destroyed first. Subscribe independently.
+    if (other.pose_sub_ && !initialized_)
+    {
+      ResetInitialization();
+    }
+  }
+
+  LocalXyWgs84Util& LocalXyWgs84Util::operator=(const LocalXyWgs84Util& other)
+  {
+    if (this != &other)
+    {
+      node_ = other.node_;
+      reference_angle_ = other.reference_angle_;
+      *local_cartesian_ = *other.local_cartesian_;
+      cos_angle_ = other.cos_angle_;
+      sin_angle_ = other.sin_angle_;
+      frame_ = other.frame_;
+      initialized_ = other.initialized_;
+
+      pose_sub_.reset();
+      if (other.pose_sub_ && !initialized_)
+      {
+        ResetInitialization();
+      }
+    }
+    return *this;
+  }
+
   LocalXyWgs84Util::~LocalXyWgs84Util() = default;
 
   void LocalXyWgs84Util::ResetInitialization()
