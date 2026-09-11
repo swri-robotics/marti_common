@@ -40,6 +40,10 @@ NAME = 'test_initialize_origin'
 
 ORIGIN_TOPIC = '/local_xy_origin'
 
+# The compass track of the published GPSFix. Its ENU equivalent, 60 degrees,
+# differs from the default heading of 0 and from the track itself.
+TRACK = 30.0
+
 def get_tests(*, args=[]):
     test_path = os.path.join(
             ament_index_python.get_package_prefix("swri_transform_util"),
@@ -48,20 +52,33 @@ def get_tests(*, args=[]):
     )
 
     return launch.actions.ExecuteProcess(
-            cmd=["python3", test_path, "auto_gps"],
+            cmd=["python3", test_path, "auto_gps", *args],
             name="init_origin_auto_gps_test",
             additional_env={"PYTHONBUFFERED": "1"},
             output="screen",
     )
 
 @pytest.mark.launch_test
-def generate_test_description():
+@launch_testing.parametrize('use_track, err_track, expected_heading', [
+    # The track is ignored unless asked for.
+    (False, 2.0, 0.0),
+    (True, 2.0, 90.0 - TRACK),
+    # A track of unknown uncertainty falls back to the default heading.
+    (True, float('nan'), 0.0),
+    (True, float('inf'), 0.0),
+    # So does one whose uncertainty is not positive, which includes the 0 that
+    # a driver leaves when it never fills the uncertainty in.
+    (True, 0.0, 0.0),
+    (True, -1.0, 0.0),
+])
+def generate_test_description(use_track, err_track, expected_heading):
     init_origin = Node(
         package="swri_transform_util",
         name="origin",
         executable="initialize_origin.py",
         parameters=[{
             "local_xy_frame": "/far_field",
+            "local_xy_use_gpsfix_track": use_track,
         }]
     )
 
@@ -71,11 +88,13 @@ def generate_test_description():
                 launch_testing.util.KeepAliveProc(),
                 launch_testing.actions.ReadyToTest(),
             ]
-    )
+    # Not 'test_args', which launch_testing reserves for the launch arguments
+    # given on its command line.
+    ), {'script_args': [str(TRACK), str(err_track), str(expected_heading)]}
 
 class AutoGpsTest(unittest.TestCase):
-    def test_auto_gps(self, launch_service, proc_info, proc_output):
-        tests = get_tests();
+    def test_auto_gps(self, launch_service, proc_info, proc_output, script_args):
+        tests = get_tests(args=script_args);
         with launch_testing.tools.launch_process(
             launch_service, tests, proc_info, proc_output
         ):

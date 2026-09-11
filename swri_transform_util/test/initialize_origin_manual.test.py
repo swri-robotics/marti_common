@@ -40,6 +40,9 @@ NAME = 'test_initialize_origin'
 
 ORIGIN_TOPIC = '/local_xy_origin'
 
+# Nonzero, so that dropping the heading is caught. Degrees ENU.
+HEADING = 30.0
+
 def get_tests(*, args=[]):
     test_path = os.path.join(
             ament_index_python.get_package_prefix("swri_transform_util"),
@@ -48,40 +51,35 @@ def get_tests(*, args=[]):
     )
 
     return launch.actions.ExecuteProcess(
-            cmd=["python3", test_path, "manual"],
+            cmd=["python3", test_path, "manual", *args],
             name="init_origin_auto_gps_test",
             additional_env={"PYTHONBUFFERED": "1"},
             output="screen",
     )
 
+# Each way of specifying the origin is launched on its own, since the test
+# accepts the first origin it receives.
 @pytest.mark.launch_test
-def generate_test_description():
-    init_origin_array = Node(
+@launch_testing.parametrize('local_xy_origins', [
+    [29.45196669, -98.61370577, 233.719, HEADING],
+    "[{name: 'swri', latitude: 29.45196669, longitude: -98.61370577, altitude: 233.719, "
+    f"heading: {HEADING}}}]",
+])
+def generate_test_description(local_xy_origins):
+    init_origin = Node(
         package="swri_transform_util",
         name="origin",
         executable="initialize_origin.py",
         parameters=[{
             "local_xy_frame": "/far_field",
             "local_xy_origin": "swri",
-            "local_xy_origins": [29.45196669, -98.61370577, 233.719, 0.0],
-        }]
-    )
-
-    init_origin_dicitonary = Node(
-        package="swri_transform_util",
-        name="origin",
-        executable="initialize_origin.py",
-        parameters=[{
-            "local_xy_frame": "/far_field",
-            "local_xy_origin": "swri",
-            "local_xy_origins": "[{name: 'swri', latitude: 29.45196669, longitude: -98.61370577, altitude: 233.719, heading: 0.0}]",
+            "local_xy_origins": local_xy_origins,
         }]
     )
 
     return launch.LaunchDescription(
             [
-                init_origin_array,
-                init_origin_dicitonary,
+                init_origin,
                 launch_testing.util.KeepAliveProc(),
                 launch_testing.actions.ReadyToTest(),
             ]
@@ -89,7 +87,7 @@ def generate_test_description():
 
 class ManualTest(unittest.TestCase):
     def test_manual(self, launch_service, proc_info, proc_output):
-        tests = get_tests();
+        tests = get_tests(args=[str(HEADING)]);
         with launch_testing.tools.launch_process(
             launch_service, tests, proc_info, proc_output
         ):

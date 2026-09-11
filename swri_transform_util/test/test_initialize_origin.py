@@ -55,9 +55,15 @@ swri = {
 }
 
 class TestInitializeOrigin(unittest.TestCase):
-    def __init__(self):
+    def __init__(self, expected_heading=0.0):
+        """
+        Args:
+            expected_heading (float): The heading the published origin should have, in
+                degrees ENU. (default 0.0).
+        """
         super().__init__()
         self.got_origin = False
+        self.expected_heading = expected_heading
 
     def _yaw_from_quaternion(self, w, x, y, z):
         sc = 2 * ((w * z) + (x * y))
@@ -97,7 +103,9 @@ class TestInitializeOrigin(unittest.TestCase):
                 msg.pose.orientation.x,
                 msg.pose.orientation.y,
                 msg.pose.orientation.z)
-            self.assertAlmostEqual(yaw, 0)
+            self.node.get_logger().info("Origin heading is %f; expected %f" % (
+                math.degrees(yaw), self.expected_heading))
+            self.assertAlmostEqual(yaw, math.radians(self.expected_heading))
         elif self.origin_class == GPSFix:
             self.node.get_logger().info("Status: %d" % msg.status.status)
             self.assertEqual(msg.status.status, GPSStatus.STATUS_FIX)
@@ -169,9 +177,18 @@ class TestInvalidOrigin(unittest.TestCase):
 
 
 class TestAutoOriginFromGPSFix(TestInitializeOrigin):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, track=swri['heading'], err_track=0.0, expected_heading=0.0):
+        """
+        Args:
+            track (float): The compass track of the published GPSFix in degrees.
+            err_track (float): The track uncertainty of the published GPSFix in degrees.
+            expected_heading (float): The heading the published origin should have, in
+                degrees ENU.
+        """
+        super().__init__(expected_heading)
         self.node = rclpy.create_node('test_auto_origin_from_gps_fix')
+        self.node.get_logger().info("Publishing a GPSFix with track %f, err_track %f" % (
+            track, err_track))
         gps_pub = self.node.create_publisher(
             GPSFix, 'gps',
             QoSProfile(
@@ -186,7 +203,8 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
         gps_msg.latitude = swri['latitude']
         gps_msg.longitude = swri['longitude']
         gps_msg.altitude = swri['altitude']
-        gps_msg.track = swri['heading']
+        gps_msg.track = track
+        gps_msg.err_track = err_track
         gps_msg.header.stamp = msg_stamp
         gps_pub.publish(gps_msg)
         while not self.got_origin:
@@ -296,8 +314,8 @@ class TestInvalidNavSatFix(TestInvalidOrigin):
 
 
 class TestManualOrigin(TestInitializeOrigin):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, expected_heading=0.0):
+        super().__init__(expected_heading)
         self.node = rclpy.create_node('test_manual_origin')
         origin_sub = self.subscribeToOrigin()
         while not self.got_origin:
@@ -309,8 +327,10 @@ if __name__ == "__main__":
     time.sleep(5)
     rclpy.init()
 
+    # Any arguments after the mode are floats passed on to the test's constructor.
+    args = [float(arg) for arg in sys.argv[2:]]
     if sys.argv[1] == "auto_gps":
-        test = TestAutoOriginFromGPSFix()
+        test = TestAutoOriginFromGPSFix(*args)
     elif sys.argv[1] == "auto_navsat":
         test = TestAutoOriginFromNavSatFix()
     elif sys.argv[1] == "invalid_gps":
@@ -318,6 +338,6 @@ if __name__ == "__main__":
     elif sys.argv[1] == "invalid_navsat":
         test = TestInvalidNavSatFix()
     elif sys.argv[1] == "manual":
-        test = TestManualOrigin()
+        test = TestManualOrigin(*args)
 
     rclpy.shutdown()
