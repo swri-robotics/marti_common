@@ -34,7 +34,9 @@ import rclpy
 import rclpy.exceptions
 import rclpy.node
 from sensor_msgs.msg import NavSatFix
-from swri_transform_util.origin_manager import OriginManager, InvalidFixException
+from swri_transform_util.origin_manager import (DEFAULT_MAX_ORIGIN_DISTANCE,
+                                                InvalidFixException,
+                                                OriginManager)
 import sys
 import yaml
 
@@ -85,23 +87,30 @@ class OriginInitializer(rclpy.node.Node):
                                                                  dynamic_typing=True
                                                              ))
 
+        self.max_origin_distance_param = self.declare_parameter(
+            'local_xy_max_origin_distance',
+            DEFAULT_MAX_ORIGIN_DISTANCE,
+            descriptor=rclpy.node.ParameterDescriptor(
+                name='local_xy_max_origin_distance',
+                type=rclpy.parameter.ParameterType.PARAMETER_DOUBLE,
+                description='Warn on /diagnostics once the current position is farther '
+                            'than this many meters from the local origin. The LocalXY '
+                            'frame is a tangent plane approximation whose error grows '
+                            'with distance from the origin.'
+            ))
+
         self.get_logger().info("Origin: %s" % self.local_xy_origin_param.value)
         self.get_logger().info("Frame: %s" % self.local_xy_frame_param.value)
         self.get_logger().info("Use GPSFix track: %s" % self.use_gpsfix_track_param.value)
 
-        self.manager = OriginManager(self, self.local_xy_frame_param.value)
+        self.manager = OriginManager(
+            self,
+            self.local_xy_frame_param.value,
+            max_origin_distance=self.max_origin_distance_param.value)
         if self.local_xy_origin_param.value == 'auto':
-
-            local_xy_gpsfix_topic = self.gpsfix_topic_param.value
-            gps_sub = self.create_subscription(GPSFix,
-                                               local_xy_gpsfix_topic,
-                                               self.gps_callback, 2)
-
-            local_xy_navsatfix_topic = self.navsatfix_topic_param.value
-            navsat_sub = self.create_subscription(NavSatFix,
-                                                  local_xy_navsatfix_topic,
-                                                  self.navsat_callback, 2)
-            self.subscribers = [gps_sub, navsat_sub]
+            # The origin is set by the first valid fix to arrive on the
+            # subscriptions that are created below.
+            pass
         elif type(self.local_xy_origins_param.value) == list:
             if (len(self.local_xy_origins_param.value) != 4):
                self.get_logger().fatal(f'{self.local_xy_origins_param.name} should have len 4 [lat, lon, alt, heading], '
@@ -127,31 +136,44 @@ class OriginInitializer(rclpy.node.Node):
         else:
             self.get_logger().fatal(f"Parameter '{self.local_xy_origins_param.name}' has incorrect type. Expected: string or double array")
             exit(1)
+
+        # These are subscribed to in every mode, not just "auto". While the
+        # origin is unknown the fixes set it, and afterwards they keep the
+        # diagnostic that compares the current position against the origin up
+        # to date. A manually configured origin is the one most likely to be
+        # left far behind, so the check matters most in the modes that do not
+        # need a fix to start up.
+        self.subscribers = [
+            self.create_subscription(GPSFix,
+                                     self.gpsfix_topic_param.value,
+                                     self.gps_callback, 2),
+            self.create_subscription(NavSatFix,
+                                     self.navsatfix_topic_param.value,
+                                     self.navsat_callback, 2)
+        ]
         self.manager.start()
 
     def navsat_callback(self, msg):
-        try:
-            self.get_logger().info('Got NavSat message.')
-            self.manager.set_origin_from_navsat(msg)
-            self.get_logger().info('Successfully set origin; unsubscribing.')
-            while self.subscribers:
-                sub = self.subscribers.pop()
-                self.destroy_subscription(sub)
-        except InvalidFixException as e:
-            self.get_logger().warning("%s" % str(e))
-            return
+        if self.manager.origin is None:
+            try:
+                self.get_logger().info('Got NavSat message.')
+                self.manager.set_origin_from_navsat(msg)
+                self.get_logger().info('Successfully set origin.')
+            except InvalidFixException as e:
+                self.get_logger().warning("%s" % str(e))
+                return
+        self.manager.update_current_position_from_navsat(msg)
 
     def gps_callback(self, msg):
-        try:
-            self.get_logger().info('Got GPSFix message.')
-            self.manager.set_origin_from_gps(msg, use_track=self.use_gpsfix_track_param.value)
-            self.get_logger().info('Successfully set origin; unsubscribing.')
-            while self.subscribers:
-                sub = self.subscribers.pop()
-                self.destroy_subscription(sub)
-        except InvalidFixException as e:
-            self.get_logger().warning("%s" % str(e))
-            return
+        if self.manager.origin is None:
+            try:
+                self.get_logger().info('Got GPSFix message.')
+                self.manager.set_origin_from_gps(msg, use_track=self.use_gpsfix_track_param.value)
+                self.get_logger().info('Successfully set origin.')
+            except InvalidFixException as e:
+                self.get_logger().warning("%s" % str(e))
+                return
+        self.manager.update_current_position_from_gps(msg)
 
 
 if __name__ == "__main__":

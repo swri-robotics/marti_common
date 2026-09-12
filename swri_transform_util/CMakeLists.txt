@@ -163,6 +163,7 @@ target_link_libraries(lat_lon_tf_echo PUBLIC
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_pytest REQUIRED)
   find_package(ament_index_cpp REQUIRED)
   find_package(launch_testing_ament_cmake)
 
@@ -186,6 +187,8 @@ if(BUILD_TESTING)
   target_link_libraries(local_xy_util_test
     ${PROJECT_NAME}
     rclcpp::rclcpp)
+
+  ament_add_pytest_test(origin_manager_test test/test_origin_manager.py)
 
   ament_add_gtest(utm_util_test test/test_utm_util.cpp)
   target_link_libraries(utm_util_test
