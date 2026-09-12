@@ -2,6 +2,15 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adding warning when moving far away from origin (`#810 <https://github.com/swri-robotics/marti_common/issues/810>`_)
+* Fix origin test hang (`#808 <https://github.com/swri-robotics/marti_common/issues/808>`_)
+* Add heading support to origin initialization (`#806 <https://github.com/swri-robotics/marti_common/issues/806>`_)
+* Fixing multiple issues with how origin was subscribed to and interpreted (`#805 <https://github.com/swri-robotics/marti_common/issues/805>`_)
+* Adding copy and copy assignment operator (`#804 <https://github.com/swri-robotics/marti_common/issues/804>`_)
+* Contributors: David Anthony
+
 3.10.0 (2026-09-11)
 -------------------
 * Fixing reference angle in the LocalXyWgs84Util constructor being read as radians (`#802 <https://github.com/swri-robotics/marti_common/issues/802>`_)

@@ -2,6 +2,11 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adding obstacle marker to marker array conversion node (`#809 <https://github.com/swri-robotics/marti_common/issues/809>`_)
+* Contributors: David Anthony
+
 3.10.0 (2026-09-11)
 -------------------
 
