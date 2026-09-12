@@ -2,8 +2,8 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.11.0 (2026-09-12)
+-------------------
 * Adding warning when moving far away from origin (`#810 <https://github.com/swri-robotics/marti_common/issues/810>`_)
 * Fix origin test hang (`#808 <https://github.com/swri-robotics/marti_common/issues/808>`_)
 * Add heading support to origin initialization (`#806 <https://github.com/swri-robotics/marti_common/issues/806>`_)
