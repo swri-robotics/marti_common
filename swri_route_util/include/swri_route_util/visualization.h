@@ -29,9 +29,14 @@
 #ifndef SWRI_ROUTE_UTIL_VISUALIZATION_H_
 #define SWRI_ROUTE_UTIL_VISUALIZATION_H_
 
+#include <string>
+
 #include <swri_route_util/route.h>
+#include <marti_nav_msgs/msg/obstacle_array.hpp>
 #include <marti_nav_msgs/msg/route_speed_array.hpp>
+#include <std_msgs/msg/color_rgba.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace swri_route_util
 {
@@ -47,5 +52,20 @@ void markerForRouteSpeeds(
   const Route &route,
     const marti_nav_msgs::msg::RouteSpeedArray &speeds,
     double scale);
+
+// Create markers that outline a set of obstacles.  Each obstacle is
+// drawn as a closed line strip, using the obstacle's pose as the
+// marker's pose so that the obstacle's polygon can be used as-is.
+// The markers are all created in the namespace 'ns' and are numbered
+// sequentially starting at zero.  Obstacles that do not have enough
+// points to draw a line are skipped, so the number of markers is not
+// necessarily the number of obstacles.  Any markers already in the
+// array are removed.
+void markerArrayForObstacles(
+  visualization_msgs::msg::MarkerArray &markers,
+  const marti_nav_msgs::msg::ObstacleArray &obstacles,
+  const std::string &ns,
+  const std_msgs::msg::ColorRGBA &color,
+  double line_width);
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_

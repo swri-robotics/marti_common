@@ -19,11 +19,15 @@
   <depend>marti_common_msgs</depend>
   <depend>marti_nav_msgs</depend>
   <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>std_msgs</depend>
   <depend>swri_geometry_util</depend>
   <depend>swri_math_util</depend>
   <depend>swri_transform_util</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>visualization_msgs</depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
