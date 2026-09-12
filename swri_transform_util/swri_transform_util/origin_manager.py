@@ -45,6 +45,48 @@ class InvalidFixException(Exception):
     pass
 
 
+#: Earth mean radius in meters, matching swri_transform_util/earth_constants.h.
+EARTH_MEAN_RADIUS = 6371009.0
+
+#: Default distance from the origin, in meters, past which a warning is issued.
+#: The LocalXY frame is a tangent plane approximation whose error grows with
+#: distance from the origin, and local_xy_util.h documents that the origin
+#: should be within 10 km of the region of interest.
+DEFAULT_MAX_ORIGIN_DISTANCE = 10000.0
+
+
+def planar_distance(latitude1, longitude1, latitude2, longitude2):
+    """
+    Return the approximate distance in meters between two lat/lon points.
+
+    The offset between the points is converted to meters and its L2 norm is
+    taken, treating the earth as a sphere of mean radius. Using a single radius
+    everywhere costs about half a percent, or a few tens of meters at 10 km,
+    because the earth's radius of curvature varies with both latitude and
+    heading. That is far finer than a threshold meant to catch an origin that
+    has been left kilometers behind, and it keeps the check free of any datum
+    or ellipsoid detail. It degrades further over continental distances but
+    still reports a very large number, which is all this check needs.
+
+    Args:
+        latitude1 (float): Latitude of the first point in degrees.
+        longitude1 (float): Longitude of the first point in degrees.
+        latitude2 (float): Latitude of the second point in degrees.
+        longitude2 (float): Longitude of the second point in degrees.
+
+    Returns:
+        float: The distance between the two points in meters.
+    """
+    north = EARTH_MEAN_RADIUS * math.radians(latitude2 - latitude1)
+    # Meridians converge, so a degree of longitude covers less ground the
+    # farther it is from the equator. Scaling by the mean latitude keeps the
+    # result the same whichever way round the two points are given.
+    mean_latitude = math.radians((latitude1 + latitude2) / 2.0)
+    east = (EARTH_MEAN_RADIUS * math.radians(longitude2 - longitude1)
+            * math.cos(mean_latitude))
+    return math.hypot(east, north)
+
+
 class OriginManager(object):
     """
     A simple class for publishing the Local XY origin as a PoseStamped.
@@ -107,7 +149,8 @@ class OriginManager(object):
         manager.start()
     """
 
-    def __init__(self, node, local_xy_frame, local_xy_frame_identity=None):
+    def __init__(self, node, local_xy_frame, local_xy_frame_identity=None,
+                 max_origin_distance=DEFAULT_MAX_ORIGIN_DISTANCE):
         """
         Construct an OriginManager, create publishers and TF Broadcaster.
 
@@ -118,12 +161,17 @@ class OriginManager(object):
                 to enable tf<->/wgs_84 conversions in systems with no other frames. If
                 this argument is `None`, `local_xy_frame` + "__identity" is used.
                 (default None).
+            max_origin_distance (float): Distance from the origin, in meters, past
+                which the diagnostic is raised to WARN. See
+                `DEFAULT_MAX_ORIGIN_DISTANCE`.
         """
         self.node = node
         self.timer = None
         self.origin = None
         self.origin_source = None
         self.origin_heading = None
+        self.max_origin_distance = max_origin_distance
+        self.current_position = None
         self.local_xy_frame = local_xy_frame
         if local_xy_frame_identity is None:
             local_xy_frame_identity = local_xy_frame + "__identity"
@@ -276,6 +324,43 @@ class OriginManager(object):
         """
         self.set_origin("custom", pos[0], pos[1], pos[2], stamp)
 
+    def update_current_position(self, latitude, longitude):
+        """
+        Record the most recent position, which is compared against the origin.
+
+        Unlike the set_origin methods, this may be called for the whole life of
+        the node, so that the diagnostic reflects where the vehicle is now
+        rather than where it started.
+
+        Args:
+            latitude (float): The current latitude in degrees.
+            longitude (float): The current longitude in degrees.
+        """
+        self.current_position = (latitude, longitude)
+
+    def update_current_position_from_gps(self, msg):
+        """
+        Record the current position from a gps_msgs.msg.GPSFix, if it is valid.
+
+        Args:
+            msg (gps_msgs.msg.GPSFix): A GPSFix message with the current position.
+        """
+        if msg.status.status == GPSStatus.STATUS_NO_FIX:
+            return
+        self.update_current_position(msg.latitude, msg.longitude)
+
+    def update_current_position_from_navsat(self, msg):
+        """
+        Record the current position from a sensor_msgs.msg.NavSatFix, if it is valid.
+
+        Args:
+            msg (sensor_msgs.msg.NavSatFix): A NavSatFix message with the current
+                position.
+        """
+        if msg.status.status == NavSatStatus.STATUS_NO_FIX:
+            return
+        self.update_current_position(msg.latitude, msg.longitude)
+
     def _publish_diagnostic(self):
         """Publish diagnostics."""
         diagnostic = DiagnosticArray()
@@ -315,8 +400,32 @@ class OriginManager(object):
             heading = "%f" % self.origin_heading
             status.values.append(KeyValue(key="Heading", value=heading))
 
-            diagnostic.status.append(status)
-            self.diagnostic_pub.publish(diagnostic)
+            if self.current_position is not None:
+                distance = planar_distance(self.origin.pose.position.y,
+                                           self.origin.pose.position.x,
+                                           self.current_position[0],
+                                           self.current_position[1])
+                # Reported even when it is within the limit, so that operators can
+                # watch it grow instead of only finding out once it trips.
+                status.values.append(
+                    KeyValue(key="Distance From Origin", value="%.1f" % distance))
+                status.values.append(
+                    KeyValue(key="Max Distance From Origin",
+                             value="%.1f" % self.max_origin_distance))
+                if distance > self.max_origin_distance:
+                    # Raised rather than assigned so that a more severe level set
+                    # above is not masked by this one.
+                    status.level = max(status.level, DiagnosticStatus.WARN)
+                    status.message = (
+                        "{}; current position is {:.0f} m from the origin, which is "
+                        "farther than the {:.0f} m limit".format(
+                            status.message, distance, self.max_origin_distance))
+
+        # Published in both cases. These used to sit under the else above, so
+        # the "No Origin" status was built and then dropped, and a node that
+        # never got an origin published no diagnostic at all.
+        diagnostic.status.append(status)
+        self.diagnostic_pub.publish(diagnostic)
 
     def _publish_identity_tf(self):
         """
