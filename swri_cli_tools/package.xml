@@ -10,14 +10,14 @@
 
   <license>BSD 3 Clause</license>
 
-  <depend>marti_introspection_msgs</depend>
-  <depend>python3-natsort</depend>
-  <depend>rcl_interfaces</depend>
-  <depend>rclpy</depend>
-  <depend>ros2cli</depend>
-  <depend>ros2node</depend>
-  <depend>ros2param</depend>
-  <depend>ros2topic</depend>
+  <exec_depend>marti_introspection_msgs</exec_depend>
+  <exec_depend>python3-natsort</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>ros2cli</exec_depend>
+  <exec_depend>ros2node</exec_depend>
+  <exec_depend>ros2param</exec_depend>
+  <exec_depend>ros2topic</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

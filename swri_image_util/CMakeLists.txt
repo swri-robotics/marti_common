@@ -13,7 +13,7 @@ find_package(OpenCV REQUIRED core highgui imgproc stitching)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(rclpy REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(swri_geometry_util REQUIRED)
 find_package(swri_opencv_util REQUIRED)
 find_package(tf2 REQUIRED)
@@ -83,6 +83,7 @@ target_link_libraries(${PROJECT_NAME}_nodes PRIVATE
     rclcpp_components::component
     rclcpp_components::component_manager
     ${rcl_interfaces_TARGETS}
+    ${sensor_msgs_TARGETS}
 )
 
 # Iron and later switched some cv_bridge files to .hpp from .h

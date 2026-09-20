@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-find_package(diagnostic_msgs REQUIRED)
-find_package(diagnostic_updater REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)

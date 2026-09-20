@@ -18,30 +18,37 @@
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
-  <depend>cv_bridge</depend>
-  <depend>diagnostic_msgs</depend>
-  <depend>diagnostic_updater</depend>
-  <depend>geographic_msgs</depend>
   <depend>geometry_msgs</depend>
-  <depend>geographiclib</depend>
-  <depend>gps_msgs</depend>
-  <depend>geos</depend>
   <depend>libopencv-dev</depend>
-  <depend>marti_nav_msgs</depend>
   <depend>proj</depend>
-  <depend>rcl_interfaces</depend>
-  <depend>rclcpp_components</depend>
   <depend>rclcpp</depend>
-  <depend>rclpy</depend>
-  <depend>sensor_msgs</depend>
   <depend>swri_math_util</depend>
   <depend>tf2</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>yaml_cpp_vendor</depend>
 
+  <!-- Used by the nodes and the .cpp files, never by the installed headers. -->
+  <build_depend>geographic_msgs</build_depend>
+  <build_depend>geographiclib</build_depend>
+  <build_depend>gps_msgs</build_depend>
+  <build_depend>marti_nav_msgs</build_depend>
+  <build_depend>rcl_interfaces</build_depend>
+  <build_depend>rclcpp_components</build_depend>
+
+  <exec_depend>geographic_msgs</exec_depend>
+  <exec_depend>geographiclib</exec_depend>
+  <exec_depend>gps_msgs</exec_depend>
+  <exec_depend>marti_nav_msgs</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>rclcpp_components</exec_depend>
+
+  <!-- Imported by initialize_origin.py and swri_transform_util/*.py only. -->
+  <exec_depend>diagnostic_msgs</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_cmake_pytest</test_depend>
