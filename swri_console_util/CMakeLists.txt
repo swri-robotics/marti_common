@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14.4)
 project(swri_console_util)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -7,7 +7,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED src/progress_bar.cpp)
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC
   rclcpp::rclcpp)
 
 target_include_directories(${PROJECT_NAME}

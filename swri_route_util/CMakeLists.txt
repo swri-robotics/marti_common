@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14.4)
 project(swri_route_util)
 
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(ament_cmake REQUIRED)
-find_package(geometry_msgs)
+find_package(geometry_msgs REQUIRED)
 find_package(marti_common_msgs REQUIRED)
 find_package(marti_nav_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -97,12 +97,13 @@ install(DIRECTORY include/
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake
   geometry_msgs
+  marti_common_msgs
   marti_nav_msgs
+  rclcpp
   rclcpp_components
   std_msgs
   swri_math_util
   swri_transform_util
-  tf2
   tf2_geometry_msgs
   visualization_msgs
 )
