@@ -2,6 +2,11 @@
 Changelog for package swri_image_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.11.0 (2026-09-12)
+-------------------
+* Adding function to get ellipse points with z-value populated (`#807 <https://github.com/swri-robotics/marti_common/issues/807>`_)
+* Contributors: David Anthony
+
 3.10.0 (2026-09-11)
 -------------------
 
