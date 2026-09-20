@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14.4)
 project(swri_image_util)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -17,8 +17,6 @@ find_package(rclpy REQUIRED)
 find_package(swri_geometry_util REQUIRED)
 find_package(swri_opencv_util REQUIRED)
 find_package(tf2 REQUIRED)
-
-add_definitions(${EIGEN3_DEFINITIONS})
 
 add_library(${PROJECT_NAME} SHARED
   src/draw_util.cpp

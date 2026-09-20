@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14.4)
 project(swri_opencv_util)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -37,7 +37,5 @@ install(TARGETS ${PROJECT_NAME}
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake OpenCV swri_math_util)
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

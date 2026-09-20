@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14.4)
 
 project(swri_geometry_util)
 
@@ -21,7 +21,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  geos_c
+  GEOS::geos_c
   opencv_core
   tf2::tf2)
 target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
@@ -46,6 +46,6 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(tf2)
+ament_export_dependencies(GEOS OpenCV tf2)
 
 ament_package()
