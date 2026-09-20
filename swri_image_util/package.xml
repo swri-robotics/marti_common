@@ -13,22 +13,31 @@
  
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>ament_index_cpp</depend>
-  <depend>camera_calibration_parsers</depend>
-  <depend>cv_bridge</depend>
-  <depend>eigen</depend>
-  <depend>image_geometry</depend>
-  <depend>image_transport</depend>
   <depend>libopencv-dev</depend>
-  <depend>message_filters</depend>
-  <depend>rcl_interfaces</depend>
   <depend>rclcpp</depend>
-  <depend>rclcpp_components</depend>
-  <depend>rclpy</depend>
-  <depend>swri_geometry_util</depend>
   <depend>swri_math_util</depend>
   <depend>swri_opencv_util</depend>
   <depend>tf2</depend>
+
+  <build_depend>eigen</build_depend>
+
+  <build_depend>ament_index_cpp</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>message_filters</build_depend>
+  <build_depend>rcl_interfaces</build_depend>
+  <build_depend>rclcpp_components</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>swri_geometry_util</build_depend>
+
+  <exec_depend>ament_index_cpp</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>image_transport</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>rclcpp_components</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>swri_geometry_util</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
 
