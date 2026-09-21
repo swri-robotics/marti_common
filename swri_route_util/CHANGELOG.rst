@@ -2,8 +2,8 @@
 Changelog for package swri_route_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.12.0 (2026-09-20)
+-------------------
 * Clean up dependencies and narrow location where they are accessed (`#813 <https://github.com/swri-robotics/marti_common/issues/813>`_)
 * Cleaning up CMake code by updating versions, standards, scope, and dead code (`#811 <https://github.com/swri-robotics/marti_common/issues/811>`_)
 * Contributors: David Anthony
