@@ -34,6 +34,8 @@
 
 namespace swri_opencv_util
 {
+  // Implemented in swri_opencv_util::swri_opencv_util_show, which links
+  // HighGUI; the core swri_opencv_util library does not.
   void ShowScaled(
       const std::string& name,
       const cv::Mat& mat,

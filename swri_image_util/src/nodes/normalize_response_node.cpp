@@ -30,7 +30,6 @@
 #include <string>
 
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.hpp>

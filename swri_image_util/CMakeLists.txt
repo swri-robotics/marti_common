@@ -9,7 +9,7 @@ find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(OpenCV REQUIRED core highgui imgproc stitching)
+find_package(OpenCV REQUIRED core highgui imgcodecs imgproc stitching)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -36,12 +36,25 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${swri_opencv_util_TARGETS}
   opencv_core
-  opencv_highgui
   opencv_imgproc
   opencv_stitching
   rclcpp::rclcpp
   tf2::tf2)
 target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen ${swri_geometry_util_TARGETS})
+
+# The functions that show images in HighGUI windows live in their own library.
+# HighGUI loads its GUI toolkit (Qt5 on Ubuntu) as soon as it is linked, and a
+# Qt6 application that merely links swri_image_util would otherwise end up with
+# both Qt versions in one process.
+add_library(${PROJECT_NAME}_display SHARED
+  src/draw_util_display.cpp
+  src/image_warp_util_display.cpp
+)
+target_link_libraries(${PROJECT_NAME}_display PUBLIC ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_display PRIVATE
+  opencv_highgui
+  opencv_imgproc
+  swri_opencv_util::swri_opencv_util_show)
 
 add_library(${PROJECT_NAME}_nodes SHARED
   src/nodes/blend_images_node.cpp
@@ -79,6 +92,7 @@ target_link_libraries(${PROJECT_NAME}_nodes PRIVATE
     ament_index_cpp::ament_index_cpp
     cv_bridge::cv_bridge
     image_transport::image_transport
+    opencv_imgcodecs
     message_filters::message_filters
     rclcpp_components::component
     rclcpp_components::component_manager
@@ -115,6 +129,19 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 
+install(TARGETS ${PROJECT_NAME}_display
+  EXPORT export_${PROJECT_NAME}_display
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
+# Kept out of ament_export_targets() so it is not added to
+# ${PROJECT_NAME}_TARGETS; downstream packages opt in by linking
+# swri_image_util::swri_image_util_display.  The config extras load it.
+install(EXPORT export_${PROJECT_NAME}_display
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION share/${PROJECT_NAME}/cmake)
+
 install(TARGETS ${PROJECT_NAME}_nodes
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
@@ -126,4 +153,4 @@ ament_export_dependencies(OpenCV
   swri_opencv_util
   tf2
 )
-ament_package()
+ament_package(CONFIG_EXTRAS cmake/${PROJECT_NAME}-extras.cmake)

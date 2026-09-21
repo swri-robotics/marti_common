@@ -42,7 +42,7 @@
 
 // OpenCV Libraries
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 #include <swri_image_util/image_normalization.h>
 #include <image_transport/image_transport.hpp>

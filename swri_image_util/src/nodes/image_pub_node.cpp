@@ -38,7 +38,7 @@
 #include <image_transport/publisher.hpp>
 #include <image_transport/subscriber.hpp>
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
