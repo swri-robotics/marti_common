@@ -34,7 +34,6 @@
 
 // OpenCV Libraries
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/stitching/detail/warpers.hpp>
@@ -109,6 +108,9 @@ namespace swri_image_util
     /**
      * @brief      Estimates the nominal pitch and roll of the camera (from
      *             perfectly vertical) from two overlapping images.
+     *
+     * Implemented in swri_image_util::swri_image_util_display, because
+     * show_image_diff displays the result with HighGUI.
      *
      * @return     Returns the rotation matrix for the computed pitch and roll
      */

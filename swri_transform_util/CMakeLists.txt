@@ -9,7 +9,7 @@ find_package(geographic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(gps_msgs REQUIRED)
 find_package(marti_nav_msgs REQUIRED)
-find_package(OpenCV REQUIRED calib3d core highgui imgproc video)
+find_package(OpenCV REQUIRED calib3d core imgproc video)
 find_package(rcl_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -91,7 +91,6 @@ target_compile_definitions(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PUBLIC
   opencv_calib3d
   opencv_core
-  opencv_highgui
   opencv_imgproc
   opencv_video
   ${PROJ_LIBRARIES}
