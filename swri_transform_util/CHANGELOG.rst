@@ -2,6 +2,13 @@
 Changelog for package swri_transform_util
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Refactoring to remove OpenCV's highgui from core system to prevent Qt5 from getting accidentally pulled into Qt6 systems (`#817 <https://github.com/swri-robotics/marti_common/issues/817>`_)
+* Clean up dependencies and narrow location where they are accessed (`#813 <https://github.com/swri-robotics/marti_common/issues/813>`_)
+* Cleaning up CMake code by updating versions, standards, scope, and dead code (`#811 <https://github.com/swri-robotics/marti_common/issues/811>`_)
+* Contributors: David Anthony
+
 3.11.0 (2026-09-12)
 -------------------
 * Adding warning when moving far away from origin (`#810 <https://github.com/swri-robotics/marti_common/issues/810>`_)

@@ -2,6 +2,11 @@
 Changelog for package swri_cli_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Clean up dependencies and narrow location where they are accessed (`#813 <https://github.com/swri-robotics/marti_common/issues/813>`_)
+* Contributors: David Anthony
+
 3.11.0 (2026-09-12)
 -------------------
 
