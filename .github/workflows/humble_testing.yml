@@ -1,4 +1,4 @@
-name: Humble
+name: Humble (testing)
 
 on: [push, pull_request]
 
@@ -8,7 +8,6 @@ jobs:
       matrix:
         env:
           - {ROS_DISTRO: humble, ROS_REPO: testing}
-          - {ROS_DISTRO: humble, ROS_REPO: main}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
