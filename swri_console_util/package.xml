@@ -7,7 +7,7 @@
     Utility functions for interacting with console
   </description>
   <author>Marc Alban</author>
-  <maintainer email="swri-rorobircs@swri.org">Southwest Research Institute</maintainer>
+  <maintainer email="swri-robotics@swri.org">Southwest Research Institute</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
   
