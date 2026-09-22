@@ -43,61 +43,63 @@
 
 namespace swri_transform_util
 {
-  class GeoReference
-  {
-  public:
-    explicit GeoReference(const std::string& path,
-        rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::GeoReference"));
-    GeoReference(const GeoReference& geo,
-                 rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::GeoReference"));
-    ~GeoReference() = default;
+class GeoReference
+{
+public:
+  explicit GeoReference(
+    const std::string & path,
+    rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::GeoReference"));
+  GeoReference(
+    const GeoReference & geo,
+    rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::GeoReference"));
+  ~GeoReference() = default;
 
-    bool Load();
-    void Print();
+  bool Load();
+  void Print();
 
-    std::string GeoPath() const { return path_; }
-    std::string Path() const { return image_path_; }
-    unsigned int Width() const { return width_; }
-    unsigned int Height() const { return height_; }
-    unsigned int TileSize() const { return tile_size_; }
-    std::string Extension() const { return extension_; }
+  std::string GeoPath() const {return path_;}
+  std::string Path() const {return image_path_;}
+  unsigned int Width() const {return width_;}
+  unsigned int Height() const {return height_;}
+  unsigned int TileSize() const {return tile_size_;}
+  std::string Extension() const {return extension_;}
 
-    std::string Datum() const { return datum_; }
-    std::string Projection() const { return projection_; }
+  std::string Datum() const {return datum_;}
+  std::string Projection() const {return projection_;}
 
-    void GetCoordinate(int x_pixel, int y_pixel, double& x_coordinate, double& y_coordinate) const;
-    void GetPixel(double x_coordinate, double y_coordinate, int& x_pixel, int& y_pixel) const;
+  void GetCoordinate(int x_pixel, int y_pixel, double & x_coordinate, double & y_coordinate) const;
+  void GetPixel(double x_coordinate, double y_coordinate, int & x_pixel, int & y_pixel) const;
 
-  private:
-    void GetTransform();
+private:
+  void GetTransform();
 
-    bool loaded_;
+  bool loaded_;
 
-    // Image properties
-    std::string path_;
-    std::string image_path_;
-    unsigned int width_;
-    unsigned int height_;
-    unsigned int tile_size_;
-    std::string extension_;
+  // Image properties
+  std::string path_;
+  std::string image_path_;
+  unsigned int width_;
+  unsigned int height_;
+  unsigned int tile_size_;
+  std::string extension_;
 
-    // Coordinate system
-    std::string datum_;
-    std::string projection_;
+  // Coordinate system
+  std::string datum_;
+  std::string projection_;
 
-    // Affine transform from pixel space
-    cv::Mat transform_;
-    cv::Mat inverse_transform_;
+  // Affine transform from pixel space
+  cv::Mat transform_;
+  cv::Mat inverse_transform_;
 
-    // Tiepoints
-    cv::Mat pixels_;
-    cv::Mat coordinates_;
+  // Tiepoints
+  cv::Mat pixels_;
+  cv::Mat coordinates_;
 
-    double x_offset_;
-    double y_offset_;
+  double x_offset_;
+  double y_offset_;
 
-    rclcpp::Logger logger_;
-  };
+  rclcpp::Logger logger_;
+};
 }
 
 #endif  // TRANSFORM_UTIL_GEOREFERENCE_H_

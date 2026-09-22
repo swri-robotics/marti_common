@@ -54,7 +54,7 @@ namespace swri_route_util
 // calling findPointIdConst() instead.
 class Route
 {
- public:
+public:
   // Create a new empty route.
   Route() = default;
 
@@ -62,10 +62,10 @@ class Route
   // Warning: If a route or a specific route point contains properties
   // with duplicate keys, only one will be kept; the others are
   // silently discarded.  Don't use non-unique property keys.
-  explicit Route(const marti_nav_msgs::msg::Route &msg);
+  explicit Route(const marti_nav_msgs::msg::Route & msg);
 
   // Create a marti_nav_msgs::Route from the route, in place version.
-  void toMsg(marti_nav_msgs::msg::Route &msg) const;
+  void toMsg(marti_nav_msgs::msg::Route & msg) const;
   // Create a marti_nav_msgs::Route from the route, returned as a
   // shared pointer.
   marti_nav_msgs::msg::Route::SharedPtr toMsgPtr() const;
@@ -89,7 +89,7 @@ class Route
   // many invalid ids in any route.  If there are multiple points with
   // the requested key, it will return one of the points, but which
   // one is undefined.  Don't use non-unqiue ids.
-  bool findPointId(size_t &index, const std::string &id) const;
+  bool findPointId(size_t & index, const std::string & id) const;
 
   // Find a point index by its ID, the less safe version.  This
   // version should only be used on Routes with a valid internal index
@@ -101,7 +101,7 @@ class Route
   // id.  It will never return a point with a different id than
   // requested.  Be sure you know what you're doing if you want to use
   // this.
-  bool findPointIdConst(size_t &index, const std::string &id) const;
+  bool findPointIdConst(size_t & index, const std::string & id) const;
 
   // Rebuilds the internal point index.  This is handled internally
   // and exposed for very special use cases, which you probably do not
@@ -111,12 +111,12 @@ class Route
   // Native access to the route "name" property, which is required to
   // exist.
   std::string name() const;
-  void setName(const std::string &name);
+  void setName(const std::string & name);
 
   // Native access to the route "guid" property, which is required to
   // exist.
   std::string guid() const;
-  void setGuid(const std::string &guid);
+  void setGuid(const std::string & guid);
 
   // The following methods provide general purpose access to route
   // properties.  They will also correctly map to properties that are
@@ -130,20 +130,20 @@ class Route
 
   // Get the value of a property.  Returns an empty string if the
   // property does not exist.
-  std::string getProperty(const std::string &name) const;
+  std::string getProperty(const std::string & name) const;
 
   // Determine if the specified property is defined for the route.
-  bool hasProperty(const std::string &name) const;
+  bool hasProperty(const std::string & name) const;
 
   // Set the value of a property.  If the property doesn't exist, it
   // is added.
-  void setProperty(const std::string &name, const std::string &value);
+  void setProperty(const std::string & name, const std::string & value);
 
   // Delete a property.  If the property doesn't exist or is not
   // deletable (e.g. name, guid), this method does nothing.
-  void deleteProperty(const std::string &name);
+  void deleteProperty(const std::string & name);
 
- public:
+public:
   // The point index maps point ids to their index in the points
   // vector.  It is mutable because we want to support fast look ups
   // on const Routes.

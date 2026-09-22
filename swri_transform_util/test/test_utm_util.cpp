@@ -37,22 +37,22 @@
 TEST(UtmUtilTests, GetZone)
 {
   EXPECT_EQ(11, swri_transform_util::GetZone(-118.408056));  // LAX
-  EXPECT_EQ(17, swri_transform_util::GetZone( -80.290556));  // MIA
-  EXPECT_EQ(30, swri_transform_util::GetZone(  -0.461389));  // LHR
-  EXPECT_EQ(37, swri_transform_util::GetZone(  37.414722));  // SVO
-  EXPECT_EQ(54, swri_transform_util::GetZone( 139.781111));  // HND
-  EXPECT_EQ( 4, swri_transform_util::GetZone(  -157.9225));  // HNL
-  EXPECT_EQ(54, swri_transform_util::GetZone(  138.530556)); // ADL
+  EXPECT_EQ(17, swri_transform_util::GetZone(-80.290556));   // MIA
+  EXPECT_EQ(30, swri_transform_util::GetZone(-0.461389));    // LHR
+  EXPECT_EQ(37, swri_transform_util::GetZone(37.414722));    // SVO
+  EXPECT_EQ(54, swri_transform_util::GetZone(139.781111));   // HND
+  EXPECT_EQ(4, swri_transform_util::GetZone(-157.9225));     // HNL
+  EXPECT_EQ(54, swri_transform_util::GetZone(138.530556));   // ADL
 }
 
 TEST(UtmUtilTests, GetBand)
 {
-  EXPECT_EQ('S', swri_transform_util::GetBand( 33.9425));    // LAX
-  EXPECT_EQ('R', swri_transform_util::GetBand( 25.793333));  // MIA
-  EXPECT_EQ('U', swri_transform_util::GetBand( 51.4775));    // LHR
-  EXPECT_EQ('U', swri_transform_util::GetBand( 55.972778));  // SVO
-  EXPECT_EQ('S', swri_transform_util::GetBand( 35.553333));  // HND
-  EXPECT_EQ('Q', swri_transform_util::GetBand( 21.318611));  // HNL
+  EXPECT_EQ('S', swri_transform_util::GetBand(33.9425));     // LAX
+  EXPECT_EQ('R', swri_transform_util::GetBand(25.793333));   // MIA
+  EXPECT_EQ('U', swri_transform_util::GetBand(51.4775));     // LHR
+  EXPECT_EQ('U', swri_transform_util::GetBand(55.972778));   // SVO
+  EXPECT_EQ('S', swri_transform_util::GetBand(35.553333));   // HND
+  EXPECT_EQ('Q', swri_transform_util::GetBand(21.318611));   // HNL
   EXPECT_EQ('F', swri_transform_util::GetBand(-54.843333));  // USH
   EXPECT_EQ('H', swri_transform_util::GetBand(-34.945));     // ADL
 
@@ -150,8 +150,7 @@ TEST(UtmUtilTests, Continuity)
 
   double last_lon = 0;
 
-  for (int i = 0; i < 1000; i++)
-  {
+  for (int i = 0; i < 1000; i++) {
     double new_lat;
     double new_lon;
     double new_easting;
@@ -164,8 +163,7 @@ TEST(UtmUtilTests, Continuity)
     EXPECT_FLOAT_EQ(easting + i * 1.11 / 100.0, new_easting);
     EXPECT_FLOAT_EQ(northing, new_northing);
 
-    if (i > 0)
-    {
+    if (i > 0) {
       // The difference should be 1.11cm which is approximately
       // 1/10th of 1 microdegree near the equator
       EXPECT_NEAR(0.0000001, std::fabs(new_lon - last_lon), 0.00000001);
@@ -183,8 +181,7 @@ TEST(UtmUtilTests, ContinuityNoNaNRegression)
   const double easting = 551940.0;
   const double northing = 9582637.0;
 
-  for (int i = 0; i < 1000; i++)
-  {
+  for (int i = 0; i < 1000; i++) {
     const double input_easting = easting + i * 1.11 / 100.0;
 
     double lat;
@@ -214,8 +211,7 @@ TEST(UtmUtilTests, Random)
 
   std::srand(0);
 
-  for (int i = 0; i < 1000; i++)
-  {
+  for (int i = 0; i < 1000; i++) {
     double lon = (static_cast<double>(std::rand()) / RAND_MAX) * 360.0 - 180;
     double lat = (static_cast<double>(std::rand()) / RAND_MAX) * 140.0 - 70;
 
@@ -235,7 +231,7 @@ TEST(UtmUtilTests, Random)
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

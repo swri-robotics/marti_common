@@ -34,14 +34,14 @@
 
 namespace swri_opencv_util
 {
-  cv::Mat ToBgra8(
-      const cv::Mat& mat,
-      const cv::Mat& mask = cv::Mat(),
-      bool is_rgb = false,
-      double a = 0.0, // assume auto-scaling
-      double b = 0.0);
+cv::Mat ToBgra8(
+  const cv::Mat & mat,
+  const cv::Mat & mask = cv::Mat(),
+  bool is_rgb = false,
+  double a = 0.0,     // assume auto-scaling
+  double b = 0.0);
 
-  void SetAlpha(cv::Mat& mat, uint8_t alpha);
+void SetAlpha(cv::Mat & mat, uint8_t alpha);
 }
 
 #endif  // OPENCV_UTIL_CONVERT_H_

@@ -39,169 +39,155 @@
 
 namespace swri_math_util
 {
-  template <class Model>
-  class Ransac
+template<class Model>
+class Ransac
+{
+public:
+  typedef typename Model::M ModelType;
+  typedef typename Model::T DataType;
+
+  explicit Ransac(RandomGeneratorPtr rng = RandomGeneratorPtr())
+  : rng_(rng) {}
+
+  ModelType FitModel(
+    Model & model,
+    double max_error,
+    double confidence,
+    int32_t min_iterations,
+    int32_t max_iterations,
+    std::vector<uint32_t> & inliers,
+    int32_t & iterations)
   {
-  public:
-    typedef typename Model::M ModelType;
-    typedef typename Model::T DataType;
+    int32_t breakout = std::numeric_limits<int32_t>::max();
+    ModelType best_fit;
+    inliers.clear();
+    int32_t max_inliers = 0;
 
-    explicit Ransac(RandomGeneratorPtr rng = RandomGeneratorPtr()) : rng_(rng) {}
+    if (!model.ValidData()) {
+      return best_fit;
+    }
 
-    ModelType FitModel(
-      Model& model,
-      double max_error,
-      double confidence,
-      int32_t min_iterations,
-      int32_t max_iterations,
-      std::vector<uint32_t>& inliers,
-      int32_t& iterations)
+    if (!rng_) {
+      rng_ = std::make_shared<RandomGenerator>();
+    }
+
+    std::vector<int32_t> indices;
+
+    ModelType hypothesis;
+    for (iterations = 0;
+      (iterations < max_iterations && iterations < breakout) || iterations < min_iterations;
+      iterations++)
     {
-      int32_t breakout = std::numeric_limits<int32_t>::max();
-      ModelType best_fit;
-      inliers.clear();
-      int32_t max_inliers = 0;
+      indices.clear();
+      rng_->GetUniformRandomSample(0, model.Size() - 1, Model::MIN_SIZE, indices);
 
-      if (!model.ValidData())
-      {
-        return best_fit;
+      // Generate a hypothesis model from the random sample.
+      // If the sample is not degenerate, calculate the number of inliers.
+      if (model.GetModel(indices, hypothesis, max_error)) {
+        int32_t inlier_count = model.GetInlierCount(hypothesis, max_error);
+
+        // Update the best fit hypothesis and inliers if this hypothesis has
+        // the most inliers so far.
+        if (inlier_count > max_inliers) {
+          max_inliers = inlier_count;
+          Model::CopyTo(hypothesis, best_fit);
+
+          // Recalculate breakout threshold to see if the fit is good enough.
+          double ratio = inlier_count / static_cast<double>(model.Size());
+          double p_no_outliers = 1.0 - std::pow(ratio, Model::MIN_SIZE);
+          if (p_no_outliers == 0) {
+            breakout = 0;
+          } else if (p_no_outliers < .9999) {
+            breakout = std::log(1 - confidence) / std::log(p_no_outliers);
+          }
+        }
       }
+    }
 
-      if (!rng_)
-      {
-        rng_ = std::make_shared<RandomGenerator>();
-      }
+    if (max_inliers > 0) {
+      model.GetInliers(best_fit, max_error, inliers);
+    }
+    return best_fit;
+  }
 
-      std::vector<int32_t> indices;
+private:
+  RandomGeneratorPtr rng_;
+};
 
-      ModelType hypothesis;
-      for (iterations = 0; (iterations < max_iterations && iterations < breakout) || iterations < min_iterations; iterations++)
-      {
+template<class Model>
+class RansacBatch
+{
+public:
+  typedef typename Model::M ModelType;
+  typedef typename Model::T DataType;
+
+  explicit RansacBatch(RandomGeneratorPtr rng = RandomGeneratorPtr())
+  : rng_(rng) {}
+
+  ModelType FitModel(
+    const DataType & data,
+    double max_error,
+    double confidence,
+    int32_t max_iterations,
+    int32_t batch_size,
+    std::vector<uint32_t> & inliers,
+    int32_t & iterations)
+  {
+    Model model(data, batch_size);
+    iterations = 0;
+    int32_t breakout = std::numeric_limits<int32_t>::max();
+    ModelType best_fit;
+    inliers.clear();
+    int32_t max_inliers = 0;
+
+    if (!model.ValidData()) {
+      return best_fit;
+    }
+
+    if (!rng_) {
+      rng_ = std::make_shared<RandomGenerator>();
+    }
+
+    std::vector<int32_t> indices;
+
+    ModelType hypothesis;
+    while (iterations < max_iterations && iterations < breakout) {
+      int32_t valid = 0;
+      model.ClearSamples();
+      while (iterations < max_iterations && iterations < breakout && model.Samples() < batch_size) {
+        iterations++;
         indices.clear();
         rng_->GetUniformRandomSample(0, model.Size() - 1, Model::MIN_SIZE, indices);
+        model.AddSample(indices, max_error);
+      }
 
-        // Generate a hypothesis model from the random sample.
-        // If the sample is not degenerate, calculate the number of inliers.
-        if (model.GetModel(indices, hypothesis, max_error))
-        {
-          int32_t inlier_count = model.GetInlierCount(hypothesis, max_error);
+      if (model.Samples() > 0) {
+        int32_t inlier_count = model.ProcessSamples(hypothesis, max_error);
+        if (inlier_count > 0 && inlier_count > max_inliers) {
+          max_inliers = inlier_count;
+          Model::CopyTo(hypothesis, best_fit);
 
-          // Update the best fit hypothesis and inliers if this hypothesis has
-          // the most inliers so far.
-          if (inlier_count > max_inliers)
-          {
-            max_inliers = inlier_count;
-            Model::CopyTo(hypothesis, best_fit);
-
-            // Recalculate breakout threshold to see if the fit is good enough.
-            double ratio = inlier_count / static_cast<double>(model.Size());
-            double p_no_outliers = 1.0 - std::pow(ratio, Model::MIN_SIZE);
-            if (p_no_outliers == 0)
-            {
-              breakout = 0;
-            }
-            else if (p_no_outliers < .9999)
-            {
-              breakout = std::log(1 - confidence) / std::log(p_no_outliers);
-            }
+          // Recalculate breakout threshold to see if the fit is good enough.
+          double ratio = inlier_count / static_cast<double>(model.Size());
+          double p_no_outliers = 1.0 - std::pow(ratio, Model::MIN_SIZE);
+          if (p_no_outliers == 0) {
+            breakout = 0;
+          } else if (p_no_outliers < .9999) {
+            breakout = std::log(1 - confidence) / std::log(p_no_outliers);
           }
         }
       }
-
-      if (max_inliers > 0)
-      {
-        model.GetInliers(best_fit, max_error, inliers);
-      }
-      return best_fit;
     }
 
-  private:
-    RandomGeneratorPtr rng_;
-  };
-
-  template <class Model>
-  class RansacBatch
-  {
-  public:
-    typedef typename Model::M ModelType;
-    typedef typename Model::T DataType;
-
-    explicit RansacBatch(RandomGeneratorPtr rng = RandomGeneratorPtr()) : rng_(rng) {}
-
-    ModelType FitModel(
-      const DataType& data,
-      double max_error,
-      double confidence,
-      int32_t max_iterations,
-      int32_t batch_size,
-      std::vector<uint32_t>& inliers,
-      int32_t& iterations)
-    {
-      Model model(data, batch_size);
-      iterations = 0;
-      int32_t breakout = std::numeric_limits<int32_t>::max();
-      ModelType best_fit;
-      inliers.clear();
-      int32_t max_inliers = 0;
-
-      if (!model.ValidData())
-      {
-        return best_fit;
-      }
-
-      if (!rng_)
-      {
-        rng_ = std::make_shared<RandomGenerator>();
-      }
-
-      std::vector<int32_t> indices;
-
-      ModelType hypothesis;
-      while (iterations < max_iterations && iterations < breakout)
-      {
-        int32_t valid = 0;
-        model.ClearSamples();
-        while (iterations < max_iterations && iterations < breakout && model.Samples() < batch_size)
-        {
-          iterations++;
-          indices.clear();
-          rng_->GetUniformRandomSample(0, model.Size() - 1, Model::MIN_SIZE, indices);
-          model.AddSample(indices, max_error);
-        }
-
-        if (model.Samples() > 0)
-        {
-          int32_t inlier_count = model.ProcessSamples(hypothesis, max_error);
-          if (inlier_count > 0 && inlier_count > max_inliers)
-          {
-            max_inliers = inlier_count;
-            Model::CopyTo(hypothesis, best_fit);
-
-            // Recalculate breakout threshold to see if the fit is good enough.
-            double ratio = inlier_count / static_cast<double>(model.Size());
-            double p_no_outliers = 1.0 - std::pow(ratio, Model::MIN_SIZE);
-            if (p_no_outliers == 0)
-            {
-              breakout = 0;
-            }
-            else if (p_no_outliers < .9999)
-            {
-              breakout = std::log(1 - confidence) / std::log(p_no_outliers);
-            }
-          }
-        }
-      }
-
-      if (max_inliers > 0)
-      {
-        model.GetInliers(best_fit, max_error, inliers);
-      }
-      return best_fit;
+    if (max_inliers > 0) {
+      model.GetInliers(best_fit, max_error, inliers);
     }
+    return best_fit;
+  }
 
-  private:
-    RandomGeneratorPtr rng_;
-  };
+private:
+  RandomGeneratorPtr rng_;
+};
 }
 
 #endif  // MATH_UTIL_RANSAC_H_

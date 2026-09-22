@@ -37,15 +37,15 @@
 
 namespace swri_geometry_util
 {
-  bool CubicSplineInterpolation(
-    const std::vector<cv::Vec2d>& points,
-    double delta,
-    std::vector<std::vector<cv::Vec2d> >& splines);
+bool CubicSplineInterpolation(
+  const std::vector<cv::Vec2d> & points,
+  double delta,
+  std::vector<std::vector<cv::Vec2d>> & splines);
 
-  bool CubicSplineInterpolation(
-    const std::vector<tf2::Vector3>& points,
-    double delta,
-    std::vector<std::vector<tf2::Vector3> >& splines);
+bool CubicSplineInterpolation(
+  const std::vector<tf2::Vector3> & points,
+  double delta,
+  std::vector<std::vector<tf2::Vector3>> & splines);
 }
 
 #endif

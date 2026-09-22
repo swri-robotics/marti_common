@@ -32,24 +32,25 @@
 
 #include <opencv2/core/core.hpp>
 
-namespace swri_opencv_util {
+namespace swri_opencv_util
+{
 
 cv::Mat blend(
-    const cv::Mat& src1,
-    const cv::Mat& alpha1,
-    const cv::Mat& src2,
-    const cv::Mat& alpha2);
+  const cv::Mat & src1,
+  const cv::Mat & alpha1,
+  const cv::Mat & src2,
+  const cv::Mat & alpha2);
 
 cv::Mat blend(
-    const cv::Mat& overlay,
-    const cv::Mat& base,
-    double aplha);
+  const cv::Mat & overlay,
+  const cv::Mat & base,
+  double aplha);
 
 cv::Mat overlayColor(
-    const cv::Mat& src,
-    const cv::Mat& mask,
-    const cv::Scalar& color,
-    double alpha);
+  const cv::Mat & src,
+  const cv::Mat & mask,
+  const cv::Scalar & color,
+  double alpha);
 }
 
 #endif  // OPENCV_UTIL_BLEND_H_

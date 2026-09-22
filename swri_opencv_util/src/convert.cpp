@@ -33,182 +33,145 @@
 
 namespace swri_opencv_util
 {
-  cv::Mat ToBgra8(
-      const cv::Mat& mat,
-      const cv::Mat& mask,
-      bool is_rgb,
-      double a,
-      double b)
-  {
-    if (mat.empty())
-    {
-      return mat;
-    }
-
-    cv::Mat scaled;
-
-    // Autoscale if a zero
-    if(a == 0)
-    {
-      double min, max;
-      cv::minMaxLoc(mat, &min, &max, 0, 0, mask);
-
-      if(mat.type() == CV_8UC1)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8U, a, b);
-
-        cv::Mat color;
-        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-      else if(mat.type() == CV_32FC1)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8U, a, b);
-
-        cv::Mat color;
-        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-      else if(mat.type() == CV_32FC3)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8UC3, a, b);
-
-        cv::Mat color;
-
-        if (is_rgb)
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
-        }
-        else
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
-        }
-
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-      else if(mat.type() == CV_8UC3)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8UC3, a, b);
-
-        cv::Mat color;
-
-        if (is_rgb)
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
-        }
-        else
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
-        }
-
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-      else if(mat.type() == CV_8UC4)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8UC4, a, b);
-
-        cv::Mat color;
-
-        if (is_rgb)
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_RGBA2BGRA);
-        }
-        else
-        {
-          color = scaled;
-        }
-
-        SetAlpha(color, 255);
-        if (!mask.empty())
-        {
-          color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        }
-
-        scaled = color;
-      }
-    }
-    else
-    {
-      if(mat.type() == CV_8UC3)
-      {
-        mat.convertTo(scaled, CV_8UC3, a, b);
-
-        cv::Mat color;
-        if (is_rgb)
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
-        }
-        else
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
-        }
-
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-      else if(mat.type() == CV_8UC4)
-      {
-        mat.convertTo(scaled, CV_8UC4, a, b);
-
-        cv::Mat color;
-        if (is_rgb)
-        {
-          cv::cvtColor(scaled, color, cv::COLOR_RGBA2BGRA);
-        }
-        else
-        {
-          color = scaled;
-        }
-
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-      else
-      {
-        mat.convertTo(scaled, CV_8U, a, b);
-
-        cv::Mat color;
-        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
-        SetAlpha(color, 255);
-        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
-        scaled = color;
-      }
-    }
-
-    return scaled;
+cv::Mat ToBgra8(
+  const cv::Mat & mat,
+  const cv::Mat & mask,
+  bool is_rgb,
+  double a,
+  double b)
+{
+  if (mat.empty()) {
+    return mat;
   }
 
-  void SetAlpha(cv::Mat& mat, uint8_t alpha)
-  {
-    if (mat.type() == CV_8UC4)
-    {
-      for (int r = 0; r < mat.rows; r++)
-      {
-        for (int c = 0; c < mat.cols; c++)
-        {
-          mat.at<cv::Vec4b>(r, c)[3] = alpha;
-        }
+  cv::Mat scaled;
+
+  // Autoscale if a zero
+  if (a == 0) {
+    double min, max;
+    cv::minMaxLoc(mat, &min, &max, 0, 0, mask);
+
+    if (mat.type() == CV_8UC1) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8U, a, b);
+
+      cv::Mat color;
+      cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    } else if (mat.type() == CV_32FC1) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8U, a, b);
+
+      cv::Mat color;
+      cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    } else if (mat.type() == CV_32FC3) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8UC3, a, b);
+
+      cv::Mat color;
+
+      if (is_rgb) {
+        cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
+      } else {
+        cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
+      }
+
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    } else if (mat.type() == CV_8UC3) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8UC3, a, b);
+
+      cv::Mat color;
+
+      if (is_rgb) {
+        cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
+      } else {
+        cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
+      }
+
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    } else if (mat.type() == CV_8UC4) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8UC4, a, b);
+
+      cv::Mat color;
+
+      if (is_rgb) {
+        cv::cvtColor(scaled, color, cv::COLOR_RGBA2BGRA);
+      } else {
+        color = scaled;
+      }
+
+      SetAlpha(color, 255);
+      if (!mask.empty()) {
+        color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      }
+
+      scaled = color;
+    }
+  } else {
+    if (mat.type() == CV_8UC3) {
+      mat.convertTo(scaled, CV_8UC3, a, b);
+
+      cv::Mat color;
+      if (is_rgb) {
+        cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
+      } else {
+        cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
+      }
+
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    } else if (mat.type() == CV_8UC4) {
+      mat.convertTo(scaled, CV_8UC4, a, b);
+
+      cv::Mat color;
+      if (is_rgb) {
+        cv::cvtColor(scaled, color, cv::COLOR_RGBA2BGRA);
+      } else {
+        color = scaled;
+      }
+
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    } else {
+      mat.convertTo(scaled, CV_8U, a, b);
+
+      cv::Mat color;
+      cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
+      SetAlpha(color, 255);
+      color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
+      scaled = color;
+    }
+  }
+
+  return scaled;
+}
+
+void SetAlpha(cv::Mat & mat, uint8_t alpha)
+{
+  if (mat.type() == CV_8UC4) {
+    for (int r = 0; r < mat.rows; r++) {
+      for (int c = 0; c < mat.cols; c++) {
+        mat.at<cv::Vec4b>(r, c)[3] = alpha;
       }
     }
   }
+}
 }

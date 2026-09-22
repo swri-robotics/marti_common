@@ -40,79 +40,75 @@
 
 namespace swri_image_util
 {
-  void DrawOverlap(
-      const std::string& title,
-      const cv::Mat& image1,
-      const cv::Mat& image2,
-      const cv::Mat& transform)
-  {
-    if (image1.rows == image2.rows && image1.cols == image2.cols)
-    {
-      cv::Mat image2_warped;
-      cv::warpAffine(
-        image2,
-        image2_warped,
-        transform,
-        cv::Size(image2.cols, image2.rows));
+void DrawOverlap(
+  const std::string & title,
+  const cv::Mat & image1,
+  const cv::Mat & image2,
+  const cv::Mat & transform)
+{
+  if (image1.rows == image2.rows && image1.cols == image2.cols) {
+    cv::Mat image2_warped;
+    cv::warpAffine(
+      image2,
+      image2_warped,
+      transform,
+      cv::Size(image2.cols, image2.rows));
 
-      cv::Mat sub = image1 - image2_warped;
+    cv::Mat sub = image1 - image2_warped;
 
-      swri_opencv_util::ShowScaled(title, sub);
-    }
+    swri_opencv_util::ShowScaled(title, sub);
+  }
+}
+
+void DrawMatches(
+  const std::string & title,
+  const cv::Mat image1,
+  const cv::Mat image2,
+  const cv::Mat points1,
+  const cv::Mat points2,
+  const cv::Scalar & color,
+  bool draw_image_borders)
+{
+  cv::Mat image_out;
+  DrawMatches(
+    image_out,
+    image1,
+    image2,
+    points1,
+    points2,
+    color,
+    draw_image_borders);
+
+  swri_opencv_util::ShowScaled(title, image_out);
+}
+
+void DrawMatches(
+  const std::string & title,
+  const cv::Mat image,
+  const cv::Mat points1,
+  const cv::Mat points2,
+  const cv::Scalar & color1,
+  const cv::Scalar & color2,
+  bool draw_image_borders)
+{
+  cv::Mat draw_image;
+  if (image.type() == CV_8U) {
+    cvtColor(image, draw_image, cv::COLOR_GRAY2BGR);
+  } else {
+    draw_image = image.clone();
   }
 
-  void DrawMatches(
-      const std::string& title,
-      const cv::Mat image1,
-      const cv::Mat image2,
-      const cv::Mat points1,
-      const cv::Mat points2,
-      const cv::Scalar& color,
-      bool draw_image_borders)
-  {
-    cv::Mat image_out;
-    DrawMatches(image_out,
-                image1,
-                image2,
-                points1,
-                points2,
-                color,
-                draw_image_borders);
-
-    swri_opencv_util::ShowScaled(title, image_out);
-  }
-
-  void DrawMatches(
-      const std::string& title,
-      const cv::Mat image,
-      const cv::Mat points1,
-      const cv::Mat points2,
-      const cv::Scalar& color1,
-      const cv::Scalar& color2,
-      bool draw_image_borders)
-  {
-    cv::Mat draw_image;
-    if (image.type() == CV_8U)
-    {
-      cvtColor(image, draw_image, cv::COLOR_GRAY2BGR);
-    }
-    else
-    {
-      draw_image = image.clone();
-    }
-
-    for (int i = 0; i < points1.rows; i++)
-    {
-      cv::Point2f center1(
-        cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
-        cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
-      cv::Point2f center2(cvRound(
+  for (int i = 0; i < points1.rows; i++) {
+    cv::Point2f center1(
+      cvRound(points1.at<cv::Vec2f>(0, i)[0] * 16.0),
+      cvRound(points1.at<cv::Vec2f>(0, i)[1] * 16.0));
+    cv::Point2f center2(cvRound(
         points2.at<cv::Vec2f>(0, i)[0] * 16.0),
-        cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
-      circle(draw_image, center1, 48, color1, 1, cv::LINE_AA, 4);
-      line(draw_image, center1, center2, color2, 1, cv::LINE_AA, 4);
-    }
-
-    swri_opencv_util::ShowScaled(title, draw_image);
+      cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
+    circle(draw_image, center1, 48, color1, 1, cv::LINE_AA, 4);
+    line(draw_image, center1, center2, color2, 1, cv::LINE_AA, 4);
   }
+
+  swri_opencv_util::ShowScaled(title, draw_image);
+}
 }

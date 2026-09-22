@@ -30,7 +30,7 @@
 #ifndef SWRI_GEOMETRY_UTIL_UTIL_HPP_
 #define SWRI_GEOMETRY_UTIL_UTIL_HPP_
 
-#define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
+#define HAVE_INT64_T_64  #Prevents conflict with OpenCV typedef of int64
 #include <geos_c.h>
 #undef HAVE_INT64_T_64
 
@@ -40,11 +40,11 @@
 namespace swri_geometry_util
 {
 // Convert vector of OpenCV coordinates to polygon
-GEOSGeometry* VectorToPolygon(const std::vector<cv::Vec2d>& v);
+GEOSGeometry * VectorToPolygon(const std::vector<cv::Vec2d> & v);
 // Convert vector of OpenCV coordinates to polygon, reentrant version
-GEOSGeometry* VectorToPolygon(
-  const std::vector<cv::Vec2d>& v,
-  GEOSContextHandle_t& ctx);
+GEOSGeometry * VectorToPolygon(
+  const std::vector<cv::Vec2d> & v,
+  GEOSContextHandle_t & ctx);
 }
 
 #endif

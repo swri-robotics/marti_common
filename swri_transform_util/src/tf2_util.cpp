@@ -49,32 +49,30 @@ tf2::Quaternion createQuaternionFromRPY(double roll, double pitch, double yaw)
   return q;
 }
 
-geometry_msgs::msg::Quaternion createQuaternionMsgFromRollPitchYaw(double roll, double pitch, double yaw)
+geometry_msgs::msg::Quaternion createQuaternionMsgFromRollPitchYaw(
+  double roll, double pitch,
+  double yaw)
 {
   geometry_msgs::msg::Quaternion q_msg;
   quaternionTFToMsg(createQuaternionFromRPY(roll, pitch, yaw), q_msg);
   return q_msg;
 }
 
-void quaternionTFToMsg(const Quaternion& bt, geometry_msgs::msg::Quaternion& msg)
+void quaternionTFToMsg(const Quaternion & bt, geometry_msgs::msg::Quaternion & msg)
 {
-  if (fabs(bt.length2() - 1 ) > QUATERNION_TOLERANCE)
-  {
+  if (fabs(bt.length2() - 1) > QUATERNION_TOLERANCE) {
     Quaternion bt_temp = bt;
     bt_temp.normalize();
     msg.x = bt_temp.x(); msg.y = bt_temp.y(); msg.z = bt_temp.z();  msg.w = bt_temp.w();
-  }
-  else
-  {
+  } else {
     msg.x = bt.x(); msg.y = bt.y(); msg.z = bt.z();  msg.w = bt.w();
   }
 }
 
-void quaternionMsgToTF(const geometry_msgs::msg::Quaternion& msg, Quaternion& bt)
+void quaternionMsgToTF(const geometry_msgs::msg::Quaternion & msg, Quaternion & bt)
 {
   bt = Quaternion(msg.x, msg.y, msg.z, msg.w);
-  if (fabs(bt.length2() - 1 ) > QUATERNION_TOLERANCE)
-  {
+  if (fabs(bt.length2() - 1) > QUATERNION_TOLERANCE) {
     bt.normalize();
   }
 }

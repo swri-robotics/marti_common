@@ -34,25 +34,25 @@
 namespace swri_route_util
 {
 inline
-void RoutePoint::setPosition(const tf2::Vector3 &position)
+void RoutePoint::setPosition(const tf2::Vector3 & position)
 {
   position_ = position;
 }
 
 inline
-const tf2::Vector3& RoutePoint::position() const
+const tf2::Vector3 & RoutePoint::position() const
 {
   return position_;
 }
 
 inline
-tf2::Vector3& RoutePoint::position()
+tf2::Vector3 & RoutePoint::position()
 {
   return position_;
 }
 
 inline
-void RoutePoint::setPosition(const geometry_msgs::msg::Point &position)
+void RoutePoint::setPosition(const geometry_msgs::msg::Point & position)
 {
   position_.setValue(position.x, position.y, position.z);
 }
@@ -68,25 +68,25 @@ const geometry_msgs::msg::Point RoutePoint::positionMsg() const
 }
 
 inline
-void RoutePoint::setOrientation(const tf2::Quaternion &orientation)
+void RoutePoint::setOrientation(const tf2::Quaternion & orientation)
 {
   orientation_ = orientation;
 }
 
 inline
-const tf2::Quaternion& RoutePoint::orientation() const
+const tf2::Quaternion & RoutePoint::orientation() const
 {
   return orientation_;
 }
 
 inline
-tf2::Quaternion& RoutePoint::orientation()
+tf2::Quaternion & RoutePoint::orientation()
 {
   return orientation_;
 }
 
 inline
-void RoutePoint::setOrientation(const geometry_msgs::msg::Quaternion &orientation)
+void RoutePoint::setOrientation(const geometry_msgs::msg::Quaternion & orientation)
 {
   orientation_.setValue(orientation.x, orientation.y, orientation.z, orientation.w);
 }
@@ -103,7 +103,7 @@ const geometry_msgs::msg::Quaternion RoutePoint::orientationMsg() const
 }
 
 inline
-void RoutePoint::setPose(const geometry_msgs::msg::Pose &pose)
+void RoutePoint::setPose(const geometry_msgs::msg::Pose & pose)
 {
   setPosition(pose.position);
   setOrientation(pose.orientation);
@@ -119,13 +119,13 @@ geometry_msgs::msg::Pose RoutePoint::poseMsg() const
 }
 
 inline
-const std::string& RoutePoint::id() const
+const std::string & RoutePoint::id() const
 {
   return id_;
 }
 
 inline
-void RoutePoint::setId(const std::string &id)
+void RoutePoint::setId(const std::string & id)
 {
   id_ = id;
 }

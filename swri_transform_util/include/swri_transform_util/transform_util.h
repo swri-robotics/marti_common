@@ -41,15 +41,15 @@
 
 namespace swri_transform_util
 {
-  tf2::Transform GetRelativeTransform(
-      double latitude,
-      double longitude,
-      double yaw,
-      double reference_latitude,
-      double reference_longitude,
-      double reference_yaw);
+tf2::Transform GetRelativeTransform(
+  double latitude,
+  double longitude,
+  double yaw,
+  double reference_latitude,
+  double reference_longitude,
+  double reference_yaw);
 
-  /**
+/**
    * Calculates the great circle distance between two points.
    *
    * @param[in] src_latitude   Source latitude
@@ -59,13 +59,13 @@ namespace swri_transform_util
    *
    * @returns Distance in meters.
    */
-  double GreatCircleDistance(
-      double src_latitude,
-      double src_longitude,
-      double dst_latitude,
-      double dst_longitude);
+double GreatCircleDistance(
+  double src_latitude,
+  double src_longitude,
+  double dst_latitude,
+  double dst_longitude);
 
-  /**
+/**
    * Calculates the great circle distance between two points.
    *
    * @param[in] src  Source(x = longitude, y = latitude, z ignored)
@@ -73,9 +73,9 @@ namespace swri_transform_util
    *
    * @returns Distance in meters.
    */
-  double GreatCircleDistance(const tf2::Vector3& src, const tf2::Vector3& dst);
+double GreatCircleDistance(const tf2::Vector3 & src, const tf2::Vector3 & dst);
 
-  /**
+/**
    * Calculates the bearing between two points.
    *
    * @param[in] source_latitude       The latitude of the origin point in degrees
@@ -84,13 +84,13 @@ namespace swri_transform_util
    * @param[in] destination_longitude The longitude of the destination point in degrees
    * @return The bearing between the origin and destination in degrees ENU
    */
-  double GetBearing(
-      double source_latitude,
-      double source_longitude,
-      double destination_latitude,
-      double destination_longitude);
+double GetBearing(
+  double source_latitude,
+  double source_longitude,
+  double destination_latitude,
+  double destination_longitude);
 
-  /**
+/**
    * Find the midpoint on the arc between two lat/lon points
    *
    * @param[in] latitude1      Endpoint 1 latitude in degrees
@@ -100,15 +100,15 @@ namespace swri_transform_util
    * @param[out] mid_latitude  Midpoint latitude in degrees
    * @param[out] mid_longitude Midpoint longitude in degrees
    */
-  void GetMidpointLatLon(
-      double latitude1,
-      double longitude1,
-      double latitude2,
-      double longitude2,
-      double& mid_latitude,
-      double& mid_longitude);
+void GetMidpointLatLon(
+  double latitude1,
+  double longitude1,
+  double latitude2,
+  double longitude2,
+  double & mid_latitude,
+  double & mid_longitude);
 
-  /**
+/**
    * Calculates the heading in degrees from a source and destination point in
    * a north-oriented (+y = north, +x = east), ortho-rectified coordinate
    * system. The heading is positive clock-wise with 0 degrees at north.
@@ -121,9 +121,9 @@ namespace swri_transform_util
    * @returns The heading in degrees along the vector between the source and
    * destination points.
    */
-  double GetHeading(double src_x, double src_y, double dst_x, double dst_y);
+double GetHeading(double src_x, double src_y, double dst_x, double dst_y);
 
-  /**
+/**
    * Convert yaw to heading, where yaw is in radians, counter-clockwise, with 0
    * on the positive x-axis and heading is in degrees, clockwise, with 0 on the
    * positive y-axis.
@@ -132,9 +132,9 @@ namespace swri_transform_util
    *
    * @return The heading in degrees.
    */
-  double ToHeading(double yaw);
+double ToHeading(double yaw);
 
-  /**
+/**
    * Convert heading to yaw, where yaw is in radians, counter-clockwise, with 0
    * on the positive x-axis and heading is in degrees, clockwise, with 0 on the
    * positive y-axis.
@@ -143,63 +143,63 @@ namespace swri_transform_util
    *
    * @return The yaw in radians.
    */
-  double ToYaw(double heading);
+double ToYaw(double heading);
 
-  /**
+/**
    * Snaps a quaternion rotation to the closest right angle rotation.
    *
    * @param[in]  rotation  The input quaternion rotation.
    *
    * @returns The closest right angle rotation to the input rotation.
    */
-  tf2::Quaternion SnapToRightAngle(const tf2::Quaternion& rotation);
+tf2::Quaternion SnapToRightAngle(const tf2::Quaternion & rotation);
 
-  /**
+/**
    * Return an axis aligned unit vector that is nearest the provided vector.
    *
    * @param[in]  vector  The input vector.
    *
    * @returns The axis aligned unit vector.
    */
-  tf2::Vector3 GetPrimaryAxis(const tf2::Vector3& vector);
+tf2::Vector3 GetPrimaryAxis(const tf2::Vector3 & vector);
 
-  /**
+/**
    * Validate that a 3x3 matrix is a rotation.
    *
    * @param[in]  matrix  The matrix to validate.
    *
    * @returns True if the matrix is a valid rotation.
    */
-  bool IsRotation(tf2::Matrix3x3 matrix);
+bool IsRotation(tf2::Matrix3x3 matrix);
 
-  /**
+/**
    * Gets the upper-left 3x3 sub-matrix of a 6x6 matrix.
    *
    * @param[in]  matrix  The 6x6 matrix.
    *
    * @returns The upper-left 3x3 sub-matrix.
    */
-  tf2::Matrix3x3 GetUpperLeft(const std::array<double, 36>& matrix);
+tf2::Matrix3x3 GetUpperLeft(const std::array<double, 36> & matrix);
 
-  /**
+/**
    * Gets the lower-right 3x3 sub-matrix of a 6x6 matrix.
    *
    * @param[in]  matrix  The 6x6 matrix.
    *
    * @returns The lower-right 3x3 sub-matrix.
    */
-  tf2::Matrix3x3 GetLowerRight(const std::array<double, 36>& matrix);
+tf2::Matrix3x3 GetLowerRight(const std::array<double, 36> & matrix);
 
-  /**
+/**
    * Converts the 3x3 covariance matrices from Imu messages to a Matrix3x3
    *
    * @param[in]  matrix   The input matrix
    *
    * @retval     Returns the input matrix as a Matrix3x3 object
    */
-  tf2::Matrix3x3 Get3x3Cov(const std::array<double, 9>& matrix);
+tf2::Matrix3x3 Get3x3Cov(const std::array<double, 9> & matrix);
 
-  /**
+/**
    * Converts the Matrix3x3 matrix into a 9 element covariance matrix from Imu
    * messages
    *
@@ -207,31 +207,32 @@ namespace swri_transform_util
    * @param[out] matrix_out   The output matrix
    *
    */
-  void Set3x3Cov(const tf2::Matrix3x3& matrix_in,
-                          std::array<double, 9>& matrix_out);
-  /**
+void Set3x3Cov(
+  const tf2::Matrix3x3 & matrix_in,
+  std::array<double, 9> & matrix_out);
+/**
    * Sets the upper-left quadrant of a 6x6 matrix with the specified 3x3
    * sub-matrix
    *
    * @param[in]  sub_matrix  The 3x3 sub-matrix.
    * @param[out] matrix      The 6x6 matrix to modify.
    */
-  void SetUpperLeft(
-      const tf2::Matrix3x3& sub_matrix,
-      std::array<double, 36>& matrix);
+void SetUpperLeft(
+  const tf2::Matrix3x3 & sub_matrix,
+  std::array<double, 36> & matrix);
 
-  /**
+/**
    * Sets the lower-right quadrant of a 6x6 matrix with the specified 3x3
    * sub-matrix
    *
    * @param[in]  sub_matrix  The 3x3 sub-matrix.
    * @param[out] matrix      The 6x6 matrix to modify.
    */
-  void SetLowerRight(
-      const tf2::Matrix3x3& sub_matrix,
-      std::array<double, 36>& matrix);
+void SetLowerRight(
+  const tf2::Matrix3x3 & sub_matrix,
+  std::array<double, 36> & matrix);
 
-  /**
+/**
    * Calculate the subtending angle of an arc (aligned with the
    * longitudinal coordinate axis at the specified latitude and
    * altitude) with the specied arc length.
@@ -241,12 +242,12 @@ namespace swri_transform_util
    * @param[in] arc_length   The arc length in meters.
    * @returns The angle subtended by the arc (in degrees)
    */
-  double LongitudeDegreesFromMeters(
-    double latitude,
-    double altitude,
-    double arc_length);
+double LongitudeDegreesFromMeters(
+  double latitude,
+  double altitude,
+  double arc_length);
 
-  /**
+/**
    * Calculate the subtending angle of an arc (aligned with the
    * latitudinal coordinate axis at the specified altitude) with the
    * specied arc length.  This conversion is invariant to longitude.
@@ -255,11 +256,11 @@ namespace swri_transform_util
    * @param[in] arc_length   The arc length in meters.
    * @returns The angle subtended by the arc (in degrees)
    */
-  double LatitudeDegreesFromMeters(
-    double altitude,
-    double arc_length);
+double LatitudeDegreesFromMeters(
+  double altitude,
+  double arc_length);
 
-  /**
+/**
    * Normalize a TF frame ID by assuming that frames with
    * relative paths are in the global namespace and adding
    * a leading slash.
@@ -267,9 +268,9 @@ namespace swri_transform_util
    * @param[in] frame_id  A TF frame ID, with or without a leading slash
    * @returns   frame_id with a leading slash if it did not have one previously
    */
-  std::string NormalizeFrameId(const std::string& frame_id);
+std::string NormalizeFrameId(const std::string & frame_id);
 
-  /**
+/**
    * Compare two TF frame IDs, assuming that frames with
    * relative paths are in the global namespace. E.g.
    * "map" == "/map"
@@ -283,7 +284,7 @@ namespace swri_transform_util
    * @param[in[ frame2 A TF frame ID, with or without a leading slash
    * @return True if the frames match
    **/
-  bool FrameIdsEqual(const std::string& frame1, const std::string& frame2);
+bool FrameIdsEqual(const std::string & frame1, const std::string & frame2);
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_

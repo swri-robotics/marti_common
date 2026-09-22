@@ -36,36 +36,36 @@
 
 namespace swri_image_util
 {
-  class DummyImagePublisherNode : public rclcpp::Node
-  {
-  public:
-    DummyImagePublisherNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("dummy_image_publisher", options)
+class DummyImagePublisherNode : public rclcpp::Node
+{
+public:
+  DummyImagePublisherNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("dummy_image_publisher", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        , it_(image_transport::RequiredInterfaces{*this})
+    , it_(image_transport::RequiredInterfaces{*this})
 #endif
-    {
-      rcl_interfaces::msg::ParameterDescriptor desc;
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
-      desc.name = "encoding";
-      this->declare_parameter("encoding", "mono8", desc);
+  {
+    rcl_interfaces::msg::ParameterDescriptor desc;
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+    desc.name = "encoding";
+    this->declare_parameter("encoding", "mono8", desc);
 
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
-      desc.name = "width";
-      this->declare_parameter("width", 640, desc);
-      desc.name = "height";
-      this->declare_parameter("height", 480, desc);
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
+    desc.name = "width";
+    this->declare_parameter("width", 640, desc);
+    desc.name = "height";
+    this->declare_parameter("height", 480, desc);
 
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
-      desc.read_only = true;
-      this->declare_parameter("rate", 10.0, desc);
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    desc.read_only = true;
+    this->declare_parameter("rate", 10.0, desc);
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "image");
+    image_pub_ = image_transport::create_publisher(this, "image");
 #else
-      image_pub_ = it_.advertise("image", 1);
+    image_pub_ = it_.advertise("image", 1);
 #endif
 
-      auto publisher = [this]() -> void
+    auto publisher = [this]() -> void
       {
         int64_t width = this->get_parameter("width").as_int();
         int64_t height = this->get_parameter("height").as_int();
@@ -81,16 +81,20 @@ namespace swri_image_util
         image_pub_.publish(std::move(image));
       };
 
-      timer_ = this->create_wall_timer(std::chrono::duration<float>(1.0 / this->get_parameter("rate").as_double()), publisher);
-    }
+    timer_ =
+      this->create_wall_timer(
+      std::chrono::duration<float>(
+        1.0 /
+        this->get_parameter("rate").as_double()), publisher);
+  }
 
-  private:
-    image_transport::Publisher image_pub_;
+private:
+  image_transport::Publisher image_pub_;
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    rclcpp::TimerBase::SharedPtr timer_;
-  };
+  rclcpp::TimerBase::SharedPtr timer_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

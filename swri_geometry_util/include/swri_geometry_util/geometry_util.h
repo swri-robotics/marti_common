@@ -36,7 +36,7 @@
 
 namespace swri_geometry_util
 {
-  /**
+/**
    * Calculate the distance from a point to a plane.
    *
    * @param[in]  plane_normal  The normal vector of the plane.
@@ -45,37 +45,37 @@ namespace swri_geometry_util
    *
    * @returns The distance of the point from the plane.
    */
-  double DistanceFromPlane(
-      const tf2::Vector3& plane_normal,
-      const tf2::Vector3& plane_point,
-      const tf2::Vector3& point);
+double DistanceFromPlane(
+  const tf2::Vector3 & plane_normal,
+  const tf2::Vector3 & plane_point,
+  const tf2::Vector3 & point);
 
-  tf2::Vector3 ProjectPointToPlane(
-      const tf2::Vector3& plane_normal,
-      const tf2::Vector3& plane_point,
-      const tf2::Vector3& point);
+tf2::Vector3 ProjectPointToPlane(
+  const tf2::Vector3 & plane_normal,
+  const tf2::Vector3 & plane_point,
+  const tf2::Vector3 & point);
 
-  double DistanceFromLineSegment(
-      const tf2::Vector3& line_start,
-      const tf2::Vector3& line_end,
-      const tf2::Vector3& point);
+double DistanceFromLineSegment(
+  const tf2::Vector3 & line_start,
+  const tf2::Vector3 & line_end,
+  const tf2::Vector3 & point);
 
-  double DistanceFromLineSegment(
-      const cv::Vec2d& line_start,
-      const cv::Vec2d& line_end,
-      const cv::Vec2d& point);
+double DistanceFromLineSegment(
+  const cv::Vec2d & line_start,
+  const cv::Vec2d & line_end,
+  const cv::Vec2d & point);
 
-  tf2::Vector3 ProjectToLineSegment(
-      const tf2::Vector3& line_start,
-      const tf2::Vector3& line_end,
-      const tf2::Vector3& point);
+tf2::Vector3 ProjectToLineSegment(
+  const tf2::Vector3 & line_start,
+  const tf2::Vector3 & line_end,
+  const tf2::Vector3 & point);
 
-  cv::Vec2d ProjectToLineSegment(
-      const cv::Vec2d& line_start,
-      const cv::Vec2d& line_end,
-      const cv::Vec2d& point);
+cv::Vec2d ProjectToLineSegment(
+  const cv::Vec2d & line_start,
+  const cv::Vec2d & line_end,
+  const cv::Vec2d & point);
 
-  /**
+/**
    * Test if a point is within the bounds of a polygon.
    *
    * The polygon is assumed to be non-intersecting and that the vertices
@@ -86,11 +86,11 @@ namespace swri_geometry_util
    *
    * @return True if the point is within the bounds of the polygon.
    */
-  bool PointInPolygon(
-      const std::vector<cv::Vec2d>& polygon,
-      const cv::Vec2d& point);
+bool PointInPolygon(
+  const std::vector<cv::Vec2d> & polygon,
+  const cv::Vec2d & point);
 
-  /**
+/**
    * Calcuate the distance between a point and the bounds of a polygon.
    *
    * The polygon vertices are assumed to be ordered sequentially.
@@ -103,11 +103,11 @@ namespace swri_geometry_util
    * @return The distance from the point to the polygon.  -1 is returned if the
    *         polygon is empty.
    */
-  double DistanceFromPolygon(
-      const std::vector<cv::Vec2d>& polygon,
-      const cv::Vec2d& point);
+double DistanceFromPolygon(
+  const std::vector<cv::Vec2d> & polygon,
+  const cv::Vec2d & point);
 
-  /**
+/**
    * Find closest point to two 3D lines.
    *
    * @param[in]   a1     First point on line 1.
@@ -118,12 +118,12 @@ namespace swri_geometry_util
    *
    * @returns True unless a1 == a2, b1 == b2, or lines are parallel.
    */
-  bool ClosestPointToLines(
-      const tf2::Vector3& a1,
-      const tf2::Vector3& a2,
-      const tf2::Vector3& b1,
-      const tf2::Vector3& b2,
-      tf2::Vector3& point);
+bool ClosestPointToLines(
+  const tf2::Vector3 & a1,
+  const tf2::Vector3 & a2,
+  const tf2::Vector3 & b1,
+  const tf2::Vector3 & b2,
+  tf2::Vector3 & point);
 }
 
 #endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_

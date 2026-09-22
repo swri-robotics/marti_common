@@ -37,295 +37,307 @@
 namespace swri_opencv_util
 {
 
-  class Correspondence2d
+class Correspondence2d
+{
+public:
+  typedef cv::Mat T;           // An Nx4 float matrix
+  typedef cv::Mat M;
+
+  explicit Correspondence2d(const T & data)
+  : data_(data) {}
+
+  virtual bool GetModel(
+    const std::vector<int32_t> & indices, M & model,
+    double max_error) const = 0;
+  int32_t GetInlierCount(const M & model, double max_error);
+  void GetInliers(const M & model, double max_error, std::vector<uint32_t> & indices);
+  int32_t Size() const {return data_.rows;}
+  virtual std::string GetModelString(M & model) const {return "";}
+
+  static void CopyTo(const M & src, M & dst)
   {
-  public:
-    typedef cv::Mat T;         // An Nx4 float matrix
-    typedef cv::Mat M;
+    src.copyTo(dst);
+  }
 
-    explicit Correspondence2d(const T& data) : data_(data) {}
+protected:
+  virtual void CalculateNorms(const M & model, cv::Mat & norms);
 
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const = 0;
-    int32_t GetInlierCount(const M& model, double max_error);
-    void GetInliers(const M& model, double max_error, std::vector<uint32_t>& indices);
-    int32_t Size() const { return data_.rows; }
-    virtual std::string GetModelString(M& model) const { return ""; }
+  const T & data_;
 
-    static void CopyTo(const M& src, M& dst)
-    {
-      src.copyTo(dst);
-    }
+  // Buffer matrices to avoid repeated memory allocations.
+  cv::Mat norms__;
+  cv::Mat predicted__;
+  cv::Mat delta__;
+  cv::Mat delta_squared__;
+  cv::Mat thresholded__;
+};
 
-  protected:
-    virtual void CalculateNorms(const M& model, cv::Mat& norms);
+class Homography : public Correspondence2d
+{
+public:
+  enum { MIN_SIZE = 4 };
 
-    const T& data_;
-
-    // Buffer matrices to avoid repeated memory allocations.
-    cv::Mat norms__;
-    cv::Mat predicted__;
-    cv::Mat delta__;
-    cv::Mat delta_squared__;
-    cv::Mat thresholded__;
-  };
-
-  class Homography : public Correspondence2d
+  explicit Homography(const T & data)
+  : Correspondence2d(data) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-  public:
-    enum { MIN_SIZE = 4 };
+    return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
+  }
 
-    explicit Homography(const T& data) : Correspondence2d(data) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
-    }
+protected:
+  virtual void CalculateNorms(const M & model, cv::Mat & norms);
+};
 
-  protected:
-    virtual void CalculateNorms(const M& model, cv::Mat& norms);
-  };
+class AffineTransform2d : public Correspondence2d
+{
+public:
+  enum { MIN_SIZE = 3 };
 
-  class AffineTransform2d : public Correspondence2d
+  explicit AffineTransform2d(const T & data)
+  : Correspondence2d(data) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-  public:
-    enum { MIN_SIZE = 3 };
+    return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
+  }
+};
 
-    explicit AffineTransform2d(const T& data) : Correspondence2d(data) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
-    }
-  };
+class RigidTransform2d : public Correspondence2d
+{
+public:
+  enum { MIN_SIZE = 2 };
 
-  class RigidTransform2d : public Correspondence2d
+  explicit RigidTransform2d(const T & data)
+  : Correspondence2d(data) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-  public:
-    enum { MIN_SIZE = 2 };
+    return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
+  }
+};
 
-    explicit RigidTransform2d(const T& data) : Correspondence2d(data) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
-    }
-  };
+class Translation2d : public Correspondence2d
+{
+public:
+  enum { MIN_SIZE = 1 };
 
-  class Translation2d : public Correspondence2d
+  explicit Translation2d(const T & data)
+  : Correspondence2d(data) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-  public:
-    enum { MIN_SIZE = 1 };
+    return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
+  }
+};
 
-    explicit Translation2d(const T& data) : Correspondence2d(data) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 4 && data_.rows >= MIN_SIZE && data_.type() == CV_32F;
-    }
-  };
+bool Valid2dPointCorrespondences(
+  const cv::Mat & points1,
+  const cv::Mat & points2);
 
-  bool Valid2dPointCorrespondences(
-    const cv::Mat& points1,
-    const cv::Mat& points2);
+bool Valid3dPointCorrespondences(
+  const cv::Mat & points1,
+  const cv::Mat & points2);
 
-  bool Valid3dPointCorrespondences(
-    const cv::Mat& points1,
-    const cv::Mat& points2);
+bool ZipCorrespondences(
+  const cv::Mat & points1,
+  const cv::Mat & points2,
+  cv::Mat & correspondences);
 
-  bool ZipCorrespondences(
-    const cv::Mat& points1,
-    const cv::Mat& points2,
-    cv::Mat& correspondences);
+template<class Model>
+class Fit3d
+{
+public:
+  typedef cv::Mat T;           // An Nx3 float matrix
+  typedef Model M;             // A geometric model
 
-  template <class Model>
-  class Fit3d
+  explicit Fit3d(const T & data)
+  : data_(data) {}
+
+  virtual bool GetModel(
+    const std::vector<int32_t> & indices, M & model,
+    double max_error) const = 0;
+  int32_t GetInlierCount(const M & model, double max_error)
   {
-  public:
-    typedef cv::Mat T;         // An Nx3 float matrix
-    typedef Model M;           // A geometric model
+    CalculateNorms(model, norms__);
 
-    explicit Fit3d(const T& data) : data_(data) {}
+    cv::compare(norms__, cv::Scalar(max_error), thresholded__, cv::CMP_LT);
 
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const = 0;
-    int32_t GetInlierCount(const M& model, double max_error)
-    {
-      CalculateNorms(model, norms__);
+    return cv::countNonZero(thresholded__);
+  }
 
-      cv::compare(norms__, cv::Scalar(max_error), thresholded__, cv::CMP_LT);
+  void GetInliers(const M & model, double max_error, std::vector<uint32_t> & indices)
+  {
+    CalculateNorms(model, norms__);
 
-      return cv::countNonZero(thresholded__);
-    }
-
-    void GetInliers(const M& model, double max_error, std::vector<uint32_t>& indices)
-    {
-      CalculateNorms(model, norms__);
-
-      indices.clear();
-      indices.reserve(norms__.rows);
-      double threshold = max_error;
-      for (int i = 0; i < norms__.rows; i++)
-      {
-        if (norms__.at<float>(i) < threshold)
-        {
-          indices.push_back(i);
-        }
+    indices.clear();
+    indices.reserve(norms__.rows);
+    double threshold = max_error;
+    for (int i = 0; i < norms__.rows; i++) {
+      if (norms__.at<float>(i) < threshold) {
+        indices.push_back(i);
       }
     }
+  }
 
-    int32_t Size() const { return data_.rows; }
-    virtual std::string GetModelString(M& model) const { return ""; }
+  int32_t Size() const {return data_.rows;}
+  virtual std::string GetModelString(M & model) const {return "";}
 
-    static void CopyTo(const M& src, M& dst)
-    {
-      src.copyTo(dst);
-    }
-
-  protected:
-    virtual void CalculateNorms(const M& model, cv::Mat& norms) = 0;
-
-    const T& data_;
-
-    // Buffer matrices to avoid repeated memory allocations.
-    cv::Mat norms__;
-    cv::Mat delta__;
-    cv::Mat thresholded__;
-  };
-
-  struct PlaneModel
+  static void CopyTo(const M & src, M & dst)
   {
-    PlaneModel() : x(0), y(0), z(0), i(0), j(0), k(0) {}
-    void copyTo(PlaneModel& dst) const
-    {
-      dst = *this;
-    }
+    src.copyTo(dst);
+  }
 
-    float x, y, z, i, j, k;
-  };
+protected:
+  virtual void CalculateNorms(const M & model, cv::Mat & norms) = 0;
 
-  class PlaneFit : public Fit3d<PlaneModel>
+  const T & data_;
+
+  // Buffer matrices to avoid repeated memory allocations.
+  cv::Mat norms__;
+  cv::Mat delta__;
+  cv::Mat thresholded__;
+};
+
+struct PlaneModel
+{
+  PlaneModel()
+  : x(0), y(0), z(0), i(0), j(0), k(0) {}
+  void copyTo(PlaneModel & dst) const
   {
-  public:
-    enum { MIN_SIZE = 3 };
+    dst = *this;
+  }
 
-    PlaneFit(const T& data, float min_angle = 0.2) :
-        Fit3d<PlaneModel>(data),
-        min_angle_(min_angle) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
-    }
+  float x, y, z, i, j, k;
+};
 
-  protected:
-    virtual void CalculateNorms(const M& model, cv::Mat& norms);
+class PlaneFit : public Fit3d<PlaneModel>
+{
+public:
+  enum { MIN_SIZE = 3 };
 
-    float min_angle_;
-  };
-
-  class PerpendicularPlaneWithPointFit : public PlaneFit
+  PlaneFit(const T & data, float min_angle = 0.2)
+  : Fit3d<PlaneModel>(data),
+    min_angle_(min_angle) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-  public:
-    enum { MIN_SIZE = 2 };
+    return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
+  }
 
-    PerpendicularPlaneWithPointFit(const T& data,
-                                   const cv::Vec3f& point_on_plane = cv::Vec3f(0,0,0),
-                                   const cv::Vec3f& perp_axis = cv::Vec3f(0,0,1),
-                                   float max_axis_angle = 0.5,
-                                   float min_angle = 0.2) :
-        PlaneFit(data, min_angle),
-        point_(point_on_plane),
-        perp_axis_(perp_axis),
-        max_axis_angle_(max_axis_angle)
-    {}
+protected:
+  virtual void CalculateNorms(const M & model, cv::Mat & norms);
 
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+  float min_angle_;
+};
 
-  protected:
+class PerpendicularPlaneWithPointFit : public PlaneFit
+{
+public:
+  enum { MIN_SIZE = 2 };
 
-    cv::Vec3f point_;
-    cv::Vec3f perp_axis_;
-    float max_axis_angle_;
-  };
+  PerpendicularPlaneWithPointFit(
+    const T & data,
+    const cv::Vec3f & point_on_plane = cv::Vec3f(0, 0, 0),
+    const cv::Vec3f & perp_axis = cv::Vec3f(0, 0, 1),
+    float max_axis_angle = 0.5,
+    float min_angle = 0.2)
+  : PlaneFit(data, min_angle),
+    point_(point_on_plane),
+    perp_axis_(perp_axis),
+    max_axis_angle_(max_axis_angle)
+  {}
 
-  struct LineModel3d
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+
+protected:
+  cv::Vec3f point_;
+  cv::Vec3f perp_axis_;
+  float max_axis_angle_;
+};
+
+struct LineModel3d
+{
+  LineModel3d()
+  : x(0), y(0), z(0), i(0), j(0), k(0) {}
+  void copyTo(LineModel3d & dst) const
   {
-    LineModel3d() : x(0), y(0), z(0), i(0), j(0), k(0) {}
-    void copyTo(LineModel3d& dst) const
-    {
-      dst = *this;
-    }
+    dst = *this;
+  }
 
-    float x, y, z, i, j, k;
-  };
+  float x, y, z, i, j, k;
+};
 
-  class LineFit3d : public Fit3d<LineModel3d>
+class LineFit3d : public Fit3d<LineModel3d>
+{
+public:
+  enum { MIN_SIZE = 2 };
+
+  LineFit3d(const T & data)
+  : Fit3d<LineModel3d>(data) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-  public:
-    enum { MIN_SIZE = 2 };
+    return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
+  }
 
-    LineFit3d(const T& data) : Fit3d<LineModel3d>(data) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
-    }
+protected:
+  virtual void CalculateNorms(const M & model, cv::Mat & norms);
 
-  protected:
-    virtual void CalculateNorms(const M& model, cv::Mat& norms);
+  cv::Mat temp1__;
+  cv::Mat temp2__;
+  cv::Mat x0_p_dot_n__;
+  cv::Mat x0_p__;
+};
 
-    cv::Mat temp1__;
-    cv::Mat temp2__;
-    cv::Mat x0_p_dot_n__;
-    cv::Mat x0_p__;
-  };
+class OrthoLineFit3d : public LineFit3d
+{
+public:
+  OrthoLineFit3d(const T & data, const LineModel3d & ortho, float angle_tolerance = 0.09)
+  : LineFit3d(data), ortho_(ortho), angle_tolerance_(angle_tolerance) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
 
-  class OrthoLineFit3d : public LineFit3d
+protected:
+  LineModel3d ortho_;
+  float angle_tolerance_;
+};
+
+struct CrossModel3d
+{
+  CrossModel3d()
+  : x(0), y(0), z(0), i1(0), j1(0), k1(0), i2(0), j2(0), k2(0) {}
+  void copyTo(CrossModel3d & dst) const
   {
-  public:
-    OrthoLineFit3d(const T& data, const LineModel3d& ortho, float angle_tolerance = 0.09) :
-      LineFit3d(data), ortho_(ortho), angle_tolerance_(angle_tolerance) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
+    dst = *this;
+  }
 
-  protected:
-    LineModel3d ortho_;
-    float angle_tolerance_;
-  };
+  float x, y, z, i1, j1, k1, i2, j2, k2;
+};
 
-  struct CrossModel3d
+class CrossFit3d : public Fit3d<CrossModel3d>
+{
+public:
+  enum { MIN_SIZE = 3 };
+
+  CrossFit3d(const T & data, float min_angle = 0.2)
+  : Fit3d<CrossModel3d>(data),
+    min_angle_(min_angle) {}
+  virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
+  bool ValidData() const
   {
-    CrossModel3d() : x(0), y(0), z(0), i1(0), j1(0), k1(0), i2(0), j2(0), k2(0) {}
-    void copyTo(CrossModel3d& dst) const
-    {
-      dst = *this;
-    }
+    return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
+  }
 
-    float x, y, z, i1, j1, k1, i2, j2, k2;
-  };
+protected:
+  virtual void CalculateNorms(const M & model, cv::Mat & norms);
 
-  class CrossFit3d : public Fit3d<CrossModel3d>
-  {
-  public:
-    enum { MIN_SIZE = 3 };
-
-    CrossFit3d(const T& data, float min_angle = 0.2) :
-        Fit3d<CrossModel3d>(data),
-        min_angle_(min_angle) {}
-    virtual bool GetModel(const std::vector<int32_t>& indices, M& model, double max_error) const;
-    bool ValidData() const
-    {
-      return data_.cols == 1 && data_.rows >= MIN_SIZE && data_.type() == CV_32FC3;
-    }
-
-  protected:
-    virtual void CalculateNorms(const M& model, cv::Mat& norms);
-
-    float min_angle_;
-    cv::Mat temp1__;
-    cv::Mat temp2__;
-    cv::Mat temp3__;
-    cv::Mat x0_p_dot_n__;
-    cv::Mat x0_p__;
-  };
+  float min_angle_;
+  cv::Mat temp1__;
+  cv::Mat temp2__;
+  cv::Mat temp3__;
+  cv::Mat x0_p_dot_n__;
+  cv::Mat x0_p__;
+};
 
 }
 

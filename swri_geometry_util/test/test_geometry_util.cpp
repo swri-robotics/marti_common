@@ -34,109 +34,121 @@
 TEST(GeometryUtilTests, ClosestPointToLinesInvalid)
 {
   tf2::Vector3 point;
-  ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(1, 0, 0),
-    tf2::Vector3(1, 0, 0),
-    tf2::Vector3(0, 1, 0),
-    tf2::Vector3(1, 0, 1),
-    point));
+  ASSERT_FALSE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(1, 0, 0),
+      tf2::Vector3(1, 0, 0),
+      tf2::Vector3(0, 1, 0),
+      tf2::Vector3(1, 0, 1),
+      point));
 
-  ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(1, 0, 1),
-    tf2::Vector3(0, 1, 0),
-    tf2::Vector3(0, 0, 1),
-    tf2::Vector3(0, 0, 1),
-    point));
+  ASSERT_FALSE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(1, 0, 1),
+      tf2::Vector3(0, 1, 0),
+      tf2::Vector3(0, 0, 1),
+      tf2::Vector3(0, 0, 1),
+      point));
 
-  ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(20, 0, 0),
-    tf2::Vector3(30, 0, 0),
-    point));
+  ASSERT_FALSE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(20, 0, 0),
+      tf2::Vector3(30, 0, 0),
+      point));
 
-  ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(30, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    point));
+  ASSERT_FALSE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(30, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      point));
 
-  ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(20, 10, 10),
-    tf2::Vector3(30, 10, 10),
-    point));
+  ASSERT_FALSE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(20, 10, 10),
+      tf2::Vector3(30, 10, 10),
+      point));
 
 
-  ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(30, 10, 10),
-    tf2::Vector3(10, 10, 10),
-    point));
+  ASSERT_FALSE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(30, 10, 10),
+      tf2::Vector3(10, 10, 10),
+      point));
 }
 
 TEST(GeometryUtilTests, ClosestPointToLines)
 {
   tf2::Vector3 point;
-  ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(0, 10, 0),
-    point));
+  ASSERT_TRUE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(0, 10, 0),
+      point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
-  ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(0, 5, 0),
-    tf2::Vector3(0, 10, 0),
-    point));
+  ASSERT_TRUE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(0, 5, 0),
+      tf2::Vector3(0, 10, 0),
+      point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
-  ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(5, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(0, 5, 0),
-    tf2::Vector3(0, 10, 0),
-    point));
+  ASSERT_TRUE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(5, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(0, 5, 0),
+      tf2::Vector3(0, 10, 0),
+      point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
-  ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(0, -5, 0),
-    tf2::Vector3(0, 10, 0),
-    point));
+  ASSERT_TRUE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(0, -5, 0),
+      tf2::Vector3(0, 10, 0),
+      point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 0);
 
-  ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(0, 0, 20),
-    tf2::Vector3(0, 10, 20),
-    point));
+  ASSERT_TRUE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(0, 0, 20),
+      tf2::Vector3(0, 10, 20),
+      point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 10);
 
-  ASSERT_TRUE(swri_geometry_util::ClosestPointToLines(
-    tf2::Vector3(0, 0, 0),
-    tf2::Vector3(10, 0, 0),
-    tf2::Vector3(0, 10, 20),
-    tf2::Vector3(0, 0, 20),
-    point));
+  ASSERT_TRUE(
+    swri_geometry_util::ClosestPointToLines(
+      tf2::Vector3(0, 0, 0),
+      tf2::Vector3(10, 0, 0),
+      tf2::Vector3(0, 10, 20),
+      tf2::Vector3(0, 0, 20),
+      point));
   EXPECT_FLOAT_EQ(point.x(), 0);
   EXPECT_FLOAT_EQ(point.y(), 0);
   EXPECT_FLOAT_EQ(point.z(), 10);
@@ -399,8 +411,10 @@ TEST(GeometryUtilTests, DistanceFromPolygon)
   EXPECT_FLOAT_EQ(0.01, swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(-0.99, -0.99)));
   EXPECT_FLOAT_EQ(0.01, swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(0.99, -0.99)));
   EXPECT_FLOAT_EQ(1, swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(2, 0)));
-  EXPECT_FLOAT_EQ(1,swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(-2, 0)));
-  EXPECT_FLOAT_EQ(std::sqrt(2),swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(2, -2)));
+  EXPECT_FLOAT_EQ(1, swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(-2, 0)));
+  EXPECT_FLOAT_EQ(
+    std::sqrt(2),
+    swri_geometry_util::DistanceFromPolygon(polygon1, cv::Vec2d(2, -2)));
 
   std::vector<cv::Vec2d> polygon2;
   polygon2.push_back(cv::Vec2d(1, 1));
@@ -415,12 +429,14 @@ TEST(GeometryUtilTests, DistanceFromPolygon)
   EXPECT_FLOAT_EQ(0.01, swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(-0.99, -0.99)));
   EXPECT_FLOAT_EQ(0.01, swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(0.99, -0.99)));
   EXPECT_FLOAT_EQ(1, swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(2, 0)));
-  EXPECT_FLOAT_EQ(1,swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(-2, 0)));
-  EXPECT_FLOAT_EQ(std::sqrt(2),swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(2, -2)));
+  EXPECT_FLOAT_EQ(1, swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(-2, 0)));
+  EXPECT_FLOAT_EQ(
+    std::sqrt(2),
+    swri_geometry_util::DistanceFromPolygon(polygon2, cv::Vec2d(2, -2)));
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

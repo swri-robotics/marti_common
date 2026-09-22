@@ -42,16 +42,15 @@ namespace mnm = marti_nav_msgs;
 namespace swri_route_util
 {
 // Convenience function to add a key/value pair to a KeyValueArray message.
-static void addItem(mcm::msg::KeyValueArray &m, const std::string &key, const std::string &value)
+static void addItem(mcm::msg::KeyValueArray & m, const std::string & key, const std::string & value)
 {
   m.items.emplace_back();
   m.items.back().key = key;
   m.items.back().value = value;
 }
 
-SpeedForCurvatureParameters::SpeedForCurvatureParameters(const rclcpp::Node::SharedPtr& node)
-  :
-  node_(node),
+SpeedForCurvatureParameters::SpeedForCurvatureParameters(const rclcpp::Node::SharedPtr & node)
+: node_(node),
   use_speed_from_accel_constant_(true),
   max_lateral_accel_mss_(0.2),
   speed_curve_(*node_),
@@ -68,10 +67,14 @@ void SpeedForCurvatureParameters::loadFromRosParam()
   max_lateral_accel_mss_ = node_->declare_parameter("max_lateral_acceleration", 0.2);
 
   if (!speed_curve_.readFromParameter("curvature_vs_speed")) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to load speed/curve parameter. Forcing lateral acceleration mode.");
+    RCLCPP_ERROR(
+      node_->get_logger(),
+      "Failed to load speed/curve parameter. Forcing lateral acceleration mode.");
     use_speed_from_accel_constant_ = true;
   } else {
-    RCLCPP_INFO(node_->get_logger(), "Loaded speed vs curvature curve (%s)", speed_curve_.interpolationTypeString().c_str());
+    RCLCPP_INFO(
+      node_->get_logger(), "Loaded speed vs curvature curve (%s)",
+      speed_curve_.interpolationTypeString().c_str());
     for (size_t i = 0; i < speed_curve_.numPoints(); i++) {
       std::pair<double, double> pt = speed_curve_.getPoint(i);
       RCLCPP_INFO(node_->get_logger(), "  %zu -- %f [1/m] vs %f [m/s]", i, pt.first, pt.second);
@@ -79,7 +82,7 @@ void SpeedForCurvatureParameters::loadFromRosParam()
   }
 }
 
-void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &config)
+void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray & config)
 {
   std::unordered_map<std::string, std::string> config_map;
   for (size_t i = 0; i < config.items.size(); ++i) {
@@ -88,21 +91,25 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &
 
   if (config_map.count("curvature_filter_size")) {
     curvature_filter_size_ = std::atof(config_map.at("curvature_filter_size").c_str());
-    RCLCPP_INFO(node_->get_logger(), "Setting curvature_filter_size to %lf", curvature_filter_size_);
+    RCLCPP_INFO(
+      node_->get_logger(), "Setting curvature_filter_size to %lf",
+      curvature_filter_size_);
     config_map.erase("curvature_filter_size");
   }
 
   if (config_map.count("lateral_acceleration_mode")) {
     use_speed_from_accel_constant_ =
       (std::atoi(config_map.at("lateral_acceleration_mode").c_str()) > 0);
-    RCLCPP_INFO(node_->get_logger(), "Setting lateral acceleration mode to %s",
-             use_speed_from_accel_constant_ ? "true" : "false");
+    RCLCPP_INFO(
+      node_->get_logger(), "Setting lateral acceleration mode to %s",
+      use_speed_from_accel_constant_ ? "true" : "false");
     config_map.erase("lateral_acceleration_mode");
   }
 
   if (config_map.count("max_lateral_acceleration")) {
     max_lateral_accel_mss_ = std::atof(config_map.at("max_lateral_acceleration").c_str());
-    RCLCPP_INFO(node_->get_logger(), "Setting max_lateral_acceleration to %lf", max_lateral_accel_mss_);
+    RCLCPP_INFO(
+      node_->get_logger(), "Setting max_lateral_acceleration to %lf", max_lateral_accel_mss_);
     config_map.erase("max_lateral_acceleration");
   }
 
@@ -115,7 +122,8 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &
       speed_curve_.setInterpolationType(smu::Interpolation1D::LINEAR);
       RCLCPP_INFO(node_->get_logger(), "Setting interpolation type to %s", interp_type.c_str());
     } else {
-      RCLCPP_ERROR(node_->get_logger(), "Ignoring invalid interpolation type '%s'.", interp_type.c_str());
+      RCLCPP_ERROR(
+        node_->get_logger(), "Ignoring invalid interpolation type '%s'.", interp_type.c_str());
     }
     config_map.erase("curvature_vs_speed/interpolation_type");
   }
@@ -155,39 +163,46 @@ void SpeedForCurvatureParameters::loadFromConfig(const mcm::msg::KeyValueArray &
   }
 
   // Print warnings to help find ignored paramters
-  for (auto const &it : config_map) {
+  for (auto const & it : config_map) {
     RCLCPP_WARN(node_->get_logger(), "Ignoring unknown configuration value '%s'", it.first.c_str());
   }
 }
 
-void SpeedForCurvatureParameters::readToConfig(mcm::msg::KeyValueArray &config) const
+void SpeedForCurvatureParameters::readToConfig(mcm::msg::KeyValueArray & config) const
 {
   mcm::msg::KeyValueArray::SharedPtr msg = std::make_shared<mcm::msg::KeyValueArray>();
   config.header.stamp = rclcpp::Clock().now();
 
-  addItem(config, "curvature_filter_size",
-          std::to_string(curvature_filter_size_));
-  addItem(config, "lateral_acceleration_mode",
-          use_speed_from_accel_constant_ ? "1" : "0");
-  addItem(config, "max_lateral_acceleration",
-          std::to_string(max_lateral_accel_mss_));
-  addItem(config, "curvature_vs_speed/interpolation_type",
-          speed_curve_.interpolationTypeString());
+  addItem(
+    config, "curvature_filter_size",
+    std::to_string(curvature_filter_size_));
+  addItem(
+    config, "lateral_acceleration_mode",
+    use_speed_from_accel_constant_ ? "1" : "0");
+  addItem(
+    config, "max_lateral_acceleration",
+    std::to_string(max_lateral_accel_mss_));
+  addItem(
+    config, "curvature_vs_speed/interpolation_type",
+    speed_curve_.interpolationTypeString());
 
   for (size_t i = 0; i < speed_curve_.numPoints(); i++) {
     char base_key[1024];
     snprintf(base_key, sizeof(base_key), "curvature_vs_speed/values/%zu", i);
 
-    addItem(config, std::string(base_key) + "/0",
-            std::to_string(speed_curve_.getPoint(i).first));
-    addItem(config, std::string(base_key) + "/1",
-            std::to_string(speed_curve_.getPoint(i).second));
+    addItem(
+      config, std::string(base_key) + "/0",
+      std::to_string(speed_curve_.getPoint(i).first));
+    addItem(
+      config, std::string(base_key) + "/1",
+      std::to_string(speed_curve_.getPoint(i).second));
   }
 }
 
-static double estimateCurvature(const Route &route,
-                                const size_t index,
-                                double filter_size)
+static double estimateCurvature(
+  const Route & route,
+  const size_t index,
+  double filter_size)
 {
   // Sample the route at the specified point
   mnm::msg::RoutePosition pos1;
@@ -215,11 +230,12 @@ static double estimateCurvature(const Route &route,
   // Approximate the outgoing tangent vector
   const tf2::Vector3 T1 = (pt2.position() - pt1.position()).normalized();
   // k ~ ||dT / ds||
-  return ((T1-T0)/filter_size).length();
+  return ((T1 - T0) / filter_size).length();
 }
 
-static double maxSpeedForCurvature(double curvature,
-                                   const SpeedForCurvatureParameters &params)
+static double maxSpeedForCurvature(
+  double curvature,
+  const SpeedForCurvatureParameters & params)
 {
   double k = std::abs(curvature);
 
@@ -231,7 +247,7 @@ static double maxSpeedForCurvature(double curvature,
     if (k < 1e-4) {
       return max_speed;
     } else {
-      return std::min(max_speed, std::sqrt(a/k));
+      return std::min(max_speed, std::sqrt(a / k));
     }
   } else {
     return params.speed_curve_.eval(k);
@@ -239,9 +255,9 @@ static double maxSpeedForCurvature(double curvature,
 }
 
 void speedsForCurvature(
-  mnm::msg::RouteSpeedArray &speeds,
-  const Route &route,
-  const SpeedForCurvatureParameters &parameters)
+  mnm::msg::RouteSpeedArray & speeds,
+  const Route & route,
+  const SpeedForCurvatureParameters & parameters)
 {
   speeds.header.stamp = rclcpp::Clock().now();
 
@@ -257,9 +273,8 @@ void speedsForCurvature(
   }
 }
 
-SpeedForObstaclesParameters::SpeedForObstaclesParameters(const rclcpp::Node::SharedPtr& node)
-  :
-  node_(node),
+SpeedForObstaclesParameters::SpeedForObstaclesParameters(const rclcpp::Node::SharedPtr & node)
+: node_(node),
   origin_to_front_m_(2.0),
   origin_to_rear_m_(1.0),
   origin_to_left_m_(1.0),
@@ -288,26 +303,27 @@ void SpeedForObstaclesParameters::loadFromRosParam()
 }
 
 void generateObstacleData(
-  std::vector<ObstacleData>& obstacle_data,
-  const stu::Transform& g_route_from_obs,
-  const mnm::msg::ObstacleArray& obstacles_msg)
+  std::vector<ObstacleData> & obstacle_data,
+  const stu::Transform & g_route_from_obs,
+  const mnm::msg::ObstacleArray & obstacles_msg)
 {
   obstacle_data.resize(obstacles_msg.obstacles.size());
   for (size_t i = 0; i < obstacle_data.size(); i++) {
-    const mnm::msg::Obstacle &obs_msg = obstacles_msg.obstacles[i];
+    const mnm::msg::Obstacle & obs_msg = obstacles_msg.obstacles[i];
 
     geometry_msgs::msg::Pose pose = obs_msg.pose;
     if (pose.orientation.x == 0.0 &&
-        pose.orientation.y == 0.0 &&
-        pose.orientation.z == 0.0 &&
-        pose.orientation.w == 0.0) {
+      pose.orientation.y == 0.0 &&
+      pose.orientation.z == 0.0 &&
+      pose.orientation.w == 0.0)
+    {
       pose.orientation.w = 1.0;
     }
 
     tf2::Transform g_obs_from_local;
     tf2::fromMsg(pose, g_obs_from_local);
 
-    obstacle_data[i].center = g_route_from_obs*g_obs_from_local.getOrigin();
+    obstacle_data[i].center = g_route_from_obs * g_obs_from_local.getOrigin();
     obstacle_data[i].center.setZ(0.0);
 
     double max_radius = 0.0;
@@ -317,7 +333,7 @@ void generateObstacleData(
       tf2::fromMsg(obs_msg.polygon[j], pt);
 
       max_radius = std::max(max_radius, pt.length());
-      obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
+      obstacle_data[i].polygon[j] = g_route_from_obs * (g_obs_from_local * pt);
       obstacle_data[i].polygon[j].setZ(0.0);
     }
     obstacle_data[i].radius = max_radius;
@@ -325,26 +341,27 @@ void generateObstacleData(
 }
 
 void generateObstacleData(
-  std::vector<ObstacleData>& obstacle_data,
-  const stu::Transform& g_route_from_obs,
-  const mnm::msg::TrackedObjectArray& obstacles_msg)
+  std::vector<ObstacleData> & obstacle_data,
+  const stu::Transform & g_route_from_obs,
+  const mnm::msg::TrackedObjectArray & obstacles_msg)
 {
   obstacle_data.resize(obstacles_msg.objects.size());
   for (size_t i = 0; i < obstacle_data.size(); i++) {
-    const mnm::msg::TrackedObject &obs_msg = obstacles_msg.objects[i];
+    const mnm::msg::TrackedObject & obs_msg = obstacles_msg.objects[i];
 
     geometry_msgs::msg::Pose pose = obs_msg.pose.pose;
     if (pose.orientation.x == 0.0 &&
-        pose.orientation.y == 0.0 &&
-        pose.orientation.z == 0.0 &&
-        pose.orientation.w == 0.0) {
+      pose.orientation.y == 0.0 &&
+      pose.orientation.z == 0.0 &&
+      pose.orientation.w == 0.0)
+    {
       pose.orientation.w = 1.0;
     }
 
     tf2::Transform g_obs_from_local;
     tf2::fromMsg(pose, g_obs_from_local);
 
-    obstacle_data[i].center = g_route_from_obs*g_obs_from_local.getOrigin();
+    obstacle_data[i].center = g_route_from_obs * g_obs_from_local.getOrigin();
     obstacle_data[i].center.setZ(0.0);
 
     double max_radius = 0.0;
@@ -354,7 +371,7 @@ void generateObstacleData(
       tf2::fromMsg(obs_msg.polygon[j], pt);
 
       max_radius = std::max(max_radius, pt.length());
-      obstacle_data[i].polygon[j] = g_route_from_obs*(g_obs_from_local*pt);
+      obstacle_data[i].polygon[j] = g_route_from_obs * (g_obs_from_local * pt);
       obstacle_data[i].polygon[j].setZ(0.0);
     }
     obstacle_data[i].radius = max_radius;
@@ -362,12 +379,12 @@ void generateObstacleData(
 }
 
 void speedsForObstacles(
-  mnm::msg::RouteSpeedArray &speeds,
-  std::vector<DistanceReport> &reports,
-  const Route &route,
-  const mnm::msg::RoutePosition &route_position,
-  const std::vector<ObstacleData> &obstacles,
-  const SpeedForObstaclesParameters &p,
+  mnm::msg::RouteSpeedArray & speeds,
+  std::vector<DistanceReport> & reports,
+  const Route & route,
+  const mnm::msg::RoutePosition & route_position,
+  const std::vector<ObstacleData> & obstacles,
+  const SpeedForObstaclesParameters & p,
   rclcpp::Logger logger)
 {
   tf2::Vector3 local_fl(p.origin_to_left_m_, p.origin_to_left_m_, 0.0);
@@ -383,7 +400,7 @@ void speedsForObstacles(
   bool skip_point = true;
 
   for (size_t route_index = 0; route_index < route.points.size(); route_index++) {
-    const RoutePoint &point = route.points[route_index];
+    const RoutePoint & point = route.points[route_index];
 
     if (skip_point) {
       if (point.id() == route_position.id) {
@@ -397,20 +414,18 @@ void speedsForObstacles(
     // though cones. It prevents objects close to the vehicle from causing the vehicle
     // to stop/slow down too much unnecessarily.
     double veh_r = car_r;
-    if (point.hasProperty("vehicle_width_override"))
-    {
+    if (point.hasProperty("vehicle_width_override")) {
       RCLCPP_DEBUG(logger, "Speeds for obstacle found vehicle_width_override property");
       double width = std::atof(point.getProperty("vehicle_width_override").c_str());
 
       // Pick the smaller of the radii
-      if (veh_r >= width/2.0)
-      {
-        veh_r = width/2.0;
+      if (veh_r >= width / 2.0) {
+        veh_r = width / 2.0;
         RCLCPP_WARN(logger, "Vehicle width being overridden to %0.2f", (float)veh_r);
       }
     }
 
-    for (const auto& obstacle: obstacles) {
+    for (const auto & obstacle: obstacles) {
       const tf2::Vector3 v = obstacle.center - point.position();
       const double d = v.length() - veh_r - obstacle.radius;
       if (d > p.max_distance_m_) {
@@ -464,13 +479,15 @@ void speedsForObstacles(
         report.near = false;
         report.collision = false;
         report.route_index = route_index;
-        report.vehicle_point = point.position() + (closest_point - point.position()).normalized() * veh_r;
+        report.vehicle_point = point.position() + (closest_point - point.position()).normalized() *
+          veh_r;
         report.obstacle_point = closest_point;
         reports.push_back(report);
 
-        const double s = std::max(0.0, (distance - p.min_distance_m_) / (
-                                    p.max_distance_m_ - p.min_distance_m_));
-        double speed = (1.0-s)*p.min_speed_ + s*p.max_speed_;
+        const double s = std::max(
+          0.0, (distance - p.min_distance_m_) / (
+            p.max_distance_m_ - p.min_distance_m_));
+        double speed = (1.0 - s) * p.min_speed_ + s * p.max_speed_;
 
         speeds.speeds.emplace_back();
         speeds.speeds.back().id = point.id();
@@ -506,14 +523,16 @@ void speedsForObstacles(
   }
 }
 
-  DistanceReport::DistanceReport(bool near, bool collision, size_t routeIndex, const tf2::Vector3& vehiclePoint,
-                                 const tf2::Vector3& obstaclePoint, double distance) : near(near), collision(collision),
-                                                                                       route_index(routeIndex),
-                                                                                       vehicle_point(vehiclePoint),
-                                                                                       obstacle_point(obstaclePoint),
-                                                                                       distance(distance)
-  {}
+DistanceReport::DistanceReport(
+  bool near, bool collision, size_t routeIndex, const tf2::Vector3 & vehiclePoint,
+  const tf2::Vector3 & obstaclePoint, double distance)
+: near(near), collision(collision),
+  route_index(routeIndex),
+  vehicle_point(vehiclePoint),
+  obstacle_point(obstaclePoint),
+  distance(distance)
+{}
 
-  DistanceReport::DistanceReport()
-  {}
+DistanceReport::DistanceReport()
+{}
 }  // namespace swri_route_util

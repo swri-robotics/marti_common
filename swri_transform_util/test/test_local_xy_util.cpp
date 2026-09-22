@@ -40,18 +40,23 @@
 /// stored as though it were radians and wrapped into (-180, 180] from there.
 TEST(LocalXyUtilTests, TestReferenceAngleIsInDegrees)
 {
-  EXPECT_FLOAT_EQ(0.0,
-      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 0.0).ReferenceAngle());
-  EXPECT_FLOAT_EQ(30.0,
-      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 30.0).ReferenceAngle());
-  EXPECT_FLOAT_EQ(-45.5,
-      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, -45.5).ReferenceAngle());
-  EXPECT_FLOAT_EQ(180.0,
-      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 180.0).ReferenceAngle());
+  EXPECT_FLOAT_EQ(
+    0.0,
+    swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 0.0).ReferenceAngle());
+  EXPECT_FLOAT_EQ(
+    30.0,
+    swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 30.0).ReferenceAngle());
+  EXPECT_FLOAT_EQ(
+    -45.5,
+    swri_transform_util::LocalXyWgs84Util(29.45, -98.61, -45.5).ReferenceAngle());
+  EXPECT_FLOAT_EQ(
+    180.0,
+    swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 180.0).ReferenceAngle());
 
   // Angles outside (-180, 180] are wrapped into it.
-  EXPECT_FLOAT_EQ(-90.0,
-      swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 270.0).ReferenceAngle());
+  EXPECT_FLOAT_EQ(
+    -90.0,
+    swri_transform_util::LocalXyWgs84Util(29.45, -98.61, 270.0).ReferenceAngle());
 }
 
 /// The reference angle rotates the local XY frame, so getting its scale wrong
@@ -90,8 +95,7 @@ TEST(LocalXyUtilTests, TestReferenceAngleRotatesLocalXy)
 /// cos_angle_ and sin_angle_ against drifting apart rather than pinning units.
 TEST(LocalXyUtilTests, TestRotatedFrameRoundTrips)
 {
-  for (double angle : {0.0, 30.0, 90.0, -45.5, 180.0, 270.0})
-  {
+  for (double angle : {0.0, 30.0, 90.0, -45.5, 180.0, 270.0}) {
     SCOPED_TRACE("reference angle " + std::to_string(angle));
     swri_transform_util::LocalXyWgs84Util local_xy_util(29.45, -98.61, angle);
 
@@ -128,7 +132,7 @@ TEST(LocalXyUtilTests, TestOrigin)
 TEST(LocalXyUtilTests, TestCopy)
 {
   auto original = std::make_unique<swri_transform_util::LocalXyWgs84Util>(
-      29.45196669, -98.61370577, 30.0, 100.0);
+    29.45196669, -98.61370577, 30.0, 100.0);
 
   swri_transform_util::LocalXyWgs84Util copy(*original);
   swri_transform_util::LocalXyWgs84Util assigned(0, 0);
@@ -141,8 +145,7 @@ TEST(LocalXyUtilTests, TestCopy)
   // The copies must remain valid after the original is destroyed.
   original.reset();
 
-  for (const auto* util : {&copy, &assigned})
-  {
+  for (const auto * util : {&copy, &assigned}) {
     EXPECT_TRUE(util->Initialized());
     EXPECT_FLOAT_EQ(29.45196669, util->ReferenceLatitude());
     EXPECT_FLOAT_EQ(-98.61370577, util->ReferenceLongitude());
@@ -243,16 +246,16 @@ TEST(LocalXyUtilTests, LocalXyFromWgs84)
 {
   double x, y;
   swri_transform_util::LocalXyFromWgs84(
-      29.4937686007, -98.6134341407,
-      29.45196669, -98.61370577,
-      x, y);
+    29.4937686007, -98.6134341407,
+    29.45196669, -98.61370577,
+    x, y);
   EXPECT_FLOAT_EQ(26.3405, x);
   EXPECT_FLOAT_EQ(4633.4741, y);
 
   swri_transform_util::LocalXyFromWgs84(
-      29.4510874304, -98.6613942088,
-      29.45196669, -98.61370577,
-      x, y);
+    29.4510874304, -98.6613942088,
+    29.45196669, -98.61370577,
+    x, y);
   EXPECT_FLOAT_EQ(-4626.3906, x);
   EXPECT_FLOAT_EQ(-96.5133, y);
 }
@@ -261,16 +264,16 @@ TEST(LocalXyUtilTests, Wgs84FromLocalXy)
 {
   double lat, lon;
   swri_transform_util::Wgs84FromLocalXy(
-      26.3513, 4633.46,
-      29.45196669, -98.61370577,
-      lat, lon);
+    26.3513, 4633.46,
+    29.45196669, -98.61370577,
+    lat, lon);
   EXPECT_FLOAT_EQ(29.4937684617, lat);
   EXPECT_FLOAT_EQ(-98.6134340294, lon);
 
   swri_transform_util::Wgs84FromLocalXy(
-      -4626.3513, -97.46,
-      29.45196669, -98.61370577,
-      lat, lon);
+    -4626.3513, -97.46,
+    29.45196669, -98.61370577,
+    lat, lon);
   EXPECT_FLOAT_EQ(29.4510788901, lat);
   EXPECT_FLOAT_EQ(-98.6613937867, lon);
 }
@@ -285,8 +288,7 @@ TEST(LocalXyUtilTests, Continuity)
 
   double last_lon = 0;
 
-  for (int i = 0; i < 1000; i++)
-  {
+  for (int i = 0; i < 1000; i++) {
     double new_lat;
     double new_lon;
     double new_x;
@@ -298,8 +300,7 @@ TEST(LocalXyUtilTests, Continuity)
     EXPECT_FLOAT_EQ(x + i * 1.11 / 100.0, new_x);
     EXPECT_NEAR(y, new_y, 1e-9);
 
-    if (i > 0)
-    {
+    if (i > 0) {
       // The difference should be 1.11cm which is approximately
       // 1/10th of 1 microdegree near the equator
       EXPECT_NEAR(0.0000001, std::fabs(new_lon - last_lon), 0.00000001);
@@ -310,7 +311,7 @@ TEST(LocalXyUtilTests, Continuity)
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

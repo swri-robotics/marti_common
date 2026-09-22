@@ -38,53 +38,53 @@
 
 namespace swri_geometry_util
 {
-  //structure for defining the vertices of a polygon
-  typedef struct
-  {
-    //vertices
-    double *x;
-    double *y;
-  }PolygonD;
+//structure for defining the vertices of a polygon
+typedef struct
+{
+  //vertices
+  double * x;
+  double * y;
+} PolygonD;
 
-  typedef struct
-  {
-    //vertex
-    double x;
-    double y;
-  }Vertex;
+typedef struct
+{
+  //vertex
+  double x;
+  double y;
+} Vertex;
 
-  class Polygon{
-  public:
+class Polygon
+{
+public:
+  Polygon();
+  Polygon(const Polygon & other);
+  Polygon & operator=(const Polygon & other);
 
-    Polygon();
-    Polygon(const Polygon & other);
-    Polygon & operator= (const Polygon & other);
+  Polygon(double Xs[], double Ys[], int numVertx);
 
-    Polygon(double Xs[], double Ys[], int numVertx);
+  bool VertexInPolygon(Vertex vertex);
 
-    bool VertexInPolygon(Vertex vertex);
+  double * GetXVerticies();
 
-    double* GetXVerticies();
+  double * GetYVerticies();
 
-    double* GetYVerticies();
+  double GetXVerticie(int num);
 
-    double GetXVerticie(int num);
+  double GetYVerticie(int num);
 
-    double GetYVerticie(int num);
+  int GetNumVerticies();
 
-    int GetNumVerticies();
+  bool LineOverlapsPolygon(Vertex start, Vertex end);
 
-    bool LineOverlapsPolygon(Vertex start, Vertex end);
+  ~Polygon();
 
-    ~Polygon();
+private:
+  Vertex FindLineIntersectLine(
+    Vertex start1, Vertex end1, Vertex start2,
+    Vertex end2);
 
-  private:
-
-    Vertex FindLineIntersectLine(Vertex start1, Vertex end1, Vertex start2,
-        Vertex end2);
-
-    PolygonD _shape;  //list of polygon vertices
-    int _nvert;   //number of vertices in this polygon
-  };
+  PolygonD _shape;    //list of polygon vertices
+  int _nvert;     //number of vertices in this polygon
+};
 }  // end namespace swri_geometry_util
 #endif /* POLYGON_H_ */

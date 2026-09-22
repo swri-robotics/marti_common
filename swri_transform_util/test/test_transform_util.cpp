@@ -42,9 +42,9 @@
 TEST(TransformUtilTests, GetRelativeTransform)
 {
   tf2::Transform offset = swri_transform_util::GetRelativeTransform(
-                29.441679990508018, -98.602031700252184, -1.2030287,
-                29.441609529848606, -98.601997698933161, -1.21015707397341
-                );
+    29.441679990508018, -98.602031700252184, -1.2030287,
+    29.441609529848606, -98.601997698933161, -1.21015707397341
+  );
 
   tf2::Vector3 origin = offset.getOrigin();
   EXPECT_FLOAT_EQ(-8.47174634, origin.x());
@@ -107,18 +107,23 @@ TEST(TransformUtilTests, SnapToRightAngleRandom)
 {
   std::srand(0);
 
-  for (int32_t i = 0; i < 1000; i++)
-  {
-    double y = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * swri_math_util::_half_pi;
-    double p = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) * swri_math_util::_half_pi;
-    double r = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 2.0 - 1.0) * swri_math_util::_half_pi;
+  for (int32_t i = 0; i < 1000; i++) {
+    double y = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) *
+      swri_math_util::_half_pi;
+    double p = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 4.0 - 2.0) *
+      swri_math_util::_half_pi;
+    double r = swri_math_util::Round((static_cast<double>(std::rand()) / RAND_MAX) * 2.0 - 1.0) *
+      swri_math_util::_half_pi;
 
     tf2::Quaternion q1;
     q1.setRPY(r, p, y);
 
-    double dy = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
-    double dp = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
-    double dr = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 - swri_math_util::_half_pi * .25;
+    double dy = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 -
+      swri_math_util::_half_pi * .25;
+    double dp = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 -
+      swri_math_util::_half_pi * .25;
+    double dr = (static_cast<double>(std::rand()) / RAND_MAX) * swri_math_util::_half_pi * .5 -
+      swri_math_util::_half_pi * .25;
 
     tf2::Quaternion q2;
     q2.setRPY(r + dr, p + dp, y + dy);
@@ -217,33 +222,32 @@ TEST(TransformUtilTests, GetPrimaryAxis)
 TEST(TransformUtilTests, ValidIsRotation)
 {
   tf2::Matrix3x3 valid_rotations[] = {
-  tf2::Matrix3x3( 1,  0,  0,   0,  1,  0,   0,  0,  1),
-  tf2::Matrix3x3( 0,  0,  1,   0,  1,  0,  -1,  0,  0),
-  tf2::Matrix3x3(-1,  0,  0,   0,  1,  0,   0,  0, -1),
-  tf2::Matrix3x3( 0,  0, -1,   0,  1,  0,   1,  0,  0),
-  tf2::Matrix3x3( 0, -1,  0,   1,  0,  0,   0,  0,  1),
-  tf2::Matrix3x3( 0,  0,  1,   1,  0,  0,   0,  1,  0),
-  tf2::Matrix3x3( 0,  1,  0,   1,  0,  0,   0,  0, -1),
-  tf2::Matrix3x3( 0,  0, -1,   1,  0,  0,   0, -1,  0),
-  tf2::Matrix3x3( 0,  1,  0,  -1,  0,  0,   0,  0,  1),
-  tf2::Matrix3x3( 0,  0,  1,  -1,  0,  0,   0, -1,  0),
-  tf2::Matrix3x3( 0, -1,  0,  -1,  0,  0,   0,  0, -1),
-  tf2::Matrix3x3( 0,  0, -1,  -1,  0,  0,   0,  1,  0),
-  tf2::Matrix3x3( 1,  0,  0,   0,  0, -1,   0,  1,  0),
-  tf2::Matrix3x3( 0,  1,  0,   0,  0, -1,  -1,  0,  0),
-  tf2::Matrix3x3(-1,  0,  0,   0,  0, -1,   0, -1,  0),
-  tf2::Matrix3x3( 0, -1,  0,   0,  0, -1,   1,  0,  0),
-  tf2::Matrix3x3( 1,  0,  0,   0, -1,  0,   0,  0, -1),
-  tf2::Matrix3x3( 0,  0, -1,   0, -1,  0,  -1,  0,  0),
-  tf2::Matrix3x3(-1,  0,  0,   0, -1,  0,   0,  0,  1),
-  tf2::Matrix3x3( 0,  0,  1,   0, -1,  0,   1,  0,  0),
-  tf2::Matrix3x3( 1,  0,  0,   0,  0,  1,   0, -1,  0),
-  tf2::Matrix3x3( 0, -1,  0,   0,  0,  1,  -1,  0,  0),
-  tf2::Matrix3x3(-1,  0,  0,   0,  0,  1,   0,  1,  0),
-  tf2::Matrix3x3( 0,  1,  0,   0,  0,  1,   1,  0,  0)};
+    tf2::Matrix3x3(1, 0, 0, 0, 1, 0, 0, 0, 1),
+    tf2::Matrix3x3(0, 0, 1, 0, 1, 0, -1, 0, 0),
+    tf2::Matrix3x3(-1, 0, 0, 0, 1, 0, 0, 0, -1),
+    tf2::Matrix3x3(0, 0, -1, 0, 1, 0, 1, 0, 0),
+    tf2::Matrix3x3(0, -1, 0, 1, 0, 0, 0, 0, 1),
+    tf2::Matrix3x3(0, 0, 1, 1, 0, 0, 0, 1, 0),
+    tf2::Matrix3x3(0, 1, 0, 1, 0, 0, 0, 0, -1),
+    tf2::Matrix3x3(0, 0, -1, 1, 0, 0, 0, -1, 0),
+    tf2::Matrix3x3(0, 1, 0, -1, 0, 0, 0, 0, 1),
+    tf2::Matrix3x3(0, 0, 1, -1, 0, 0, 0, -1, 0),
+    tf2::Matrix3x3(0, -1, 0, -1, 0, 0, 0, 0, -1),
+    tf2::Matrix3x3(0, 0, -1, -1, 0, 0, 0, 1, 0),
+    tf2::Matrix3x3(1, 0, 0, 0, 0, -1, 0, 1, 0),
+    tf2::Matrix3x3(0, 1, 0, 0, 0, -1, -1, 0, 0),
+    tf2::Matrix3x3(-1, 0, 0, 0, 0, -1, 0, -1, 0),
+    tf2::Matrix3x3(0, -1, 0, 0, 0, -1, 1, 0, 0),
+    tf2::Matrix3x3(1, 0, 0, 0, -1, 0, 0, 0, -1),
+    tf2::Matrix3x3(0, 0, -1, 0, -1, 0, -1, 0, 0),
+    tf2::Matrix3x3(-1, 0, 0, 0, -1, 0, 0, 0, 1),
+    tf2::Matrix3x3(0, 0, 1, 0, -1, 0, 1, 0, 0),
+    tf2::Matrix3x3(1, 0, 0, 0, 0, 1, 0, -1, 0),
+    tf2::Matrix3x3(0, -1, 0, 0, 0, 1, -1, 0, 0),
+    tf2::Matrix3x3(-1, 0, 0, 0, 0, 1, 0, 1, 0),
+    tf2::Matrix3x3(0, 1, 0, 0, 0, 1, 1, 0, 0)};
 
-  for (int i = 0; i < 24; i++)
-  {
+  for (int i = 0; i < 24; i++) {
     EXPECT_TRUE(swri_transform_util::IsRotation(valid_rotations[i]));
   }
 }
@@ -251,18 +255,17 @@ TEST(TransformUtilTests, ValidIsRotation)
 TEST(TransformUtilTests, InvalidIsRotation)
 {
   tf2::Matrix3x3 invalid_rotations[] = {
-  tf2::Matrix3x3( 2,  0,  0,   0,  1,  0,   0,  0,  1),
-  tf2::Matrix3x3( 0,  0,  1,   0,  0,  0,  -1,  0,  0),
-  tf2::Matrix3x3(-1,  1,  0,   0,  1,  0,   0,  0, -1)};
+    tf2::Matrix3x3(2, 0, 0, 0, 1, 0, 0, 0, 1),
+    tf2::Matrix3x3(0, 0, 1, 0, 0, 0, -1, 0, 0),
+    tf2::Matrix3x3(-1, 1, 0, 0, 1, 0, 0, 0, -1)};
 
-  for (int i = 0; i < 3; i++)
-  {
+  for (int i = 0; i < 3; i++) {
     EXPECT_FALSE(swri_transform_util::IsRotation(invalid_rotations[i]));
   }
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

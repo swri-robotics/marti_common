@@ -33,29 +33,27 @@
 
 namespace swri_math_util
 {
-  double WrapRadians(double angle, double center)
-  {
-    double wrapped = angle;
-    while (wrapped < center && center - wrapped > _pi)
-    {
-      wrapped += _2pi;
-    }
-
-    while (wrapped > center && wrapped - center > _pi)
-    {
-      wrapped -= _2pi;
-    }
-
-    return wrapped;
+double WrapRadians(double angle, double center)
+{
+  double wrapped = angle;
+  while (wrapped < center && center - wrapped > _pi) {
+    wrapped += _2pi;
   }
 
-  double ToRadians(double degrees)
-  {
-    return degrees * _pi / 180.0;
+  while (wrapped > center && wrapped - center > _pi) {
+    wrapped -= _2pi;
   }
 
-  double ToDegrees(double radians)
-  {
-    return radians * 180.0 / _pi;
-  }
+  return wrapped;
+}
+
+double ToRadians(double degrees)
+{
+  return degrees * _pi / 180.0;
+}
+
+double ToDegrees(double radians)
+{
+  return radians * 180.0 / _pi;
+}
 }

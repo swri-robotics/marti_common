@@ -42,14 +42,14 @@ std::vector<std::string> RoutePoint::getPropertyNames() const
   names.push_back("stop_point");
   names.push_back("stop_point_delay");
 
-  for (auto const &it : properties_) {
+  for (auto const & it : properties_) {
     names.push_back(it.first);
   }
 
   return names;
 }
 
-std::string RoutePoint::getProperty(const std::string &name) const
+std::string RoutePoint::getProperty(const std::string & name) const
 {
   if (name == "stop_point") {
     return stop_point_ ? "true" : "false";
@@ -66,14 +66,14 @@ std::string RoutePoint::getProperty(const std::string &name) const
   }
 }
 
-bool RoutePoint::hasProperty(const std::string &name) const
+bool RoutePoint::hasProperty(const std::string & name) const
 {
-  if (name == "stop_point") { return true; }
-  if (name == "stop_point_delay") { return true; }
+  if (name == "stop_point") {return true;}
+  if (name == "stop_point_delay") {return true;}
   return properties_.count(name);
 }
 
-void RoutePoint::setProperty(const std::string &name, const std::string &value)
+void RoutePoint::setProperty(const std::string & name, const std::string & value)
 {
   if (name == "stop_point") {
     stop_point_ = (value == "1") || (value == "true");
@@ -84,7 +84,7 @@ void RoutePoint::setProperty(const std::string &name, const std::string &value)
   }
 }
 
-void RoutePoint::deleteProperty(const std::string &name)
+void RoutePoint::deleteProperty(const std::string & name)
 {
   // If we add "native" properties that are erasable, we should check
   // for those here first and mark them as deleted when appropriate.

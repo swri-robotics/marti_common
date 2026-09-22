@@ -49,132 +49,124 @@
 
 namespace swri_image_util
 {
-  class NormalizationImageNode : public rclcpp::Node
+class NormalizationImageNode : public rclcpp::Node
+{
+public:
+  explicit NormalizationImageNode(const rclcpp::NodeOptions &)
+  : rclcpp::Node("image_normalization_node"),
+    raw_count_(0),
+    image_count_(0),
+    image_written_(false)
   {
-  public:
-    explicit NormalizationImageNode(const rclcpp::NodeOptions&) :
-        rclcpp::Node("image_normalization_node"),
-        raw_count_(0),
-        image_count_(0),
-        image_written_(false)
-    {
-      this->declare_parameter("num_to_skip", 20);
-      this->declare_parameter("filename", "normalization_image.png");
-      this->declare_parameter("max_num_to_average", 100);
+    this->declare_parameter("num_to_skip", 20);
+    this->declare_parameter("filename", "normalization_image.png");
+    this->declare_parameter("max_num_to_average", 100);
 
-      subscribe_to_topics();
-    }
+    subscribe_to_topics();
+  }
 
-    void shut_down()
-    {
-      if (!image_written_ && image_array_.size() > 25)
-      {
-        generate_and_write_image();
-        RCLCPP_ERROR(this->get_logger(), "\nNode killed before enough frames received to generate "
-                        "normalized image, so a normalized image was generated with "
-                        "available frames (%d vs. %ld)\n",
-                image_count_,
-                this->get_parameter("max_num_to_average").as_int());
-      }
-      else if (!image_written_)
-      {
-        RCLCPP_ERROR(this->get_logger(), "\nNode killed before enough frames received to generate "
-                        "normalized image: Too few frames in the buffer to generate a "
-                        "normalization image\n");
-      }
-      else
-      {
-        RCLCPP_ERROR(this->get_logger(), "\nExiting normally\n");
-      }
+  void shut_down()
+  {
+    if (!image_written_ && image_array_.size() > 25) {
+      generate_and_write_image();
+      RCLCPP_ERROR(
+        this->get_logger(), "\nNode killed before enough frames received to generate "
+        "normalized image, so a normalized image was generated with "
+        "available frames (%d vs. %ld)\n",
+        image_count_,
+        this->get_parameter("max_num_to_average").as_int());
+    } else if (!image_written_) {
+      RCLCPP_ERROR(
+        this->get_logger(), "\nNode killed before enough frames received to generate "
+        "normalized image: Too few frames in the buffer to generate a "
+        "normalization image\n");
+    } else {
+      RCLCPP_ERROR(this->get_logger(), "\nExiting normally\n");
     }
+  }
 
-    bool get_image_written()
-    {
-      return image_written_;
-    }
-  private:
-    void subscribe_to_topics()
-    {
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& msg) -> void
+  bool get_image_written()
+  {
+    return image_written_;
+  }
+
+private:
+  void subscribe_to_topics()
+  {
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & msg) -> void
       {
         int64_t max_num_to_average = this->get_parameter("max_num_to_average").as_int();
-        if (image_count_ >= max_num_to_average)
-        {
+        if (image_count_ >= max_num_to_average) {
           // ::sleep(1);
           return;
         }
 
-        if (raw_count_++ % this->get_parameter("num_to_skip").as_int() == 0)
-        {
+        if (raw_count_++ % this->get_parameter("num_to_skip").as_int() == 0) {
           image_count_++;
-          RCLCPP_ERROR(this->get_logger(), "Got image %d of %ld",
-                       image_count_,
-                       max_num_to_average);
+          RCLCPP_ERROR(
+            this->get_logger(), "Got image %d of %ld",
+            image_count_,
+            max_num_to_average);
 
           cv_bridge::CvImagePtr im_ptr = cv_bridge::toCvCopy(*msg);
           cv::Mat image(im_ptr->image);
           image_array_.push_back(image);
-          if (image_count_ >= max_num_to_average)
-          {
+          if (image_count_ >= max_num_to_average) {
             generate_and_write_image();
           }
         }
       };
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      rmw_qos_profile_t qos = rmw_qos_profile_default;
-      qos.depth = 2;
-      image_sub_ = image_transport::create_subscription(
-          this,
-          "image",
-          callback,
-          "raw",
-          qos);
+    rmw_qos_profile_t qos = rmw_qos_profile_default;
+    qos.depth = 2;
+    image_sub_ = image_transport::create_subscription(
+      this,
+      "image",
+      callback,
+      "raw",
+      qos);
 #else
-      image_sub_ = image_transport::create_subscription(
-          image_transport::RequiredInterfaces{*this},
-          "image",
-          callback,
-          "raw",
-          rclcpp::QoS(2));
+    image_sub_ = image_transport::create_subscription(
+      image_transport::RequiredInterfaces{*this},
+      "image",
+      callback,
+      "raw",
+      rclcpp::QoS(2));
 #endif
-    }
+  }
 
-    void generate_and_write_image()
-    {
-      cv::Mat norm_im = swri_image_util::generate_normalization_image(image_array_);
-      if (!norm_im.empty())
-      {
-        std::string filename = this->get_parameter("filename").as_string();
-        try
-        {
-          cv::imwrite(filename, norm_im);
-        }
-        catch (const std::exception& e)
-        {
-          RCLCPP_ERROR(this->get_logger(), "Failed to save the normalization image: %s",
-                       e.what());
-          return;
-        }
-        RCLCPP_ERROR(this->get_logger(), "Successfully wrote normalization image to: %s",
-                     filename.c_str());
-
-        image_written_ = true;
+  void generate_and_write_image()
+  {
+    cv::Mat norm_im = swri_image_util::generate_normalization_image(image_array_);
+    if (!norm_im.empty()) {
+      std::string filename = this->get_parameter("filename").as_string();
+      try {
+        cv::imwrite(filename, norm_im);
+      } catch (const std::exception & e) {
+        RCLCPP_ERROR(
+          this->get_logger(), "Failed to save the normalization image: %s",
+          e.what());
+        return;
       }
-      else
-      {
-        RCLCPP_ERROR(this->get_logger(), "Failed to generate a normalization image");
-      }
+      RCLCPP_ERROR(
+        this->get_logger(), "Successfully wrote normalization image to: %s",
+        filename.c_str());
+
+      image_written_ = true;
+    } else {
+      RCLCPP_ERROR(this->get_logger(), "Failed to generate a normalization image");
     }
+  }
 
-    image_transport::Subscriber image_sub_;
+  image_transport::Subscriber image_sub_;
 
-    int32_t raw_count_;
-    int32_t image_count_;
+  int32_t raw_count_;
+  int32_t image_count_;
 
-    bool image_written_;
+  bool image_written_;
 
-    std::vector<cv::Mat> image_array_;
-  };
+  std::vector<cv::Mat> image_array_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

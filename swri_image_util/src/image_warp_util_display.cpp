@@ -42,66 +42,68 @@
 
 namespace swri_image_util
 {
-  cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
-      double& nominal_pitch,
-      double& nominal_roll,
-      bool show_image_diff,
-      rclcpp::Logger logger)
-  {
-    if (kp1_matched_.empty() || kp2_matched_.empty())
-    {
-      return cv::Mat();
-    }
-
-    std::chrono::system_clock::time_point T1 = std::chrono::system_clock::now();
-    cv::Mat T_rigid = EstimateNominalAngle(kp1_matched_,
-                                           kp2_matched_,
-                                           cv::Size(im1_.cols, im1_.rows),
-                                           nominal_pitch,
-                                           nominal_roll);
-
-    std::chrono::system_clock::time_point T2 = std::chrono::system_clock::now();
-
-    RCLCPP_ERROR(logger, "Estimate Nominal Angle time = %g",
-        std::chrono::duration_cast<std::chrono::duration<float> >(T2 - T1).count());
-    cv::Mat R = GetR(nominal_pitch, nominal_roll);
-
-    if (show_image_diff)
-    {
-      // Do the warping and transformation and show the results
-      cv::Mat warped_im1;
-      cv::Mat warped_im2;
-
-      warper_.warp(im1_, K_, R, T_, cv::INTER_LANCZOS4, 0, warped_im1);
-      warper_.warp(im2_, K_, R, T_, cv::INTER_LANCZOS4, 0, warped_im2);
-
-      cv::Mat temp_im;
-      cv::warpAffine(warped_im1,
-                     temp_im,
-                     T_rigid,
-                     cv::Size(warped_im1.cols, warped_im1.rows));
-
-      cv::Mat sub = warped_im2 - temp_im;
-
-      cv::namedWindow("Warped Subtraction");
-      cv::imshow("Warped Subtraction", sub);
-
-      // Now compare the result to the unwarped, transformed result:
-
-      cv::warpAffine(im1_,
-                     temp_im,
-                     T_rigid,
-                     cv::Size(im1_.cols, im1_.rows));
-
-      cv::Mat sub2 = im2_ - temp_im;
-      cv::namedWindow("Subtraction");
-      cv::imshow("Subtraction", sub2);
-
-      cv::namedWindow("im2_");
-      cv::imshow("im2_", im2_);
-      cv::waitKey(0);
-    }
-
-    return R;
+cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
+  double & nominal_pitch,
+  double & nominal_roll,
+  bool show_image_diff,
+  rclcpp::Logger logger)
+{
+  if (kp1_matched_.empty() || kp2_matched_.empty()) {
+    return cv::Mat();
   }
+
+  std::chrono::system_clock::time_point T1 = std::chrono::system_clock::now();
+  cv::Mat T_rigid = EstimateNominalAngle(
+    kp1_matched_,
+    kp2_matched_,
+    cv::Size(im1_.cols, im1_.rows),
+    nominal_pitch,
+    nominal_roll);
+
+  std::chrono::system_clock::time_point T2 = std::chrono::system_clock::now();
+
+  RCLCPP_ERROR(
+    logger, "Estimate Nominal Angle time = %g",
+    std::chrono::duration_cast<std::chrono::duration<float>>(T2 - T1).count());
+  cv::Mat R = GetR(nominal_pitch, nominal_roll);
+
+  if (show_image_diff) {
+    // Do the warping and transformation and show the results
+    cv::Mat warped_im1;
+    cv::Mat warped_im2;
+
+    warper_.warp(im1_, K_, R, T_, cv::INTER_LANCZOS4, 0, warped_im1);
+    warper_.warp(im2_, K_, R, T_, cv::INTER_LANCZOS4, 0, warped_im2);
+
+    cv::Mat temp_im;
+    cv::warpAffine(
+      warped_im1,
+      temp_im,
+      T_rigid,
+      cv::Size(warped_im1.cols, warped_im1.rows));
+
+    cv::Mat sub = warped_im2 - temp_im;
+
+    cv::namedWindow("Warped Subtraction");
+    cv::imshow("Warped Subtraction", sub);
+
+    // Now compare the result to the unwarped, transformed result:
+
+    cv::warpAffine(
+      im1_,
+      temp_im,
+      T_rigid,
+      cv::Size(im1_.cols, im1_.rows));
+
+    cv::Mat sub2 = im2_ - temp_im;
+    cv::namedWindow("Subtraction");
+    cv::imshow("Subtraction", sub2);
+
+    cv::namedWindow("im2_");
+    cv::imshow("im2_", im2_);
+    cv::waitKey(0);
+  }
+
+  return R;
+}
 }

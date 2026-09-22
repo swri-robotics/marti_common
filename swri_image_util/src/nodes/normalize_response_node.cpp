@@ -46,61 +46,60 @@
 namespace swri_image_util
 {
 class NormalizeResponseNodelet : public rclcpp::Node
-  {
-  public:
-    explicit NormalizeResponseNodelet(const rclcpp::NodeOptions& options) :
-      rclcpp::Node("normalize_response", options)
+{
+public:
+  explicit NormalizeResponseNodelet(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("normalize_response", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-      , it_(image_transport::RequiredInterfaces{*this})
+    , it_(image_transport::RequiredInterfaces{*this})
 #endif
-    {
-      this->declare_parameter("filter_size", 9);
-      this->declare_parameter("filter_cap", 31);
+  {
+    this->declare_parameter("filter_size", 9);
+    this->declare_parameter("filter_cap", 31);
 
-      buffer_.create(1, 10000000, CV_8U);
+    buffer_.create(1, 10000000, CV_8U);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void {
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void {
         cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
-        if (image->encoding == sensor_msgs::image_encodings::MONO8)
-        {
+        if (image->encoding == sensor_msgs::image_encodings::MONO8) {
           swri_image_util::NormalizeResponse(
-              cv_image->image,
-              normalized_,
-              this->get_parameter("filter_size").as_int(),
-              this->get_parameter("filter_cap").as_int(),
-              buffer_.ptr());
+            cv_image->image,
+            normalized_,
+            this->get_parameter("filter_size").as_int(),
+            this->get_parameter("filter_cap").as_int(),
+            buffer_.ptr());
           cv_bridge::CvImage normalized_image;
           normalized_image.header = image->header;
           normalized_image.encoding = image->encoding;
           normalized_image.image = normalized_;
           image_pub_.publish(normalized_image.toImageMsg());
-        }
-        else
-        {
-          RCLCPP_WARN(this->get_logger(), "Unsupported image encoding: %s", image->encoding.c_str());
+        } else {
+          RCLCPP_WARN(
+            this->get_logger(), "Unsupported image encoding: %s",
+            image->encoding.c_str());
         }
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "normalized_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_pub_ = image_transport::create_publisher(this, "normalized_image");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_pub_ = it_.advertise("normalized_image", 1);
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_pub_ = it_.advertise("normalized_image", 1);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
-    cv::Mat normalized_;
-    cv::Mat buffer_;
+private:
+  cv::Mat normalized_;
+  cv::Mat buffer_;
 
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
-  };
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

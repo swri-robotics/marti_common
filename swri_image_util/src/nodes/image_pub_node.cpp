@@ -44,69 +44,65 @@
 
 namespace swri_image_util
 {
-  class ImagePubNode : public rclcpp::Node
+class ImagePubNode : public rclcpp::Node
+{
+public:
+  explicit ImagePubNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("image_pub", options)
   {
-  public:
-    explicit ImagePubNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("image_pub", options)
-    {
-      this->declare_parameter<std::string>("image_file", "");
-      this->declare_parameter<std::string>("mode", sensor_msgs::image_encodings::BGR8);
-      this->declare_parameter<double>("rate", 1);
+    this->declare_parameter<std::string>("image_file", "");
+    this->declare_parameter<std::string>("mode", sensor_msgs::image_encodings::BGR8);
+    this->declare_parameter<double>("rate", 1);
 
-      std::string image_file = this->get_parameter("image_file").as_string();
-      std::string mode = this->get_parameter("mode").as_string();
-      double rate = this->get_parameter("rate").as_double();
+    std::string image_file = this->get_parameter("image_file").as_string();
+    std::string mode = this->get_parameter("mode").as_string();
+    double rate = this->get_parameter("rate").as_double();
 
-      rate = std::max(0.1, rate);
+    rate = std::max(0.1, rate);
 
-      cv_image.header.stamp = rclcpp::Clock().now();
-      if (mode == sensor_msgs::image_encodings::BGR8)
-      {
-        cv_image.image = cv::imread(image_file, cv::IMREAD_COLOR);
-        cv_image.encoding = sensor_msgs::image_encodings::BGR8;
-      }
-      else
-      {
-        cv_image.image = cv::imread(image_file, cv::IMREAD_GRAYSCALE);
-        cv_image.encoding = sensor_msgs::image_encodings::MONO8;
-      }
+    cv_image.header.stamp = rclcpp::Clock().now();
+    if (mode == sensor_msgs::image_encodings::BGR8) {
+      cv_image.image = cv::imread(image_file, cv::IMREAD_COLOR);
+      cv_image.encoding = sensor_msgs::image_encodings::BGR8;
+    } else {
+      cv_image.image = cv::imread(image_file, cv::IMREAD_GRAYSCALE);
+      cv_image.encoding = sensor_msgs::image_encodings::MONO8;
+    }
 
-      if (!cv_image.image.empty())
-      {
+    if (!cv_image.image.empty()) {
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-        rmw_qos_profile_t qos = rmw_qos_profile_default;
-        qos.depth = 2;
-        qos.durability = rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-        image_pub_ = image_transport::create_publisher(this, "image", qos);
+      rmw_qos_profile_t qos = rmw_qos_profile_default;
+      qos.depth = 2;
+      qos.durability = rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+      image_pub_ = image_transport::create_publisher(this, "image", qos);
 #else
-        rclcpp::QoS qos(2);
-        qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
-        image_pub_ = image_transport::create_publisher(image_transport::RequiredInterfaces{*this}, "image", qos);
+      rclcpp::QoS qos(2);
+      qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
+      image_pub_ = image_transport::create_publisher(
+        image_transport::RequiredInterfaces{*this},
+        "image", qos);
 #endif
-        pub_timer_ = this->create_wall_timer(
-            std::chrono::duration<float>(1.0 / rate),
-            std::bind(&ImagePubNode::publish, this));
-      }
-      else
-      {
-        RCLCPP_FATAL(this->get_logger(), "Failed to load image.");
-        rclcpp::shutdown();
-      }
+      pub_timer_ = this->create_wall_timer(
+        std::chrono::duration<float>(1.0 / rate),
+        std::bind(&ImagePubNode::publish, this));
+    } else {
+      RCLCPP_FATAL(this->get_logger(), "Failed to load image.");
+      rclcpp::shutdown();
     }
+  }
 
-    void publish()
-    {
-      cv_image.header.stamp = rclcpp::Clock().now();
-      image_pub_.publish(cv_image.toImageMsg());
-    }
+  void publish()
+  {
+    cv_image.header.stamp = rclcpp::Clock().now();
+    image_pub_.publish(cv_image.toImageMsg());
+  }
 
-  private:
-    rclcpp::TimerBase::SharedPtr pub_timer_;
-    image_transport::Publisher image_pub_;
+private:
+  rclcpp::TimerBase::SharedPtr pub_timer_;
+  image_transport::Publisher image_pub_;
 
-    cv_bridge::CvImage cv_image;
-  };
+  cv_bridge::CvImage cv_image;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

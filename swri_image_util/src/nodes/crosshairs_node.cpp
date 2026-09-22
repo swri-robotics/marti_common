@@ -43,22 +43,22 @@
 
 namespace swri_image_util
 {
-  class CrosshairsNode : public rclcpp::Node
-  {
-  public:
-    explicit CrosshairsNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("crosshairs", options)
+class CrosshairsNode : public rclcpp::Node
+{
+public:
+  explicit CrosshairsNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("crosshairs", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        , it_(image_transport::RequiredInterfaces{*this})
+    , it_(image_transport::RequiredInterfaces{*this})
 #endif
-    {
+  {
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "crosshairs_image");
+    image_pub_ = image_transport::create_publisher(this, "crosshairs_image");
 #else
-      image_pub_ = it_.advertise("crosshairs_image", 1);
+    image_pub_ = it_.advertise("crosshairs_image", 1);
 #endif
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void
       {
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
         // Get image dimensions
@@ -69,27 +69,35 @@ namespace swri_image_util
         const int thickness = 3;
         const int line_type = 8;  // 8-connected line
         // Draw vertical line
-        cv::line(cv_image->image, cv::Point(0, w / 2), cv::Point(h - 1, w / 2), black, thickness, line_type);
+        cv::line(
+          cv_image->image, cv::Point(0, w / 2), cv::Point(
+            h - 1,
+            w / 2), black, thickness,
+          line_type);
         // Draw horizontal line
-        cv::line(cv_image->image, cv::Point(h / 2, 0), cv::Point(h / 2, w - 1), black, thickness, line_type);
+        cv::line(
+          cv_image->image, cv::Point(h / 2, 0), cv::Point(
+            h / 2,
+            w - 1), black, thickness,
+          line_type);
         // Publish image
         image_pub_.publish(cv_image->toImageMsg());
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
+private:
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
-  };
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

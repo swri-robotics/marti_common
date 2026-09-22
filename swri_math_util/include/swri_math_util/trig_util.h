@@ -32,7 +32,7 @@
 
 namespace swri_math_util
 {
-  /**
+/**
    * Normalize an angle to be within a 2pi range centered at a given value.
    *
    * @param[in]:  angle   The input angle in radians.
@@ -40,9 +40,9 @@ namespace swri_math_util
    *
    * @returns An equivalent angle in the desired range.
    */
-  double WrapRadians(double angle, double center);
+double WrapRadians(double angle, double center);
 
-  /**
+/**
    * Convert radians to degrees.
    *
    * @param[in] degrees Input angle.
@@ -50,16 +50,16 @@ namespace swri_math_util
    *
    * @return The angle in radians.
    */
-  double ToRadians(double degrees);
+double ToRadians(double degrees);
 
-  /**
+/**
    * Convert degrees to radians.
    *
    * @param[in] radians Input angle.
    *
    * @return The angle in degrees.
    */
-  double ToDegrees(double radians);
+double ToDegrees(double radians);
 }
 
 #endif  // MATH_UTIL_TRIG_UTIL_H_

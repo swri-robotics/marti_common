@@ -45,298 +45,289 @@
 
 namespace swri_transform_util
 {
-  inline
-  double getYaw(const geometry_msgs::msg::Quaternion & q)
-  {
-    double yaw;
+inline
+double getYaw(const geometry_msgs::msg::Quaternion & q)
+{
+  double yaw;
 
-    double sqw;
-    double sqx;
-    double sqy;
-    double sqz;
+  double sqw;
+  double sqx;
+  double sqy;
+  double sqz;
 
-    sqx = q.x * q.x;
-    sqy = q.y * q.y;
-    sqz = q.z * q.z;
-    sqw = q.w * q.w;
+  sqx = q.x * q.x;
+  sqy = q.y * q.y;
+  sqz = q.z * q.z;
+  sqw = q.w * q.w;
 
-    // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
-    // normalization added from urdfom_headers
-    double sarg = -2 * (q.x * q.z - q.w * q.y) / (sqx + sqy + sqz + sqw);
+  // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
+  // normalization added from urdfom_headers
+  double sarg = -2 * (q.x * q.z - q.w * q.y) / (sqx + sqy + sqz + sqw);
 
-    if (sarg <= -0.99999) {
-      yaw = -2 * atan2(q.y, q.x);
-    } else if (sarg >= 0.99999) {
-      yaw = 2 * atan2(q.y, q.x);
-    } else {
-      yaw = atan2(2 * (q.x * q.y + q.w * q.z), sqw + sqx - sqy - sqz);
-    }
-    return yaw;
+  if (sarg <= -0.99999) {
+    yaw = -2 * atan2(q.y, q.x);
+  } else if (sarg >= 0.99999) {
+    yaw = 2 * atan2(q.y, q.x);
+  } else {
+    yaw = atan2(2 * (q.x * q.y + q.w * q.z), sqw + sqx - sqy - sqz);
   }
+  return yaw;
+}
 
-  void LocalXyFromWgs84(
-      double latitude,
-      double longitude,
-      double reference_latitude,
-      double reference_longitude,
-      double& x,
-      double& y)
-  {
-    LocalXyWgs84Util local_xy(reference_latitude, reference_longitude);
-    local_xy.ToLocalXy(latitude, longitude, x, y);
-  }
+void LocalXyFromWgs84(
+  double latitude,
+  double longitude,
+  double reference_latitude,
+  double reference_longitude,
+  double & x,
+  double & y)
+{
+  LocalXyWgs84Util local_xy(reference_latitude, reference_longitude);
+  local_xy.ToLocalXy(latitude, longitude, x, y);
+}
 
-  void Wgs84FromLocalXy(
-      double x,
-      double y,
-      double reference_latitude,
-      double reference_longitude,
-      double& latitude,
-      double& longitude)
-  {
-    LocalXyWgs84Util local_xy(reference_latitude, reference_longitude);
-    local_xy.ToWgs84(x, y, latitude, longitude);
-  }
+void Wgs84FromLocalXy(
+  double x,
+  double y,
+  double reference_latitude,
+  double reference_longitude,
+  double & latitude,
+  double & longitude)
+{
+  LocalXyWgs84Util local_xy(reference_latitude, reference_longitude);
+  local_xy.ToWgs84(x, y, latitude, longitude);
+}
 
-  LocalXyWgs84Util::LocalXyWgs84Util(
-      double reference_latitude,
-      double reference_longitude,
-      double reference_angle,
-      double reference_altitude,
-      rclcpp::Node::SharedPtr node) :
-    node_(node),
-    reference_angle_(reference_angle * swri_math_util::_deg_2_rad),
-    local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>()),
-    cos_angle_(0),
-    sin_angle_(0),
-    frame_("map"),
-    initialized_(false)
-  {
-    // HandleOrigin() takes its angle in radians, matching the yaw it is given
-    // when an origin arrives over a topic, while this constructor documents its
-    // own angle in degrees.
-    HandleOrigin(reference_latitude, reference_longitude, reference_altitude,
-        reference_angle * swri_math_util::_deg_2_rad, "map");
-  }
+LocalXyWgs84Util::LocalXyWgs84Util(
+  double reference_latitude,
+  double reference_longitude,
+  double reference_angle,
+  double reference_altitude,
+  rclcpp::Node::SharedPtr node)
+: node_(node),
+  reference_angle_(reference_angle * swri_math_util::_deg_2_rad),
+  local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>()),
+  cos_angle_(0),
+  sin_angle_(0),
+  frame_("map"),
+  initialized_(false)
+{
+  // HandleOrigin() takes its angle in radians, matching the yaw it is given
+  // when an origin arrives over a topic, while this constructor documents its
+  // own angle in degrees.
+  HandleOrigin(
+    reference_latitude, reference_longitude, reference_altitude,
+    reference_angle * swri_math_util::_deg_2_rad, "map");
+}
 
-  LocalXyWgs84Util::LocalXyWgs84Util(rclcpp::Node::SharedPtr node) :
-    node_(node),
-    reference_angle_(0),
-    local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>()),
-    cos_angle_(0),
-    sin_angle_(0),
-    frame_("map"),
-    initialized_(false)
-  {
-    RCLCPP_INFO(node->get_logger(), "Subscribing to /local_xy_origin");
+LocalXyWgs84Util::LocalXyWgs84Util(rclcpp::Node::SharedPtr node)
+: node_(node),
+  reference_angle_(0),
+  local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>()),
+  cos_angle_(0),
+  sin_angle_(0),
+  frame_("map"),
+  initialized_(false)
+{
+  RCLCPP_INFO(node->get_logger(), "Subscribing to /local_xy_origin");
 
+  ResetInitialization();
+}
+
+LocalXyWgs84Util::LocalXyWgs84Util(const LocalXyWgs84Util & other)
+: node_(other.node_),
+  reference_angle_(other.reference_angle_),
+  local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>(*other.local_cartesian_)),
+  cos_angle_(other.cos_angle_),
+  sin_angle_(other.sin_angle_),
+  frame_(other.frame_),
+  initialized_(other.initialized_)
+{
+  // The source's subscription callback is bound to the source's this
+  // pointer, so sharing it would leave this copy uninitialized forever and
+  // dangling if the source is destroyed first. Subscribe independently.
+  if (other.pose_sub_ && !initialized_) {
     ResetInitialization();
   }
+}
 
-  LocalXyWgs84Util::LocalXyWgs84Util(const LocalXyWgs84Util& other) :
-    node_(other.node_),
-    reference_angle_(other.reference_angle_),
-    local_cartesian_(std::make_unique<GeographicLib::LocalCartesian>(*other.local_cartesian_)),
-    cos_angle_(other.cos_angle_),
-    sin_angle_(other.sin_angle_),
-    frame_(other.frame_),
-    initialized_(other.initialized_)
-  {
-    // The source's subscription callback is bound to the source's this
-    // pointer, so sharing it would leave this copy uninitialized forever and
-    // dangling if the source is destroyed first. Subscribe independently.
-    if (other.pose_sub_ && !initialized_)
-    {
+LocalXyWgs84Util & LocalXyWgs84Util::operator=(const LocalXyWgs84Util & other)
+{
+  if (this != &other) {
+    node_ = other.node_;
+    reference_angle_ = other.reference_angle_;
+    *local_cartesian_ = *other.local_cartesian_;
+    cos_angle_ = other.cos_angle_;
+    sin_angle_ = other.sin_angle_;
+    frame_ = other.frame_;
+    initialized_ = other.initialized_;
+
+    pose_sub_.reset();
+    if (other.pose_sub_ && !initialized_) {
       ResetInitialization();
     }
   }
+  return *this;
+}
 
-  LocalXyWgs84Util& LocalXyWgs84Util::operator=(const LocalXyWgs84Util& other)
-  {
-    if (this != &other)
-    {
-      node_ = other.node_;
-      reference_angle_ = other.reference_angle_;
-      *local_cartesian_ = *other.local_cartesian_;
-      cos_angle_ = other.cos_angle_;
-      sin_angle_ = other.sin_angle_;
-      frame_ = other.frame_;
-      initialized_ = other.initialized_;
+LocalXyWgs84Util::~LocalXyWgs84Util() = default;
 
-      pose_sub_.reset();
-      if (other.pose_sub_ && !initialized_)
-      {
-        ResetInitialization();
-      }
-    }
-    return *this;
-  }
+void LocalXyWgs84Util::ResetInitialization()
+{
+  std::string type;
+  rclcpp::QoS latching_qos(1);
+  latching_qos.transient_local();
+  pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
+    "/local_xy_origin",
+    latching_qos,
+    std::bind(&LocalXyWgs84Util::HandlePoseStamped, this, std::placeholders::_1));
+  initialized_ = false;
+}
 
-  LocalXyWgs84Util::~LocalXyWgs84Util() = default;
+void LocalXyWgs84Util::Initialize()
+{
 
-  void LocalXyWgs84Util::ResetInitialization()
-  {
-    std::string type;
-    rclcpp::QoS latching_qos(1);
-    latching_qos.transient_local();
-    pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseStamped>(
-        "/local_xy_origin",
-        latching_qos,
-        std::bind(&LocalXyWgs84Util::HandlePoseStamped, this, std::placeholders::_1));
-    initialized_ = false;
-  }
+}
 
-  void LocalXyWgs84Util::Initialize()
-  {
+void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
+{
+  HandleOrigin(
+    pose->pose.position.y,
+    pose->pose.position.x,
+    pose->pose.position.z,
+    getYaw(pose->pose.orientation),
+    pose->header.frame_id);
+}
 
-  }
-
-  void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
-  {
-    HandleOrigin(pose->pose.position.y,
-        pose->pose.position.x,
-        pose->pose.position.z,
-        getYaw(pose->pose.orientation),
-        pose->header.frame_id);
-  }
-
-  void LocalXyWgs84Util::HandleOrigin(double latitude,
-                                      double longitude,
-                                      double altitude,
-                                      double angle,
-                                      std::string const &frame_id)
-  {
-    if (!initialized_)
-    {
-      bool ignore_reference_angle = false;
-      if (node_)
-      {
-        node_->get_parameter_or("/local_xy_ignore_reference_angle", ignore_reference_angle, ignore_reference_angle);
-      }
-
-      local_cartesian_->Reset(latitude, longitude, altitude);
-
-      if (!ignore_reference_angle)
-      {
-        reference_angle_ = angle;
-      }
-
-      std::string frame = frame_id;
-
-      if (frame.empty())
-      {
-        // If the origin has an empty frame id, look for a frame in
-        // the global parameter /local_xy_frame.  This provides
-        // compatibility with older bag files.
-        node_->get_parameter_or("/local_xy_frame", frame, frame_);
-      }
-      else
-      {
-        if (frame[0] == '/')
-        {
-          frame.erase(0, 1);
-        }
-      }
-
-      frame_ = frame;
-      reference_angle_ = swri_math_util::WrapRadians(reference_angle_, 0);
-
-      cos_angle_ = std::cos(reference_angle_);
-      sin_angle_ = std::sin(reference_angle_);
-
-      RCUTILS_LOG_INFO("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, altitude);
-
-      pose_sub_.reset();
-      initialized_ = true;
-    }
-  }
-
-  bool AreEquivalent(const LocalXyWgs84UtilPtr& lhs, const LocalXyWgs84UtilPtr& rhs)
-  {
-    if (lhs == rhs)
-    {
-      return true;
+void LocalXyWgs84Util::HandleOrigin(
+  double latitude,
+  double longitude,
+  double altitude,
+  double angle,
+  std::string const & frame_id)
+{
+  if (!initialized_) {
+    bool ignore_reference_angle = false;
+    if (node_) {
+      node_->get_parameter_or(
+        "/local_xy_ignore_reference_angle", ignore_reference_angle,
+        ignore_reference_angle);
     }
 
-    if (!lhs || !rhs)
-    {
+    local_cartesian_->Reset(latitude, longitude, altitude);
+
+    if (!ignore_reference_angle) {
+      reference_angle_ = angle;
+    }
+
+    std::string frame = frame_id;
+
+    if (frame.empty()) {
+      // If the origin has an empty frame id, look for a frame in
+      // the global parameter /local_xy_frame.  This provides
+      // compatibility with older bag files.
+      node_->get_parameter_or("/local_xy_frame", frame, frame_);
+    } else {
+      if (frame[0] == '/') {
+        frame.erase(0, 1);
+      }
+    }
+
+    frame_ = frame;
+    reference_angle_ = swri_math_util::WrapRadians(reference_angle_, 0);
+
+    cos_angle_ = std::cos(reference_angle_);
+    sin_angle_ = std::sin(reference_angle_);
+
+    RCUTILS_LOG_INFO(
+      "LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude,
+      longitude, altitude);
+
+    pose_sub_.reset();
+    initialized_ = true;
+  }
+}
+
+bool AreEquivalent(const LocalXyWgs84UtilPtr & lhs, const LocalXyWgs84UtilPtr & rhs)
+{
+  if (lhs == rhs) {
+    return true;
+  }
+
+  if (!lhs || !rhs) {
+    return false;
+  }
+
+  return lhs->Initialized() && rhs->Initialized() &&
+         lhs->ReferenceLatitude() == rhs->ReferenceLatitude() &&
+         lhs->ReferenceLongitude() == rhs->ReferenceLongitude() &&
+         lhs->ReferenceAltitude() == rhs->ReferenceAltitude() &&
+         lhs->ReferenceAngle() == rhs->ReferenceAngle() &&
+         lhs->Frame() == rhs->Frame();
+}
+
+double LocalXyWgs84Util::ReferenceLongitude() const
+{
+  return local_cartesian_->LongitudeOrigin();
+}
+
+double LocalXyWgs84Util::ReferenceLatitude() const
+{
+  return local_cartesian_->LatitudeOrigin();
+}
+
+double LocalXyWgs84Util::ReferenceAngle() const
+{
+  return reference_angle_ * swri_math_util::_rad_2_deg;
+}
+
+double LocalXyWgs84Util::ReferenceAltitude() const
+{
+  return local_cartesian_->HeightOrigin();
+}
+
+bool LocalXyWgs84Util::ToLocalXy(
+  double latitude,
+  double longitude,
+  double & x,
+  double & y) const
+{
+  if (initialized_) {
+    if (latitude < -90.0 || latitude > 90.0) {
       return false;
     }
 
-    return lhs->Initialized() && rhs->Initialized() &&
-        lhs->ReferenceLatitude() == rhs->ReferenceLatitude() &&
-        lhs->ReferenceLongitude() == rhs->ReferenceLongitude() &&
-        lhs->ReferenceAltitude() == rhs->ReferenceAltitude() &&
-        lhs->ReferenceAngle() == rhs->ReferenceAngle() &&
-        lhs->Frame() == rhs->Frame();
-  }
-
-  double LocalXyWgs84Util::ReferenceLongitude() const
-  {
-    return local_cartesian_->LongitudeOrigin();
-  }
-
-  double LocalXyWgs84Util::ReferenceLatitude() const
-  {
-    return local_cartesian_->LatitudeOrigin();
-  }
-
-  double LocalXyWgs84Util::ReferenceAngle() const
-  {
-    return reference_angle_ * swri_math_util::_rad_2_deg;
-  }
-
-  double LocalXyWgs84Util::ReferenceAltitude() const
-  {
-    return local_cartesian_->HeightOrigin();
-  }
-
-  bool LocalXyWgs84Util::ToLocalXy(
-      double latitude,
-      double longitude,
-      double& x,
-      double& y) const
-  {
-    if (initialized_)
-    {
-      if (latitude < -90.0 || latitude > 90.0)
-      {
-        return false;
-      }
-
-      if (longitude < -180.0 || longitude > 180.0)
-      {
-        return false;
-      }
-
-      double z, dLon, dLat;
-
-      local_cartesian_->Forward(latitude, longitude, 0, dLon, dLat, z);
-
-      x =  cos_angle_ * dLon + sin_angle_ * dLat;
-      y = -sin_angle_ * dLon + cos_angle_ * dLat;
-      return true;
+    if (longitude < -180.0 || longitude > 180.0) {
+      return false;
     }
 
-    return initialized_;
+    double z, dLon, dLat;
+
+    local_cartesian_->Forward(latitude, longitude, 0, dLon, dLat, z);
+
+    x = cos_angle_ * dLon + sin_angle_ * dLat;
+    y = -sin_angle_ * dLon + cos_angle_ * dLat;
+    return true;
   }
 
-  bool LocalXyWgs84Util::ToWgs84(
-      double x,
-      double y,
-      double& latitude,
-      double& longitude) const
-  {
-    if (initialized_)
-    {
-      double alt;
-      double dLon = cos_angle_ * x - sin_angle_ * y;
-      double dLat = sin_angle_ * x + cos_angle_ * y;
+  return initialized_;
+}
 
-      local_cartesian_->Reverse(dLon, dLat, 0, latitude, longitude, alt);
-      return true;
-    }
+bool LocalXyWgs84Util::ToWgs84(
+  double x,
+  double y,
+  double & latitude,
+  double & longitude) const
+{
+  if (initialized_) {
+    double alt;
+    double dLon = cos_angle_ * x - sin_angle_ * y;
+    double dLat = sin_angle_ * x + cos_angle_ * y;
 
-    return initialized_;
+    local_cartesian_->Reverse(dLon, dLat, 0, latitude, longitude, alt);
+    return true;
   }
+
+  return initialized_;
+}
 }

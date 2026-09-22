@@ -69,10 +69,16 @@ TEST(MathUtilTests, ToNearest)
 
   EXPECT_EQ(0, swri_math_util::ToNearest(-0.45, swri_math_util::_half_pi));
   EXPECT_EQ(0, swri_math_util::ToNearest(0.45, swri_math_util::_half_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_half_pi, swri_math_util::ToNearest(1.2, swri_math_util::_half_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_half_pi, swri_math_util::ToNearest(1.6, swri_math_util::_half_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_half_pi,
+    swri_math_util::ToNearest(1.2, swri_math_util::_half_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_half_pi,
+    swri_math_util::ToNearest(1.6, swri_math_util::_half_pi));
   EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::ToNearest(2.4, swri_math_util::_half_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::ToNearest(swri_math_util::_pi, swri_math_util::_half_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi,
+    swri_math_util::ToNearest(swri_math_util::_pi, swri_math_util::_half_pi));
   EXPECT_FLOAT_EQ(swri_math_util::_2pi, swri_math_util::ToNearest(6.1, swri_math_util::_half_pi));
 }
 
@@ -101,26 +107,32 @@ TEST(MathUtilTests, UpToNearest)
   EXPECT_EQ(0.0, swri_math_util::UpToNearest(-301.4, 0));
 
   EXPECT_EQ(0, swri_math_util::UpToNearest(-0.45, swri_math_util::_half_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_half_pi, swri_math_util::UpToNearest(0.45, swri_math_util::_half_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_half_pi, swri_math_util::UpToNearest(1.2, swri_math_util::_half_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_half_pi,
+    swri_math_util::UpToNearest(0.45, swri_math_util::_half_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_half_pi,
+    swri_math_util::UpToNearest(1.2, swri_math_util::_half_pi));
   EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::UpToNearest(1.6, swri_math_util::_half_pi));
   EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::UpToNearest(2.4, swri_math_util::_half_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::UpToNearest(swri_math_util::_pi, swri_math_util::_half_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi,
+    swri_math_util::UpToNearest(swri_math_util::_pi, swri_math_util::_half_pi));
   EXPECT_FLOAT_EQ(swri_math_util::_2pi, swri_math_util::UpToNearest(6.1, swri_math_util::_half_pi));
 }
 
 TEST(MathUtilTests, IsNear)
 {
-   EXPECT_TRUE(swri_math_util::IsNear(1, 1, 0));
-   EXPECT_TRUE(swri_math_util::IsNear(3535.353, 3535.353, 0));
-   EXPECT_TRUE(swri_math_util::IsNear(10.1, 10, 0.1));
-   EXPECT_TRUE(swri_math_util::IsNear(10, 10.1, 0.1));
-   EXPECT_TRUE(swri_math_util::IsNear(-10.1, -10, 0.1));
-   EXPECT_TRUE(swri_math_util::IsNear(-10, -10.1, 0.1));
+  EXPECT_TRUE(swri_math_util::IsNear(1, 1, 0));
+  EXPECT_TRUE(swri_math_util::IsNear(3535.353, 3535.353, 0));
+  EXPECT_TRUE(swri_math_util::IsNear(10.1, 10, 0.1));
+  EXPECT_TRUE(swri_math_util::IsNear(10, 10.1, 0.1));
+  EXPECT_TRUE(swri_math_util::IsNear(-10.1, -10, 0.1));
+  EXPECT_TRUE(swri_math_util::IsNear(-10, -10.1, 0.1));
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 
