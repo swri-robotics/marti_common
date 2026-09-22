@@ -31,15 +31,16 @@
 import math
 
 from diagnostic_msgs.msg import DiagnosticStatus
-from gps_msgs.msg import GPSFix, GPSStatus
+from gps_msgs.msg import GPSFix
+from gps_msgs.msg import GPSStatus
 import pytest
 import rclpy
-from sensor_msgs.msg import NavSatFix, NavSatStatus
-
-from swri_transform_util.origin_manager import (DEFAULT_MAX_ORIGIN_DISTANCE,
-                                                EARTH_MEAN_RADIUS,
-                                                OriginManager,
-                                                planar_distance)
+from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatStatus
+from swri_transform_util.origin_manager import DEFAULT_MAX_ORIGIN_DISTANCE
+from swri_transform_util.origin_manager import EARTH_MEAN_RADIUS
+from swri_transform_util.origin_manager import OriginManager
+from swri_transform_util.origin_manager import planar_distance
 
 SWRI = {'latitude': 29.45196669, 'longitude': -98.61370577, 'altitude': 233.719}
 
@@ -78,7 +79,7 @@ def values_of(status):
 
 def test_distance_between_identical_points_is_zero():
     assert planar_distance(SWRI['latitude'], SWRI['longitude'],
-                             SWRI['latitude'], SWRI['longitude']) == pytest.approx(0.0)
+                           SWRI['latitude'], SWRI['longitude']) == pytest.approx(0.0)
 
 
 def test_one_degree_of_latitude():

@@ -29,10 +29,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
-from geometry_msgs.msg import PoseStamped, TransformStamped
-from gps_msgs.msg import GPSStatus
 import math
+
+from diagnostic_msgs.msg import DiagnosticArray
+from diagnostic_msgs.msg import DiagnosticStatus
+from diagnostic_msgs.msg import KeyValue
+from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import TransformStamped
+from gps_msgs.msg import GPSStatus
 import rclpy.node
 import rclpy.qos
 from sensor_msgs.msg import NavSatStatus
@@ -68,14 +72,12 @@ def planar_distance(latitude1, longitude1, latitude2, longitude2):
     or ellipsoid detail. It degrades further over continental distances but
     still reports a very large number, which is all this check needs.
 
-    Args:
-        latitude1 (float): Latitude of the first point in degrees.
-        longitude1 (float): Longitude of the first point in degrees.
-        latitude2 (float): Latitude of the second point in degrees.
-        longitude2 (float): Longitude of the second point in degrees.
-
-    Returns:
-        float: The distance between the two points in meters.
+    :param float latitude1: Latitude of the first point in degrees.
+    :param float longitude1: Longitude of the first point in degrees.
+    :param float latitude2: Latitude of the second point in degrees.
+    :param float longitude2: Longitude of the second point in degrees.
+    :return: The distance between the two points in meters.
+    :rtype: float
     """
     north = EARTH_MEAN_RADIUS * math.radians(latitude2 - latitude1)
     # Meridians converge, so a degree of longitude covers less ground the
@@ -114,7 +116,7 @@ class OriginManager(object):
                 manager.set_origin_from_navsat(msg)
             except InvalidFixException as e:
                 rospy.logwarn(e)
-                return
+                return None
             finally:
                 navsat_sub.unregister()
         manager = OriginManager("/map")
@@ -129,7 +131,7 @@ class OriginManager(object):
                 manager.set_origin_from_gps(msg)
             except InvalidFixException as e:
                 rospy.logwarn(e)
-                return
+                return None
             finally:
                 gps_sub.unregister()
         manager = OriginManager("/map")
@@ -154,16 +156,15 @@ class OriginManager(object):
         """
         Construct an OriginManager, create publishers and TF Broadcaster.
 
-        Args:
-            node (rclpy.node.Node): ROS node for subscribing
-            local_xy_frame (str): TF frame ID of the local XY origin
-            local_xy_frame_identity (str): TF frame ID of the identity frame published
-                to enable tf<->/wgs_84 conversions in systems with no other frames. If
-                this argument is `None`, `local_xy_frame` + "__identity" is used.
-                (default None).
-            max_origin_distance (float): Distance from the origin, in meters, past
-                which the diagnostic is raised to WARN. See
-                `DEFAULT_MAX_ORIGIN_DISTANCE`.
+        :param rclpy.node.Node node: ROS node for subscribing
+        :param str local_xy_frame: TF frame ID of the local XY origin
+        :param str local_xy_frame_identity: TF frame ID of the identity frame published
+            to enable tf<->/wgs_84 conversions in systems with no other frames. If
+            this argument is `None`, `local_xy_frame` + "__identity" is used.
+            (default None).
+        :param float max_origin_distance: Distance from the origin, in meters, past
+            which the diagnostic is raised to WARN. See
+            `DEFAULT_MAX_ORIGIN_DISTANCE`.
         """
         self.node = node
         self.timer = None
@@ -174,7 +175,7 @@ class OriginManager(object):
         self.current_position = None
         self.local_xy_frame = local_xy_frame
         if local_xy_frame_identity is None:
-            local_xy_frame_identity = local_xy_frame + "__identity"
+            local_xy_frame_identity = local_xy_frame + '__identity'
         self.local_xy_frame_identity = local_xy_frame_identity
         qos = rclpy.node.QoSProfile(depth=1,
                                     durability=rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL)
@@ -188,18 +189,17 @@ class OriginManager(object):
 
         All other set_ methods wrap this method.
 
-        Args:
-            source (string): The source of the origin.
-            latitude (float): The latitude of the origin in degrees.
-            longitude (float): The longitude of the origin in degrees.
-            altitude (float): The altitude of the origin in meters.
-                Positive values correspond to altitude above the geoid.
-            stamp (rospy.Time): The time to use for the origin's header.stamp field.
-                If the argument is `None`, the stamp is not set and defaults to
-                `rospy.Time(0)`. (default None).
-            heading (float): The direction of the local X axis in degrees ENU, i.e.
-                counter-clockwise from east. It is published as the yaw of the
-                origin's orientation. (default 0.0).
+        :param string source: The source of the origin.
+        :param float latitude: The latitude of the origin in degrees.
+        :param float longitude: The longitude of the origin in degrees.
+        :param float altitude: The altitude of the origin in meters.
+            Positive values correspond to altitude above the geoid.
+        :param rospy.Time stamp: The time to use for the origin's header.stamp field.
+            If the argument is `None`, the stamp is not set and defaults to
+            `rospy.Time(0)`. (default None).
+        :param float heading: The direction of the local X axis in degrees ENU, i.e.
+            counter-clockwise from east. It is published as the yaw of the
+            origin's orientation. (default 0.0).
         """
         if self.origin is not None:
             return
@@ -231,31 +231,25 @@ class OriginManager(object):
         """
         Set the local origin from a dictionary.
 
-        Args:
-            origin_dict (dict): A dictionary containing the keys "latitude", "longitude", and
-                "altitude" with appropriate float values, and optionally "heading" in degrees
-                ENU (default 0.0)
-
-        Raises:
-            KeyError: If `origin_dict` does not contain all of the required keys.
+        :param dict origin_dict: A dictionary containing the keys "latitude", "longitude", and
+            "altitude" with appropriate float values, and optionally "heading" in degrees
+            ENU (default 0.0)
+        :raises KeyError: If `origin_dict` does not contain all of the required keys.
         """
-        self.set_origin("manual", origin_dict["latitude"],
-                        origin_dict["longitude"],
-                        origin_dict["altitude"],
-                        heading=origin_dict.get("heading", 0.0))
+        self.set_origin('manual', origin_dict['latitude'],
+                        origin_dict['longitude'],
+                        origin_dict['altitude'],
+                        heading=origin_dict.get('heading', 0.0))
 
     def set_origin_from_list(self, origin_name, origin_list):
         """
         Set the local origin from a list of named origins.
 
-        Args:
-            origin_name (str): The name of the origin in origin_list to use
-            origin_list (list): A list of dicts containing a name key and all keys required
-                by set_origin_from_dict()
-
-        Raises:
-            KeyError: If any origin in `origins_list` lacks a "name" key or if there exists
-                no origin in `origins_list` whose "name" is `origin_name`
+        :param str origin_name: The name of the origin in origin_list to use
+        :param list origin_list: A list of dicts containing a name key and all keys required
+            by set_origin_from_dict()
+        :raises KeyError: If any origin in `origins_list` lacks a "name" key or if there exists
+            no origin in `origins_list` whose "name" is `origin_name`
         """
         origin = next((x for x in origin_list if x['name'] == origin_name), None)
         if origin:
@@ -270,14 +264,11 @@ class OriginManager(object):
         """
         Set the local origin from a gps_common.msg.GPSFix object.
 
-        Args:
-            msg (gps_common.msg.GPSFix): A GPSFix message with the local origin
-            use_track (bool): If True, point the local X axis along the GPS track, provided
-                that the track is finite and its uncertainty is finite and positive;
-                otherwise the heading is 0, pointing the X axis east. (default False).
-
-        Raises:
-            InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
+        :param gps_common.msg.GPSFix msg: A GPSFix message with the local origin
+        :param bool use_track: If True, point the local X axis along the GPS track, provided
+            that the track is finite and its uncertainty is finite and positive;
+            otherwise the heading is 0, pointing the X axis east. (default False).
+        :raises InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
         """
         if msg.status.status == GPSStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid GPSFix. Waiting for a valid one...'
@@ -296,33 +287,29 @@ class OriginManager(object):
                     'GPSFix track {} with uncertainty {} is not usable, since the track must '
                     'be finite and its uncertainty finite and positive; using a heading of 0 '
                     'for the origin'.format(msg.track, msg.err_track))
-        self.set_origin("gpsfix", msg.latitude, msg.longitude, msg.altitude, msg.header.stamp,
+        self.set_origin('gpsfix', msg.latitude, msg.longitude, msg.altitude, msg.header.stamp,
                         heading)
 
     def set_origin_from_navsat(self, msg):
         """
         Set the local origin from a sensor_msgs.msg.NavSatFix object.
 
-        Args:
-            msg (sensor_msgs.msg.NavSatFix): A NavSatFix message with the local origin
-
-        Raises:
-            InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
+        :param sensor_msgs.msg.NavSatFix msg: A NavSatFix message with the local origin
+        :raises InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
         """
         if msg.status.status == NavSatStatus.STATUS_NO_FIX:
             message = 'Cannot set origin from invalid NavSatFix. Waiting for a valid one...'
             raise InvalidFixException(message)
-        self.set_origin("navsat", msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
+        self.set_origin('navsat', msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
 
     def set_origin_from_custom(self, pos, stamp):
         """
         Set the local origin from a custom object.
 
-        Args:
-            pos: Tuple with the local origin
-            stamp: Msg header stamp if available
+        :param pos: Tuple with the local origin
+        :param stamp: Msg header stamp if available
         """
-        self.set_origin("custom", pos[0], pos[1], pos[2], stamp)
+        self.set_origin('custom', pos[0], pos[1], pos[2], stamp)
 
     def update_current_position(self, latitude, longitude):
         """
@@ -332,9 +319,8 @@ class OriginManager(object):
         the node, so that the diagnostic reflects where the vehicle is now
         rather than where it started.
 
-        Args:
-            latitude (float): The current latitude in degrees.
-            longitude (float): The current longitude in degrees.
+        :param float latitude: The current latitude in degrees.
+        :param float longitude: The current longitude in degrees.
         """
         self.current_position = (latitude, longitude)
 
@@ -342,8 +328,7 @@ class OriginManager(object):
         """
         Record the current position from a gps_msgs.msg.GPSFix, if it is valid.
 
-        Args:
-            msg (gps_msgs.msg.GPSFix): A GPSFix message with the current position.
+        :param gps_msgs.msg.GPSFix msg: A GPSFix message with the current position.
         """
         if msg.status.status == GPSStatus.STATUS_NO_FIX:
             return
@@ -353,9 +338,8 @@ class OriginManager(object):
         """
         Record the current position from a sensor_msgs.msg.NavSatFix, if it is valid.
 
-        Args:
-            msg (sensor_msgs.msg.NavSatFix): A NavSatFix message with the current
-                position.
+        :param sensor_msgs.msg.NavSatFix msg: A NavSatFix message with the current
+            position.
         """
         if msg.status.status == NavSatStatus.STATUS_NO_FIX:
             return
@@ -366,39 +350,39 @@ class OriginManager(object):
         diagnostic = DiagnosticArray()
         diagnostic.header.stamp = self.node.get_clock().now().to_msg()
         status = DiagnosticStatus()
-        status.name = "LocalXY Origin"
-        status.hardware_id = "origin_publisher"
+        status.name = 'LocalXY Origin'
+        status.hardware_id = 'origin_publisher'
         if self.origin is None:
             status.level = DiagnosticStatus.ERROR
-            status.message = "No Origin"
+            status.message = 'No Origin'
         else:
-            if self.origin_source == "gpsfix":
+            if self.origin_source == 'gpsfix':
                 status.level = DiagnosticStatus.OK
-                status.message = "Has Origin (GPSFix)"
-            elif self.origin_source == "navsat":
+                status.message = 'Has Origin (GPSFix)'
+            elif self.origin_source == 'navsat':
                 status.level = DiagnosticStatus.OK
-                status.message = "Has Origin (NavSatFix)"
-            elif self.origin_source == "custom":
+                status.message = 'Has Origin (NavSatFix)'
+            elif self.origin_source == 'custom':
                 status.level = DiagnosticStatus.OK
-                status.message = "Has Origin (Custom Topic)"
+                status.message = 'Has Origin (Custom Topic)'
             else:
                 status.level = DiagnosticStatus.WARN
-                status.message = "Origin Was Set Manually"
+                status.message = 'Origin Was Set Manually'
 
             frame_id = self.origin.header.frame_id
-            status.values.append(KeyValue(key="Origin Frame ID", value=frame_id))
+            status.values.append(KeyValue(key='Origin Frame ID', value=frame_id))
 
-            latitude = "%f" % self.origin.pose.position.y
-            status.values.append(KeyValue(key="Latitude", value=latitude))
+            latitude = '%f' % self.origin.pose.position.y
+            status.values.append(KeyValue(key='Latitude', value=latitude))
 
-            longitude = "%f" % self.origin.pose.position.x
-            status.values.append(KeyValue(key="Longitude", value=longitude))
+            longitude = '%f' % self.origin.pose.position.x
+            status.values.append(KeyValue(key='Longitude', value=longitude))
 
-            altitude = "%f" % self.origin.pose.position.z
-            status.values.append(KeyValue(key="Altitude", value=altitude))
+            altitude = '%f' % self.origin.pose.position.z
+            status.values.append(KeyValue(key='Altitude', value=altitude))
 
-            heading = "%f" % self.origin_heading
-            status.values.append(KeyValue(key="Heading", value=heading))
+            heading = '%f' % self.origin_heading
+            status.values.append(KeyValue(key='Heading', value=heading))
 
             if self.current_position is not None:
                 distance = planar_distance(self.origin.pose.position.y,
@@ -408,17 +392,17 @@ class OriginManager(object):
                 # Reported even when it is within the limit, so that operators can
                 # watch it grow instead of only finding out once it trips.
                 status.values.append(
-                    KeyValue(key="Distance From Origin", value="%.1f" % distance))
+                    KeyValue(key='Distance From Origin', value='%.1f' % distance))
                 status.values.append(
-                    KeyValue(key="Max Distance From Origin",
-                             value="%.1f" % self.max_origin_distance))
+                    KeyValue(key='Max Distance From Origin',
+                             value='%.1f' % self.max_origin_distance))
                 if distance > self.max_origin_distance:
                     # Raised rather than assigned so that a more severe level set
                     # above is not masked by this one.
                     status.level = max(status.level, DiagnosticStatus.WARN)
                     status.message = (
-                        "{}; current position is {:.0f} m from the origin, which is "
-                        "farther than the {:.0f} m limit".format(
+                        '{}; current position is {:.0f} m from the origin, which is '
+                        'farther than the {:.0f} m limit'.format(
                             status.message, distance, self.max_origin_distance))
 
         # Published in both cases. These used to sit under the else above, so
@@ -457,9 +441,7 @@ class OriginManager(object):
         self._publish_identity_tf()
 
     def start(self):
-        """
-        Creates a timer that periodically publishes our messages.
-        """
+        """Create a timer that periodically publishes our messages."""
         # Publish the identity transform and then the origin once
         self.publish_messages()
         self._publish_origin()

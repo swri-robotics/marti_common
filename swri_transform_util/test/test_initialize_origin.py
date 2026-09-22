@@ -31,14 +31,18 @@ import sys
 import time
 import unittest
 
-from geographic_msgs.msg import GeoPose, GeoPoseStamped
+from geographic_msgs.msg import GeoPose
+from geographic_msgs.msg import GeoPoseStamped
 from geometry_msgs.msg import PoseStamped
-from gps_msgs.msg import GPSFix, GPSStatus
-from sensor_msgs.msg import NavSatFix, NavSatStatus
+from gps_msgs.msg import GPSFix
+from gps_msgs.msg import GPSStatus
 import rclpy
 from rclpy.clock import ClockType
-from rclpy.qos import QoSProfile, QoSDurabilityPolicy
+from rclpy.qos import QoSDurabilityPolicy
+from rclpy.qos import QoSProfile
 from ros2topic.api import get_msg_class
+from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatStatus
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
@@ -54,12 +58,15 @@ swri = {
     'heading': 90.0
 }
 
+
 class TestInitializeOrigin(unittest.TestCase):
+
     def __init__(self, expected_heading=0.0):
         """
-        Args:
-            expected_heading (float): The heading the published origin should have, in
-                degrees ENU. (default 0.0).
+        Initialize the test.
+
+        :param float expected_heading: The heading the published origin should have, in
+            degrees ENU. (default 0.0).
         """
         super().__init__()
         self.got_origin = False
@@ -87,15 +94,15 @@ class TestInitializeOrigin(unittest.TestCase):
                 next_publish = time.time() + 0.5
             rclpy.spin_once(self.node, timeout_sec=0.01)
             time.sleep(0.01)
-        self.assertTrue(self.got_origin, "never received an origin on " + ORIGIN_TOPIC)
+        self.assertTrue(self.got_origin, 'never received an origin on ' + ORIGIN_TOPIC)
 
     def subscribeToOrigin(self):
         self.assertIsNotNone(self.node)
         self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC, blocking=True)
         if self.origin_class is None:
-            self.node.get_logger().fatal(ORIGIN_TOPIC+" was never advertised")
+            self.node.get_logger().fatal(ORIGIN_TOPIC+' was never advertised')
         self.assertIsNotNone(self.origin_class)
-        self.node.get_logger().info("Origin is a " + str(self.origin_class) + " message")
+        self.node.get_logger().info('Origin is a ' + str(self.origin_class) + ' message')
         self.assertIn(self.origin_class, ORIGIN_TYPES)
         self.test_stamp = False  # Enable this for auto origin
         self.got_origin = False
@@ -110,7 +117,7 @@ class TestInitializeOrigin(unittest.TestCase):
 
     def originCallback(self, msg):
         self.assertIsNotNone(self.node)
-        self.node.get_logger().info("Callback received a message.")
+        self.node.get_logger().info('Callback received a message.')
         self.got_origin = True
         if self.origin_class == PoseStamped:
             latitude = msg.pose.position.y
@@ -121,18 +128,18 @@ class TestInitializeOrigin(unittest.TestCase):
                 msg.pose.orientation.x,
                 msg.pose.orientation.y,
                 msg.pose.orientation.z)
-            self.node.get_logger().info("Origin heading is %f; expected %f" % (
+            self.node.get_logger().info('Origin heading is %f; expected %f' % (
                 math.degrees(yaw), self.expected_heading))
             self.assertAlmostEqual(yaw, math.radians(self.expected_heading))
         elif self.origin_class == GPSFix:
-            self.node.get_logger().info("Status: %d" % msg.status.status)
+            self.node.get_logger().info('Status: %d' % msg.status.status)
             self.assertEqual(msg.status.status, GPSStatus.STATUS_FIX)
             latitude = msg.latitude
             longitude = msg.longitude
             altitude = msg.altitude
             self.assertAlmostEqual(msg.track, swri['heading'])
         elif self.origin_class == NavSatFix:
-            self.node.get_logger().info("Status: %d" % msg.status.status)
+            self.node.get_logger().info('Status: %d' % msg.status.status)
             self.assertEqual(msg.status.status, NavSatStatus.STATUS_FIX)
             latitude = msg.latitude
             longitude = msg.longitude
@@ -165,6 +172,7 @@ class TestInitializeOrigin(unittest.TestCase):
 
 
 class TestInvalidOrigin(unittest.TestCase):
+
     def __init__(self):
         super().__init__()
         self.got_message = False
@@ -173,9 +181,9 @@ class TestInvalidOrigin(unittest.TestCase):
         self.assertIsNotNone(self.node)
         self.origin_class = get_msg_class(self.node, ORIGIN_TOPIC, blocking=True)
         if self.origin_class is None:
-            self.node.get_logger().fatal(ORIGIN_TOPIC+" was never advertised")
+            self.node.get_logger().fatal(ORIGIN_TOPIC+' was never advertised')
         self.assertIsNotNone(self.origin_class)
-        self.node.get_logger().info("Origin is a " + str(self.origin_class) + " message")
+        self.node.get_logger().info('Origin is a ' + str(self.origin_class) + ' message')
         self.assertIn(self.origin_class, ORIGIN_TYPES)
         self.test_stamp = False  # Enable this for auto origin
         self.got_origin = False
@@ -195,17 +203,19 @@ class TestInvalidOrigin(unittest.TestCase):
 
 
 class TestAutoOriginFromGPSFix(TestInitializeOrigin):
+
     def __init__(self, track=swri['heading'], err_track=0.0, expected_heading=0.0):
         """
-        Args:
-            track (float): The compass track of the published GPSFix in degrees.
-            err_track (float): The track uncertainty of the published GPSFix in degrees.
-            expected_heading (float): The heading the published origin should have, in
-                degrees ENU.
+        Publish a GPSFix and check the origin initialized from it.
+
+        :param float track: The compass track of the published GPSFix in degrees.
+        :param float err_track: The track uncertainty of the published GPSFix in degrees.
+        :param float expected_heading: The heading the published origin should have, in
+            degrees ENU.
         """
         super().__init__(expected_heading)
         self.node = rclpy.create_node('test_auto_origin_from_gps_fix')
-        self.node.get_logger().info("Publishing a GPSFix with track %f, err_track %f" % (
+        self.node.get_logger().info('Publishing a GPSFix with track %f, err_track %f' % (
             track, err_track))
         gps_pub = self.node.create_publisher(
             GPSFix, 'gps',
@@ -214,7 +224,7 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
                 depth=2
             )
         )
-        origin_sub = self.subscribeToOrigin()
+        self.subscribeToOrigin()
         self.test_stamp = True
         gps_msg = GPSFix()
         gps_msg.status.status = GPSStatus.STATUS_FIX
@@ -228,11 +238,12 @@ class TestAutoOriginFromGPSFix(TestInitializeOrigin):
 
 
 class TestInvalidGPSFix(TestInvalidOrigin):
+
     def __init__(self):
         super().__init__()
         self.node = rclpy.create_node('test_invalid_gps_fix')
         gps_pub = self.node.create_publisher(GPSFix, 'gps', 2)
-        origin_sub = self.subscribeToOrigin()
+        self.subscribeToOrigin()
         self.test_stamp = True
         gps_msg = GPSFix()
         gps_msg.status.status = GPSStatus.STATUS_NO_FIX
@@ -261,14 +272,15 @@ class TestInvalidGPSFix(TestInvalidOrigin):
             time.sleep(0.01)
 
         self.assertFalse(self.got_message,
-                         "initialize_origin should not have published an origin.")
+                         'initialize_origin should not have published an origin.')
         self.assertFalse(node_attached and count == 0,
-                         "initialize_origin unsubscribed without getting a valid fix.")
+                         'initialize_origin unsubscribed without getting a valid fix.')
 
         self.node.destroy_node()
 
 
 class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
+
     def __init__(self):
         super().__init__()
         self.node = rclpy.create_node('test_auto_origin_from_nav_sat_fix')
@@ -279,28 +291,29 @@ class TestAutoOriginFromNavSatFix(TestInitializeOrigin):
                 depth=2
             )
         )
-        origin_sub = self.subscribeToOrigin()
+        self.subscribeToOrigin()
         self.test_stamp = True
         nsf_msg = NavSatFix()
         nsf_msg.status.status = NavSatStatus.STATUS_FIX
         nsf_msg.latitude = swri['latitude']
         nsf_msg.longitude = swri['longitude']
         nsf_msg.altitude = swri['altitude']
-        nsf_msg.header.frame_id = "/far_field"
+        nsf_msg.header.frame_id = '/far_field'
         nsf_msg.header.stamp = msg_stamp
         self.waitForOrigin(nsf_pub, nsf_msg)
 
 
 class TestInvalidNavSatFix(TestInvalidOrigin):
+
     def __init__(self):
         super().__init__()
         self.node = rclpy.create_node('test_invalid_nav_sat_fix')
         nsf_pub = self.node.create_publisher(NavSatFix, 'fix', 2)
-        origin_sub = self.subscribeToOrigin()
+        self.subscribeToOrigin()
         self.test_stamp = True
         nsf_msg = NavSatFix()
         nsf_msg.status.status = NavSatStatus.STATUS_NO_FIX
-        nsf_msg.header.frame_id = "/far_field"
+        nsf_msg.header.frame_id = '/far_field'
         nsf_msg.header.stamp = msg_stamp
 
         # See documentation in testInvalidGPSFix.
@@ -318,22 +331,23 @@ class TestInvalidNavSatFix(TestInvalidOrigin):
             time.sleep(0.01)
 
         self.assertFalse(self.got_message,
-                         "initialize_origin should not have published an origin.")
+                         'initialize_origin should not have published an origin.')
         self.assertFalse(node_attached and count == 0,
-                         "initialize_origin unsubscribed without getting a valid fix.")
+                         'initialize_origin unsubscribed without getting a valid fix.')
 
         self.node.destroy_node()
 
 
 class TestManualOrigin(TestInitializeOrigin):
+
     def __init__(self, expected_heading=0.0):
         super().__init__(expected_heading)
         self.node = rclpy.create_node('test_manual_origin')
-        origin_sub = self.subscribeToOrigin()
+        self.subscribeToOrigin()
         self.waitForOrigin()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # No wait for the node under test here: subscribeToOrigin() blocks until it
     # advertises /local_xy_origin, and the fixes these tests publish are either
     # latched or published in a loop until they are picked up.
@@ -341,15 +355,15 @@ if __name__ == "__main__":
 
     # Any arguments after the mode are floats passed on to the test's constructor.
     args = [float(arg) for arg in sys.argv[2:]]
-    if sys.argv[1] == "auto_gps":
+    if sys.argv[1] == 'auto_gps':
         test = TestAutoOriginFromGPSFix(*args)
-    elif sys.argv[1] == "auto_navsat":
+    elif sys.argv[1] == 'auto_navsat':
         test = TestAutoOriginFromNavSatFix()
-    elif sys.argv[1] == "invalid_gps":
+    elif sys.argv[1] == 'invalid_gps':
         test = TestInvalidGPSFix()
-    elif sys.argv[1] == "invalid_navsat":
+    elif sys.argv[1] == 'invalid_navsat':
         test = TestInvalidNavSatFix()
-    elif sys.argv[1] == "manual":
+    elif sys.argv[1] == 'manual':
         test = TestManualOrigin(*args)
 
     rclpy.shutdown()

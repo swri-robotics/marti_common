@@ -24,6 +24,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from ros2node.api import TopicInfo
+
 from swri_cli_tools.api._parameter_info import ParameterInfo
 
 

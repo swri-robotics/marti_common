@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""A module containing a simple class for transforming from WGS84 coordinate
-frame to a local_xy frame and vice versa."""
+"""
+A module containing a simple class for transforming between WGS84 and local_xy.
+
+Transforms coordinates from the WGS84 frame to a local_xy frame and vice versa.
+"""
 
 # Copyright (C) 2020, Southwest Research Institute® (SwRI®)
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +34,7 @@ frame to a local_xy frame and vice versa."""
 # POSSIBILITY OF SUCH DAMAGE.
 
 import math
+
 import numpy as np
 
 EARTH_ECCENTRICITY = 0.08181919084261
@@ -40,7 +44,8 @@ EARTH_EQUATOR_RADIUS = 6378137.0
 # TODO: Use library implementation similar to euler_from_quaternion when available in ROS2
 def yaw_from_quaternion(quaternion):
     """
-    Converts a quartenion into a yaw value
+    Convert a quaternion into a yaw value.
+
     :param quaternion: list of quaternion values in (x,y,z,w) order
     :return: The yaw angle (in radians) of the quaternion
     """
@@ -51,8 +56,7 @@ def yaw_from_quaternion(quaternion):
 
 class Wgs84Transformer(object):
     """
-    A simple class for transforming from the WGS84 frame to the local_xy frame
-    and vice versa.
+    A simple class for transforming between the WGS84 frame and the local_xy frame.
 
     Transforms to and from WGS84 and the local_xy frame using a local origin
     as a reference.
@@ -60,7 +64,8 @@ class Wgs84Transformer(object):
 
     def __init__(self, local_origin):
         """
-        Constructor for the Wgs84Transformer class
+        Construct a Wgs84Transformer.
+
         :param geometry_msgs.Pose local_origin: An initialized local origin
         """
         self._reference_heading = yaw_from_quaternion(
@@ -87,7 +92,8 @@ class Wgs84Transformer(object):
 
     def wgs84_to_local_xy(self, wgs84_points):
         """
-        Transforms point(s) in the WGS84 coordinate frame to the local_xy frame.
+        Transform point(s) in the WGS84 coordinate frame to the local_xy frame.
+
         :param list wgs84_points: list of (latitude, longitude) coordinates
         :return: The transformed list of (x, y) coordinates in the local_xy frame
         """
@@ -105,7 +111,8 @@ class Wgs84Transformer(object):
 
     def local_xy_to_wgs84(self, local_points):
         """
-        Transforms point(s) in the local_xy frame to the WGS84 coordinate frame
+        Transform point(s) in the local_xy frame to the WGS84 coordinate frame.
+
         :param list local_points: list of (x, y) coordinates
         :return: The transformed list of (latitude, longitude) coordinates in the WGS84 frame
         """

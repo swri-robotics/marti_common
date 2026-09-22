@@ -32,14 +32,13 @@ import os
 import time
 import unittest
 
-import pytest
-
 import ament_index_python
-import launch
-import launch_testing
-import rclpy
 from gps_msgs.msg import GPSFix
+import launch
 from launch_ros.actions import Node
+import launch_testing
+import pytest
+import rclpy
 
 WARNING = '/local_xy_origin is published as sensor_msgs/msg/NavSatFix'
 

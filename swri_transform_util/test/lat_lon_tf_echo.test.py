@@ -34,15 +34,14 @@ import re
 import time
 import unittest
 
-import pytest
-
 import ament_index_python
-import launch
-import launch_testing
-import rclpy
 from geometry_msgs.msg import PoseStamped
 from gps_msgs.msg import GPSFix
+import launch
 from launch_ros.actions import Node
+import launch_testing
+import pytest
+import rclpy
 
 ORIGIN_LAT = 29.45
 ORIGIN_LON = -98.61
