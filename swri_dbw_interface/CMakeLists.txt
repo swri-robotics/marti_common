@@ -23,8 +23,6 @@ install(TARGETS ${PROJECT_NAME}
 ament_export_targets(export_${PROJECT_NAME})
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # TODO(#818): Enable the remaining linters once the code complies with them.
-  set(ament_cmake_copyright_FOUND TRUE)
   # Parse .h headers as C++ rather than C.
   set(ament_cmake_cppcheck_LANGUAGE "c++")
   set(ament_cmake_uncrustify_ADDITIONAL_ARGS LANGUAGE CPP)

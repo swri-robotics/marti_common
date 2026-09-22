@@ -22,12 +22,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ament_pep257.main import main
+from ament_copyright.main import main
 import pytest
 
 
+@pytest.mark.copyright
 @pytest.mark.linter
-@pytest.mark.pep257
-def test_pep257():
+def test_copyright():
     rc = main(argv=['.', 'test'])
-    assert rc == 0, 'Found code style errors / warnings'
+    assert rc == 0, 'Found errors'
