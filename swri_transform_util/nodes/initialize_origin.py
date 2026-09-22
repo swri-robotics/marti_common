@@ -54,7 +54,7 @@ class OriginInitializer(rclpy.node.Node):
         self.local_xy_origin_param = self.declare_parameter('local_xy_origin',
                                                             'auto',
                                                             descriptor=rclpy.node.ParameterDescriptor(
-                                                                name='local_xy_frame',
+                                                                name='local_xy_origin',
                                                                 type=rclpy.parameter.ParameterType.PARAMETER_STRING
                                                             ))
 
