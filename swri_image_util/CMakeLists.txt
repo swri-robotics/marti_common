@@ -101,7 +101,7 @@ target_link_libraries(${PROJECT_NAME}_nodes PRIVATE
 )
 
 # Iron and later switched some cv_bridge files to .hpp from .h
-if ("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
+if("${cv_bridge_VERSION}" VERSION_LESS "3.3.0")
   target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_CVBRIDGE_H_FILES")
 endif()
 
@@ -110,11 +110,21 @@ endif()
 # (rclcpp::Node *, rmw_qos_profile_t) API, so compile the legacy code path for
 # them. Newer versions fall through to the default path and use the current,
 # non-deprecated API.
-if ("${image_transport_VERSION}" VERSION_LESS "6.4.0")
+if("${image_transport_VERSION}" VERSION_LESS "6.4.0")
   target_compile_definitions(${PROJECT_NAME}_nodes PRIVATE "-DUSE_LEGACY_IMAGE_TRANSPORT_API")
 endif()
 
 if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # TODO(#818): Enable the remaining linters once the code complies with them.
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cppcheck_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_pep257_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_geometry_util test/test_geometry_util.cpp)
   target_link_libraries(test_geometry_util ${PROJECT_NAME})

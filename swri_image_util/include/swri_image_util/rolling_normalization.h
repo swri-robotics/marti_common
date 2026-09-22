@@ -43,7 +43,7 @@ namespace swri_image_util
   public:
     explicit RollingNormalization(int32_t size);
     ~RollingNormalization();
-    
+
     cv::Mat AddSample(const cv::Mat& image);
   private:
     int32_t max_size_;

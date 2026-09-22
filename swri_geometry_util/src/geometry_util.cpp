@@ -38,7 +38,7 @@ namespace swri_geometry_util
   {
     return plane_normal.normalized().dot(point - plane_point);
   }
-  
+
   tf2::Vector3 ProjectPointToPlane(
       const tf2::Vector3& plane_normal,
       const tf2::Vector3& plane_point,
@@ -52,10 +52,10 @@ namespace swri_geometry_util
       const tf2::Vector3& line_start,
       const tf2::Vector3& line_end,
       const tf2::Vector3& point)
-  {    
+  {
     return point.distance(ProjectToLineSegment(line_start, line_end, point));
   }
-  
+
   double DistanceFromLineSegment(
       const cv::Vec2d& line_start,
       const cv::Vec2d& line_end,
@@ -74,19 +74,19 @@ namespace swri_geometry_util
   {
     tf2::Vector3 v = line_end - line_start;
     tf2::Vector3 r = point - line_start;
-    
+
     double t = r.dot(v);
     if (t <= 0)
     {
       return line_start;
     }
-    
+
     double b = v.dot(v);
     if (t >= b)
     {
       return line_end;
     }
-    
+
     return line_start + (t / b) * v;
   }
 

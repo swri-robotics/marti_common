@@ -21,6 +21,16 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   rclcpp::rclcpp)
 
 if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # TODO(#818): Enable the remaining linters once the code complies with them.
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cppcheck_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_pep257_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(test_trig_util test/test_trig_util.cpp)

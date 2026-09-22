@@ -70,7 +70,7 @@ namespace swri_opencv_util
         a = 255.0 / std::max(max - min, DBL_EPSILON);
         b = -min * a;
         mat.convertTo(scaled, CV_8U, a, b);
- 
+
         cv::Mat color;
         cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGRA);
         SetAlpha(color, 255);
@@ -84,7 +84,7 @@ namespace swri_opencv_util
         mat.convertTo(scaled, CV_8UC3, a, b);
 
         cv::Mat color;
-        
+
         if (is_rgb)
         {
           cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
@@ -93,7 +93,7 @@ namespace swri_opencv_util
         {
           cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
         }
-        
+
         SetAlpha(color, 255);
         color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         scaled = color;
@@ -105,7 +105,7 @@ namespace swri_opencv_util
         mat.convertTo(scaled, CV_8UC3, a, b);
 
         cv::Mat color;
-        
+
         if (is_rgb)
         {
           cv::cvtColor(scaled, color, cv::COLOR_RGB2BGRA);
@@ -114,7 +114,7 @@ namespace swri_opencv_util
         {
           cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
         }
-        
+
         SetAlpha(color, 255);
         color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         scaled = color;
@@ -141,7 +141,7 @@ namespace swri_opencv_util
         {
           color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         }
-        
+
         scaled = color;
       }
     }
@@ -150,7 +150,7 @@ namespace swri_opencv_util
       if(mat.type() == CV_8UC3)
       {
         mat.convertTo(scaled, CV_8UC3, a, b);
-        
+
         cv::Mat color;
         if (is_rgb)
         {
@@ -160,7 +160,7 @@ namespace swri_opencv_util
         {
           cv::cvtColor(scaled, color, cv::COLOR_BGR2BGRA);
         }
-        
+
         SetAlpha(color, 255);
         color.setTo(cv::Scalar(0, 0, 0, 0), mask == 0);
         scaled = color;
@@ -168,7 +168,7 @@ namespace swri_opencv_util
       else if(mat.type() == CV_8UC4)
       {
         mat.convertTo(scaled, CV_8UC4, a, b);
-        
+
         cv::Mat color;
         if (is_rgb)
         {
@@ -194,10 +194,10 @@ namespace swri_opencv_util
         scaled = color;
       }
     }
-    
+
     return scaled;
   }
-  
+
   void SetAlpha(cv::Mat& mat, uint8_t alpha)
   {
     if (mat.type() == CV_8UC4)
@@ -212,4 +212,3 @@ namespace swri_opencv_util
     }
   }
 }
-

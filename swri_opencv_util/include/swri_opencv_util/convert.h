@@ -40,7 +40,7 @@ namespace swri_opencv_util
       bool is_rgb = false,
       double a = 0.0, // assume auto-scaling
       double b = 0.0);
-      
+
   void SetAlpha(cv::Mat& mat, uint8_t alpha);
 }
 

@@ -41,13 +41,13 @@ namespace swri_math_util
   {
     public:
       explicit RandomGenerator(int32_t seed = -1);
-      
+
       void GetUniformRandomSample(
-        int32_t min, 
-        int32_t max, 
+        int32_t min,
+        int32_t max,
         int32_t count,
         std::vector<int32_t>& sample);
-      
+
     private:
       std::random_device seed_;
       std::mt19937 rng_;
@@ -61,9 +61,9 @@ namespace swri_math_util
    * The number of samples should be much smaller than the number of possible
    * values in the range for optimal performance.
    *
-   * This function depends on a random number generator (RNG) being provided, 
-   * which generally aren't thread safe.  It is recommended that a 
-   * multi-threaded application create a seperate RNGs for each thread. 
+   * This function depends on a random number generator (RNG) being provided,
+   * which generally aren't thread safe.  It is recommended that a
+   * multi-threaded application create a seperate RNGs for each thread.
    *
    * param[in]   rng     The random number generator.
    * param[in]   min     The minimum of the range (inclusive).
@@ -74,8 +74,8 @@ namespace swri_math_util
   template <class RNG>
   void GetUniformRandomSample(
     RNG& rng,
-    int32_t min, 
-    int32_t max, 
+    int32_t min,
+    int32_t max,
     int32_t count,
     std::vector<int32_t>& sample)
   {
@@ -84,14 +84,14 @@ namespace swri_math_util
     {
       return;
     }
-    
+
     if (min > max)
     {
       int32_t tmp = min;
       min = max;
       max = tmp;
     }
-    
+
     int32_t range = (max - min) + 1;
     if (count > range)
     {
@@ -99,7 +99,7 @@ namespace swri_math_util
     }
 
     sample.resize(count);
-      
+
     std::uniform_int_distribution<> dist(min, max);
     for (int32_t i = 0; i < count; i++)
     {

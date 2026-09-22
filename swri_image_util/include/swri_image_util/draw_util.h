@@ -97,4 +97,3 @@ namespace swri_image_util
 }
 
 #endif  // IMAGE_UTIL_DRAW_UTIL_H_
-

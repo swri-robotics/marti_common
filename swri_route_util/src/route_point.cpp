@@ -45,7 +45,7 @@ std::vector<std::string> RoutePoint::getPropertyNames() const
   for (auto const &it : properties_) {
     names.push_back(it.first);
   }
-  
+
   return names;
 }
 
@@ -88,7 +88,7 @@ void RoutePoint::deleteProperty(const std::string &name)
 {
   // If we add "native" properties that are erasable, we should check
   // for those here first and mark them as deleted when appropriate.
-  
+
   // Otherwise, fall back to the generic properties.
   // std::map::erase() ignores the call if the key is not found.
   properties_.erase(name);

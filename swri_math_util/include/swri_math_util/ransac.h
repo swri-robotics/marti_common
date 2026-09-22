@@ -45,7 +45,7 @@ namespace swri_math_util
   public:
     typedef typename Model::M ModelType;
     typedef typename Model::T DataType;
-  
+
     explicit Ransac(RandomGeneratorPtr rng = RandomGeneratorPtr()) : rng_(rng) {}
 
     ModelType FitModel(
@@ -54,24 +54,24 @@ namespace swri_math_util
       double confidence,
       int32_t min_iterations,
       int32_t max_iterations,
-      std::vector<uint32_t>& inliers, 
+      std::vector<uint32_t>& inliers,
       int32_t& iterations)
     {
       int32_t breakout = std::numeric_limits<int32_t>::max();
       ModelType best_fit;
       inliers.clear();
       int32_t max_inliers = 0;
-      
+
       if (!model.ValidData())
       {
         return best_fit;
       }
-      
+
       if (!rng_)
       {
         rng_ = std::make_shared<RandomGenerator>();
       }
-      
+
       std::vector<int32_t> indices;
 
       ModelType hypothesis;
@@ -85,14 +85,14 @@ namespace swri_math_util
         if (model.GetModel(indices, hypothesis, max_error))
         {
           int32_t inlier_count = model.GetInlierCount(hypothesis, max_error);
-          
+
           // Update the best fit hypothesis and inliers if this hypothesis has
           // the most inliers so far.
           if (inlier_count > max_inliers)
           {
             max_inliers = inlier_count;
             Model::CopyTo(hypothesis, best_fit);
-            
+
             // Recalculate breakout threshold to see if the fit is good enough.
             double ratio = inlier_count / static_cast<double>(model.Size());
             double p_no_outliers = 1.0 - std::pow(ratio, Model::MIN_SIZE);
@@ -107,7 +107,7 @@ namespace swri_math_util
           }
         }
       }
-      
+
       if (max_inliers > 0)
       {
         model.GetInliers(best_fit, max_error, inliers);

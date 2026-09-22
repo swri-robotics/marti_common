@@ -287,4 +287,3 @@ namespace swri_transform_util
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_
-

@@ -281,7 +281,7 @@ namespace swri_image_util
     cv::Mat inliers1;
     cv::Mat inliers2;
     std::vector<uint32_t> good_points;
-    
+
     int32_t iterations;
     cv::Mat affine = swri_opencv_util::FindAffineTransform2d(
       fund_inliers1, fund_inliers2, inliers1, inliers2, good_points, iterations, 30.0);
@@ -308,14 +308,14 @@ namespace swri_image_util
     cv::Mat inliers1;
     cv::Mat inliers2;
     std::vector<uint32_t> good_points;
-    
+
     int32_t iterations;
     T_affine = swri_opencv_util::FindAffineTransform2d(
       pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
-    
+
     T_rigid = swri_opencv_util::FindRigidTransform2d(
       pts1, pts2, inliers1, inliers2, good_points, iterations, 30.0);
-    
+
     cv::Mat inliers1_t;
     cv::transform(inliers1, inliers1_t, T_rigid);
     double n = good_points.size();

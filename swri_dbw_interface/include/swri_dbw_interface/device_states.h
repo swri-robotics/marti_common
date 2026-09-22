@@ -62,4 +62,3 @@ static const std::string TURN_SIGNAL_HAZARD = "hazard";
 }  // namespace swri_dbw_interface
 
 #endif  // SWRI_DBW_INTERFACE_DEVICE_STATES_H_
-

@@ -49,7 +49,7 @@ namespace swri_geometry_util
       const tf2::Vector3& plane_normal,
       const tf2::Vector3& plane_point,
       const tf2::Vector3& point);
-      
+
   tf2::Vector3 ProjectPointToPlane(
       const tf2::Vector3& plane_normal,
       const tf2::Vector3& plane_point,

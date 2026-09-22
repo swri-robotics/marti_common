@@ -157,5 +157,3 @@ namespace swri_math_util
   }
 }  // namespace swri_math_util
 #endif  // MATH_UTIL_INTERPOLATION_1D_H_
-
-

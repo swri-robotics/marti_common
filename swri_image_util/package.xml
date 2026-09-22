@@ -6,11 +6,11 @@
   <description>
     A package of commonly image manipulation utilities.
   </description>
-  <author>Kris Kozak</author>
   <maintainer email="swri-robotics@swri.org">Southwest Research Institute</maintainer>
   <license>BSD</license>
   <url>https://github.com/swri-robotics/marti_common</url>
- 
+  <author>Kris Kozak</author>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>libopencv-dev</depend>
@@ -40,9 +40,10 @@
   <exec_depend>swri_geometry_util</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
   </export>
 </package>
-

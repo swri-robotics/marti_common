@@ -87,7 +87,7 @@ bool projectOntoRouteWindow(marti_nav_msgs::msg::RoutePosition &position,
 // Normalize a route position.  A normalize route position is guaranteed to
 // have:
 //   - A valid id for a point in the route.
-//   
+//
 //   - If the position is before the start of the route, the id will be
 //     first route point and the distance will be negative.
 

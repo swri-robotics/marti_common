@@ -28,7 +28,7 @@
 // *****************************************************************************
 
 #include <swri_transform_util/tf2_util.h>
-#include <math.h> 
+#include <math.h>
 
 namespace tf2
 {

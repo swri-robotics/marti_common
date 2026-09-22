@@ -35,7 +35,7 @@
 namespace swri_image_util
 {
   /**
-   * Replaces the colors in original_image with the values from the look up 
+   * Replaces the colors in original_image with the values from the look up
    * table in lut. The modified image is stored in modified_image
    */
   void replaceColors(

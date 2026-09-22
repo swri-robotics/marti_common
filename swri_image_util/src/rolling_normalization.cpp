@@ -35,14 +35,14 @@ namespace swri_image_util
     max_size_(size),
     samples_(0)
   {
-    
+
   }
-  
+
   RollingNormalization::~RollingNormalization()
   {
-  
+
   }
-    
+
   cv::Mat RollingNormalization::AddSample(const cv::Mat& image)
   {
     if (samples_ == 0)
@@ -56,13 +56,13 @@ namespace swri_image_util
       double s = static_cast<double>(samples_);
       average_image_ = (average_image_ * s + temp) / (s + 1.0);
     }
-    
+
     samples_++;
     if (samples_ > max_size_)
     {
       samples_ = max_size_;
     }
-    
+
     cv::Mat mean_image;
     average_image_.convertTo(mean_image, CV_8U);
     cv::Mat temp_norm_image;

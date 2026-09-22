@@ -137,7 +137,7 @@ namespace swri_transform_util
 
     return initialized_;
   }
-  
+
   TfToWgs84Transform::TfToWgs84Transform(
     const geometry_msgs::msg::TransformStamped& transform,
     std::shared_ptr<LocalXyWgs84Util> local_xy_util) :
@@ -157,14 +157,14 @@ namespace swri_transform_util
     local_xy_util_->ToWgs84(local_xy.x(), local_xy.y(), latitude, longitude);
     v_out.setValue(longitude, latitude, local_xy.z());
   }
-  
+
   tf2::Quaternion TfToWgs84Transform::GetOrientation() const
   {
     tf2::Stamped<tf2::Transform> tf;
     tf2::fromMsg(transform_, tf);
     tf2::Quaternion reference_angle;
     reference_angle.setRPY(0, 0, swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
- 
+
     return tf.getRotation() * reference_angle;
   }
 
@@ -190,7 +190,7 @@ namespace swri_transform_util
         local_xy_util_);
     return inverse;
   }
-  
+
   Wgs84ToTfTransform::Wgs84ToTfTransform(
     const geometry_msgs::msg::TransformStamped& transform,
     std::shared_ptr<LocalXyWgs84Util> local_xy_util) :
@@ -209,14 +209,14 @@ namespace swri_transform_util
     // Transform from the LocalXY coordinate frame using the TF transform.
     v_out = GetStampedTransform() * v_out;
   }
-  
+
   tf2::Quaternion Wgs84ToTfTransform::GetOrientation() const
   {
     tf2::Quaternion reference_angle;
     reference_angle.setRPY(0, 0, swri_math_util::ToRadians(local_xy_util_->ReferenceAngle()));
 
     tf2::Stamped<tf2::Transform> tf = GetStampedTransform();
-      
+
     return GetStampedTransform().getRotation() * reference_angle.inverse();
   }
 
@@ -246,4 +246,3 @@ namespace swri_transform_util
     return inverse;
   }
 }
-

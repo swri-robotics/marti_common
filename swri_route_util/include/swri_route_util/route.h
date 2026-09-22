@@ -81,7 +81,7 @@ class Route
 
   // A route is considered invalid if it has no points.
   bool valid() const;
-  
+
   // Find a point index by its ID.  For the common use case of looking
   // up valid ids in a static route, this will be very fast.  For less
   // common cases like looking up valid ids in a route that has been

@@ -40,7 +40,7 @@ TEST(GeometryUtilTests, ClosestPointToLinesInvalid)
     tf2::Vector3(0, 1, 0),
     tf2::Vector3(1, 0, 1),
     point));
- 
+
   ASSERT_FALSE(swri_geometry_util::ClosestPointToLines(
     tf2::Vector3(1, 0, 1),
     tf2::Vector3(0, 1, 0),
