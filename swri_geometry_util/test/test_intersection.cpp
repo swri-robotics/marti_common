@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <swri_geometry_util/intersection.h>
+#include "swri_geometry_util/intersection.h"
 
 TEST(IntersectionTests, Intersects_0)
 {

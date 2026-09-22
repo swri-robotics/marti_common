@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef OPENCV_UTIL_CONVERT_H_
-#define OPENCV_UTIL_CONVERT_H_
+#ifndef SWRI_OPENCV_UTIL__CONVERT_H_
+#define SWRI_OPENCV_UTIL__CONVERT_H_
 
 #include <opencv2/core/core.hpp>
 
@@ -42,6 +42,6 @@ cv::Mat ToBgra8(
   double b = 0.0);
 
 void SetAlpha(cv::Mat & mat, uint8_t alpha);
-}
+}  // namespace swri_opencv_util
 
-#endif  // OPENCV_UTIL_CONVERT_H_
+#endif  // SWRI_OPENCV_UTIL__CONVERT_H_

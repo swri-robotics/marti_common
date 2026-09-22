@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_opencv_util/models.h>
+#include "swri_opencv_util/models.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -679,4 +679,4 @@ void CrossFit3d::CalculateNorms(const M & model, cv::Mat & norms)
   // Use the minimum distance to either line.
   norms = cv::min(norms, temp3__);
 }
-}
+}  // namespace swri_opencv_util

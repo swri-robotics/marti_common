@@ -26,9 +26,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_ROUTE_POINT_INLINE_H_
-#define SWRI_ROUTE_UTIL_ROUTE_POINT_INLINE_H_
+#ifndef SWRI_ROUTE_UTIL__ROUTE_POINT_INLINE_H_
+#define SWRI_ROUTE_UTIL__ROUTE_POINT_INLINE_H_
 
+#include <string>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 namespace swri_route_util
@@ -163,5 +164,5 @@ void RoutePoint::setStopPointDelay(double delay)
   stop_point_delay_ = delay;
 }
 
-} // namespace swri_route_util
-#endif  // SWRI_ROUTE_UTIL_ROUTE_POINT_INLINE_H_
+}  // namespace swri_route_util
+#endif  // SWRI_ROUTE_UTIL__ROUTE_POINT_INLINE_H_

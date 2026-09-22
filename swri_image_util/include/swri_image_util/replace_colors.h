@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_REPLACE_COLORS_H_
-#define IMAGE_UTIL_REPLACE_COLORS_H_
+#ifndef SWRI_IMAGE_UTIL__REPLACE_COLORS_H_
+#define SWRI_IMAGE_UTIL__REPLACE_COLORS_H_
 
 #include <opencv2/core/core.hpp>
 
@@ -42,6 +42,6 @@ void replaceColors(
   const cv::Mat & original_image,
   const cv::Mat & lut,
   cv::Mat & modified_image);
-}
+}  // namespace swri_image_util
 
-#endif // IMAGE_UTIL_REPLACE_COLORS_H_
+#endif  // SWRI_IMAGE_UTIL__REPLACE_COLORS_H_

@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_IMAGE_WARP_UTIL_H_
-#define IMAGE_UTIL_IMAGE_WARP_UTIL_H_
+#ifndef SWRI_IMAGE_UTIL__IMAGE_WARP_UTIL_H_
+#define SWRI_IMAGE_UTIL__IMAGE_WARP_UTIL_H_
 
 #include <vector>
 
@@ -38,7 +38,7 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/stitching/detail/warpers.hpp>
 
-#include <swri_image_util/image_matching.h>
+#include "swri_image_util/image_matching.h"
 
 #include <rclcpp/logger.hpp>
 
@@ -318,6 +318,6 @@ private:
    */
   void ComputeStats();
 };
-}
+}  // namespace swri_image_util
 
-#endif  // IMAGE_UTIL_IMAGE_WARP_UTIL_H_
+#endif  // SWRI_IMAGE_UTIL__IMAGE_WARP_UTIL_H_

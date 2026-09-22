@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_FRAMES_H_
-#define TRANSFORM_UTIL_FRAMES_H_
+#ifndef SWRI_TRANSFORM_UTIL__FRAMES_H_
+#define SWRI_TRANSFORM_UTIL__FRAMES_H_
 
 #include <string>
 
@@ -37,7 +37,7 @@ namespace swri_transform_util
 /**
    * Special frame id for data defined in the WGS84 lat/lon coordinate system.
    */
-static const std::string _wgs84_frame = "wgs84";
+static const std::string _wgs84_frame = "wgs84";  // NOLINT(runtime/string)
 
 /**
    * Special frame id for data defined in the UTM coordinate system.
@@ -45,19 +45,19 @@ static const std::string _wgs84_frame = "wgs84";
    * The zone is assumed to be the same as the LocalXY origin of the system.
    * Because of this zone transitions are not supported.
    */
-static const std::string _utm_frame = "utm";
+static const std::string _utm_frame = "utm";  // NOLINT(runtime/string)
 
 /**
    * Special frame id for data defined a LocalXY coordinate system.
    *
    * Dependent on the LocalXY origin of the system.
    */
-static const std::string _local_xy_frame = "local_xy";
+static const std::string _local_xy_frame = "local_xy";  // NOLINT(runtime/string)
 
 /**
    * Special frame id used internally to denote frames that are part of the ROS TF tree
    */
-static const std::string _tf_frame = "tf";
-}
+static const std::string _tf_frame = "tf";  // NOLINT(runtime/string)
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_FRAMES_H_
+#endif  // SWRI_TRANSFORM_UTIL__FRAMES_H_

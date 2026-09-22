@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_TRIG_UTIL_H_
-#define MATH_UTIL_TRIG_UTIL_H_
+#ifndef SWRI_MATH_UTIL__TRIG_UTIL_H_
+#define SWRI_MATH_UTIL__TRIG_UTIL_H_
 
 namespace swri_math_util
 {
@@ -60,6 +60,6 @@ double ToRadians(double degrees);
    * @return The angle in degrees.
    */
 double ToDegrees(double radians);
-}
+}  // namespace swri_math_util
 
-#endif  // MATH_UTIL_TRIG_UTIL_H_
+#endif  // SWRI_MATH_UTIL__TRIG_UTIL_H_

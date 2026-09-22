@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_geometry_util/cubic_spline.h>
+#include "swri_geometry_util/cubic_spline.h"
 
 #include <Eigen/Dense>
 
@@ -171,4 +171,4 @@ bool CubicSplineInterpolation(
 
   return result;
 }
-}
+}  // namespace swri_geometry_util

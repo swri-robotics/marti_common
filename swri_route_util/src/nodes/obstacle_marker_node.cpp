@@ -36,7 +36,7 @@
 #include <std_msgs/msg/color_rgba.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
-#include <swri_route_util/visualization.h>
+#include "swri_route_util/visualization.h"
 
 namespace swri_route_util
 {

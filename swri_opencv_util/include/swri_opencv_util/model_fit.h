@@ -27,17 +27,17 @@
 //
 // *****************************************************************************
 
-#ifndef OPENCV_UTIL_MODEL_FIT_H_
-#define OPENCV_UTIL_MODEL_FIT_H_
+#ifndef SWRI_OPENCV_UTIL__MODEL_FIT_H_
+#define SWRI_OPENCV_UTIL__MODEL_FIT_H_
 
 #include <vector>
 
 #include <opencv2/core/core.hpp>
 
-#include <swri_math_util/random.h>
-#include <swri_math_util/ransac.h>
+#include "swri_math_util/random.h"
+#include "swri_math_util/ransac.h"
 
-#include <swri_opencv_util/models.h>
+#include "swri_opencv_util/models.h"
 
 namespace swri_opencv_util
 {
@@ -215,6 +215,6 @@ CrossModel3d FindCross3d(
   int32_t min_iterations = 1,
   int32_t max_iterations = 1000,
   swri_math_util::RandomGeneratorPtr rng = swri_math_util::RandomGeneratorPtr());
-}
+}  // namespace swri_opencv_util
 
-#endif  // OPENCV_UTIL_MODEL_FIT_H_
+#endif  // SWRI_OPENCV_UTIL__MODEL_FIT_H_

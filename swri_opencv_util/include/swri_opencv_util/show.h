@@ -27,9 +27,10 @@
 //
 // *****************************************************************************
 
-#ifndef OPENCV_UTIL_SHOW_H_
-#define OPENCV_UTIL_SHOW_H_
+#ifndef SWRI_OPENCV_UTIL__SHOW_H_
+#define SWRI_OPENCV_UTIL__SHOW_H_
 
+#include <string>
 #include <opencv2/core/core.hpp>
 
 namespace swri_opencv_util
@@ -42,6 +43,6 @@ void ShowScaled(
   const cv::Mat & mask = cv::Mat(),
   double a = -1.0,     // assume auto-scaling
   double b = 0.0);
-}
+}  // namespace swri_opencv_util
 
-#endif  // OPENCV_UTIL_SHOW_H_
+#endif  // SWRI_OPENCV_UTIL__SHOW_H_

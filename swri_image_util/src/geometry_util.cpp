@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_image_util/geometry_util.h>
+#include "swri_image_util/geometry_util.h"
 
 #include <cmath>
 #include <limits>
@@ -35,11 +35,11 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <Eigen/Dense>
-#include <Eigen/SVD>
+#include "Eigen/Dense"
+#include "Eigen/SVD"
 
-#include <swri_geometry_util/intersection.h>
-#include <swri_math_util/constants.h>
+#include "swri_geometry_util/intersection.h"
+#include "swri_math_util/constants.h"
 
 namespace swri_image_util
 {
@@ -256,4 +256,4 @@ std::vector<tf2::Vector3> GetEllipsePoints(
 
   return perimeter;
 }
-}
+}  // namespace swri_image_util

@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_TF2_UTIL_H_
-#define TRANSFORM_UTIL_TF2_UTIL_H_
+#ifndef SWRI_TRANSFORM_UTIL__TF2_UTIL_H_
+#define SWRI_TRANSFORM_UTIL__TF2_UTIL_H_
 
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
@@ -47,7 +47,7 @@ void quaternionTFToMsg(const Quaternion & bt, geometry_msgs::msg::Quaternion & m
 
 void quaternionMsgToTF(const geometry_msgs::msg::Quaternion & msg, Quaternion & bt);
 
-}
+}  // namespace tf2
 
 
-#endif  // TRANSFORM_UTIL_TF2_UTIL_H_
+#endif  // SWRI_TRANSFORM_UTIL__TF2_UTIL_H_

@@ -27,10 +27,10 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/wgs84_transformer.h>
+#include "swri_transform_util/wgs84_transformer.h"
 
-#include <swri_math_util/trig_util.h>
-#include <swri_transform_util/frames.h>
+#include "swri_math_util/trig_util.h"
+#include "swri_transform_util/frames.h"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 namespace swri_transform_util
@@ -50,7 +50,7 @@ bool GeometryEquals(
          lhs.child_frame_id == rhs.child_frame_id &&
          lhs.transform == rhs.transform;
 }
-}
+}  // namespace
 
 Wgs84Transformer::Wgs84Transformer(LocalXyWgs84UtilPtr local_xy_util)
 {
@@ -237,4 +237,4 @@ TransformImplPtr Wgs84ToTfTransform::Inverse() const
     local_xy_util_);
   return inverse;
 }
-}
+}  // namespace swri_transform_util

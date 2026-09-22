@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <swri_math_util/trig_util.h>
+#include "swri_math_util/trig_util.h"
 
-#include <swri_math_util/constants.h>
+#include "swri_math_util/constants.h"
 
 namespace swri_math_util
 {
@@ -56,4 +56,4 @@ double ToDegrees(double radians)
 {
   return radians * 180.0 / _pi;
 }
-}
+}  // namespace swri_math_util

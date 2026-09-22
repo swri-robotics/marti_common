@@ -41,8 +41,8 @@
 #include <tf2_ros/buffer.hpp>
 #include <tf2_ros/transform_listener.hpp>
 
-#include <swri_math_util/constants.h>
-#include <swri_transform_util/local_xy_util.h>
+#include "swri_math_util/constants.h"
+#include "swri_transform_util/local_xy_util.h"
 
 /**
  * @file

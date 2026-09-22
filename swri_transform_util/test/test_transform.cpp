@@ -29,13 +29,13 @@
 
 #include <memory>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include <geometry_msgs/msg/transform_stamped.hpp>
 
-#include <swri_transform_util/local_xy_util.h>
-#include <swri_transform_util/transform.h>
-#include <swri_transform_util/wgs84_transformer.h>
+#include "swri_transform_util/local_xy_util.h"
+#include "swri_transform_util/transform.h"
+#include "swri_transform_util/wgs84_transformer.h"
 
 namespace
 {
@@ -51,7 +51,7 @@ geometry_msgs::msg::TransformStamped MakeTf(
   tf.transform.rotation.w = 1.0;
   return tf;
 }
-}
+}  // namespace
 
 TEST(TransformEqualityTests, IdentityTransformsAreEquivalent)
 {

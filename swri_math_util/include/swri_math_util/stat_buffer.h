@@ -27,13 +27,13 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_STAT_BUFFER_H_
-#define MATH_UTIL_STAT_BUFFER_H_
+#ifndef SWRI_MATH_UTIL__STAT_BUFFER_H_
+#define SWRI_MATH_UTIL__STAT_BUFFER_H_
 
 #include <cmath>
 #include <algorithm>
 
-#include <swri_math_util/generic_ring_buffer.h>
+#include "swri_math_util/generic_ring_buffer.h"
 
 namespace swri_math_util
 {
@@ -265,7 +265,7 @@ private:
     return true;
   }
 };
-}
+}  // namespace swri_math_util
 
 
-#endif  // MATH_UTIL_STAT_BUFFER_H_
+#endif  // SWRI_MATH_UTIL__STAT_BUFFER_H_

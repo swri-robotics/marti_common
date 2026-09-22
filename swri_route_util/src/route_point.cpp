@@ -26,7 +26,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#include <swri_route_util/route_point.h>
+#include "swri_route_util/route_point.h"
 
 namespace swri_route_util
 {

@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef SERIAL_UTIL_SERIAL_PORT_H_
-#define SERIAL_UTIL_SERIAL_PORT_H_
+#ifndef SWRI_SERIAL_UTIL__SERIAL_PORT_H_
+#define SWRI_SERIAL_UTIL__SERIAL_PORT_H_
 
 #include <cstdint>
 
@@ -163,6 +163,6 @@ private:
    */
   int32_t ParseBaudRate(int32_t baud);
 };
-}
+}  // namespace swri_serial_util
 
-#endif  // SERIAL_UTIL_SERIAL_PORT_H_
+#endif  // SWRI_SERIAL_UTIL__SERIAL_PORT_H_

@@ -27,14 +27,14 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
-#define TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
+#ifndef SWRI_TRANSFORM_UTIL__LOCAL_XY_UTIL_H_
+#define SWRI_TRANSFORM_UTIL__LOCAL_XY_UTIL_H_
 
 #include <memory>
 #include <string>
 
 #include <rclcpp/rclcpp.hpp>
-#include <swri_transform_util/transform_util.h>
+#include "swri_transform_util/transform_util.h"
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
 // Forward declaration to keep GeographicLib out of this package's exported
@@ -287,6 +287,6 @@ typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
    * @returns True if the two origins convert coordinates identically.
    */
 bool AreEquivalent(const LocalXyWgs84UtilPtr & lhs, const LocalXyWgs84UtilPtr & rhs);
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_
+#endif  // SWRI_TRANSFORM_UTIL__LOCAL_XY_UTIL_H_

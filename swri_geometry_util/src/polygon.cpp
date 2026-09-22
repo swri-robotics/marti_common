@@ -27,11 +27,11 @@
 //
 // *****************************************************************************
 
-#include <swri_geometry_util/polygon.h>
+#include "swri_geometry_util/polygon.h"
 
 namespace swri_geometry_util
 {
-//Constructor - create and undefined polygon
+// Constructor - create and undefined polygon
 Polygon::Polygon()
 {
   this->_nvert = 0;
@@ -39,7 +39,7 @@ Polygon::Polygon()
   this->_shape.y = NULL;
 }
 
-//Constructor - create a duplicate polygon
+// Constructor - create a duplicate polygon
 Polygon::Polygon(const Polygon & other)
 {
   this->_shape.x = new double[other._nvert];
@@ -52,10 +52,10 @@ Polygon::Polygon(const Polygon & other)
   }
 }
 
-//Operate overload for assign a polygon
+// Operate overload for assign a polygon
 Polygon & Polygon::operator=(const Polygon & other)
 {
-  if (this != &other) { // protect against invalid self-assignment
+  if (this != &other) {  // protect against invalid self-assignment
     if (this->_nvert > 0) {
       delete[] this->_shape.x;
       this->_shape.x = NULL;
@@ -74,11 +74,10 @@ Polygon & Polygon::operator=(const Polygon & other)
   return *this;
 }
 
-//Constructor - create a polygon using a list of vertices
-//Assumptions - vertices are in CW order
+// Constructor - create a polygon using a list of vertices
+// Assumptions - vertices are in CW order
 Polygon::Polygon(double Xs[], double Ys[], int numVertx)
 {
-
   this->_shape.x = new double[numVertx];
   this->_shape.y = new double[numVertx];
   this->_nvert = numVertx;
@@ -89,8 +88,8 @@ Polygon::Polygon(double Xs[], double Ys[], int numVertx)
   }
 }
 
-//Determine if a given vertex lies within this polygon
-//Returns:  True if "vertex" is within this polygon, False otherwise
+// Determine if a given vertex lies within this polygon
+// Returns:  True if "vertex" is within this polygon, False otherwise
 bool Polygon::VertexInPolygon(Vertex vertex)
 {
   int i, j, c = 0;
@@ -105,19 +104,19 @@ bool Polygon::VertexInPolygon(Vertex vertex)
   return c;
 }
 
-//Determine if a given line segment intersects with or lies within this polygon
-//Returns:  True if line segment defined by "start" and "end" intersects or
+// Determine if a given line segment intersects with or lies within this polygon
+// Returns:  True if line segment defined by "start" and "end" intersects or
 //          lies within this polygon, False otherwise
 bool Polygon::LineOverlapsPolygon(Vertex start, Vertex end)
 {
   Vertex pStart, pEnd, intersect;
 
-  //check if either end point is within the polygon
+  // check if either end point is within the polygon
   if (VertexInPolygon(start) || VertexInPolygon(end)) {
     return true;
   }
 
-  //check for line intersection with the polygon
+  // check for line intersection with the polygon
   for (int i = 0; i < _nvert; i++) {
     pStart.x = _shape.x[i];
     pStart.y = _shape.y[i];
@@ -125,7 +124,7 @@ bool Polygon::LineOverlapsPolygon(Vertex start, Vertex end)
     pEnd.y = _shape.y[(i + 1) % _nvert];
 
     intersect = FindLineIntersectLine(pStart, pEnd, start, end);
-    if (intersect.x != -999.0 && intersect.y != -999.0) {//intersection found
+    if (intersect.x != -999.0 && intersect.y != -999.0) {  // intersection found
       return true;
     }
   }
@@ -133,9 +132,9 @@ bool Polygon::LineOverlapsPolygon(Vertex start, Vertex end)
   return false;
 }
 
-//Private Function
-//Determines if two line segments intersect
-//Returns:  True if line segments intersect, False otherwise
+// Private Function
+// Determines if two line segments intersect
+// Returns:  True if line segments intersect, False otherwise
 Vertex Polygon::FindLineIntersectLine(
   Vertex start1, Vertex end1,
   Vertex start2, Vertex end2)
@@ -147,7 +146,7 @@ Vertex Polygon::FindLineIntersectLine(
   double denom = ((end1.x - start1.x) * (end2.y - start2.y)) -
     ((end1.y - start1.y) * (end2.x - start2.x));
 
-  //no intersection (lines are parallel)
+  // no intersection (lines are parallel)
   if (denom == 0) {
     return result;
   }
@@ -162,7 +161,7 @@ Vertex Polygon::FindLineIntersectLine(
 
   double s = numer2 / denom;
 
-  //no intersection
+  // no intersection
   if ((r < 0 || r > 1) || (s < 0 || s > 1)) {
     return result;
   }
@@ -174,25 +173,25 @@ Vertex Polygon::FindLineIntersectLine(
   return result;
 }
 
-//returns all x vertices for this polygon
+// returns all x vertices for this polygon
 double * Polygon::GetXVerticies()
 {
   return this->_shape.x;
 }
 
-//returns all y vertices for this polygon
+// returns all y vertices for this polygon
 double * Polygon::GetYVerticies()
 {
   return this->_shape.y;
 }
 
-//returns a specific x vertex
+// returns a specific x vertex
 double Polygon::GetXVerticie(int num)
 {
   return this->_shape.x[num];
 }
 
-//returns a specific y vertex
+// returns a specific y vertex
 double Polygon::GetYVerticie(int num)
 {
   return this->_shape.y[num];
@@ -203,7 +202,7 @@ int Polygon::GetNumVerticies()
   return this->_nvert;
 }
 
-//Destructor
+// Destructor
 Polygon::~Polygon()
 {
   if (_shape.x) {

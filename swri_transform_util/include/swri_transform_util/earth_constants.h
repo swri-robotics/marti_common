@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_EARTH_CONSTANTS_H_
-#define TRANSFORM_UTIL_EARTH_CONSTANTS_H_
+#ifndef SWRI_TRANSFORM_UTIL__EARTH_CONSTANTS_H_
+#define SWRI_TRANSFORM_UTIL__EARTH_CONSTANTS_H_
 
 namespace swri_transform_util
 {
@@ -66,6 +66,6 @@ static const double _earth_flattening = 3.35281066475e-3;
    * Earth rotation rate in radians per second.
    */
 static const double _earth_rotation_rate = 7.292115e-5;
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_EARTH_CONSTANTS_H_
+#endif  // SWRI_TRANSFORM_UTIL__EARTH_CONSTANTS_H_

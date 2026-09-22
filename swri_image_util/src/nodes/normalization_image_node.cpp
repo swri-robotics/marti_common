@@ -35,7 +35,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #ifdef USE_CVBRIDGE_H_FILES
-#include <cv_bridge/cv_bridge.h>
+#include "cv_bridge/cv_bridge.h"
 #else
 #include <cv_bridge/cv_bridge.hpp>
 #endif
@@ -44,7 +44,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 
-#include <swri_image_util/image_normalization.h>
+#include "swri_image_util/image_normalization.h"
 #include <image_transport/image_transport.hpp>
 
 namespace swri_image_util
@@ -167,7 +167,7 @@ private:
 
   std::vector<cv::Mat> image_array_;
 };
-}
+}  // namespace swri_image_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::NormalizationImageNode)

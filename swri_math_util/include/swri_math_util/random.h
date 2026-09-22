@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_RANDOM_H_
-#define MATH_UTIL_RANDOM_H_
+#ifndef SWRI_MATH_UTIL__RANDOM_H_
+#define SWRI_MATH_UTIL__RANDOM_H_
 
 #include <memory>
 #include <mutex>
@@ -110,6 +110,6 @@ void GetUniformRandomSample(
     }
   }
 }
-}
+}  // namespace swri_math_util
 
-#endif  // MATH_UTIL_RANDOM_H_
+#endif  // SWRI_MATH_UTIL__RANDOM_H_

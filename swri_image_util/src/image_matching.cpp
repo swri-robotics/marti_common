@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_image_util/image_matching.h>
+#include "swri_image_util/image_matching.h"
 
 #include <algorithm>
 #include <vector>
@@ -117,4 +117,4 @@ void ConvertMatches(
     kp2_out.at<cv::Vec2f>(0, i) = kp2[matches[i].trainIdx].pt;
   }
 }
-}
+}  // namespace swri_image_util

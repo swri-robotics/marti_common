@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_GEOMETRY_UTIL_POLYGON_H_
-#define SWRI_GEOMETRY_UTIL_POLYGON_H_
+#ifndef SWRI_GEOMETRY_UTIL__POLYGON_H_
+#define SWRI_GEOMETRY_UTIL__POLYGON_H_
 
 #include <sstream>
 
@@ -38,17 +38,17 @@
 
 namespace swri_geometry_util
 {
-//structure for defining the vertices of a polygon
+// structure for defining the vertices of a polygon
 typedef struct
 {
-  //vertices
+  // vertices
   double * x;
   double * y;
 } PolygonD;
 
 typedef struct
 {
-  //vertex
+  // vertex
   double x;
   double y;
 } Vertex;
@@ -83,8 +83,8 @@ private:
     Vertex start1, Vertex end1, Vertex start2,
     Vertex end2);
 
-  PolygonD _shape;    //list of polygon vertices
-  int _nvert;     //number of vertices in this polygon
+  PolygonD _shape;    // list of polygon vertices
+  int _nvert;     // number of vertices in this polygon
 };
 }  // end namespace swri_geometry_util
-#endif /* POLYGON_H_ */
+#endif  // SWRI_GEOMETRY_UTIL__POLYGON_H_

@@ -27,10 +27,10 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/utm_transformer.h>
+#include "swri_transform_util/utm_transformer.h"
 
-#include <swri_math_util/trig_util.h>
-#include <swri_transform_util/frames.h>
+#include "swri_math_util/trig_util.h"
+#include "swri_transform_util/frames.h"
 
 namespace swri_transform_util
 {
@@ -320,4 +320,4 @@ TransformImplPtr Wgs84ToUtmTransform::Inverse() const
   inverse->SetStamp(stamp_);
   return inverse;
 }
-}
+}  // namespace swri_transform_util

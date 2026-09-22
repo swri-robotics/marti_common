@@ -30,13 +30,13 @@
 // The functions here display images with HighGUI, so they are built into
 // swri_image_util_display rather than swri_image_util.  See CMakeLists.txt.
 
-#include <swri_image_util/draw_util.h>
+#include "swri_image_util/draw_util.h"
 
 #include <string>
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <swri_opencv_util/show.h>
+#include "swri_opencv_util/show.h"
 
 namespace swri_image_util
 {
@@ -111,4 +111,4 @@ void DrawMatches(
 
   swri_opencv_util::ShowScaled(title, draw_image);
 }
-}
+}  // namespace swri_image_util

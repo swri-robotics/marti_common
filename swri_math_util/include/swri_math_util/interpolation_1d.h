@@ -26,10 +26,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef MATH_UTIL_INTERPOLATION_1D_H_
-#define MATH_UTIL_INTERPOLATION_1D_H_
+#ifndef SWRI_MATH_UTIL__INTERPOLATION_1D_H_
+#define SWRI_MATH_UTIL__INTERPOLATION_1D_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <rclcpp/rclcpp.hpp>
@@ -45,7 +46,7 @@ public:
     LINEAR
   };
 
-  Interpolation1D(rclcpp::Node & node);
+  explicit Interpolation1D(rclcpp::Node & node);
 
   bool appendPoint(double x, double y);
 
@@ -138,4 +139,4 @@ double Interpolation1D::eval(double x) const
   }
 }
 }  // namespace swri_math_util
-#endif  // MATH_UTIL_INTERPOLATION_1D_H_
+#endif  // SWRI_MATH_UTIL__INTERPOLATION_1D_H_

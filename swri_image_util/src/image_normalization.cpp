@@ -33,7 +33,7 @@
  *      Author: kkozak
  */
 
-#include <swri_image_util/image_normalization.h>
+#include "swri_image_util/image_normalization.h"
 
 namespace swri_image_util
 {
@@ -238,7 +238,7 @@ void ContrastStretch(
       double min_x2_y2 = min_vals.at<float>(cell_y2, cell_x2);
       double max_x2_y2 = max_vals.at<float>(cell_y2, cell_x2);
 
-      //4-point interpolation
+      // 4-point interpolation
       double xM1 = max_x1_y1 * px1 + max_x2_y1 * px2;
       double xM2 = max_x1_y2 * px1 + max_x2_y2 * px2;
       double M = xM1 * py1 + xM2 * py2;
@@ -348,13 +348,13 @@ cv::Mat scale_2_8bit(const cv::Mat & image)
   if (image.type() == CV_8UC1) {
     return image;
   }
-  cv::Mat Image8Bit(image.rows, image.cols, CV_8U), Image8BitColor;             //Define an 8bit image
-  //Convert the image to 32bit float
+  cv::Mat Image8Bit(image.rows, image.cols, CV_8U), Image8BitColor;  // Define an 8bit image
+  // Convert the image to 32bit float
   cv::Mat ImageFloat;
   image.convertTo(ImageFloat, CV_32F, 1, 0);
-  double maxVal;             //Define the max value of image
-  cv::minMaxLoc(ImageFloat.reshape(1, 1), NULL, &maxVal);           //Extract the max value of image
-  //ReScale the image to 0 to 255
+  double maxVal;             // Define the max value of image
+  cv::minMaxLoc(ImageFloat.reshape(1, 1), NULL, &maxVal);  // Extract the max value of image
+  // ReScale the image to 0 to 255
   ImageFloat = ImageFloat * ((1 << 8) / pow(2, ceil(log(maxVal) / log(2))));
   ImageFloat.convertTo(Image8Bit, CV_8U, 1, 0);
   return Image8Bit;
@@ -369,4 +369,4 @@ cv::Mat scale_2_8bit_color(const cv::Mat & image)
   cvtColor(Image8Bit, Image8BitColor, cv::COLOR_GRAY2BGR);
   return Image8BitColor;
 }
-}
+}  // namespace swri_image_util

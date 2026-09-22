@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef CONSOLE_UTIL_PROGRESS_BAR_H_
-#define CONSOLE_UTIL_PROGRESS_BAR_H_
+#ifndef SWRI_CONSOLE_UTIL__PROGRESS_BAR_H_
+#define SWRI_CONSOLE_UTIL__PROGRESS_BAR_H_
 
 #include <termios.h>
 #include <string>
@@ -68,6 +68,6 @@ private:
   fd_set stdin_fdset_;
   int maxfd_;
 };
-}
+}  // namespace swri_console_util
 
-#endif  // CONSOLE_UTIL_PROGRESS_BAR_H_
+#endif  // SWRI_CONSOLE_UTIL__PROGRESS_BAR_H_

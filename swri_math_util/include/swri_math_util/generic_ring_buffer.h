@@ -27,8 +27,9 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_GENERIC_RING_BUFFER_H_
-#define MATH_UTIL_GENERIC_RING_BUFFER_H_
+#ifndef SWRI_MATH_UTIL__GENERIC_RING_BUFFER_H_
+#define SWRI_MATH_UTIL__GENERIC_RING_BUFFER_H_
+
 #ifndef NULL
 #define NULL 0
 #endif
@@ -273,6 +274,6 @@ private:
     }
   }
 };
-}
+}  // namespace swri_math_util
 
-#endif  // MATH_UTIL_GENERIC_RING_BUFFER_H_
+#endif  // SWRI_MATH_UTIL__GENERIC_RING_BUFFER_H_

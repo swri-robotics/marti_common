@@ -27,9 +27,10 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_TRANSFORM_H_
-#define TRANSFORM_UTIL_TRANSFORM_H_
+#ifndef SWRI_TRANSFORM_UTIL__TRANSFORM_H_
+#define SWRI_TRANSFORM_UTIL__TRANSFORM_H_
 
+#include <memory>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
@@ -383,6 +384,6 @@ public:
 protected:
   tf2::Transform transform_;
 };
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_TRANSFORM_H_
+#endif  // SWRI_TRANSFORM_UTIL__TRANSFORM_H_

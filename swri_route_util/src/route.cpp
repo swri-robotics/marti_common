@@ -26,8 +26,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#include <swri_route_util/route.h>
-#include <swri_route_util/route_point.h>
+#include "swri_route_util/route.h"
+#include "swri_route_util/route_point.h"
 
 namespace mnm = marti_nav_msgs;
 

@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_DBW_INTERFACE_DEVICE_STATES_H_
-#define SWRI_DBW_INTERFACE_DEVICE_STATES_H_
+#ifndef SWRI_DBW_INTERFACE__DEVICE_STATES_H_
+#define SWRI_DBW_INTERFACE__DEVICE_STATES_H_
 
 #include <string>
 
@@ -40,26 +40,26 @@ namespace swri_dbw_interface
 // swri_dbw_interface.
 
 // These values are valid command and feedback states.
-static const std::string TRANSMISSION_PARK = "park";
-static const std::string TRANSMISSION_DRIVE = "drive";
-static const std::string TRANSMISSION_DRIVE_LOW = "drive_low";
-static const std::string TRANSMISSION_REVERSE = "reverse";
-static const std::string TRANSMISSION_NEUTRAL = "neutral";
+static const std::string TRANSMISSION_PARK = "park";  // NOLINT(runtime/string)
+static const std::string TRANSMISSION_DRIVE = "drive";  // NOLINT(runtime/string)
+static const std::string TRANSMISSION_DRIVE_LOW = "drive_low";  // NOLINT(runtime/string)
+static const std::string TRANSMISSION_REVERSE = "reverse";  // NOLINT(runtime/string)
+static const std::string TRANSMISSION_NEUTRAL = "neutral";  // NOLINT(runtime/string)
 
 // The following states are only valid for feedback states.
-static const std::string TRANSMISSION_SHIFTING = "shifting";
-static const std::string TRANSMISSION_UNKNOWN = "unknown";
+static const std::string TRANSMISSION_SHIFTING = "shifting";  // NOLINT(runtime/string)
+static const std::string TRANSMISSION_UNKNOWN = "unknown";  // NOLINT(runtime/string)
 
 ///////////////////////////////////////////////////////////////////////////////
 // This following define common states used for turn signal devices in the
 // swri_dbw_interface.
 
 // These values are valid command and feedback states.
-static const std::string TURN_SIGNAL_NONE = "none";
-static const std::string TURN_SIGNAL_LEFT = "left";
-static const std::string TURN_SIGNAL_RIGHT = "right";
-static const std::string TURN_SIGNAL_HAZARD = "hazard";
+static const std::string TURN_SIGNAL_NONE = "none";  // NOLINT(runtime/string)
+static const std::string TURN_SIGNAL_LEFT = "left";  // NOLINT(runtime/string)
+static const std::string TURN_SIGNAL_RIGHT = "right";  // NOLINT(runtime/string)
+static const std::string TURN_SIGNAL_HAZARD = "hazard";  // NOLINT(runtime/string)
 
 }  // namespace swri_dbw_interface
 
-#endif  // SWRI_DBW_INTERFACE_DEVICE_STATES_H_
+#endif  // SWRI_DBW_INTERFACE__DEVICE_STATES_H_

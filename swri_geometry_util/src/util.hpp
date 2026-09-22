@@ -27,11 +27,12 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_GEOMETRY_UTIL_UTIL_HPP_
-#define SWRI_GEOMETRY_UTIL_UTIL_HPP_
+#ifndef UTIL_HPP_
+#define UTIL_HPP_
 
-#define HAVE_INT64_T_64  #Prevents conflict with OpenCV typedef of int64
-#include <geos_c.h>
+#include <vector>
+#define HAVE_INT64_T_64  // Prevents conflict with OpenCV typedef of int64
+#include <geos_c.h>  // NOLINT(build/include_order)
 #undef HAVE_INT64_T_64
 
 // This header file contains definitions that should not be used by downstream
@@ -47,4 +48,4 @@ GEOSGeometry * VectorToPolygon(
   GEOSContextHandle_t & ctx);
 }
 
-#endif
+#endif  // UTIL_HPP_

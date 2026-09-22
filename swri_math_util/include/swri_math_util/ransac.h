@@ -27,15 +27,15 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_RANSAC_H_
-#define MATH_UTIL_RANSAC_H_
+#ifndef SWRI_MATH_UTIL__RANSAC_H_
+#define SWRI_MATH_UTIL__RANSAC_H_
 
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
 
-#include <swri_math_util/random.h>
+#include "swri_math_util/random.h"
 
 namespace swri_math_util
 {
@@ -188,6 +188,6 @@ public:
 private:
   RandomGeneratorPtr rng_;
 };
-}
+}  // namespace swri_math_util
 
-#endif  // MATH_UTIL_RANSAC_H_
+#endif  // SWRI_MATH_UTIL__RANSAC_H_

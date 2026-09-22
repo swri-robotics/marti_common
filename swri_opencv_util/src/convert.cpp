@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_opencv_util/convert.h>
+#include "swri_opencv_util/convert.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -174,4 +174,4 @@ void SetAlpha(cv::Mat & mat, uint8_t alpha)
     }
   }
 }
-}
+}  // namespace swri_opencv_util

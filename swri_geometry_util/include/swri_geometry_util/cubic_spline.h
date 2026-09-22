@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_GEOMETRY_UTIL_CUBIC_SPLINE_H_
-#define SWRI_GEOMETRY_UTIL_CUBIC_SPLINE_H_
+#ifndef SWRI_GEOMETRY_UTIL__CUBIC_SPLINE_H_
+#define SWRI_GEOMETRY_UTIL__CUBIC_SPLINE_H_
 
 #include <vector>
 #include <opencv2/core/core.hpp>
@@ -46,6 +46,6 @@ bool CubicSplineInterpolation(
   const std::vector<tf2::Vector3> & points,
   double delta,
   std::vector<std::vector<tf2::Vector3>> & splines);
-}
+}  // namespace swri_geometry_util
 
-#endif
+#endif  // SWRI_GEOMETRY_UTIL__CUBIC_SPLINE_H_

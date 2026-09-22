@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_image_util/rolling_normalization.h>
+#include "swri_image_util/rolling_normalization.h"
 
 namespace swri_image_util
 {
@@ -35,12 +35,10 @@ RollingNormalization::RollingNormalization(int32_t size)
 : max_size_(size),
   samples_(0)
 {
-
 }
 
 RollingNormalization::~RollingNormalization()
 {
-
 }
 
 cv::Mat RollingNormalization::AddSample(const cv::Mat & image)
@@ -90,4 +88,4 @@ cv::Mat RollingNormalization::AddSample(const cv::Mat & image)
     5);
   return norm_image_;
 }
-}
+}  // namespace swri_image_util

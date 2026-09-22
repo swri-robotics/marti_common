@@ -27,10 +27,10 @@
 //
 // *****************************************************************************
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <swri_math_util/constants.h>
-#include <swri_math_util/trig_util.h>
+#include "swri_math_util/constants.h"
+#include "swri_math_util/trig_util.h"
 
 TEST(TrigUtilTests, WrapRadians)
 {

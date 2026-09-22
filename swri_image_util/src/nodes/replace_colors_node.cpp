@@ -36,13 +36,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.hpp>
 #ifdef USE_CVBRIDGE_H_FILES
-#include <cv_bridge/cv_bridge.h>
+#include "cv_bridge/cv_bridge.h"
 #else
 #include <cv_bridge/cv_bridge.hpp>
 #endif
 #include <sensor_msgs/image_encodings.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <swri_image_util/replace_colors.h>
+#include "swri_image_util/replace_colors.h"
 
 namespace swri_image_util
 {
@@ -137,7 +137,8 @@ ReplaceColorsNode::ReplaceColorsNode(const rclcpp::NodeOptions & options)
   } else if (!colormap_specified) {
     RCLCPP_ERROR(
       this->get_logger(),
-      "Color transformation was not specified. Images will only be converted to their grayscale equivalents");
+      "Color transformation was not specified. "
+      "Images will only be converted to their grayscale equivalents");
   }
 
   // Set up the ROS interface
@@ -307,7 +308,7 @@ void ReplaceColorsNode::readUserLut(const std::vector<int64_t> & colors)
 
   color_lut_ = temp_lut;
 }
-}
+}  // namespace swri_image_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::ReplaceColorsNode)

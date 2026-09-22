@@ -27,13 +27,13 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_UTM_UTIL_H_
-#define TRANSFORM_UTIL_UTM_UTIL_H_
+#ifndef SWRI_TRANSFORM_UTIL__UTM_UTIL_H_
+#define SWRI_TRANSFORM_UTIL__UTM_UTIL_H_
+
+#include <proj.h>
 
 #include <cstdint>
 #include <mutex>
-
-#include <proj.h>
 
 namespace swri_transform_util
 {
@@ -182,6 +182,6 @@ private:
 
   const UtmData & utm_data_;
 };
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_UTM_UTIL_H_
+#endif  // SWRI_TRANSFORM_UTIL__UTM_UTIL_H_

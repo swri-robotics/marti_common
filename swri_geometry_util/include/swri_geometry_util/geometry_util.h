@@ -27,9 +27,10 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_GEOMETRY_UTIL_GEOMETRY_UTIL_H_
-#define SWRI_GEOMETRY_UTIL_GEOMETRY_UTIL_H_
+#ifndef SWRI_GEOMETRY_UTIL__GEOMETRY_UTIL_H_
+#define SWRI_GEOMETRY_UTIL__GEOMETRY_UTIL_H_
 
+#include <vector>
 #include <opencv2/core/core.hpp>
 #include <tf2/transform_datatypes.hpp>
 #include <tf2/LinearMath/Vector3.hpp>
@@ -124,6 +125,6 @@ bool ClosestPointToLines(
   const tf2::Vector3 & b1,
   const tf2::Vector3 & b2,
   tf2::Vector3 & point);
-}
+}  // namespace swri_geometry_util
 
-#endif  // GEOMETRY_UTIL_GEOMETRY_UTIL_H_
+#endif  // SWRI_GEOMETRY_UTIL__GEOMETRY_UTIL_H_

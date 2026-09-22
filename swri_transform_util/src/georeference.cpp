@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/georeference.h>
+#include "swri_transform_util/georeference.h"
 
 // C++ standard libraries
 #include <filesystem>
@@ -37,7 +37,7 @@
 
 // ROS libraries
 #include <rclcpp/logging.hpp>
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 namespace swri_transform_util
 {
@@ -306,4 +306,4 @@ void GeoReference::Print()
 
   RCLCPP_INFO(logger_, "georeference:             %8lf, %8lf, %8lf", 0.0, 0.0, 1.0);
 }
-}
+}  // namespace swri_transform_util

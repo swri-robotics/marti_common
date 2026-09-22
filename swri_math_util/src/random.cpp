@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_math_util/random.h>
+#include "swri_math_util/random.h"
 
 namespace swri_math_util
 {
@@ -45,4 +45,4 @@ void RandomGenerator::GetUniformRandomSample(
   std::unique_lock<std::mutex> lock(mutex_);
   swri_math_util::GetUniformRandomSample<std::mt19937>(rng_, min, max, count, sample);
 }
-}
+}  // namespace swri_math_util

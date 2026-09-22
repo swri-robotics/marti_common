@@ -27,17 +27,17 @@
 //
 // *****************************************************************************
 
-#include <gtest/gtest.h>
-
 #include <atomic>
 #include <memory>
 #include <thread>
 
+#include "gtest/gtest.h"
+
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/transform_datatypes.hpp>
 
-#include <swri_transform_util/transform_manager.h>
-#include <swri_transform_util/frames.h>
+#include "swri_transform_util/transform_manager.h"
+#include "swri_transform_util/frames.h"
 
 static std::shared_ptr<rclcpp::Node> _node;
 static std::shared_ptr<tf2_ros::TransformListener> _tf_listener;
@@ -576,7 +576,7 @@ int main(int argc, char ** argv)
   std::atomic<bool> tests_done(false);
   std::thread spinner = std::thread(
     [&tests_done, &executor]() {
-      while (not tests_done) {
+      while (!tests_done) {
         executor.spin_some();
       }
     });

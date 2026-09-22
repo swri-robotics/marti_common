@@ -26,11 +26,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_UTIL_H_
-#define SWRI_ROUTE_UTIL_UTIL_H_
+#ifndef SWRI_ROUTE_UTIL__UTIL_H_
+#define SWRI_ROUTE_UTIL__UTIL_H_
 
+#include <string>
+#include <vector>
 #include <marti_nav_msgs/msg/route_position.hpp>
-#include <swri_transform_util/transform.h>
+#include "swri_transform_util/transform.h"
 
 namespace swri_route_util
 {
@@ -148,4 +150,4 @@ bool extractSubroute(
   const marti_nav_msgs::msg::RoutePosition & start,
   const marti_nav_msgs::msg::RoutePosition & end);
 }  // namespace swri_route_util
-#endif  // SWRI_ROUTE_UTIL_UTIL_H_
+#endif  // SWRI_ROUTE_UTIL__UTIL_H_

@@ -29,7 +29,7 @@
 
 #include <algorithm>
 #ifdef USE_CVBRIDGE_H_FILES
-#include <cv_bridge/cv_bridge.h>
+#include "cv_bridge/cv_bridge.h"
 #else
 #include <cv_bridge/cv_bridge.hpp>
 #endif
@@ -115,7 +115,7 @@ private:
   bool use_input_size_;
   cv::Size output_size_;
 };
-}
+}  // namespace swri_image_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::WarpImageNode)

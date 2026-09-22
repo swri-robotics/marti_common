@@ -36,7 +36,7 @@
 #include <image_transport/image_transport.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #ifdef USE_CVBRIDGE_H_FILES
-#include <cv_bridge/cv_bridge.h>
+#include "cv_bridge/cv_bridge.h"
 #else
 #include <cv_bridge/cv_bridge.hpp>
 #endif
@@ -98,7 +98,7 @@ private:
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
 };
-}
+}  // namespace swri_image_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::CrosshairsNode)
