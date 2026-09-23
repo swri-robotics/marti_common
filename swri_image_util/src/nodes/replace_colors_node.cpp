@@ -59,7 +59,7 @@ namespace swri_image_util
   {
   public:
     explicit ReplaceColorsNode(const rclcpp::NodeOptions& options);
-  
+
   private:
     // Callback for the input image
     void imageCallback(const sensor_msgs::msg::Image::ConstSharedPtr& image_msg);
@@ -70,7 +70,7 @@ namespace swri_image_util
     // Helper function for getting color mapping from parameter server
     void readUserLut(const std::vector<int64_t>& colors);
 
-    // Lookup table defining color replacement strategy. The row indices 
+    // Lookup table defining color replacement strategy. The row indices
     // correspond to the grayscale values, and the values in the rows are RGB
     // values to replace the grayscale values with
     cv::Mat color_lut_;
@@ -109,7 +109,7 @@ namespace swri_image_util
     colormap_names_["pink"] = cv::COLORMAP_PINK;
     colormap_names_["hot"] = cv::COLORMAP_HOT;
     colormap_names_["parula"] = cv::COLORMAP_PARULA;
-    
+
     // Lookup table to replace colors with. By default will just convert the
     // grayscale values to their RGB equivalents. If this node is ever extended
     // to more than grayscale, this will have to be changed
@@ -256,7 +256,7 @@ namespace swri_image_util
     const int32_t lut_size = color_lut_.cols;
 
       // Frequently the input image may have some small subset of values,
-      // like 0-5. In this case, just mapping to a colormap will make the 
+      // like 0-5. In this case, just mapping to a colormap will make the
       // resulting image look like one color, because the first 6 colors from
       // the colormap will be used, which for most colormaps are almost the
       // same value. This will more intelligently remap this values, so that

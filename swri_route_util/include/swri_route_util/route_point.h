@@ -111,7 +111,7 @@ class RoutePoint
   // Get a list of all the properties defined for this route point,
   // including native properties.
   std::vector<std::string> getPropertyNames() const;
-  
+
   // Get the value of a property.  Returns an empty string if the
   // property does not exist.
   std::string getProperty(const std::string &name) const;
@@ -127,7 +127,7 @@ class RoutePoint
   // Delete a property.  If the property doesn't exist or is not
   // deletable (e.g. name, guid), this method does nothing.
   void deleteProperty(const std::string &name);
-  
+
  private:
   tf2::Vector3 position_;
   tf2::Quaternion orientation_;

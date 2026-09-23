@@ -162,7 +162,7 @@ namespace swri_image_util
         cvRound(points2.at<cv::Vec2f>(0, i)[0] * 16.0),
         cvRound(points2.at<cv::Vec2f>(0, i)[1] * 16.0));
       cv::Point2f dcenter2(
-        std::min(center2.x + draw_image1.cols * 16.0, (image_out.cols - 1) * 16.0), 
+        std::min(center2.x + draw_image1.cols * 16.0, (image_out.cols - 1) * 16.0),
         center2.y);
       circle(draw_image1, center1, 48, match_color, 1, cv::LINE_AA, 4);
       circle(draw_image2, center2, 48, match_color, 1, cv::LINE_AA, 4);

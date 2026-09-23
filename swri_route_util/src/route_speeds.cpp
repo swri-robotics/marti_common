@@ -391,7 +391,7 @@ void speedsForObstacles(
       }
       continue;
     }
-    
+
     // Use half of the vehicle width override as the car radius when smaller
     // This is used for tight routes that are known to be safe such as when going
     // though cones. It prevents objects close to the vehicle from causing the vehicle

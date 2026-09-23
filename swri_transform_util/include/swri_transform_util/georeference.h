@@ -101,4 +101,3 @@ namespace swri_transform_util
 }
 
 #endif  // TRANSFORM_UTIL_GEOREFERENCE_H_
-

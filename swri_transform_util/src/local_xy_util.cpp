@@ -245,7 +245,7 @@ namespace swri_transform_util
       sin_angle_ = std::sin(reference_angle_);
 
       RCUTILS_LOG_INFO("LocalXyWgs84Util initializing origin to lat: %f, lon: %f, alt: %f", latitude, longitude, altitude);
-      
+
       pose_sub_.reset();
       initialized_ = true;
     }

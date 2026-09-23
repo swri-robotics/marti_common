@@ -37,9 +37,9 @@ TEST(RandomTests, GetUniformRandomSample)
 
   std::vector<int32_t> sample;
   swri_math_util::GetUniformRandomSample<std::mt19937>(gen, 0, 100, 10, sample);
-  
+
   EXPECT_EQ(10, sample.size());
-  
+
   swri_math_util::GetUniformRandomSample<std::mt19937>(gen, 0, 100, 90, sample);
   EXPECT_EQ(90, sample.size());
 }
@@ -47,12 +47,12 @@ TEST(RandomTests, GetUniformRandomSample)
 TEST(RandomTests, RandomGenerator)
 {
   swri_math_util::RandomGenerator gen;
-  
+
   std::vector<int32_t> sample;
   gen.GetUniformRandomSample(0, 100, 10, sample);
-  
+
   EXPECT_EQ(10, sample.size());
-  
+
   gen.GetUniformRandomSample(0, 100, 90, sample);
   EXPECT_EQ(90, sample.size());
 }

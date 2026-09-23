@@ -119,4 +119,3 @@ cv::Mat overlayColor(
 }
 
 }
-

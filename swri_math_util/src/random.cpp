@@ -35,10 +35,10 @@ namespace swri_math_util
     rng_(seed == -1 ? seed_() : seed)
   {
   }
-  
+
   void RandomGenerator::GetUniformRandomSample(
-    int32_t min, 
-    int32_t max, 
+    int32_t min,
+    int32_t max,
     int32_t count,
     std::vector<int32_t>& sample)
   {

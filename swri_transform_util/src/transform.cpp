@@ -40,7 +40,7 @@ namespace swri_transform_util
     transform_(std::make_shared<TfTransform>(transform))
   {
   }
-  
+
   Transform::Transform(const tf2::Stamped<tf2::Transform>& transform) :
     transform_(std::make_shared<TfTransform>(transform))
   {
@@ -82,7 +82,7 @@ namespace swri_transform_util
 
     return transformed;
   }
-  
+
   tf2::Quaternion Transform::operator*(const tf2::Quaternion& q) const
   {
     return q * GetOrientation();
@@ -136,7 +136,7 @@ namespace swri_transform_util
   {
     v_out = v_in;
   }
-  
+
   bool IdentityTransform::Equals(const TransformImpl& other) const
   {
     // Every identity transform maps points the same way, so the type is the
@@ -146,7 +146,7 @@ namespace swri_transform_util
 
   std::shared_ptr<TransformImpl> IdentityTransform::Inverse() const
   {
-    TransformImplPtr inverse = 
+    TransformImplPtr inverse =
         std::make_shared<IdentityTransform>();
     inverse->SetStamp(stamp_);
     return inverse;
@@ -157,7 +157,7 @@ namespace swri_transform_util
   {
     Tf2StampStampInterface::SetStamp(std::chrono::system_clock::now());
   }
-  
+
   TfTransform::TfTransform(const tf2::Stamped<tf2::Transform>& transform) :
     transform_(transform)
   {
@@ -168,7 +168,7 @@ namespace swri_transform_util
   {
     v_out = transform_ * v_in;
   }
-  
+
   bool TfTransform::Equals(const TransformImpl& other) const
   {
     auto tf_other = dynamic_cast<const TfTransform*>(&other);
@@ -188,7 +188,7 @@ namespace swri_transform_util
 
   TransformImplPtr TfTransform::Inverse() const
   {
-    TransformImplPtr inverse = 
+    TransformImplPtr inverse =
         std::make_shared<TfTransform>(transform_.inverse());
     inverse->SetStamp(stamp_);
     return inverse;

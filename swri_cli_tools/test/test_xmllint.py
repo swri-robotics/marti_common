@@ -1,4 +1,4 @@
-# Copyright (c) 2023, Southwest Research Institute® (SwRI®)
+# Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,29 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ros2cli.node.strategy import add_arguments as add_strategy_node_arguments
-from swri_cli_tools.document import document_system
-from swri_cli_tools.verb import VerbExtension
+from ament_xmllint.main import main
+import pytest
 
 
-class DocumentVerb(VerbExtension):
-    """Document running system"""
-
-    def add_arguments(self, parser, cli_name):
-        add_strategy_node_arguments(parser)
-        parser.add_argument(
-            '--hidden',
-            action='store_true',
-            dest='hidden',
-            required=False,
-            help='Include hidden node and topic information')
-        parser.add_argument(
-            '--node', '-n',
-            dest='nodes',
-            required=False,
-            default=None,
-            nargs='+',
-            help='Set of nodes to document. If unused, all nodes will be documented')
-
-    def main(self, *, args):
-        document_system(args)
+@pytest.mark.linter
+@pytest.mark.xmllint
+def test_xmllint():
+    rc = main(argv=[])
+    assert rc == 0, 'Found errors'

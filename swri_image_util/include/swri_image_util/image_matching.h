@@ -105,4 +105,3 @@ namespace swri_image_util
 }
 
 #endif  // IMAGE_UTIL_IMAGE_MATCHING_H_
-

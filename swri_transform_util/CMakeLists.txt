@@ -153,6 +153,16 @@ target_link_libraries(lat_lon_tf_echo PRIVATE
   ${gps_msgs_TARGETS})
 
 if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # TODO(#818): Enable the remaining linters once the code complies with them.
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cppcheck_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_pep257_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_cmake_pytest REQUIRED)
   find_package(ament_index_cpp REQUIRED)
@@ -269,4 +279,3 @@ ament_export_dependencies(
   yaml_cpp_vendor
   yaml-cpp)
 ament_package()
-

@@ -80,7 +80,7 @@ class ObstacleTransformer : public rclcpp::Node
         {
           tf2::Vector3 p(point.x, point.y, 0.0);
           p = local_transform*p;
-           
+
           p = transform*p;
           point.x = p.x();
           point.y = p.y();
@@ -89,7 +89,7 @@ class ObstacleTransformer : public rclcpp::Node
 
       viz_pub_->publish(std::move(obstacles));
     }
-    
+
     rclcpp::Subscription<marti_nav_msgs::msg::ObstacleArray>::SharedPtr object_array_sub_;
     rclcpp::Publisher<marti_nav_msgs::msg::ObstacleArray>::SharedPtr viz_pub_;
 

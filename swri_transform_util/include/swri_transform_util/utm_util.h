@@ -64,7 +64,7 @@ namespace swri_transform_util
 
     /**
      * Convert WGS84 latitude and longitude to UTM.
-     * 
+     *
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
      * @param[out] zone       UTM zone.
@@ -78,7 +78,7 @@ namespace swri_transform_util
 
     /**
      * Convert WGS84 latitude and longitude to UTM.
-     * 
+     *
      * @param[in]  latitude   Latitude value in degrees.
      * @param[in]  longitude  Longitude value in degrees.
      * @param[out] easting    UTM easting in meters.

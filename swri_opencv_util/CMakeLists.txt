@@ -67,4 +67,16 @@ install(EXPORT export_${PROJECT_NAME}_show
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(ament_cmake OpenCV swri_math_util)
 
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # TODO(#818): Enable the remaining linters once the code complies with them.
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cppcheck_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_pep257_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
 ament_package(CONFIG_EXTRAS cmake/${PROJECT_NAME}-extras.cmake)

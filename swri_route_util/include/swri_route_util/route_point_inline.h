@@ -117,7 +117,7 @@ geometry_msgs::msg::Pose RoutePoint::poseMsg() const
   pose.orientation = orientationMsg();
   return pose;
 }
-  
+
 inline
 const std::string& RoutePoint::id() const
 {

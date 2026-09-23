@@ -1,13 +1,13 @@
 # swri_dbw_interface
 
-This package provides documentation and tools to define and specify common 
+This package provides documentation and tools to define and specify common
 interface conventions for various drive-by-wire systems and the SwRI autonomy
 system.
 
 More specifically, the practical purpose here is to define and specify the ROS
-interface between the SwRI autonomy system and a generic/standardized DBW system, 
-where the generic/standardized messages would then be translated to and from the 
-native DBW system. This type standardized interface would enable and encourage 
+interface between the SwRI autonomy system and a generic/standardized DBW system,
+where the generic/standardized messages would then be translated to and from the
+native DBW system. This type standardized interface would enable and encourage
 consistency across vehicle platforms by ensuring that the autonomy software can
 be decoupled from vehicle-specific implementations.
 
@@ -31,7 +31,7 @@ be decoupled from vehicle-specific implementations.
 The swri_dbw_interface defines an abstract interface to a native
 vehicle drive-by-wire system. In practice, this is most commonly
 implemented as a translation layer by wrapping the native interface
-and translating between the swri_dbw_interface messages and the 
+and translating between the swri_dbw_interface messages and the
 native drive-by-wire system messages and vice versa.  This layer may
 be anything from simple translations between message types to complex
 closed loop controllers.  It may consist of one node or many nodes.
