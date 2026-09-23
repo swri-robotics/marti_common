@@ -1,5 +1,7 @@
 import os
-from setuptools import find_packages, setup
+
+from setuptools import find_packages
+from setuptools import setup
 
 package_name = 'swri_cli_tools'
 
@@ -26,7 +28,9 @@ setup(
         'Topic :: Software Development',
     ],
     license='BSD-3-Clause',
-    description='SwRI CLI tools provide additional command line tools for introspecting ROS systems.',
+    description=(
+        'SwRI CLI tools provide additional command line tools for introspecting ROS systems.'
+    ),
     long_description="""\
 swri_cli_tools provides command line tools for introspecting and documenting ROS systems""",
     extras_require={

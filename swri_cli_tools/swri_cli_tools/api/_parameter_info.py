@@ -28,33 +28,34 @@ from rcl_interfaces.msg import ParameterType
 
 class ParameterInfo:
     """Hold information about node parameter."""
+
     def __init__(self,
                  param_name: str = None,
                  param_type: ParameterType = None,
                  param_value: str = None) -> None:
 
         self._param_name = param_name
-        self._param_type = "Unknown"
+        self._param_type = 'Unknown'
         if param_type == ParameterType.PARAMETER_BOOL:
-            self._param_type = "boolean"
+            self._param_type = 'boolean'
         elif param_type == ParameterType.PARAMETER_INTEGER:
-            self._param_type = "integer"
+            self._param_type = 'integer'
         elif param_type == ParameterType.PARAMETER_DOUBLE:
-            self._param_type = "double"
+            self._param_type = 'double'
         elif param_type == ParameterType.PARAMETER_STRING:
-            self._param_type = "string"
+            self._param_type = 'string'
         elif param_type == ParameterType.PARAMETER_BYTE_ARRAY:
-            self._param_type = "byte array"
+            self._param_type = 'byte array'
         elif param_type == ParameterType.PARAMETER_BOOL_ARRAY:
-            self._param_type = "bool array"
+            self._param_type = 'bool array'
         elif param_type == ParameterType.PARAMETER_INTEGER_ARRAY:
-            self._param_type = "integer array"
+            self._param_type = 'integer array'
         elif param_type == ParameterType.PARAMETER_DOUBLE_ARRAY:
-            self._param_type = "double array"
+            self._param_type = 'double array'
         elif param_type == ParameterType.PARAMETER_STRING_ARRAY:
-            self._param_type = "string array"
+            self._param_type = 'string array'
         elif param_type == ParameterType.PARAMETER_NOT_SET:
-            self._param_type = "Not set"
+            self._param_type = 'Not set'
 
         self._param_value = param_value
 

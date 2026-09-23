@@ -1,4 +1,4 @@
-# Copyright (c) 2023, Southwest Research Institute® (SwRI®)
+# Copyright (c) 2026, Southwest Research Institute® (SwRI®)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,29 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ros2cli.command import add_subparsers_on_demand
-from ros2cli.command import CommandExtension
+from ament_flake8.main import main_with_errors
+import pytest
 
 
-class SwriCommand(CommandExtension):
-    """Execute SwRI CLI command."""
-
-    def add_arguments(self, parser, cli_name):
-        """Add arguments."""
-        self._subparser = parser
-        add_subparsers_on_demand(
-            parser,
-            cli_name,
-            '_verb',
-            'swri_cli_tools.verb',
-            required=False)
-
-    def main(self, *, parser, args):
-        """Create command."""
-        if not hasattr(args, '_verb'):
-            self._subparser.print_help()
-            return 0
-
-        extension = getattr(args, '_verb')
-
-        return extension.main(args=args)
+@pytest.mark.flake8
+@pytest.mark.linter
+def test_flake8():
+    rc, errors = main_with_errors(argv=[])
+    assert rc == 0, \
+        'Found %d code style errors / warnings:\n' % len(errors) + \
+        '\n'.join(errors)

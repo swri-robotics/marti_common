@@ -27,13 +27,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-import pytest
 import unittest
-import launch
-import launch_ros
-import launch_testing
+
 import ament_index_python
+import launch
 from launch_ros.actions import Node
+import launch_testing
+import pytest
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
@@ -43,19 +43,21 @@ ORIGIN_TOPIC = '/local_xy_origin'
 # Nonzero, so that dropping the heading is caught. Degrees ENU.
 HEADING = 30.0
 
+
 def get_tests(*, args=[]):
     test_path = os.path.join(
-            ament_index_python.get_package_prefix("swri_transform_util"),
-            "share/swri_transform_util",
-            "test/test_initialize_origin.py"
+            ament_index_python.get_package_prefix('swri_transform_util'),
+            'share/swri_transform_util',
+            'test/test_initialize_origin.py'
     )
 
     return launch.actions.ExecuteProcess(
-            cmd=["python3", test_path, "manual", *args],
-            name="init_origin_auto_gps_test",
-            additional_env={"PYTHONBUFFERED": "1"},
-            output="screen",
+            cmd=['python3', test_path, 'manual', *args],
+            name='init_origin_auto_gps_test',
+            additional_env={'PYTHONBUFFERED': '1'},
+            output='screen',
     )
+
 
 # Each way of specifying the origin is launched on its own, since the test
 # accepts the first origin it receives.
@@ -63,17 +65,17 @@ def get_tests(*, args=[]):
 @launch_testing.parametrize('local_xy_origins', [
     [29.45196669, -98.61370577, 233.719, HEADING],
     "[{name: 'swri', latitude: 29.45196669, longitude: -98.61370577, altitude: 233.719, "
-    f"heading: {HEADING}}}]",
+    f'heading: {HEADING}}}]',
 ])
 def generate_test_description(local_xy_origins):
     init_origin = Node(
-        package="swri_transform_util",
-        name="origin",
-        executable="initialize_origin.py",
+        package='swri_transform_util',
+        name='origin',
+        executable='initialize_origin.py',
         parameters=[{
-            "local_xy_frame": "/far_field",
-            "local_xy_origin": "swri",
-            "local_xy_origins": local_xy_origins,
+            'local_xy_frame': '/far_field',
+            'local_xy_origin': 'swri',
+            'local_xy_origins': local_xy_origins,
         }]
     )
 
@@ -85,9 +87,11 @@ def generate_test_description(local_xy_origins):
             ]
     )
 
+
 class ManualTest(unittest.TestCase):
+
     def test_manual(self, launch_service, proc_info, proc_output):
-        tests = get_tests(args=[str(HEADING)]);
+        tests = get_tests(args=[str(HEADING)])
         with launch_testing.tools.launch_process(
             launch_service, tests, proc_info, proc_output
         ):

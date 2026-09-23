@@ -27,41 +27,43 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-import pytest
 import unittest
-import launch
-import launch_ros
-import launch_testing
+
 import ament_index_python
+import launch
 from launch_ros.actions import Node
+import launch_testing
+import pytest
 
 PKG = 'swri_transform_util'
 NAME = 'test_initialize_origin'
 
 ORIGIN_TOPIC = '/local_xy_origin'
 
+
 def get_tests(*, args=[]):
     test_path = os.path.join(
-            ament_index_python.get_package_prefix("swri_transform_util"),
-            "share/swri_transform_util",
-            "test/test_initialize_origin.py"
+            ament_index_python.get_package_prefix('swri_transform_util'),
+            'share/swri_transform_util',
+            'test/test_initialize_origin.py'
     )
 
     return launch.actions.ExecuteProcess(
-            cmd=["python3", test_path, "invalid_navsat"],
-            name="init_origin_invalid_navsat_test",
-            additional_env={"PYTHONBUFFERED": "1"},
-            output="screen",
+            cmd=['python3', test_path, 'invalid_navsat'],
+            name='init_origin_invalid_navsat_test',
+            additional_env={'PYTHONBUFFERED': '1'},
+            output='screen',
     )
+
 
 @pytest.mark.launch_test
 def generate_test_description():
     init_origin = Node(
-        package="swri_transform_util",
-        name="origin",
-        executable="initialize_origin.py",
+        package='swri_transform_util',
+        name='origin',
+        executable='initialize_origin.py',
         parameters=[{
-            "local_xy_frame": "/far_field",
+            'local_xy_frame': '/far_field',
         }]
     )
 
@@ -73,9 +75,11 @@ def generate_test_description():
             ]
     )
 
+
 class InvalidNavsatTest(unittest.TestCase):
+
     def test_invalid_navsat(self, launch_service, proc_info, proc_output):
-        tests = get_tests();
+        tests = get_tests()
         with launch_testing.tools.launch_process(
             launch_service, tests, proc_info, proc_output
         ):

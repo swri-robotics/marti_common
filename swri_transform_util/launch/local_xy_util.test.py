@@ -30,38 +30,39 @@
 
 import os
 import unittest
+
+import ament_index_python
+import launch
+from launch_ros.actions import Node
+import launch_testing
 import pytest
 
-import launch
-import launch_ros
-import launch_testing
-import ament_index_python
-from launch_ros.actions import Node
 
 def get_tests(*, args=[]):
     test_path = os.path.join(
-            ament_index_python.get_package_prefix("swri_transform_util"),
-            "lib/swri_transform_util",
-            "local_xy_util_test",
+            ament_index_python.get_package_prefix('swri_transform_util'),
+            'lib/swri_transform_util',
+            'local_xy_util_test',
     )
 
     return launch_testing.actions.GTest(
             path=[test_path],
-            name="local_xy_util_test",
-            additional_env={"PYTHONBUFFERED": "1"},
-            output="screen",
+            name='local_xy_util_test',
+            additional_env={'PYTHONBUFFERED': '1'},
+            output='screen',
     )
+
 
 @pytest.mark.launch_test
 def generate_test_description():
     init_origin = Node(
-        package="swri_transform_util",
-        name="initialize_origin",
-        executable="initialize_origin.py",
+        package='swri_transform_util',
+        name='initialize_origin',
+        executable='initialize_origin.py',
         parameters=[{
-            "local_xy_frame": "/far_field",
-            "local_xy_origin": "swri",
-            "local_xy_origins": [29.45196669, -98.61370577, 233.719, 0.0],
+            'local_xy_frame': '/far_field',
+            'local_xy_origin': 'swri',
+            'local_xy_origins': [29.45196669, -98.61370577, 233.719, 0.0],
         }]
     )
 
@@ -73,9 +74,11 @@ def generate_test_description():
             ]
     )
 
+
 class LocalXyUtilTest(unittest.TestCase):
+
     def test_local_xy_util(self, launch_service, proc_info, proc_output):
-        tests = get_tests();
+        tests = get_tests()
         with launch_testing.tools.launch_process(
             launch_service, tests, proc_info, proc_output
         ):

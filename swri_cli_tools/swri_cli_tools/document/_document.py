@@ -24,18 +24,10 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from natsort import natsorted
-
-from swri_cli_tools.api._node_info import NodeInfo
-from swri_cli_tools.api._node_info import print_node_infos
-from swri_cli_tools.api._parameter_info import ParameterInfo
-
-import rclpy
-
 from rcl_interfaces.srv import ListParameters
-
-from ros2cli.node.strategy import NodeStrategy
+import rclpy
 from ros2cli.node.direct import DirectNode
-
+from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_absolute_node_name
 from ros2node.api import get_action_client_info
 from ros2node.api import get_action_server_info
@@ -44,9 +36,12 @@ from ros2node.api import get_publisher_info
 from ros2node.api import get_service_client_info
 from ros2node.api import get_service_server_info
 from ros2node.api import get_subscriber_info
-
 from ros2param.api import call_get_parameters
 from ros2param.api import get_value
+
+from swri_cli_tools.api._node_info import NodeInfo
+from swri_cli_tools.api._node_info import print_node_infos
+from swri_cli_tools.api._parameter_info import ParameterInfo
 
 
 def document_system(args):
