@@ -26,7 +26,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#include <swri_math_util/interpolation_1d.h>
+#include "swri_math_util/interpolation_1d.h"
 
 namespace swri_math_util
 {

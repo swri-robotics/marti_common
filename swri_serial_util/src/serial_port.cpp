@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_serial_util/serial_port.h>
+#include "swri_serial_util/serial_port.h"
 
 #include <errno.h> // NOLINT
 #include <sys/ioctl.h>
@@ -346,4 +346,4 @@ int32_t SerialPort::Write(const std::vector<uint8_t> & input)
 {
   return write(fd_, input.data(), input.size());
 }
-}
+}  // namespace swri_serial_util

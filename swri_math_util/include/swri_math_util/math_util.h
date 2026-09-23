@@ -27,10 +27,10 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_MATH_UTIL_H_
-#define MATH_UTIL_MATH_UTIL_H_
+#ifndef SWRI_MATH_UTIL__MATH_UTIL_H_
+#define SWRI_MATH_UTIL__MATH_UTIL_H_
 
-#include <swri_math_util/constants.h>
+#include "swri_math_util/constants.h"
 namespace swri_math_util
 {
 /**
@@ -91,6 +91,6 @@ double unWrapAngle(
   double static_angle,
   double variable_angle,
   double threshold = _pi);
-}
+}  // namespace swri_math_util
 
-#endif  // MATH_UTIL_MATH_UTIL_H_
+#endif  // SWRI_MATH_UTIL__MATH_UTIL_H_

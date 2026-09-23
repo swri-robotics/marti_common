@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/transform.h>
+#include "swri_transform_util/transform.h"
 
 namespace swri_transform_util
 {
@@ -191,4 +191,4 @@ TransformImplPtr TfTransform::Inverse() const
   inverse->SetStamp(stamp_);
   return inverse;
 }
-}
+}  // namespace swri_transform_util

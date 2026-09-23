@@ -26,13 +26,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#include <swri_route_util/route_speeds.h>
+#include "swri_route_util/route_speeds.h"
 
 #include <cstdlib>
 #include <unordered_map>
 
-#include <swri_geometry_util/geometry_util.h>
-#include <swri_route_util/util.h>
+#include "swri_geometry_util/geometry_util.h"
+#include "swri_route_util/util.h"
 
 namespace smu = swri_math_util;
 namespace stu = swri_transform_util;
@@ -425,7 +425,7 @@ void speedsForObstacles(
       }
     }
 
-    for (const auto & obstacle: obstacles) {
+    for (const auto & obstacle : obstacles) {
       const tf2::Vector3 v = obstacle.center - point.position();
       const double d = v.length() - veh_r - obstacle.radius;
       if (d > p.max_distance_m_) {

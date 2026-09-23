@@ -27,10 +27,10 @@
 //
 // *****************************************************************************
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <swri_math_util/constants.h>
-#include <swri_math_util/math_util.h>
+#include "swri_math_util/constants.h"
+#include "swri_math_util/math_util.h"
 
 TEST(MathUtilTests, Round)
 {

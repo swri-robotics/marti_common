@@ -31,13 +31,13 @@
 
 #include <array>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <swri_math_util/constants.h>
-#include <swri_math_util/math_util.h>
-#include <swri_transform_util/transform_util.h>
+#include "swri_math_util/constants.h"
+#include "swri_math_util/math_util.h"
+#include "swri_transform_util/transform_util.h"
 
 TEST(TransformUtilTests, GetRelativeTransform)
 {

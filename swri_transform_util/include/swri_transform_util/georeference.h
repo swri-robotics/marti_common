@@ -27,16 +27,16 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_GEOREFERENCE_H_
-#define TRANSFORM_UTIL_GEOREFERENCE_H_
+#ifndef SWRI_TRANSFORM_UTIL__GEOREFERENCE_H_
+#define SWRI_TRANSFORM_UTIL__GEOREFERENCE_H_
 
 #include <string>
 
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 #include <rclcpp/logger.hpp>
 
-//opencv includes
+// opencv includes
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/video/video.hpp>
@@ -100,6 +100,6 @@ private:
 
   rclcpp::Logger logger_;
 };
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_GEOREFERENCE_H_
+#endif  // SWRI_TRANSFORM_UTIL__GEOREFERENCE_H_

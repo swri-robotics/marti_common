@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/transformer.h>
+#include "swri_transform_util/transformer.h"
 
 namespace swri_transform_util
 {
@@ -86,4 +86,4 @@ bool Transformer::GetTransform(
 
   return has_transform;
 }
-}
+}  // namespace swri_transform_util

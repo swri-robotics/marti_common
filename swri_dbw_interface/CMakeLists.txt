@@ -26,7 +26,6 @@ if(BUILD_TESTING)
   # TODO(#818): Enable the remaining linters once the code complies with them.
   set(ament_cmake_copyright_FOUND TRUE)
   set(ament_cmake_cppcheck_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
   # Parse .h headers as C++ rather than C.
   set(ament_cmake_uncrustify_ADDITIONAL_ARGS LANGUAGE CPP)
   ament_lint_auto_find_test_dependencies()

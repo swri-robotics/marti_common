@@ -17,8 +17,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_GEOMETRY_UTIL_H_
-#define IMAGE_UTIL_GEOMETRY_UTIL_H_
+#ifndef SWRI_IMAGE_UTIL__GEOMETRY_UTIL_H_
+#define SWRI_IMAGE_UTIL__GEOMETRY_UTIL_H_
 
 #include <vector>
 
@@ -105,6 +105,6 @@ std::vector<tf2::Vector3> GetEllipsePointsWithZ(
   const tf2::Vector3 & center,
   double scale,
   int32_t num_points);
-}
+}  // namespace swri_image_util
 
-#endif  // IMAGE_UTIL_GEOMETRY_UTIL_H_
+#endif  // SWRI_IMAGE_UTIL__GEOMETRY_UTIL_H_

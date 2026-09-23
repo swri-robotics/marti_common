@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_opencv_util/model_fit.h>
+#include "swri_opencv_util/model_fit.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -456,4 +456,4 @@ CrossModel3d FindCross3d(
   inliers.reshape(points.channels());
   return model;
 }
-}
+}  // namespace swri_opencv_util

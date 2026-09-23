@@ -14,7 +14,7 @@
 #include <marti_nav_msgs/msg/obstacle.hpp>
 #include <marti_nav_msgs/msg/obstacle_array.hpp>
 
-#include <swri_transform_util/transform_manager.h>
+#include "swri_transform_util/transform_manager.h"
 
 namespace swri_transform_util
 {
@@ -65,7 +65,7 @@ private:
       return;
     }
 
-    for (auto & ob: obstacles->obstacles) {
+    for (auto & ob : obstacles->obstacles) {
       tf2::Transform local_transform;
       tf2::fromMsg(ob.pose, local_transform);
       ob.pose.position.x = 0;
@@ -75,7 +75,7 @@ private:
       ob.pose.orientation.y = 0.0;
       ob.pose.orientation.z = 0.0;
       ob.pose.orientation.w = 1.0;
-      for (auto & point: ob.polygon) {
+      for (auto & point : ob.polygon) {
         tf2::Vector3 p(point.x, point.y, 0.0);
         p = local_transform * p;
 
@@ -96,7 +96,7 @@ private:
 
   std::shared_ptr<swri_transform_util::TransformManager> tf_manager_;
 };
-}
+}  // namespace swri_transform_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_transform_util::ObstacleTransformer)

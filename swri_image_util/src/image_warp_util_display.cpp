@@ -31,7 +31,7 @@
 // so it is built into swri_image_util_display rather than swri_image_util.
 // See CMakeLists.txt.
 
-#include <swri_image_util/image_warp_util.h>
+#include "swri_image_util/image_warp_util.h"
 
 #include <chrono>
 
@@ -106,4 +106,4 @@ cv::Mat PitchAndRollEstimator::EstimateNominalAngle(
 
   return R;
 }
-}
+}  // namespace swri_image_util

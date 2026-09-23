@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_TRANSFORM_UTIL_H_
-#define TRANSFORM_UTIL_TRANSFORM_UTIL_H_
+#ifndef SWRI_TRANSFORM_UTIL__TRANSFORM_UTIL_H_
+#define SWRI_TRANSFORM_UTIL__TRANSFORM_UTIL_H_
 
 #include <array>
 #include <string>
@@ -285,6 +285,6 @@ std::string NormalizeFrameId(const std::string & frame_id);
    * @return True if the frames match
    **/
 bool FrameIdsEqual(const std::string & frame1, const std::string & frame2);
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_TRANSFORM_UTIL_H_
+#endif  // SWRI_TRANSFORM_UTIL__TRANSFORM_UTIL_H_

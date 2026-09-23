@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/transform_util.h>
+#include "swri_transform_util/transform_util.h"
 
 #include <cmath>
 #include <algorithm>
@@ -35,11 +35,11 @@
 #include <utility>
 #include <vector>
 
-#include <swri_transform_util/earth_constants.h>
-#include <swri_transform_util/local_xy_util.h>
-#include <swri_math_util/constants.h>
-#include <swri_math_util/math_util.h>
-#include <swri_math_util/trig_util.h>
+#include "swri_transform_util/earth_constants.h"
+#include "swri_transform_util/local_xy_util.h"
+#include "swri_math_util/constants.h"
+#include "swri_math_util/math_util.h"
+#include "swri_math_util/trig_util.h"
 
 namespace swri_transform_util
 {
@@ -396,4 +396,4 @@ bool FrameIdsEqual(const std::string & frame1, const std::string & frame2)
   return (frame1 == frame2) ||
          (NormalizeFrameId(frame1) == NormalizeFrameId(frame2));
 }
-}
+}  // namespace swri_transform_util

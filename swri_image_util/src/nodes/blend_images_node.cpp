@@ -31,7 +31,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #ifdef USE_CVBRIDGE_H_FILES
-#include <cv_bridge/cv_bridge.h>
+#include "cv_bridge/cv_bridge.h"
 #else
 #include <cv_bridge/cv_bridge.hpp>
 #endif
@@ -40,7 +40,7 @@
 #include <message_filters/time_synchronizer.hpp>
 #include <message_filters/sync_policies/approximate_time.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <swri_opencv_util/blend.h>
+#include "swri_opencv_util/blend.h"
 
 namespace swri_image_util
 {
@@ -207,7 +207,7 @@ void BlendImagesNode::imageCallback(
 
   image_pub_.publish(cv_blended->toImageMsg());
 }
-}
+}  // namespace swri_image_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::BlendImagesNode)

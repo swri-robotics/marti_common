@@ -1,4 +1,4 @@
-﻿// *****************************************************************************
+// *****************************************************************************
 //
 // Copyright (c) 2018, Southwest Research Institute® (SwRI®)
 // All rights reserved.
@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_opencv_util/blend.h>
+#include "swri_opencv_util/blend.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -110,4 +110,4 @@ cv::Mat overlayColor(
   return swri_opencv_util::blend(overlay, overlay_alpha, color_image, base_alpha);
 }
 
-}
+}  // namespace swri_opencv_util

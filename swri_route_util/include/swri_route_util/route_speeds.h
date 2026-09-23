@@ -26,17 +26,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
-#define SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
+#ifndef SWRI_ROUTE_UTIL__ROUTE_SPEEDS_H_
+#define SWRI_ROUTE_UTIL__ROUTE_SPEEDS_H_
 
+#include <vector>
 #include <rclcpp/rclcpp.hpp>
 #include <marti_common_msgs/msg/key_value_array.hpp>
 #include <marti_nav_msgs/msg/obstacle_array.hpp>
 #include <marti_nav_msgs/msg/route_speed_array.hpp>
 #include <marti_nav_msgs/msg/tracked_object_array.hpp>
-#include <swri_math_util/interpolation_1d.h>
-#include <swri_route_util/route.h>
-#include <swri_transform_util/transform.h>
+#include "swri_math_util/interpolation_1d.h"
+#include "swri_route_util/route.h"
+#include "swri_transform_util/transform.h"
 #include <tf2/LinearMath/Vector3.hpp>
 
 namespace swri_route_util
@@ -144,4 +145,4 @@ void speedsForObstacles(
   const SpeedForObstaclesParameters & parameters,
   rclcpp::Logger logger = rclcpp::get_logger("swri_route_util::speedsForObstacles"));
 }  // namespace swri_route_util
-#endif  // SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_
+#endif  // SWRI_ROUTE_UTIL__ROUTE_SPEEDS_H_

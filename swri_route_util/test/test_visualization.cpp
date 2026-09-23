@@ -29,9 +29,9 @@
 #include <string>
 #include <vector>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <swri_route_util/visualization.h>
+#include "swri_route_util/visualization.h"
 
 namespace
 {

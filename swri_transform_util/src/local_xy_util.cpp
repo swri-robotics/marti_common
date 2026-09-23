@@ -35,13 +35,13 @@
 #include "GeographicLib/LocalCartesian.hpp"
 
 #include <tf2/utils.hpp>
-#include <rcutils/logging_macros.h>
+#include "rcutils/logging_macros.h"
 
-#include <swri_math_util/constants.h>
-#include <swri_math_util/trig_util.h>
-#include <swri_transform_util/earth_constants.h>
-#include <swri_transform_util/local_xy_util.h>
-#include <swri_transform_util/transform_util.h>
+#include "swri_math_util/constants.h"
+#include "swri_math_util/trig_util.h"
+#include "swri_transform_util/earth_constants.h"
+#include "swri_transform_util/local_xy_util.h"
+#include "swri_transform_util/transform_util.h"
 
 namespace swri_transform_util
 {
@@ -186,7 +186,6 @@ void LocalXyWgs84Util::ResetInitialization()
 
 void LocalXyWgs84Util::Initialize()
 {
-
 }
 
 void LocalXyWgs84Util::HandlePoseStamped(const geometry_msgs::msg::PoseStamped::UniquePtr pose)
@@ -330,4 +329,4 @@ bool LocalXyWgs84Util::ToWgs84(
 
   return initialized_;
 }
-}
+}  // namespace swri_transform_util

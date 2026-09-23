@@ -27,14 +27,14 @@
 //
 // *****************************************************************************
 
-#ifndef SWRI_GEOMETRY_UTIL_INTERSECTION_H_
-#define SWRI_GEOMETRY_UTIL_INTERSECTION_H_
+#ifndef SWRI_GEOMETRY_UTIL__INTERSECTION_H_
+#define SWRI_GEOMETRY_UTIL__INTERSECTION_H_
 
 #include <vector>
 #include <opencv2/core/core.hpp>
 
-#define HAVE_INT64_T_64  #Prevents conflict with OpenCV typedef of int64
-#include <geos_c.h>
+#define HAVE_INT64_T_64  // Prevents conflict with OpenCV typedef of int64
+#include <geos_c.h>  // NOLINT(build/include_order)
 #undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
@@ -113,6 +113,6 @@ double PolygonIntersectionArea(
   GEOSContextHandle_t & ctx);
 
 void ReleaseContext(GEOSContextHandle_t & ctx);
-}
+}  // namespace swri_geometry_util
 
-#endif
+#endif  // SWRI_GEOMETRY_UTIL__INTERSECTION_H_

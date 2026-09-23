@@ -31,14 +31,14 @@
 #include <limits>
 #include <vector>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include <opencv2/core/core.hpp>
 
 #include <tf2/transform_datatypes.hpp>
 
-#include <swri_math_util/constants.h>
-#include <swri_image_util/geometry_util.h>
+#include "swri_math_util/constants.h"
+#include "swri_image_util/geometry_util.h"
 
 TEST(GeometryUtilTests, Intersects_0)
 {

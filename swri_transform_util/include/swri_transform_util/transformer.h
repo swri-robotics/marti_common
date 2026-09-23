@@ -27,10 +27,11 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_TRANSFORMER_H_
-#define TRANSFORM_UTIL_TRANSFORMER_H_
+#ifndef SWRI_TRANSFORM_UTIL__TRANSFORMER_H_
+#define SWRI_TRANSFORM_UTIL__TRANSFORMER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -40,8 +41,8 @@
 #include <tf2_ros/buffer.hpp>
 #include <tf2_ros/transform_listener.hpp>
 
-#include <swri_transform_util/transform.h>
-#include <swri_transform_util/local_xy_util.h>
+#include "swri_transform_util/transform.h"
+#include "swri_transform_util/local_xy_util.h"
 
 namespace swri_transform_util
 {
@@ -112,6 +113,6 @@ protected:
     const tf2::TimePoint & time,
     geometry_msgs::msg::TransformStamped & transform) const;
 };
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_TRANSFORMER_H_
+#endif  // SWRI_TRANSFORM_UTIL__TRANSFORMER_H_

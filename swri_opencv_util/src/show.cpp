@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_opencv_util/show.h>
+#include "swri_opencv_util/show.h"
 
 #include <map>
 #include <memory>
@@ -124,4 +124,4 @@ void ShowScaled(
 
   cv::imshow(name, scaled);
 }
-}
+}  // namespace swri_opencv_util

@@ -27,9 +27,9 @@
 //
 // *****************************************************************************
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <swri_geometry_util/geometry_util.h>
+#include "swri_geometry_util/geometry_util.h"
 
 TEST(GeometryUtilTests, ClosestPointToLinesInvalid)
 {

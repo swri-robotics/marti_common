@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef MATH_UTIL_CONSTANTS_H_
-#define MATH_UTIL_CONSTANTS_H_
+#ifndef SWRI_MATH_UTIL__CONSTANTS_H_
+#define SWRI_MATH_UTIL__CONSTANTS_H_
 
 namespace swri_math_util
 {
@@ -49,6 +49,6 @@ static const double _mps_to_mph = 2.2369362920544025;
 static const double _feet_to_meters = 0.3048;
 
 static const double _yards_to_meters = 0.9144;
-}
+}  // namespace swri_math_util
 
-#endif  // MATH_UTIL_CONSTANTS_H_
+#endif  // SWRI_MATH_UTIL__CONSTANTS_H_

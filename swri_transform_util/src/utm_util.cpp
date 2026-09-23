@@ -27,13 +27,13 @@
 //
 // *****************************************************************************
 
-#include <swri_transform_util/utm_util.h>
+#include "swri_transform_util/utm_util.h"
 
 #include <cmath>
 #include <cstdio>
 #include <mutex>
 
-#include <swri_math_util/constants.h>
+#include "swri_math_util/constants.h"
 
 namespace swri_transform_util
 {
@@ -67,7 +67,7 @@ PJ * CreateNormalizedUtmTransform(int zone, bool south)
 
   return transform;
 }
-}
+}  // namespace
 
 uint32_t GetZone(double longitude)
 {
@@ -237,4 +237,4 @@ void UtmUtil::ToLatLon(
 {
   utm_data_.ToLatLon(zone, band, easting, northing, latitude, longitude);
 }
-}
+}  // namespace swri_transform_util

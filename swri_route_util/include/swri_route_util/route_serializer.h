@@ -27,10 +27,13 @@
 //
 // *****************************************************************************
 
-// TODO pjr I'm not even sure what to do with this for ROS2...
+// TODO(pjr): I'm not even sure what to do with this for ROS2...
 
-#include <ros/message_traits.h>
-#include <ros/serialization.h>
+#ifndef SWRI_ROUTE_UTIL__ROUTE_SERIALIZER_H_
+#define SWRI_ROUTE_UTIL__ROUTE_SERIALIZER_H_
+
+#include "ros/message_traits.h"
+#include "ros/serialization.h"
 
 
 namespace ros
@@ -127,3 +130,5 @@ struct Serializer<swri_route_util::Route>
 };
 }  // namespace serialization
 }  // namespace ros
+
+#endif  // SWRI_ROUTE_UTIL__ROUTE_SERIALIZER_H_

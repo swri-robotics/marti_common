@@ -27,19 +27,20 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_UTM_TRANSFORMER_H_
-#define TRANSFORM_UTIL_UTM_TRANSFORMER_H_
+#ifndef SWRI_TRANSFORM_UTIL__UTM_TRANSFORMER_H_
+#define SWRI_TRANSFORM_UTIL__UTM_TRANSFORMER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <tf2/transform_datatypes.hpp>
 #include <tf2_ros/transform_listener.hpp>
 
-#include <swri_transform_util/utm_util.h>
-#include <swri_transform_util/local_xy_util.h>
-#include <swri_transform_util/transformer.h>
+#include "swri_transform_util/utm_util.h"
+#include "swri_transform_util/local_xy_util.h"
+#include "swri_transform_util/transformer.h"
 
 namespace swri_transform_util
 {
@@ -49,7 +50,7 @@ namespace swri_transform_util
 class UtmTransformer : public Transformer
 {
 public:
-  UtmTransformer(LocalXyWgs84UtilPtr local_xy_util);
+  explicit UtmTransformer(LocalXyWgs84UtilPtr local_xy_util);
 
   /**
      * Get a map of the transforms supported by this Transformer
@@ -195,6 +196,6 @@ protected:
   int32_t utm_zone_;
   char utm_band_;
 };
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_UTM_TRANSFORMER_H_
+#endif  // SWRI_TRANSFORM_UTIL__UTM_TRANSFORMER_H_

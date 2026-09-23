@@ -27,9 +27,10 @@
 //
 // *****************************************************************************
 
-#ifndef OPENCV_UTIL_MODELS_H_
-#define OPENCV_UTIL_MODELS_H_
+#ifndef SWRI_OPENCV_UTIL__MODELS_H_
+#define SWRI_OPENCV_UTIL__MODELS_H_
 
+#include <string>
 #include <vector>
 
 #include <opencv2/core/core.hpp>
@@ -216,7 +217,7 @@ class PlaneFit : public Fit3d<PlaneModel>
 public:
   enum { MIN_SIZE = 3 };
 
-  PlaneFit(const T & data, float min_angle = 0.2)
+  explicit PlaneFit(const T & data, float min_angle = 0.2)
   : Fit3d<PlaneModel>(data),
     min_angle_(min_angle) {}
   virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
@@ -273,7 +274,7 @@ class LineFit3d : public Fit3d<LineModel3d>
 public:
   enum { MIN_SIZE = 2 };
 
-  LineFit3d(const T & data)
+  explicit LineFit3d(const T & data)
   : Fit3d<LineModel3d>(data) {}
   virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
   bool ValidData() const
@@ -319,7 +320,7 @@ class CrossFit3d : public Fit3d<CrossModel3d>
 public:
   enum { MIN_SIZE = 3 };
 
-  CrossFit3d(const T & data, float min_angle = 0.2)
+  explicit CrossFit3d(const T & data, float min_angle = 0.2)
   : Fit3d<CrossModel3d>(data),
     min_angle_(min_angle) {}
   virtual bool GetModel(const std::vector<int32_t> & indices, M & model, double max_error) const;
@@ -339,6 +340,6 @@ protected:
   cv::Mat x0_p__;
 };
 
-}
+}  // namespace swri_opencv_util
 
-#endif  // OPENCV_UTIL_MODELS_H_
+#endif  // SWRI_OPENCV_UTIL__MODELS_H_

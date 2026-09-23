@@ -26,11 +26,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_ROUTE_POINT_H_
-#define SWRI_ROUTE_UTIL_ROUTE_POINT_H_
+#ifndef SWRI_ROUTE_UTIL__ROUTE_POINT_H_
+#define SWRI_ROUTE_UTIL__ROUTE_POINT_H_
 
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 #include <tf2/LinearMath/Vector3.hpp>
 #include <tf2/LinearMath/Quaternion.hpp>
@@ -73,8 +74,8 @@ public:
 
   // Access to the route point's pose (position and orientation) as
   // tf datatypes.
-  //void setPose(const tf2::Pose &pose);
-  //tf2::Pose pose() const;
+  // void setPose(const tf2::Pose &pose);
+  // tf2::Pose pose() const;
 
   // Access to the route point's pose (position and orientation) as
   // message datatypes.
@@ -139,8 +140,8 @@ private:
 
   std::map<std::string, std::string> properties_;
 };  // class RoutePoint
-} // namespace swri_route_util
+}  // namespace swri_route_util
 
-#include "route_point_inline.h"
+#include "swri_route_util/route_point_inline.h"
 
-#endif  // SWRI_ROUTE_UTIL_ROUTE_POINT_H_
+#endif  // SWRI_ROUTE_UTIL__ROUTE_POINT_H_

@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_math_util/math_util.h>
+#include "swri_math_util/math_util.h"
 
 #include <cmath>
 
@@ -75,4 +75,4 @@ double unWrapAngle(
   }
   return variable_angle;
 }
-}
+}  // namespace swri_math_util

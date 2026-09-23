@@ -28,8 +28,8 @@
 // *****************************************************************************
 
 #include <random>
-#include <gtest/gtest.h>
-#include <swri_math_util/random.h>
+#include "gtest/gtest.h"
+#include "swri_math_util/random.h"
 
 TEST(RandomTests, GetUniformRandomSample)
 {

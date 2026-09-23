@@ -27,10 +27,11 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_WGS84_TRANSFORMER_H_
-#define TRANSFORM_UTIL_WGS84_TRANSFORMER_H_
+#ifndef SWRI_TRANSFORM_UTIL__WGS84_TRANSFORMER_H_
+#define SWRI_TRANSFORM_UTIL__WGS84_TRANSFORMER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -38,8 +39,8 @@
 #include <tf2_ros/buffer.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 
-#include <swri_transform_util/local_xy_util.h>
-#include <swri_transform_util/transformer.h>
+#include "swri_transform_util/local_xy_util.h"
+#include "swri_transform_util/transformer.h"
 
 namespace swri_transform_util
 {
@@ -216,6 +217,6 @@ public:
 protected:
   std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
 };
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_WGS84_TRANSFORMER_H_
+#endif  // SWRI_TRANSFORM_UTIL__WGS84_TRANSFORMER_H_

@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef OPENCV_UTIL_BLEND_H_
-#define OPENCV_UTIL_BLEND_H_
+#ifndef SWRI_OPENCV_UTIL__BLEND_H_
+#define SWRI_OPENCV_UTIL__BLEND_H_
 
 #include <opencv2/core/core.hpp>
 
@@ -51,6 +51,6 @@ cv::Mat overlayColor(
   const cv::Mat & mask,
   const cv::Scalar & color,
   double alpha);
-}
+}  // namespace swri_opencv_util
 
-#endif  // OPENCV_UTIL_BLEND_H_
+#endif  // SWRI_OPENCV_UTIL__BLEND_H_

@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_image_util/draw_util.h>
+#include "swri_image_util/draw_util.h"
 
 #include <cstdlib>
 #include <algorithm>
@@ -150,4 +150,4 @@ void DrawMatches(
     line(image_out, center1, dcenter2, match_color, 1, cv::LINE_AA, 4);
   }
 }
-}
+}  // namespace swri_image_util

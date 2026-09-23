@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_IMAGE_MATCHING_H_
-#define IMAGE_UTIL_IMAGE_MATCHING_H_
+#ifndef SWRI_IMAGE_UTIL__IMAGE_MATCHING_H_
+#define SWRI_IMAGE_UTIL__IMAGE_MATCHING_H_
 
 #include <vector>
 
@@ -105,6 +105,6 @@ void ConvertMatches(
   const std::vector<cv::DMatch> & matches,
   cv::Mat & kp1_out,
   cv::Mat & kp2_out);
-}
+}  // namespace swri_image_util
 
-#endif  // IMAGE_UTIL_IMAGE_MATCHING_H_
+#endif  // SWRI_IMAGE_UTIL__IMAGE_MATCHING_H_

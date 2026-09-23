@@ -29,11 +29,11 @@
 
 #include <string>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <swri_transform_util/local_xy_util.h>
+#include "swri_transform_util/local_xy_util.h"
 
 /// The initializing constructor documents its reference angle in degrees, but
 /// passed it to HandleOrigin(), which takes radians, so a degree value was

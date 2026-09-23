@@ -26,15 +26,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_ROUTE_H_
-#define SWRI_ROUTE_UTIL_ROUTE_H_
+#ifndef SWRI_ROUTE_UTIL__ROUTE_H_
+#define SWRI_ROUTE_UTIL__ROUTE_H_
 
-#include <string>
 #include <map>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include <marti_nav_msgs/msg/route.hpp>
-#include <swri_route_util/route_point.h>
+#include "swri_route_util/route_point.h"
 
 namespace swri_route_util
 {
@@ -162,8 +163,8 @@ public:
 typedef std::shared_ptr<Route> RoutePtr;
 typedef std::shared_ptr<Route const> RouteConstPtr;
 
-} // namespace swri_route_util
+}  // namespace swri_route_util
 
 // #include "route_serializer.h"
 
-#endif  // SWRI_ROUTE_UTIL_ROUTE_H_
+#endif  // SWRI_ROUTE_UTIL__ROUTE_H_

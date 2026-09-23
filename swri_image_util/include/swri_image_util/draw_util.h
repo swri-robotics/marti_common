@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_DRAW_UTIL_H_
-#define IMAGE_UTIL_DRAW_UTIL_H_
+#ifndef SWRI_IMAGE_UTIL__DRAW_UTIL_H_
+#define SWRI_IMAGE_UTIL__DRAW_UTIL_H_
 
 #include <string>
 
@@ -94,6 +94,6 @@ void DrawMatches(
   const cv::Scalar & color1,
   const cv::Scalar & color2,
   bool draw_image_borders = false);
-}
+}  // namespace swri_image_util
 
-#endif  // IMAGE_UTIL_DRAW_UTIL_H_
+#endif  // SWRI_IMAGE_UTIL__DRAW_UTIL_H_

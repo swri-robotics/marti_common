@@ -30,9 +30,9 @@
 #include <cmath>
 #include <cstdlib>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <swri_transform_util/utm_util.h>
+#include "swri_transform_util/utm_util.h"
 
 TEST(UtmUtilTests, GetZone)
 {

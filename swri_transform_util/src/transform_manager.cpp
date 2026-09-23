@@ -32,10 +32,10 @@
 
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-#include <swri_transform_util/frames.h>
-#include <swri_transform_util/transform_manager.h>
-#include <swri_transform_util/utm_transformer.h>
-#include <swri_transform_util/wgs84_transformer.h>
+#include "swri_transform_util/frames.h"
+#include "swri_transform_util/transform_manager.h"
+#include "swri_transform_util/utm_transformer.h"
+#include "swri_transform_util/wgs84_transformer.h"
 
 namespace swri_transform_util
 {
@@ -371,4 +371,4 @@ const LocalXyWgs84UtilPtr & TransformManager::LocalXyUtil() const
 {
   return local_xy_util_;
 }
-}
+}  // namespace swri_transform_util

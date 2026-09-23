@@ -27,10 +27,11 @@
 //
 // *****************************************************************************
 
-#ifndef TRANSFORM_UTIL_TRANSFORM_MANAGER_H_
-#define TRANSFORM_UTIL_TRANSFORM_MANAGER_H_
+#ifndef SWRI_TRANSFORM_UTIL__TRANSFORM_MANAGER_H_
+#define SWRI_TRANSFORM_UTIL__TRANSFORM_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include <rclcpp/logger.hpp>
@@ -41,9 +42,9 @@
 #include <tf2_ros/buffer.hpp>
 #include <tf2_ros/transform_listener.hpp>
 
-#include <swri_transform_util/local_xy_util.h>
-#include <swri_transform_util/transform.h>
-#include <swri_transform_util/transformer.h>
+#include "swri_transform_util/local_xy_util.h"
+#include "swri_transform_util/transform.h"
+#include "swri_transform_util/transformer.h"
 
 namespace swri_transform_util
 {
@@ -284,6 +285,6 @@ private:
   SourceTargetMap transformers_;
 };
 typedef std::shared_ptr<TransformManager> TransformManagerPtr;
-}
+}  // namespace swri_transform_util
 
-#endif  // TRANSFORM_UTIL_TRANSFORM_MANAGER_H_
+#endif  // SWRI_TRANSFORM_UTIL__TRANSFORM_MANAGER_H_

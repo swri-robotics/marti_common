@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_console_util/progress_bar.h>
+#include "swri_console_util/progress_bar.h"
 
 #include <chrono>
 #include <ctime>
@@ -217,4 +217,4 @@ std::string ProgressBar::IntToString(int64_t i, int width)
   s = ss.str();
   return s;
 }
-}
+}  // namespace swri_console_util

@@ -33,12 +33,12 @@
 
 #include <exception>
 
-#include <swri_geometry_util/geometry_util.h>
-#include <swri_geometry_util/intersection.h>
+#include "swri_geometry_util/geometry_util.h"
+#include "swri_geometry_util/intersection.h"
 #include "util.hpp"
 
-#define HAVE_INT64_T_64  #Prevents conflict with OpenCV typedef of int64
-#include <geos_c.h>
+#define HAVE_INT64_T_64  // Prevents conflict with OpenCV typedef of int64
+#include <geos_c.h>  // NOLINT(build/include_order)
 #undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
@@ -362,4 +362,4 @@ GEOSGeometry * VectorToPolygon(
 
   return polygon;
 }
-}
+}  // namespace swri_geometry_util

@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_image_util/replace_colors.h>
+#include "swri_image_util/replace_colors.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -42,4 +42,4 @@ void replaceColors(
   cv::cvtColor(original_image, input_rgb, cv::COLOR_GRAY2BGR);
   cv::LUT(input_rgb, lut, modified_image);
 }
-}
+}  // namespace swri_image_util

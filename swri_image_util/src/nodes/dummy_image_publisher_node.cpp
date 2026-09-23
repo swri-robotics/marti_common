@@ -39,7 +39,7 @@ namespace swri_image_util
 class DummyImagePublisherNode : public rclcpp::Node
 {
 public:
-  DummyImagePublisherNode(const rclcpp::NodeOptions & options)
+  explicit DummyImagePublisherNode(const rclcpp::NodeOptions & options)
   : rclcpp::Node("dummy_image_publisher", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
     , it_(image_transport::RequiredInterfaces{*this})
@@ -95,7 +95,7 @@ private:
 #endif
   rclcpp::TimerBase::SharedPtr timer_;
 };
-}
+}  // namespace swri_image_util
 
 #include <rclcpp_components/register_node_macro.hpp>
 RCLCPP_COMPONENTS_REGISTER_NODE(swri_image_util::DummyImagePublisherNode)

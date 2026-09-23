@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_ROLLING_NORMALIZATION_H_
-#define IMAGE_UTIL_ROLLING_NORMALIZATION_H_
+#ifndef SWRI_IMAGE_UTIL__ROLLING_NORMALIZATION_H_
+#define SWRI_IMAGE_UTIL__ROLLING_NORMALIZATION_H_
 
 #include <vector>
 
@@ -52,7 +52,7 @@ private:
   cv::Mat average_image_;
   cv::Mat norm_image_;
 };
-}
+}  // namespace swri_image_util
 
 
-#endif  // IMAGE_UTIL_ROLLING_NORMALIZATION_H_
+#endif  // SWRI_IMAGE_UTIL__ROLLING_NORMALIZATION_H_

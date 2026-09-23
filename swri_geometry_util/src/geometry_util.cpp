@@ -27,7 +27,7 @@
 //
 // *****************************************************************************
 
-#include <swri_geometry_util/geometry_util.h>
+#include "swri_geometry_util/geometry_util.h"
 
 namespace swri_geometry_util
 {
@@ -184,4 +184,4 @@ bool ClosestPointToLines(
   return true;
 }
 
-}
+}  // namespace swri_geometry_util

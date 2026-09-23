@@ -27,10 +27,11 @@
 //
 // *****************************************************************************
 
-#include <swri_image_util/image_warp_util.h>
-#include <swri_opencv_util/model_fit.h>
+#include "swri_image_util/image_warp_util.h"
 
 #include <algorithm>
+
+#include "swri_opencv_util/model_fit.h"
 
 #include <rclcpp/logging.hpp>
 
@@ -559,4 +560,4 @@ void PitchAndRollEstimatorQueue::ComputeStats()
     median_roll_ = temp_roll[mid_idx];
   }
 }
-}
+}  // namespace swri_image_util

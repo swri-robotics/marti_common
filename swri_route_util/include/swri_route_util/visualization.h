@@ -26,12 +26,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *****************************************************************************
-#ifndef SWRI_ROUTE_UTIL_VISUALIZATION_H_
-#define SWRI_ROUTE_UTIL_VISUALIZATION_H_
+#ifndef SWRI_ROUTE_UTIL__VISUALIZATION_H_
+#define SWRI_ROUTE_UTIL__VISUALIZATION_H_
 
 #include <string>
 
-#include <swri_route_util/route.h>
+#include "swri_route_util/route.h"
 #include <marti_nav_msgs/msg/obstacle_array.hpp>
 #include <marti_nav_msgs/msg/route_speed_array.hpp>
 #include <std_msgs/msg/color_rgba.hpp>
@@ -68,4 +68,4 @@ void markerArrayForObstacles(
   const std_msgs::msg::ColorRGBA & color,
   double line_width);
 }  // namespace swri_route_util
-#endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_
+#endif  // SWRI_ROUTE_UTIL__VISUALIZATION_H_

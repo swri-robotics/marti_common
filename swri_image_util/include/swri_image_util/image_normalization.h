@@ -27,8 +27,8 @@
 //
 // *****************************************************************************
 
-#ifndef IMAGE_UTIL_IMAGE_NORMALIZATION_H_
-#define IMAGE_UTIL_IMAGE_NORMALIZATION_H_
+#ifndef SWRI_IMAGE_UTIL__IMAGE_NORMALIZATION_H_
+#define SWRI_IMAGE_UTIL__IMAGE_NORMALIZATION_H_
 
 #include <vector>
 
@@ -106,7 +106,7 @@ cv::Mat scale_2_8bit(const cv::Mat & image);
 	 * @returns The 8-bit color Mat.
 	 */
 cv::Mat scale_2_8bit_color(const cv::Mat & image);
-}
+}  // namespace swri_image_util
 
 
-#endif  // IMAGE_UTIL_IMAGE_NORMALIZATION_H_
+#endif  // SWRI_IMAGE_UTIL__IMAGE_NORMALIZATION_H_
