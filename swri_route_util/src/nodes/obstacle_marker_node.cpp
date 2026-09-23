@@ -47,8 +47,8 @@ namespace swri_route_util
 class ObstacleMarkerNode : public rclcpp::Node
 {
 public:
-  explicit ObstacleMarkerNode(const rclcpp::NodeOptions &options) :
-    rclcpp::Node("obstacle_markers", options),
+  explicit ObstacleMarkerNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("obstacle_markers", options),
     line_width_(0.1),
     marker_count_(0)
   {
@@ -60,7 +60,8 @@ public:
     const std::vector<double> default_color = {1.0, 0.0, 0.0, 1.0};
     std::vector<double> color = this->declare_parameter("color", default_color);
     if (color.size() != default_color.size()) {
-      RCLCPP_ERROR(this->get_logger(),
+      RCLCPP_ERROR(
+        this->get_logger(),
         "The 'color' parameter must have 4 elements (r, g, b, a), but it has %zu. "
         "Falling back to the default color.", color.size());
       color = default_color;

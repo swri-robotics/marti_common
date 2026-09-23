@@ -39,18 +39,18 @@
 
 namespace
 {
-  geometry_msgs::msg::TransformStamped MakeTf(
-    const std::string& parent = "map",
-    const std::string& child = "map",
-    double x = 0.0)
-  {
-    geometry_msgs::msg::TransformStamped tf;
-    tf.header.frame_id = parent;
-    tf.child_frame_id = child;
-    tf.transform.translation.x = x;
-    tf.transform.rotation.w = 1.0;
-    return tf;
-  }
+geometry_msgs::msg::TransformStamped MakeTf(
+  const std::string & parent = "map",
+  const std::string & child = "map",
+  double x = 0.0)
+{
+  geometry_msgs::msg::TransformStamped tf;
+  tf.header.frame_id = parent;
+  tf.child_frame_id = child;
+  tf.transform.translation.x = x;
+  tf.transform.rotation.w = 1.0;
+  return tf;
+}
 }
 
 TEST(TransformEqualityTests, IdentityTransformsAreEquivalent)
@@ -97,17 +97,24 @@ TEST(TransformEqualityTests, Wgs84TransformsCompareByOriginAndGeometry)
     std::make_shared<swri_transform_util::Wgs84ToTfTransform>(MakeTf(), local_xy));
 
   // A separately constructed but identical transform is interchangeable.
-  EXPECT_TRUE(transform == swri_transform_util::Transform(
+  EXPECT_TRUE(
+    transform == swri_transform_util::Transform(
       std::make_shared<swri_transform_util::Wgs84ToTfTransform>(MakeTf(), same_origin)));
 
   // A moved local XY origin is not.
-  EXPECT_TRUE(transform != swri_transform_util::Transform(
+  EXPECT_TRUE(
+    transform != swri_transform_util::Transform(
       std::make_shared<swri_transform_util::Wgs84ToTfTransform>(MakeTf(), other_origin)));
 
   // Neither is different TF geometry, or a different frame.
-  EXPECT_TRUE(transform != swri_transform_util::Transform(
-      std::make_shared<swri_transform_util::Wgs84ToTfTransform>(MakeTf("map", "map", 5.0), local_xy)));
-  EXPECT_TRUE(transform != swri_transform_util::Transform(
+  EXPECT_TRUE(
+    transform != swri_transform_util::Transform(
+      std::make_shared<swri_transform_util::Wgs84ToTfTransform>(
+        MakeTf(
+          "map", "map",
+          5.0), local_xy)));
+  EXPECT_TRUE(
+    transform != swri_transform_util::Transform(
       std::make_shared<swri_transform_util::Wgs84ToTfTransform>(MakeTf("map", "odom"), local_xy)));
 }
 
@@ -120,7 +127,8 @@ TEST(TransformEqualityTests, Wgs84TransformsIgnoreTheTfTimestamp)
 
   // Looking the same transform up again must not count as a change; only the
   // geometry decides where points land.
-  EXPECT_TRUE(swri_transform_util::Transform(
+  EXPECT_TRUE(
+    swri_transform_util::Transform(
       std::make_shared<swri_transform_util::Wgs84ToTfTransform>(MakeTf(), local_xy)) ==
     swri_transform_util::Transform(
       std::make_shared<swri_transform_util::Wgs84ToTfTransform>(later, local_xy)));

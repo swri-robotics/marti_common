@@ -31,18 +31,18 @@
 
 namespace swri_math_util
 {
-  RandomGenerator::RandomGenerator(int32_t seed) :
-    rng_(seed == -1 ? seed_() : seed)
-  {
-  }
+RandomGenerator::RandomGenerator(int32_t seed)
+: rng_(seed == -1 ? seed_() : seed)
+{
+}
 
-  void RandomGenerator::GetUniformRandomSample(
-    int32_t min,
-    int32_t max,
-    int32_t count,
-    std::vector<int32_t>& sample)
-  {
-    std::unique_lock<std::mutex> lock(mutex_);
-    swri_math_util::GetUniformRandomSample<std::mt19937>(rng_, min, max, count, sample);
-  }
+void RandomGenerator::GetUniformRandomSample(
+  int32_t min,
+  int32_t max,
+  int32_t count,
+  std::vector<int32_t> & sample)
+{
+  std::unique_lock<std::mutex> lock(mutex_);
+  swri_math_util::GetUniformRandomSample<std::mt19937>(rng_, min, max, count, sample);
+}
 }

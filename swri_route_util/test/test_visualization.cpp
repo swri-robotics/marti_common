@@ -45,8 +45,8 @@ geometry_msgs::msg::Point makePoint(double x, double y)
 }
 
 marti_nav_msgs::msg::Obstacle makeObstacle(
-  const std::string &id,
-  const std::vector<geometry_msgs::msg::Point> &polygon)
+  const std::string & id,
+  const std::vector<geometry_msgs::msg::Point> & polygon)
 {
   marti_nav_msgs::msg::Obstacle obstacle;
   obstacle.id = id;
@@ -86,7 +86,7 @@ TEST(MarkerArrayForObstacles, DrawsAClosedLineStripPerObstacle)
     markers, obstacles, "obstacles", makeColor(1.0, 0.0, 0.0, 1.0), 0.25);
 
   ASSERT_EQ(1U, markers.markers.size());
-  const visualization_msgs::msg::Marker &m = markers.markers.front();
+  const visualization_msgs::msg::Marker & m = markers.markers.front();
 
   EXPECT_EQ("map", m.header.frame_id);
   EXPECT_EQ(42, m.header.stamp.sec);
@@ -191,7 +191,7 @@ TEST(MarkerArrayForObstacles, ClearsAnyExistingMarkers)
   EXPECT_EQ(1U, markers.markers.size());
 }
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

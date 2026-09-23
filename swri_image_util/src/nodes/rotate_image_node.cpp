@@ -44,36 +44,34 @@
 
 namespace swri_image_util
 {
-  class RotateImageNode : public rclcpp::Node
-  {
-  public:
-    explicit RotateImageNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("rotate_image", options),
+class RotateImageNode : public rclcpp::Node
+{
+public:
+  explicit RotateImageNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("rotate_image", options),
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        it_(image_transport::RequiredInterfaces{*this}),
+    it_(image_transport::RequiredInterfaces{*this}),
 #endif
-        operations_(0),
-        flip_axis_(false)
-    {
-      this->declare_parameter("angle", 0.0);
+    operations_(0),
+    flip_axis_(false)
+  {
+    this->declare_parameter("angle", 0.0);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void
       {
         int32_t angle_90 = static_cast<int32_t>(
-            swri_math_util::ToNearest(this->get_parameter("angle").as_double(), 90));
+          swri_math_util::ToNearest(this->get_parameter("angle").as_double(), 90));
         flip_axis_ = angle_90 > 0;
         operations_ = std::abs(angle_90 / 90);
 
-        if (operations_ == 0)
-        {
+        if (operations_ == 0) {
           image_pub_.publish(image);
           return;
         }
 
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-        for (int32_t i = 0; i < operations_; i++)
-        {
+        for (int32_t i = 0; i < operations_; i++) {
           cv::transpose(cv_image->image, cv_image->image);
           cv::flip(cv_image->image, cv_image->image, flip_axis_);
         }
@@ -82,25 +80,25 @@ namespace swri_image_util
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "rotated_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_pub_ = image_transport::create_publisher(this, "rotated_image");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_pub_ = it_.advertise("rotated_image", 1);
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_pub_ = it_.advertise("rotated_image", 1);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
-    int32_t operations_;
-    bool flip_axis_;
+private:
+  int32_t operations_;
+  bool flip_axis_;
 
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
 
-  };
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

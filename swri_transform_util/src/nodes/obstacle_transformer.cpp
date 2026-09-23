@@ -19,85 +19,83 @@
 namespace swri_transform_util
 {
 class ObstacleTransformer : public rclcpp::Node
+{
+public:
+  explicit ObstacleTransformer(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("obstacle_transformer", options)
   {
-  public:
-    explicit ObstacleTransformer(const rclcpp::NodeOptions& options) :
-      rclcpp::Node("obstacle_transformer", options)
+    this->declare_parameter("output_frame", "/wgs84");
+
+    output_frame_ = this->get_parameter("output_frame").as_string();
+
+    object_array_sub_ = this->create_subscription<marti_nav_msgs::msg::ObstacleArray>(
+      "object_array",
+      1,
+      std::bind(&ObstacleTransformer::handleObstacleArray, this, std::placeholders::_1));
+
+    viz_pub_ = this->create_publisher<marti_nav_msgs::msg::ObstacleArray>("viz_array", 1);
+  }
+
+private:
+  void InitTransformManager()
+  {
+    tf_manager_ = std::make_shared<swri_transform_util::TransformManager>(shared_from_this());
+  }
+
+  void handleObstacleArray(const marti_nav_msgs::msg::ObstacleArray::ConstSharedPtr & obj)
+  {
+    if (viz_pub_->get_subscription_count() == 0 &&
+      viz_pub_->get_intra_process_subscription_count() == 0)
     {
-      this->declare_parameter("output_frame", "/wgs84");
-
-      output_frame_ = this->get_parameter("output_frame").as_string();
-
-      object_array_sub_ = this->create_subscription<marti_nav_msgs::msg::ObstacleArray>(
-        "object_array",
-        1,
-        std::bind(&ObstacleTransformer::handleObstacleArray, this, std::placeholders::_1));
-
-      viz_pub_ = this->create_publisher<marti_nav_msgs::msg::ObstacleArray>("viz_array", 1);
+      return;
     }
 
-  private:
-    void InitTransformManager()
-    {
-      tf_manager_ = std::make_shared<swri_transform_util::TransformManager>(shared_from_this());
+    marti_nav_msgs::msg::ObstacleArray::UniquePtr obstacles =
+      std::make_unique<marti_nav_msgs::msg::ObstacleArray>();
+    *obstacles = *obj;
+    obstacles->header.frame_id = output_frame_;
+
+    if (!tf_manager_) {
+      InitTransformManager();
     }
 
-    void handleObstacleArray(const marti_nav_msgs::msg::ObstacleArray::ConstSharedPtr& obj)
-    {
-      if (viz_pub_->get_subscription_count() == 0 && viz_pub_->get_intra_process_subscription_count() == 0)
-      {
-        return;
-      }
-
-      marti_nav_msgs::msg::ObstacleArray::UniquePtr obstacles = std::make_unique<marti_nav_msgs::msg::ObstacleArray>();
-      *obstacles = *obj;
-      obstacles->header.frame_id = output_frame_;
-
-      if (!tf_manager_)
-      {
-        InitTransformManager();
-      }
-
-      swri_transform_util::Transform transform;
-      if (!tf_manager_->GetTransform(output_frame_, obj->header.frame_id, transform))
-      {
-        RCLCPP_WARN(this->get_logger(), "Failed to get transform.");
-        return;
-      }
-
-      for (auto& ob: obstacles->obstacles)
-      {
-        tf2::Transform local_transform;
-        tf2::fromMsg(ob.pose, local_transform);
-        ob.pose.position.x = 0;
-        ob.pose.position.y = 0;
-        ob.pose.position.z = 0;
-        ob.pose.orientation.x = 0.0;
-        ob.pose.orientation.y = 0.0;
-        ob.pose.orientation.z = 0.0;
-        ob.pose.orientation.w = 1.0;
-        for (auto& point: ob.polygon)
-        {
-          tf2::Vector3 p(point.x, point.y, 0.0);
-          p = local_transform*p;
-
-          p = transform*p;
-          point.x = p.x();
-          point.y = p.y();
-        }
-      }
-
-      viz_pub_->publish(std::move(obstacles));
+    swri_transform_util::Transform transform;
+    if (!tf_manager_->GetTransform(output_frame_, obj->header.frame_id, transform)) {
+      RCLCPP_WARN(this->get_logger(), "Failed to get transform.");
+      return;
     }
 
-    rclcpp::Subscription<marti_nav_msgs::msg::ObstacleArray>::SharedPtr object_array_sub_;
-    rclcpp::Publisher<marti_nav_msgs::msg::ObstacleArray>::SharedPtr viz_pub_;
+    for (auto & ob: obstacles->obstacles) {
+      tf2::Transform local_transform;
+      tf2::fromMsg(ob.pose, local_transform);
+      ob.pose.position.x = 0;
+      ob.pose.position.y = 0;
+      ob.pose.position.z = 0;
+      ob.pose.orientation.x = 0.0;
+      ob.pose.orientation.y = 0.0;
+      ob.pose.orientation.z = 0.0;
+      ob.pose.orientation.w = 1.0;
+      for (auto & point: ob.polygon) {
+        tf2::Vector3 p(point.x, point.y, 0.0);
+        p = local_transform * p;
 
-    // parameters
-    std::string output_frame_;
+        p = transform * p;
+        point.x = p.x();
+        point.y = p.y();
+      }
+    }
 
-    std::shared_ptr<swri_transform_util::TransformManager> tf_manager_;
-  };
+    viz_pub_->publish(std::move(obstacles));
+  }
+
+  rclcpp::Subscription<marti_nav_msgs::msg::ObstacleArray>::SharedPtr object_array_sub_;
+  rclcpp::Publisher<marti_nav_msgs::msg::ObstacleArray>::SharedPtr viz_pub_;
+
+  // parameters
+  std::string output_frame_;
+
+  std::shared_ptr<swri_transform_util::TransformManager> tf_manager_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

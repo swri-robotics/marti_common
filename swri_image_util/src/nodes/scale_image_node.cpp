@@ -44,22 +44,21 @@
 
 namespace swri_image_util
 {
-  class ScaleImageNode : public rclcpp::Node
-  {
-  public:
-    explicit ScaleImageNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("scale_image", options)
+class ScaleImageNode : public rclcpp::Node
+{
+public:
+  explicit ScaleImageNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("scale_image", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        , it_(image_transport::RequiredInterfaces{*this})
+    , it_(image_transport::RequiredInterfaces{*this})
 #endif
-    {
-      this->declare_parameter("scale", 1.0);
+  {
+    this->declare_parameter("scale", 1.0);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void
       {
         double scale = this->get_parameter("scale").as_double();
-        if (std::fabs(scale - 1.0) < 0.001)
-        {
+        if (std::fabs(scale - 1.0) < 0.001) {
           image_pub_.publish(image);
           return;
         }
@@ -67,8 +66,8 @@ namespace swri_image_util
         cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
         cv::Size size(
-            swri_math_util::Round(image->width * scale),
-            swri_math_util::Round(image->height * scale));
+          swri_math_util::Round(image->width * scale),
+          swri_math_util::Round(image->height * scale));
         cv::Mat scaled;
         cv::resize(cv_image->image, scaled, size);
 
@@ -81,21 +80,21 @@ namespace swri_image_util
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "scaled_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_pub_ = image_transport::create_publisher(this, "scaled_image");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_pub_ = it_.advertise("scaled_image", 1);
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_pub_ = it_.advertise("scaled_image", 1);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
+private:
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
-  };
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

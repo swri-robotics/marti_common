@@ -41,16 +41,19 @@ namespace message_traits
 // http://wiki.ros.org/roscpp/Overview/MessagesTraits
 
 // This type is not fixed-size.
-template<> struct IsFixedSize<swri_route_util::Route> : public FalseType {};
+template<>
+struct IsFixedSize<swri_route_util::Route>: public FalseType {};
 // This type is memcpyable
-template<> struct IsSimple<swri_route_util::Route> : public TrueType {};
+template<>
+struct IsSimple<swri_route_util::Route>: public TrueType {};
 // This type has a header
-template<> struct HasHeader<swri_route_util::Route> : public TrueType {};
+template<>
+struct HasHeader<swri_route_util::Route>: public TrueType {};
 
 template<>
 struct MD5Sum<swri_route_util::Route>
 {
-  static const char* value()
+  static const char * value()
   {
     // Ensure that if the definition of marti_nav_msgs::Route changes
     // we have a compile error here.
@@ -59,7 +62,7 @@ struct MD5Sum<swri_route_util::Route>
     return MD5Sum<marti_nav_msgs::Route>::value();
   }
 
-  static const char* value(const swri_route_util::Route& m)
+  static const char * value(const swri_route_util::Route & m)
   {
     return MD5Sum<swri_route_util::Route>::value();
   }
@@ -68,12 +71,12 @@ struct MD5Sum<swri_route_util::Route>
 template<>
 struct DataType<swri_route_util::Route>
 {
-  static const char* value()
+  static const char * value()
   {
     return DataType<marti_nav_msgs::Route>::value();
   }
 
-  static const char* value(const swri_route_util::Route& m)
+  static const char * value(const swri_route_util::Route & m)
   {
     return DataType<swri_route_util::Route>::value();
   }
@@ -82,12 +85,12 @@ struct DataType<swri_route_util::Route>
 template<>
 struct Definition<swri_route_util::Route>
 {
-  static const char* value()
+  static const char * value()
   {
     return Definition<marti_nav_msgs::Route>::value();
   }
 
-  static const char* value(const swri_route_util::Route& m)
+  static const char * value(const swri_route_util::Route & m)
   {
     return Definition<swri_route_util::Route>::value();
   }
@@ -100,7 +103,7 @@ template<>
 struct Serializer<swri_route_util::Route>
 {
   template<typename Stream>
-  inline static void write(Stream& stream, const swri_route_util::Route& route)
+  inline static void write(Stream & stream, const swri_route_util::Route & route)
   {
     marti_nav_msgs::Route msg;
     route.toMsg(msg);
@@ -108,14 +111,14 @@ struct Serializer<swri_route_util::Route>
   }
 
   template<typename Stream>
-  inline static void read(Stream& stream, swri_route_util::Route& route)
+  inline static void read(Stream & stream, swri_route_util::Route & route)
   {
     marti_nav_msgs::Route msg;
     stream.next(msg);
     route = swri_route_util::Route(msg);
   }
 
-  inline static uint32_t serializedLength(const swri_route_util::Route& route)
+  inline static uint32_t serializedLength(const swri_route_util::Route & route)
   {
     marti_nav_msgs::Route msg;
     route.toMsg(msg);

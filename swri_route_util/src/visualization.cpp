@@ -44,9 +44,9 @@ static geometry_msgs::msg::Point makePoint(const double x, const double y)
 }
 
 void markerForRouteSpeeds(
-  visualization_msgs::msg::Marker &m,
-  const Route &route,
-  const marti_nav_msgs::msg::RouteSpeedArray &speeds,
+  visualization_msgs::msg::Marker & m,
+  const Route & route,
+  const marti_nav_msgs::msg::RouteSpeedArray & speeds,
   double scale)
 {
   m.header.frame_id = route.header.frame_id;
@@ -72,9 +72,9 @@ void markerForRouteSpeeds(
   m.lifetime = rclcpp::Duration(std::chrono::nanoseconds::zero());
   m.frame_locked = false;
 
-  m.points.reserve(speeds.speeds.size()*2);
+  m.points.reserve(speeds.speeds.size() * 2);
 
-  for (auto const &speed : speeds.speeds) {
+  for (auto const & speed : speeds.speeds) {
     marti_nav_msgs::msg::RoutePosition position;
     position.id = speed.id;
     position.distance = speed.distance;
@@ -86,7 +86,7 @@ void markerForRouteSpeeds(
 
     tf2::Vector3 p1 = p.position();
     tf2::Vector3 v = tf2::Transform(p.orientation()) * tf2::Vector3(0.0, 1.0, 0.0);
-    tf2::Vector3 p2 = p1 + scale*speed.speed*v;
+    tf2::Vector3 p2 = p1 + scale * speed.speed * v;
 
     m.points.push_back(makePoint(p1.x(), p1.y()));
     m.points.push_back(makePoint(p2.x(), p2.y()));
@@ -94,16 +94,16 @@ void markerForRouteSpeeds(
 }
 
 void markerArrayForObstacles(
-  visualization_msgs::msg::MarkerArray &markers,
-  const marti_nav_msgs::msg::ObstacleArray &obstacles,
-  const std::string &ns,
-  const std_msgs::msg::ColorRGBA &color,
+  visualization_msgs::msg::MarkerArray & markers,
+  const marti_nav_msgs::msg::ObstacleArray & obstacles,
+  const std::string & ns,
+  const std_msgs::msg::ColorRGBA & color,
   double line_width)
 {
   markers.markers.clear();
   markers.markers.reserve(obstacles.obstacles.size());
 
-  for (auto const &obstacle : obstacles.obstacles) {
+  for (auto const & obstacle : obstacles.obstacles) {
     // A line strip needs at least two points to draw anything.
     if (obstacle.polygon.size() < 2) {
       continue;
@@ -123,9 +123,10 @@ void markerArrayForObstacles(
     // builds the pose from raw data can leave the quaternion zeroed
     // out, which is not a valid rotation and can not be rendered.
     if (m.pose.orientation.x == 0.0 &&
-        m.pose.orientation.y == 0.0 &&
-        m.pose.orientation.z == 0.0 &&
-        m.pose.orientation.w == 0.0) {
+      m.pose.orientation.y == 0.0 &&
+      m.pose.orientation.z == 0.0 &&
+      m.pose.orientation.w == 0.0)
+    {
       m.pose.orientation.w = 1.0;
     }
     m.scale.x = line_width;

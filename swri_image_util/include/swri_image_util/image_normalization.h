@@ -38,7 +38,7 @@
 
 namespace swri_image_util
 {
-  /**
+/**
    * Normalizes the illumination in an image using a normalization image as a
    * template
    *
@@ -46,38 +46,38 @@ namespace swri_image_util
    * @param[in]  SourceImage    The image to normalize
    * @param[out] DestImage      The resulting normalized image
    */
-  void normalize_illumination(
-      cv::Mat NormImage,
-      cv::Mat SourceImage,
-      cv::Mat& DestImage);
+void normalize_illumination(
+  cv::Mat NormImage,
+  cv::Mat SourceImage,
+  cv::Mat & DestImage);
 
-  /**
+/**
    * Normalizes the illumination in an image using contrast stretching.
    *
    * @param[in]  grid_size     The grid size to normalize on
    * @param[in]  source_image  The image to normalize
    * @param[out] dest_image    The resulting normalized image
    */
-  void ContrastStretch(
-      int32_t grid_size,
-      const cv::Mat& source_image,
-      cv::Mat& dest_image,
-      const cv::Mat& mask=cv::Mat(),
-      double max_min = 0.0,
-      double min_max = 0.0);
+void ContrastStretch(
+  int32_t grid_size,
+  const cv::Mat & source_image,
+  cv::Mat & dest_image,
+  const cv::Mat & mask = cv::Mat(),
+  double max_min = 0.0,
+  double min_max = 0.0);
 
-  /**
+/**
    * Normalizes the illumination in an image using approach from OpenCV's
    * stereo block matching.
    */
-  void NormalizeResponse(
-      const cv::Mat& src,
-      cv::Mat& dst,
-      int winsize,
-      int ftzero,
-      uchar* buf);
+void NormalizeResponse(
+  const cv::Mat & src,
+  cv::Mat & dst,
+  int winsize,
+  int ftzero,
+  uchar * buf);
 
-  /**
+/**
    * @brief      Computes a best estimate of a normalization image from a vector
    *             of images.
    *
@@ -86,9 +86,9 @@ namespace swri_image_util
    *
    * @retval     Returns the normalization image
    */
-  cv::Mat generate_normalization_image(const std::vector<cv::Mat>& image_list);
+cv::Mat generate_normalization_image(const std::vector<cv::Mat> & image_list);
 
-	/**
+/**
 	 * @brief Convert the input Mat to 8 bit
 	 *
 	 *
@@ -96,8 +96,8 @@ namespace swri_image_util
 	 *
 	 * @returns The 8-bit Mat.
 	 */
-	cv::Mat scale_2_8bit(const cv::Mat& image);
-	/**
+cv::Mat scale_2_8bit(const cv::Mat & image);
+/**
 	 * @brief Convert the input Mat to 8 bit color
 	 *
 	 *
@@ -105,7 +105,7 @@ namespace swri_image_util
 	 *
 	 * @returns The 8-bit color Mat.
 	 */
-	cv::Mat scale_2_8bit_color(const cv::Mat& image);
+cv::Mat scale_2_8bit_color(const cv::Mat & image);
 }
 
 

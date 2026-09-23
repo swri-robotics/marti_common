@@ -31,13 +31,14 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
-namespace swri_opencv_util {
+namespace swri_opencv_util
+{
 
 cv::Mat blend(
-    const cv::Mat& src1,
-    const cv::Mat& alpha1,
-    const cv::Mat& src2,
-    const cv::Mat& alpha2)
+  const cv::Mat & src1,
+  const cv::Mat & alpha1,
+  const cv::Mat & src2,
+  const cv::Mat & alpha2)
 {
   int out_type = src1.type();
   cv::Mat s1, s2, a1, a2;
@@ -56,9 +57,9 @@ cv::Mat blend(
 }
 
 cv::Mat blend(
-    const cv::Mat& overlay,
-    const cv::Mat& base,
-    double alpha)
+  const cv::Mat & overlay,
+  const cv::Mat & base,
+  double alpha)
 {
   alpha = std::min(1.0, alpha);
   alpha = std::max(0.0, alpha);
@@ -68,10 +69,10 @@ cv::Mat blend(
 }
 
 cv::Mat overlayColor(
-    const cv::Mat& src,
-    const cv::Mat& mask,
-    const cv::Scalar& color,
-    double alpha)
+  const cv::Mat & src,
+  const cv::Mat & mask,
+  const cv::Scalar & color,
+  double alpha)
 {
   alpha = std::min(1.0, alpha);
   alpha = std::max(0.0, alpha);
@@ -79,26 +80,17 @@ cv::Mat overlayColor(
   cv::Size size = src.size();
   cv::Mat color_image;
 
-  if (src.type() == CV_8U)
-  {
+  if (src.type() == CV_8U) {
     cv::cvtColor(src, color_image, cv::COLOR_GRAY2BGR);
-  }
-  else if (src.type() == CV_32F || src.type() == CV_16U)
-  {
+  } else if (src.type() == CV_32F || src.type() == CV_16U) {
     cv::Mat tmp;
     src.convertTo(tmp, CV_8U);
     cv::cvtColor(tmp, color_image, cv::COLOR_GRAY2BGR);
-  }
-  else if (src.type() == CV_32FC3 || src.type() == CV_16UC3)
-  {
+  } else if (src.type() == CV_32FC3 || src.type() == CV_16UC3) {
     src.convertTo(color_image, CV_8UC3);
-  }
-  else if (src.type() != CV_8UC3)
-  {
+  } else if (src.type() != CV_8UC3) {
     color_image = src;
-  }
-  else
-  {
+  } else {
     return cv::Mat();
   }
 

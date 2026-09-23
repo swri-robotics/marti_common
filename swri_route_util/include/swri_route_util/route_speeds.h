@@ -59,18 +59,18 @@ struct SpeedForCurvatureParameters
   // values result in smoother curvature estimates with fewer spikes.
   double curvature_filter_size_;
 
-  explicit SpeedForCurvatureParameters(const rclcpp::Node::SharedPtr& node);
+  explicit SpeedForCurvatureParameters(const rclcpp::Node::SharedPtr & node);
 
   void loadFromRosParam();
 
-  void loadFromConfig(const marti_common_msgs::msg::KeyValueArray &config);
-  void readToConfig(marti_common_msgs::msg::KeyValueArray &config) const;
+  void loadFromConfig(const marti_common_msgs::msg::KeyValueArray & config);
+  void readToConfig(marti_common_msgs::msg::KeyValueArray & config) const;
 };
 
 void speedsForCurvature(
-  marti_nav_msgs::msg::RouteSpeedArray &speeds,
-  const Route &route,
-  const SpeedForCurvatureParameters &parameters);
+  marti_nav_msgs::msg::RouteSpeedArray & speeds,
+  const Route & route,
+  const SpeedForCurvatureParameters & parameters);
 
 
 struct SpeedForObstaclesParameters
@@ -89,7 +89,7 @@ struct SpeedForObstaclesParameters
 
   double stop_buffer_m_;
 
-  explicit SpeedForObstaclesParameters(const rclcpp::Node::SharedPtr& node);
+  explicit SpeedForObstaclesParameters(const rclcpp::Node::SharedPtr & node);
 
   void loadFromRosParam();
 };
@@ -109,8 +109,9 @@ struct DistanceReport
 {
   DistanceReport();
 
-  DistanceReport(bool near, bool collision, size_t routeIndex, const tf2::Vector3& vehiclePoint,
-                 const tf2::Vector3& obstaclePoint, double distance);
+  DistanceReport(
+    bool near, bool collision, size_t routeIndex, const tf2::Vector3 & vehiclePoint,
+    const tf2::Vector3 & obstaclePoint, double distance);
 
   // True if the bounding circles touch but the actual polygons do not.
   bool near;
@@ -125,22 +126,22 @@ struct DistanceReport
 // Convert an obstacle array message into a ObstacleData by applying a
 // transform and calculating the radius of each obstacle.
 void generateObstacleData(
-  std::vector<ObstacleData>& obstacle_data,
-  swri_transform_util::Transform& g_route_from_obs,
-  marti_nav_msgs::msg::ObstacleArray& obstacles_msg);
+  std::vector<ObstacleData> & obstacle_data,
+  swri_transform_util::Transform & g_route_from_obs,
+  marti_nav_msgs::msg::ObstacleArray & obstacles_msg);
 
 void generateObstacleData(
-  std::vector<ObstacleData>& obstacle_data,
-  const swri_transform_util::Transform& g_route_from_obs,
-  const marti_nav_msgs::msg::TrackedObjectArray& obstacles_msg);
+  std::vector<ObstacleData> & obstacle_data,
+  const swri_transform_util::Transform & g_route_from_obs,
+  const marti_nav_msgs::msg::TrackedObjectArray & obstacles_msg);
 
 void speedsForObstacles(
-    marti_nav_msgs::msg::RouteSpeedArray &speeds,
-    std::vector<DistanceReport> &reports,
-    const Route &route,
-    const marti_nav_msgs::msg::RoutePosition &route_position,
-    const std::vector<ObstacleData> &obstacles,
-    const SpeedForObstaclesParameters &parameters,
-    rclcpp::Logger logger = rclcpp::get_logger("swri_route_util::speedsForObstacles"));
+  marti_nav_msgs::msg::RouteSpeedArray & speeds,
+  std::vector<DistanceReport> & reports,
+  const Route & route,
+  const marti_nav_msgs::msg::RoutePosition & route_position,
+  const std::vector<ObstacleData> & obstacles,
+  const SpeedForObstaclesParameters & parameters,
+  rclcpp::Logger logger = rclcpp::get_logger("swri_route_util::speedsForObstacles"));
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_ROUTE_SPEEDS_H_

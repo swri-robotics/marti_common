@@ -42,7 +42,7 @@
 // consumers neither compile against nor link to GeographicLib.
 namespace GeographicLib
 {
-  class LocalCartesian;
+class LocalCartesian;
 }
 
 namespace swri_transform_util
@@ -58,15 +58,15 @@ namespace swri_transform_util
  * @param[out] x                   The output X coordinate in meters.
  * @param[out] y                   The output Y coordinate in meters.
  */
-  void LocalXyFromWgs84(
-      double latitude,
-      double longitude,
-      double reference_latitude,
-      double reference_longitude,
-      double& x,
-      double& y);
+void LocalXyFromWgs84(
+  double latitude,
+  double longitude,
+  double reference_latitude,
+  double reference_longitude,
+  double & x,
+  double & y);
 
-  /**
+/**
    * Transform a point from an ortho-rectified LocalXY coordinate system into
    * WGS84 latitude and longitude.
    *
@@ -79,15 +79,15 @@ namespace swri_transform_util
    * @param[out] latitude             The output latitude in degrees.
    * @param[out] longitude            The output latitude in degrees.
    */
-  void Wgs84FromLocalXy(
-      double x,
-      double y,
-      double reference_latitude,
-      double reference_longitude,
-      double& latitude,
-      double& longitude);
+void Wgs84FromLocalXy(
+  double x,
+  double y,
+  double reference_latitude,
+  double reference_longitude,
+  double & latitude,
+  double & longitude);
 
-  /**
+/**
    * Utility class for converting between WGS84 lat/lon and an ortho-rectified
    * LocalXY coordinate system.
    *
@@ -104,173 +104,175 @@ namespace swri_transform_util
    * corresponds to the X-axis of the ortho-rectified frame pointing east.
    *
    */
-  class LocalXyWgs84Util
-  {
-  public:
-    /**
-     * Initializing constructor
-     *
-     * This constructor creates and initializes a LocalXyWgs84Util.
-     *
-     * @param[in] reference_latitude   Reference latitude in degrees.
-     * @param[in] reference_longitude  Reference longitude in degrees.
-     * @param[in] reference_angle      Reference angle in degrees ENU.
-     * @param[in] reference_altitude   Reference altitude in meters.
-     */
-    LocalXyWgs84Util(
-        double reference_latitude,
-        double reference_longitude,
-        double reference_angle = 0,
-        double reference_altitude = 0,
-        rclcpp::Node::SharedPtr node = nullptr);
-
-    /**
-     * Zero-argument constructor.
-     *
-     * This constructor creates an uninitialized LocalXyWgs84Util. This
-     * constructor is only used to create placeholder objects in containers
-     * that require a zero-argument constructor.
-     */
-    explicit LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
-
-    /**
-     * Copy constructor.
-     *
-     * Performs a deep copy of the GeographicLib::LocalCartesian. If the source
-     * is still waiting on /local_xy_origin, the copy creates its own
-     * subscription so that the callback is bound to the copy rather than the
-     * source.
-     */
-    LocalXyWgs84Util(const LocalXyWgs84Util& other);
-
-    /**
-     * Copy assignment operator.
-     *
-     * See the copy constructor for semantics.
-     */
-    LocalXyWgs84Util& operator=(const LocalXyWgs84Util& other);
-
-    /**
-     * Destructor.
-     *
-     * Declared and defined out-of-line in the .cpp so that the unique_ptr to
-     * the forward-declared GeographicLib::LocalCartesian is destroyed where the
-     * complete type is visible.
-     */
-    ~LocalXyWgs84Util();
-
-    /**
-     * Return whether the object has been initialized
-     *
-     * The object is not usable unless it has been initialized (see the two
-     * constructors).
-     *
-     * @return True if initialized, false otherwise.
-     */
-    bool Initialized() const { return initialized_; }
-
-    /**
-     * Reset to "not Initialized". Useful when the local_xy_origin
-     * changes and we want this class to be updated.
-     */
-    void ResetInitialization();
-
-    /**
-     * Return the longitude coordinate of the local origin
-     *
-     * @return The WGS84 longitude coordinate of the local origin in degrees
-     */
-    double ReferenceLongitude() const;
-
-    /**
-     * Return the latitude coordinate of the local origin
-     *
-     * @return The WGS84 latitude coordinate of the local origin in degrees
-     */
-    double ReferenceLatitude() const;
-
-    /**
-     * Return the reference angle in degrees ENU.
-     */
-    double ReferenceAngle() const;
-
-    /**
-     * Return the altitude coordinate of the local origin
-     *
-     * @return The WGS84 altitude coordinate of the local origin in meters
-     */
-    double ReferenceAltitude() const;
-
-    /**
-     * Return the TF frame ID corresponding to the local origin
-     *
-     * @return The TF frame ID corresponding to the local origin
-     */
-    std::string Frame() const { return frame_; }
-
-    /**
-     * Return the TF frame ID corresponding to the local origin with a leading slash
-     *
-     * @return The TF frame ID corresponding to the local origin with a leading slash
-     */
-    std::string NormalizedFrame() const { return NormalizeFrameId(frame_); }
-
-    /**
-     * Convert WGS84 latitude and longitude to LocalXY.
-     *
-     * @param[in]  latitude   Latitude value in degrees.
-     * @param[in]  longitude  Longitude value in degrees.
-     * @param[out] x          X coordinate in meters from origin.
-     * @param[out] y          Y coordinate in meters from origin.
-     *
-     * @returns True if the conversion is possible.
-     */
-    bool ToLocalXy(
-        double latitude,
-        double longitude,
-        double& x,
-        double& y) const;
-
-    /**
-     * Convert LocalXY to WGS84 latitude and longitude.
-     *
-     * @param[in]  x          X coordinate in meters from origin.
-     * @param[in]  y          Y coordinate in meters from origin.
-     * @param[out] latitude   Latitude value in degrees.
-     * @param[out] longitude  Longitude value in degrees.
-     *
-     * @returns True if the conversion is possible.
-     */
-    bool ToWgs84(
-        double x,
-        double y,
-        double& latitude,
-        double& longitude) const;
-
-  protected:
-    rclcpp::Node::SharedPtr node_;
-
-    double reference_angle_;      //< Reference angle in radians ENU.
-
-    std::unique_ptr<GeographicLib::LocalCartesian> local_cartesian_;
-
-    double cos_angle_;
-    double sin_angle_;
-
-    std::string frame_;
-
-    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
-    bool initialized_;
-
-    void Initialize();
-
-    void HandleOrigin(double latitude, double longitude, double altitude, double angle, const std::string& frame_id);
-
-    void HandlePoseStamped(geometry_msgs::msg::PoseStamped::UniquePtr pose);
-  };
-  typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
+class LocalXyWgs84Util
+{
+public:
+  /**
+   * Initializing constructor
+   *
+   * This constructor creates and initializes a LocalXyWgs84Util.
+   *
+   * @param[in] reference_latitude   Reference latitude in degrees.
+   * @param[in] reference_longitude  Reference longitude in degrees.
+   * @param[in] reference_angle      Reference angle in degrees ENU.
+   * @param[in] reference_altitude   Reference altitude in meters.
+   */
+  LocalXyWgs84Util(
+    double reference_latitude,
+    double reference_longitude,
+    double reference_angle = 0,
+    double reference_altitude = 0,
+    rclcpp::Node::SharedPtr node = nullptr);
 
   /**
+   * Zero-argument constructor.
+   *
+   * This constructor creates an uninitialized LocalXyWgs84Util. This
+   * constructor is only used to create placeholder objects in containers
+   * that require a zero-argument constructor.
+   */
+  explicit LocalXyWgs84Util(rclcpp::Node::SharedPtr node);
+
+  /**
+   * Copy constructor.
+   *
+   * Performs a deep copy of the GeographicLib::LocalCartesian. If the source
+   * is still waiting on /local_xy_origin, the copy creates its own
+   * subscription so that the callback is bound to the copy rather than the
+   * source.
+   */
+  LocalXyWgs84Util(const LocalXyWgs84Util & other);
+
+  /**
+   * Copy assignment operator.
+   *
+   * See the copy constructor for semantics.
+   */
+  LocalXyWgs84Util & operator=(const LocalXyWgs84Util & other);
+
+  /**
+   * Destructor.
+   *
+   * Declared and defined out-of-line in the .cpp so that the unique_ptr to
+   * the forward-declared GeographicLib::LocalCartesian is destroyed where the
+   * complete type is visible.
+   */
+  ~LocalXyWgs84Util();
+
+  /**
+   * Return whether the object has been initialized
+   *
+   * The object is not usable unless it has been initialized (see the two
+   * constructors).
+   *
+   * @return True if initialized, false otherwise.
+   */
+  bool Initialized() const {return initialized_;}
+
+  /**
+   * Reset to "not Initialized". Useful when the local_xy_origin
+   * changes and we want this class to be updated.
+   */
+  void ResetInitialization();
+
+  /**
+   * Return the longitude coordinate of the local origin
+   *
+   * @return The WGS84 longitude coordinate of the local origin in degrees
+   */
+  double ReferenceLongitude() const;
+
+  /**
+   * Return the latitude coordinate of the local origin
+   *
+   * @return The WGS84 latitude coordinate of the local origin in degrees
+   */
+  double ReferenceLatitude() const;
+
+  /**
+   * Return the reference angle in degrees ENU.
+   */
+  double ReferenceAngle() const;
+
+  /**
+   * Return the altitude coordinate of the local origin
+   *
+   * @return The WGS84 altitude coordinate of the local origin in meters
+   */
+  double ReferenceAltitude() const;
+
+  /**
+   * Return the TF frame ID corresponding to the local origin
+   *
+   * @return The TF frame ID corresponding to the local origin
+   */
+  std::string Frame() const {return frame_;}
+
+  /**
+   * Return the TF frame ID corresponding to the local origin with a leading slash
+   *
+   * @return The TF frame ID corresponding to the local origin with a leading slash
+   */
+  std::string NormalizedFrame() const {return NormalizeFrameId(frame_);}
+
+  /**
+   * Convert WGS84 latitude and longitude to LocalXY.
+   *
+   * @param[in]  latitude   Latitude value in degrees.
+   * @param[in]  longitude  Longitude value in degrees.
+   * @param[out] x          X coordinate in meters from origin.
+   * @param[out] y          Y coordinate in meters from origin.
+   *
+   * @returns True if the conversion is possible.
+   */
+  bool ToLocalXy(
+    double latitude,
+    double longitude,
+    double & x,
+    double & y) const;
+
+  /**
+   * Convert LocalXY to WGS84 latitude and longitude.
+   *
+   * @param[in]  x          X coordinate in meters from origin.
+   * @param[in]  y          Y coordinate in meters from origin.
+   * @param[out] latitude   Latitude value in degrees.
+   * @param[out] longitude  Longitude value in degrees.
+   *
+   * @returns True if the conversion is possible.
+   */
+  bool ToWgs84(
+    double x,
+    double y,
+    double & latitude,
+    double & longitude) const;
+
+protected:
+  rclcpp::Node::SharedPtr node_;
+
+  double reference_angle_;        //< Reference angle in radians ENU.
+
+  std::unique_ptr<GeographicLib::LocalCartesian> local_cartesian_;
+
+  double cos_angle_;
+  double sin_angle_;
+
+  std::string frame_;
+
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
+  bool initialized_;
+
+  void Initialize();
+
+  void HandleOrigin(
+    double latitude, double longitude, double altitude, double angle,
+    const std::string & frame_id);
+
+  void HandlePoseStamped(geometry_msgs::msg::PoseStamped::UniquePtr pose);
+};
+typedef std::shared_ptr<LocalXyWgs84Util> LocalXyWgs84UtilPtr;
+
+/**
    * Determine whether two local XY origins are interchangeable.
    *
    * They are interchangeable if they convert between WGS84 and local XY
@@ -284,7 +286,7 @@ namespace swri_transform_util
    *
    * @returns True if the two origins convert coordinates identically.
    */
-  bool AreEquivalent(const LocalXyWgs84UtilPtr& lhs, const LocalXyWgs84UtilPtr& rhs);
+bool AreEquivalent(const LocalXyWgs84UtilPtr & lhs, const LocalXyWgs84UtilPtr & rhs);
 }
 
 #endif  // TRANSFORM_UTIL_LOCAL_XY_UTIL_H_

@@ -36,9 +36,9 @@
 
 namespace swri_image_util
 {
-  void RandomColor(int32_t seed, double& r, double& g, double& b);
+void RandomColor(int32_t seed, double & r, double & g, double & b);
 
-  /**
+/**
    * @brief Map a scalar value to a color gradient.
    *
    * Return a color gradient RGB value by mapping an input value to a specified
@@ -51,49 +51,49 @@ namespace swri_image_util
    * @param[in] min The minimum value on the gradient scale.
    * @param[in] max The maximum value on the gradient scale.
    */
-  void JetColorMap(
-      unsigned char &r,
-      unsigned char &g,
-      unsigned char &b,
-      float value,
-      float min,
-      float max);
+void JetColorMap(
+  unsigned char & r,
+  unsigned char & g,
+  unsigned char & b,
+  float value,
+  float min,
+  float max);
 
-  // DrawOverlap() and the DrawMatches() overloads that take a window title show
-  // their result with HighGUI.  They are implemented in
-  // swri_image_util::swri_image_util_display, not swri_image_util.
-  void DrawOverlap(
-      const std::string& title,
-      const cv::Mat& image1,
-      const cv::Mat& image2,
-      const cv::Mat& transform);
+// DrawOverlap() and the DrawMatches() overloads that take a window title show
+// their result with HighGUI.  They are implemented in
+// swri_image_util::swri_image_util_display, not swri_image_util.
+void DrawOverlap(
+  const std::string & title,
+  const cv::Mat & image1,
+  const cv::Mat & image2,
+  const cv::Mat & transform);
 
-  void DrawMatches(
-      cv::Mat& image_out,
-      const cv::Mat image1,
-      const cv::Mat image2,
-      const cv::Mat points1,
-      const cv::Mat points2,
-      const cv::Scalar& color = cv::Scalar::all(-1),
-      bool draw_image_borders = false);
+void DrawMatches(
+  cv::Mat & image_out,
+  const cv::Mat image1,
+  const cv::Mat image2,
+  const cv::Mat points1,
+  const cv::Mat points2,
+  const cv::Scalar & color = cv::Scalar::all(-1),
+  bool draw_image_borders = false);
 
-  void DrawMatches(
-      const std::string& title,
-      const cv::Mat image1,
-      const cv::Mat image2,
-      const cv::Mat points1,
-      const cv::Mat points2,
-      const cv::Scalar& color = cv::Scalar::all(-1),
-      bool draw_image_borders = false);
+void DrawMatches(
+  const std::string & title,
+  const cv::Mat image1,
+  const cv::Mat image2,
+  const cv::Mat points1,
+  const cv::Mat points2,
+  const cv::Scalar & color = cv::Scalar::all(-1),
+  bool draw_image_borders = false);
 
-  void DrawMatches(
-      const std::string& title,
-      const cv::Mat image,
-      const cv::Mat points1,
-      const cv::Mat points2,
-      const cv::Scalar& color1,
-      const cv::Scalar& color2,
-      bool draw_image_borders = false);
+void DrawMatches(
+  const std::string & title,
+  const cv::Mat image,
+  const cv::Mat points1,
+  const cv::Mat points2,
+  const cv::Scalar & color1,
+  const cv::Scalar & color2,
+  bool draw_image_borders = false);
 }
 
 #endif  // IMAGE_UTIL_DRAW_UTIL_H_

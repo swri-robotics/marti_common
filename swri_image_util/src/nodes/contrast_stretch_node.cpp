@@ -47,54 +47,50 @@
 
 namespace swri_image_util
 {
-  class ContrastStretchNode : public rclcpp::Node
-  {
-  public:
-    explicit ContrastStretchNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("contrast_stretch", options)
+class ContrastStretchNode : public rclcpp::Node
+{
+public:
+  explicit ContrastStretchNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("contrast_stretch", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        , it_(image_transport::RequiredInterfaces{*this})
+    , it_(image_transport::RequiredInterfaces{*this})
 #endif
-    {
-      rcl_interfaces::msg::ParameterDescriptor desc;
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
-      desc.name = "bins";
-      this->declare_parameter("bins", 8, desc);
+  {
+    rcl_interfaces::msg::ParameterDescriptor desc;
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
+    desc.name = "bins";
+    this->declare_parameter("bins", 8, desc);
 
-      desc.name = "over_exposure_dilation";
-      this->declare_parameter("over_exposure_dilation", 3, desc);
+    desc.name = "over_exposure_dilation";
+    this->declare_parameter("over_exposure_dilation", 3, desc);
 
-      desc.name = "max_min";
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
-      this->declare_parameter("max_min", 0.0, desc);
+    desc.name = "max_min";
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    this->declare_parameter("max_min", 0.0, desc);
 
-      desc.name = "min_max";
-      this->declare_parameter("min_max", 0.0, desc);
+    desc.name = "min_max";
+    this->declare_parameter("min_max", 0.0, desc);
 
-      desc.name = "over_exposure_threshold";
-      this->declare_parameter("over_exposure_threshold", 255.0, desc);
+    desc.name = "over_exposure_threshold";
+    this->declare_parameter("over_exposure_threshold", 255.0, desc);
 
-      desc.name = "mask";
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
-      desc.read_only = true;
-      this->declare_parameter("mask", std::string(""), desc);
+    desc.name = "mask";
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+    desc.read_only = true;
+    this->declare_parameter("mask", std::string(""), desc);
 
-      std::string mask = this->get_parameter("mask").as_string();
-      if (!mask.empty())
-      {
-        mask_ = cv::imread(mask, 0);
-      }
+    std::string mask = this->get_parameter("mask").as_string();
+    if (!mask.empty()) {
+      mask_ = cv::imread(mask, 0);
+    }
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void
       {
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
-        if (mask_.empty())
-        {
+        if (mask_.empty()) {
           mask_ = cv::Mat::ones(cv_image->image.size(), CV_8U);
-        }
-        else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols)
-        {
+        } else if (mask_.rows != cv_image->image.rows || mask_.cols != cv_image->image.cols) {
           cv::resize(mask_, mask_, cv_image->image.size(), 1.0, 1.0, cv::INTER_NEAREST);
         }
 
@@ -102,51 +98,49 @@ namespace swri_image_util
 
         double over_exposure_threshold = this->get_parameter("over_exposure_threshold").as_double();
 
-        if (over_exposure_threshold < 255 && over_exposure_threshold > 0)
-        {
+        if (over_exposure_threshold < 255 && over_exposure_threshold > 0) {
           int32_t over_exposure_dilation = this->get_parameter("over_exposure_dilation").as_int();
           cv::Mat over_exposed = cv_image->image > over_exposure_threshold;
           cv::Mat element = cv::getStructuringElement(
-              cv::MORPH_ELLIPSE,
-              cv::Size(2 * over_exposure_dilation + 1, 2 * over_exposure_dilation + 1),
-              cv::Point(over_exposure_dilation, over_exposure_dilation));
+            cv::MORPH_ELLIPSE,
+            cv::Size(2 * over_exposure_dilation + 1, 2 * over_exposure_dilation + 1),
+            cv::Point(over_exposure_dilation, over_exposure_dilation));
           cv::dilate(over_exposed, over_exposed, element);
 
           mask = mask_.clone();
           mask.setTo(0, over_exposed);
-        }
-        else
-        {
+        } else {
           mask = mask_;
         }
 
-        swri_image_util::ContrastStretch(this->get_parameter("bins").as_int(),
-            cv_image->image,
-            cv_image->image,
-            mask,
-            this->get_parameter("max_min").as_double(),
-            this->get_parameter("min_max").as_double());
+        swri_image_util::ContrastStretch(
+          this->get_parameter("bins").as_int(),
+          cv_image->image,
+          cv_image->image,
+          mask,
+          this->get_parameter("max_min").as_double(),
+          this->get_parameter("min_max").as_double());
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "normalized_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_pub_ = image_transport::create_publisher(this, "normalized_image");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_pub_ = it_.advertise("normalized_image", 1);
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_pub_ = it_.advertise("normalized_image", 1);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
-    cv::Mat mask_;
+private:
+  cv::Mat mask_;
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
-  };
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

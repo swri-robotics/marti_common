@@ -38,29 +38,31 @@ namespace stu = swri_transform_util;
 
 namespace swri_route_util
 {
-void transform(Route &route,
-               const stu::Transform &transform,
-               const std::string &target_frame)
+void transform(
+  Route & route,
+  const stu::Transform & transform,
+  const std::string & target_frame)
 {
-  for (auto &point : route.points) {
-    point.setPosition(transform*point.position());
-    point.setOrientation(transform*point.orientation());
+  for (auto & point : route.points) {
+    point.setPosition(transform * point.position());
+    point.setOrientation(transform * point.orientation());
   }
   route.header.frame_id = target_frame;
 }
 
-void projectToXY(Route &route)
+void projectToXY(Route & route)
 {
-  for (auto &point : route.points) {
+  for (auto & point : route.points) {
     point.position().setZ(0.0);
     // todo(exjohnson): if orientation is valid, project it to a
     // rotation around the Z axis only.
   }
 }
 
-void fillOrientations(Route &route,
-    const tf2::Vector3 &up,
-    rclcpp::Logger logger)
+void fillOrientations(
+  Route & route,
+  const tf2::Vector3 & up,
+  rclcpp::Logger logger)
 {
   // We can't estimate any orientations for 0 or 1 points.
   if (route.points.size() < 2) {
@@ -77,12 +79,12 @@ void fillOrientations(Route &route,
     tf2::Vector3 v_forward;
     if (i == 0) {
       // For the first point, we use the forward difference
-      v_forward = route.points[i+1].position() - route.points[i+0].position();
-    } else if (i+1 == route.points.size()) {
+      v_forward = route.points[i + 1].position() - route.points[i + 0].position();
+    } else if (i + 1 == route.points.size()) {
       // For the last point, we use the backward difference
-      v_forward = route.points[i+0].position() - route.points[i-1].position();
+      v_forward = route.points[i + 0].position() - route.points[i - 1].position();
     } else {
-      v_forward = route.points[i+1].position() - route.points[i-1].position();
+      v_forward = route.points[i + 1].position() - route.points[i - 1].position();
     }
 
     v_forward.normalize();
@@ -95,8 +97,7 @@ void fillOrientations(Route &route,
     // axis.  We ignore that.
     v_left.normalize();
 
-    if (std::isnan(v_left.x()))
-    {
+    if (std::isnan(v_left.x())) {
       // This should catch issues with repeated route points, and co-linear
       // v_forward and up vectors (though the latter should never happen)
       degenerate_orientations.push_back(i);
@@ -130,17 +131,16 @@ void fillOrientations(Route &route,
 
   // If there are any degenerate orientations, assign the same orientation as
   // the nearest neighbor. There is probably a better way to do this.
-  for (size_t i = 0; i < degenerate_orientations.size(); ++i)
-  {
+  for (size_t i = 0; i < degenerate_orientations.size(); ++i) {
     size_t d_idx = degenerate_orientations[i];
     bool repaired_orientation = false;
-    for (size_t j = 1; j < route.points.size(); ++j)
-    {
+    for (size_t j = 1; j < route.points.size(); ++j) {
       size_t up_idx = d_idx + j;
       int64_t down_idx = (int64_t)d_idx - (int64_t)j;
-      if (up_idx < route.points.size())
-      {
-        if (std::find(degenerate_orientations.begin(), degenerate_orientations.end(), up_idx) == degenerate_orientations.end())
+      if (up_idx < route.points.size()) {
+        if (std::find(
+            degenerate_orientations.begin(), degenerate_orientations.end(),
+            up_idx) == degenerate_orientations.end())
         {
           // Found a neighboring point with valid orientation.
           route.points[d_idx].setOrientation(route.points[up_idx].orientation());
@@ -149,9 +149,10 @@ void fillOrientations(Route &route,
         }
       }
 
-      if (down_idx >= 0)
-      {
-        if (std::find(degenerate_orientations.begin(), degenerate_orientations.end(), down_idx) == degenerate_orientations.end())
+      if (down_idx >= 0) {
+        if (std::find(
+            degenerate_orientations.begin(), degenerate_orientations.end(),
+            down_idx) == degenerate_orientations.end())
         {
           // Found a neighboring point with valid orientation.
           route.points[d_idx].setOrientation(route.points[down_idx].orientation());
@@ -161,16 +162,15 @@ void fillOrientations(Route &route,
       }
     }
 
-    if (!repaired_orientation)
-    {
-      RCLCPP_ERROR(logger, "fillOrientations was unable to repair an invalid "
-                   "orientation. The route may be malformed.");
-    }
-    else
-    {
-      RCLCPP_WARN(logger, "fillOrientations found and repaired an invalid "
-                  "orientation. Note that the source route may contain "
-                  "repeated points.");
+    if (!repaired_orientation) {
+      RCLCPP_ERROR(
+        logger, "fillOrientations was unable to repair an invalid "
+        "orientation. The route may be malformed.");
+    } else {
+      RCLCPP_WARN(
+        logger, "fillOrientations found and repaired an invalid "
+        "orientation. Note that the source route may contain "
+        "repeated points.");
     }
   }
 }
@@ -183,11 +183,11 @@ void fillOrientations(Route &route,
 // corresponding directions.
 static
 void nearestDistanceToLineSegment(
-  double &min_distance_from_line,
-  double &min_distance_on_line,
-  const tf2::Vector3 &p0,
-  const tf2::Vector3 &p1,
-  const tf2::Vector3 &p,
+  double & min_distance_from_line,
+  double & min_distance_on_line,
+  const tf2::Vector3 & p0,
+  const tf2::Vector3 & p1,
+  const tf2::Vector3 & p,
   bool extrapolate_start,
   bool extrapolate_end)
 {
@@ -213,17 +213,18 @@ void nearestDistanceToLineSegment(
     s = 1.0;
   }
 
-  tf2::Vector3 x_nearest = p0 + s*v;
+  tf2::Vector3 x_nearest = p0 + s * v;
 
   min_distance_from_line = x_nearest.distance(p);
-  min_distance_on_line = s*std::sqrt(v_len_sq);
+  min_distance_on_line = s * std::sqrt(v_len_sq);
 }
 
-bool projectOntoRoute(mnm::msg::RoutePosition &position,
-                      const Route &route,
-                      const tf2::Vector3 &point,
-                      bool extrapolate_before_start,
-                      bool extrapolate_past_end)
+bool projectOntoRoute(
+  mnm::msg::RoutePosition & position,
+  const Route & route,
+  const tf2::Vector3 & point,
+  bool extrapolate_before_start,
+  bool extrapolate_past_end)
 {
   if (route.points.size() == 0) {
     // We can't do anything with this.
@@ -244,16 +245,17 @@ bool projectOntoRoute(mnm::msg::RoutePosition &position,
   double min_distance_on_line = std::numeric_limits<double>::infinity();
   size_t min_segment_index = 0;
 
-  for (size_t i = 0; i+1 < route.points.size(); ++i) {
+  for (size_t i = 0; i + 1 < route.points.size(); ++i) {
     double distance_from_line;
     double distance_on_line;
 
-    nearestDistanceToLineSegment(distance_from_line,
-                                 distance_on_line,
-                                 route.points[i+0].position(),
-                                 route.points[i+1].position(),
-                                 point,
-                                 false, false);
+    nearestDistanceToLineSegment(
+      distance_from_line,
+      distance_on_line,
+      route.points[i + 0].position(),
+      route.points[i + 1].position(),
+      point,
+      false, false);
 
     if (distance_from_line <= min_distance_from_line) {
       min_segment_index = i;
@@ -280,12 +282,13 @@ bool projectOntoRoute(mnm::msg::RoutePosition &position,
   if (extrapolate_before_start && min_segment_index == 0) {
     double distance_from_line;
     double distance_on_line;
-    nearestDistanceToLineSegment(distance_from_line,
-                                 distance_on_line,
-                                 route.points[0].position(),
-                                 route.points[1].position(),
-                                 point,
-                                 true, false);
+    nearestDistanceToLineSegment(
+      distance_from_line,
+      distance_on_line,
+      route.points[0].position(),
+      route.points[1].position(),
+      point,
+      true, false);
     if (distance_on_line < 0.0) {
       min_distance_from_line = distance_from_line;
       min_distance_on_line = distance_on_line;
@@ -301,14 +304,15 @@ bool projectOntoRoute(mnm::msg::RoutePosition &position,
     // number of places, but makes it easy to check if a point is past
     // the end of a route.
     size_t i = min_segment_index;
-    nearestDistanceToLineSegment(min_distance_from_line,
-                                 min_distance_on_line,
-                                 route.points[i+0].position(),
-                                 route.points[i+1].position(),
-                                 point,
-                                 false, true);
+    nearestDistanceToLineSegment(
+      min_distance_from_line,
+      min_distance_on_line,
+      route.points[i + 0].position(),
+      route.points[i + 1].position(),
+      point,
+      false, true);
 
-    double last_length = (route.points[i+1].position() - route.points[i+0].position()).length();
+    double last_length = (route.points[i + 1].position() - route.points[i + 0].position()).length();
     if (min_distance_on_line > last_length) {
       min_segment_index++;
       min_distance_on_line -= last_length;
@@ -326,11 +330,11 @@ bool projectOntoRoute(mnm::msg::RoutePosition &position,
 }
 
 bool projectOntoRouteWindow(
-  mnm::msg::RoutePosition &position,
-  const Route &route,
-  const tf2::Vector3 &point,
-  const mnm::msg::RoutePosition &window_start,
-  const mnm::msg::RoutePosition &window_end)
+  mnm::msg::RoutePosition & position,
+  const Route & route,
+  const tf2::Vector3 & point,
+  const mnm::msg::RoutePosition & window_start,
+  const mnm::msg::RoutePosition & window_end)
 {
   if (route.points.size() < 2) {
     // We can't do anything with this.
@@ -364,7 +368,8 @@ bool projectOntoRouteWindow(
 
   // Fix the ordering so that start comes before end.
   if ((end_index < start_index) ||
-      (start_index == end_index && end.distance < start.distance)) {
+    (start_index == end_index && end.distance < start.distance))
+  {
     std::swap(end, start);
     std::swap(start_index, end_index);
   }
@@ -372,17 +377,17 @@ bool projectOntoRouteWindow(
   // If either of the points are past the end of the route, we want to
   // back them up to the previous segment to reduce the number of
   // special cases we have to handle.
-  if (start_index+1 == route.points.size()) {
+  if (start_index + 1 == route.points.size()) {
     start_index -= 1;
     start.id = route.points[start_index].id();
-    start.distance += (route.points[start_index+1].position() -
-                       route.points[start_index+0].position()).length();
+    start.distance += (route.points[start_index + 1].position() -
+      route.points[start_index + 0].position()).length();
   }
-  if (end_index+1 == route.points.size()) {
+  if (end_index + 1 == route.points.size()) {
     end_index -= 1;
     end.id = route.points[end_index].id();
-    end.distance += (route.points[end_index+1].position() -
-                     route.points[end_index+0].position()).length();
+    end.distance += (route.points[end_index + 1].position() -
+      route.points[end_index + 0].position()).length();
   }
 
   // Although it causes a little duplication, it's easier over all to
@@ -392,12 +397,13 @@ bool projectOntoRouteWindow(
     double distance_from_line;
     double distance_on_line;
 
-    nearestDistanceToLineSegment(distance_from_line,
-                                 distance_on_line,
-                                 route.points[start_index+0].position(),
-                                 route.points[start_index+1].position(),
-                                 point,
-                                 true, true);
+    nearestDistanceToLineSegment(
+      distance_from_line,
+      distance_on_line,
+      route.points[start_index + 0].position(),
+      route.points[start_index + 1].position(),
+      point,
+      true, true);
 
     if (distance_on_line < start.distance) {
       distance_on_line = start.distance;
@@ -426,12 +432,13 @@ bool projectOntoRouteWindow(
     double distance_from_line;
     double distance_on_line;
 
-    nearestDistanceToLineSegment(distance_from_line,
-                                 distance_on_line,
-                                 route.points[i+0].position(),
-                                 route.points[i+1].position(),
-                                 point,
-                                 false, false);
+    nearestDistanceToLineSegment(
+      distance_from_line,
+      distance_on_line,
+      route.points[i + 0].position(),
+      route.points[i + 1].position(),
+      point,
+      false, false);
 
     if (distance_from_line <= min_distance_from_line) {
       min_segment_index = i;
@@ -443,22 +450,24 @@ bool projectOntoRouteWindow(
   // We have identified the closest segment.  We need to clamp it
   // to the window boundaries.
   if (min_segment_index == start_index) {
-    nearestDistanceToLineSegment(min_distance_from_line,
-                                 min_distance_on_line,
-                                 route.points[min_segment_index+0].position(),
-                                 route.points[min_segment_index+1].position(),
-                                 point,
-                                 true, false);
+    nearestDistanceToLineSegment(
+      min_distance_from_line,
+      min_distance_on_line,
+      route.points[min_segment_index + 0].position(),
+      route.points[min_segment_index + 1].position(),
+      point,
+      true, false);
     if (min_distance_on_line < start.distance) {
       min_distance_on_line = start.distance;
     }
   } else if (min_segment_index == end_index) {
-    nearestDistanceToLineSegment(min_distance_from_line,
-                                 min_distance_on_line,
-                                 route.points[min_segment_index+0].position(),
-                                 route.points[min_segment_index+1].position(),
-                                 point,
-                                 false, true);
+    nearestDistanceToLineSegment(
+      min_distance_from_line,
+      min_distance_on_line,
+      route.points[min_segment_index + 0].position(),
+      route.points[min_segment_index + 1].position(),
+      point,
+      false, true);
     if (min_distance_on_line > end.distance) {
       min_distance_on_line = end.distance;
     }
@@ -477,12 +486,12 @@ bool projectOntoRouteWindow(
 
 static
 void interpolateRouteSegment(
-  RoutePoint &dst,
-  const RoutePoint &p0,
-  const RoutePoint &p1,
+  RoutePoint & dst,
+  const RoutePoint & p0,
+  const RoutePoint & p1,
   double distance)
 {
-  double len = (p0.position()-p1.position()).length();
+  double len = (p0.position() - p1.position()).length();
 
   double s;
   if (len > 1e-6) {
@@ -504,15 +513,16 @@ void interpolateRouteSegment(
     }
   }
 
-  dst.setPosition((1.0-s)*p0.position() + s*p1.position());
+  dst.setPosition((1.0 - s) * p0.position() + s * p1.position());
   dst.setOrientation(p0.orientation().slerp(p1.orientation(), s));
 
   // Interpolate other known properties here.
 }
 
-bool normalizeRoutePosition(mnm::msg::RoutePosition &normalized_position,
-                            const Route &route,
-                            const mnm::msg::RoutePosition &position)
+bool normalizeRoutePosition(
+  mnm::msg::RoutePosition & normalized_position,
+  const Route & route,
+  const mnm::msg::RoutePosition & position)
 {
   size_t index;
   if (!route.findPointId(index, position.id)) {
@@ -528,19 +538,19 @@ bool normalizeRoutePosition(mnm::msg::RoutePosition &normalized_position,
 
     // The distance is still negative, so we can't be on this
     // segment.  Move to the preceding segment.
-    distance += (route.points[index-0].position() -
-                 route.points[index-1].position()).length();
+    distance += (route.points[index - 0].position() -
+      route.points[index - 1].position()).length();
     index--;
   }
 
   while (distance > 0.0) {
     // We can't go past the end of the route.
-    if (index+1 == route.points.size()) {
+    if (index + 1 == route.points.size()) {
       break;
     }
 
-    double segment_length = (route.points[index+0].position() -
-                             route.points[index+1].position()).length();
+    double segment_length = (route.points[index + 0].position() -
+      route.points[index + 1].position()).length();
     if (distance > segment_length) {
       // The distance is greater than this segment length, so we're
       // not on this segment.  Move to the following segment.
@@ -560,10 +570,11 @@ bool normalizeRoutePosition(mnm::msg::RoutePosition &normalized_position,
 }
 
 
-bool interpolateRoutePosition(RoutePoint &dst,
-                              const Route &route,
-                              const mnm::msg::RoutePosition &position,
-                              bool allow_extrapolation)
+bool interpolateRoutePosition(
+  RoutePoint & dst,
+  const Route & route,
+  const mnm::msg::RoutePosition & position,
+  bool allow_extrapolation)
 {
   mnm::msg::RoutePosition norm_position;
   if (!normalizeRoutePosition(norm_position, route, position)) {
@@ -586,15 +597,16 @@ bool interpolateRoutePosition(RoutePoint &dst,
       return false;
     }
 
-    interpolateRouteSegment(dst,
-                            route.points[0],
-                            route.points[1],
-                            norm_position.distance);
+    interpolateRouteSegment(
+      dst,
+      route.points[0],
+      route.points[1],
+      norm_position.distance);
     return true;
   }
 
   // Special case when the point is after the end of the route.
-  if (index+1 == route.points.size() && norm_position.distance > 0.0) {
+  if (index + 1 == route.points.size() && norm_position.distance > 0.0) {
     if (!allow_extrapolation) {
       return false;
     }
@@ -604,29 +616,31 @@ bool interpolateRoutePosition(RoutePoint &dst,
       return false;
     }
 
-    const RoutePoint &p0 = route.points[index-1];
-    const RoutePoint &p1 = route.points[index-0];
+    const RoutePoint & p0 = route.points[index - 1];
+    const RoutePoint & p1 = route.points[index - 0];
     double extra_dist = (p1.position() - p0.position()).length();
 
-    interpolateRouteSegment(dst,
-                            p0,
-                            p1,
-                            norm_position.distance + extra_dist);
+    interpolateRouteSegment(
+      dst,
+      p0,
+      p1,
+      norm_position.distance + extra_dist);
     return true;
   }
 
-  interpolateRouteSegment(dst,
-                          route.points[index+0],
-                          route.points[index+1],
-                          norm_position.distance);
+  interpolateRouteSegment(
+    dst,
+    route.points[index + 0],
+    route.points[index + 1],
+    norm_position.distance);
   return true;
 }
 
 bool routeDistance(
-  double &distance,
-  const mnm::msg::RoutePosition &start,
-  const mnm::msg::RoutePosition &end,
-  const Route &route)
+  double & distance,
+  const mnm::msg::RoutePosition & start,
+  const mnm::msg::RoutePosition & end,
+  const Route & route)
 {
   size_t start_index;
   if (!route.findPointId(start_index, start.id)) {
@@ -644,11 +658,11 @@ bool routeDistance(
   double d = 0.0;
   if (route.header.frame_id == stu::_wgs84_frame) {
     for (size_t i = min_index; i < max_index; i++) {
-      d += stu::GreatCircleDistance(route.points[i+1].position(), route.points[i].position());
+      d += stu::GreatCircleDistance(route.points[i + 1].position(), route.points[i].position());
     }
   } else {
     for (size_t i = min_index; i < max_index; i++) {
-      d += (route.points[i+1].position() - route.points[i].position()).length();
+      d += (route.points[i + 1].position() - route.points[i].position()).length();
     }
   }
 
@@ -661,10 +675,10 @@ bool routeDistance(
 }
 
 bool routeDistances(
-  std::vector<double> &distances,
-  const mnm::msg::RoutePosition &start,
-  const std::vector<mnm::msg::RoutePosition> &ends,
-  const Route &route)
+  std::vector<double> & distances,
+  const mnm::msg::RoutePosition & start,
+  const std::vector<mnm::msg::RoutePosition> & ends,
+  const Route & route)
 {
   size_t start_index;
   if (!route.findPointId(start_index, start.id)) {
@@ -696,37 +710,37 @@ bool routeDistances(
   // the start point.  This vector covers the ROI (so it corresponds
   // from min_index to max_index)
   std::vector<double> arc_lengths;
-  arc_lengths.resize(max_index-min_index+1);
+  arc_lengths.resize(max_index - min_index + 1);
 
   arc_lengths[roi_start_index] = 0.0;
   if (route.header.frame_id == stu::_wgs84_frame) {
     // Calculate the lengths before the start point.
     for (size_t rev_i = 1; rev_i <= roi_start_index; ++rev_i) {
       const size_t i = roi_start_index - rev_i;
-      const tf2::Vector3 pt1 = route.points[min_index+i].position();
-      const tf2::Vector3 pt2 = route.points[min_index+i+1].position();
-      arc_lengths[i] = arc_lengths[i+1] - stu::GreatCircleDistance(pt1, pt2);
+      const tf2::Vector3 pt1 = route.points[min_index + i].position();
+      const tf2::Vector3 pt2 = route.points[min_index + i + 1].position();
+      arc_lengths[i] = arc_lengths[i + 1] - stu::GreatCircleDistance(pt1, pt2);
     }
     // Calculate the lengths after the start point.
-    for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
-      const tf2::Vector3 pt1 = route.points[min_index+i].position();
-      const tf2::Vector3 pt2 = route.points[min_index+i-1].position();
-      arc_lengths[i] = arc_lengths[i-1] + stu::GreatCircleDistance(pt1, pt2);
+    for (size_t i = roi_start_index + 1; i < arc_lengths.size(); ++i) {
+      const tf2::Vector3 pt1 = route.points[min_index + i].position();
+      const tf2::Vector3 pt2 = route.points[min_index + i - 1].position();
+      arc_lengths[i] = arc_lengths[i - 1] + stu::GreatCircleDistance(pt1, pt2);
     }
   } else {
     // Assume Euclidean coordinates.
     // Calculate the lengths before the start point.
     for (size_t rev_i = 1; rev_i <= roi_start_index; ++rev_i) {
       const size_t i = roi_start_index - rev_i;
-      const tf2::Vector3 pt1 = route.points[min_index+i].position();
-      const tf2::Vector3 pt2 = route.points[min_index+i+1].position();
-      arc_lengths[i] = arc_lengths[i+1] - (pt2-pt1).length();
+      const tf2::Vector3 pt1 = route.points[min_index + i].position();
+      const tf2::Vector3 pt2 = route.points[min_index + i + 1].position();
+      arc_lengths[i] = arc_lengths[i + 1] - (pt2 - pt1).length();
     }
     // Calculate the lengths after the start point.
-    for (size_t i = roi_start_index+1; i < arc_lengths.size(); ++i) {
-      const tf2::Vector3 pt1 = route.points[min_index+i].position();
-      const tf2::Vector3 pt2 = route.points[min_index+i-1].position();
-      arc_lengths[i] = arc_lengths[i-1] + (pt2-pt1).length();
+    for (size_t i = roi_start_index + 1; i < arc_lengths.size(); ++i) {
+      const tf2::Vector3 pt1 = route.points[min_index + i].position();
+      const tf2::Vector3 pt2 = route.points[min_index + i - 1].position();
+      arc_lengths[i] = arc_lengths[i - 1] + (pt2 - pt1).length();
     }
   }
 
@@ -738,7 +752,7 @@ bool routeDistances(
       continue;
     }
 
-    const size_t cache_index = indices[i]-min_index;
+    const size_t cache_index = indices[i] - min_index;
     distances[i] = arc_lengths[cache_index] + ends[i].distance - start.distance;
   }
 
@@ -746,10 +760,10 @@ bool routeDistances(
 }
 
 bool extractSubroute(
-  Route &sub_route,
-  const Route &route,
-  const marti_nav_msgs::msg::RoutePosition &start,
-  const marti_nav_msgs::msg::RoutePosition &end)
+  Route & sub_route,
+  const Route & route,
+  const marti_nav_msgs::msg::RoutePosition & start,
+  const marti_nav_msgs::msg::RoutePosition & end)
 {
   sub_route.header = route.header;
   sub_route.properties_ = route.properties_;
@@ -784,8 +798,7 @@ bool extractSubroute(
   end_index++;
   end_index = std::min(end_index, route.points.size());
 
-  if (end_index <= start_index)
-  {
+  if (end_index <= start_index) {
     sub_route.points.clear();
     sub_route.rebuildPointIndex();
     return true;

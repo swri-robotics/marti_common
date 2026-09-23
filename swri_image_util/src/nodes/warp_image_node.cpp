@@ -42,53 +42,50 @@
 
 namespace swri_image_util
 {
-  class WarpImageNode : public rclcpp::Node
-  {
-  public:
-    explicit WarpImageNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("warp_image", options),
+class WarpImageNode : public rclcpp::Node
+{
+public:
+  explicit WarpImageNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("warp_image", options),
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        it_(image_transport::RequiredInterfaces{*this}),
+    it_(image_transport::RequiredInterfaces{*this}),
 #endif
-        use_input_size_(false)
-    {
-      this->declare_parameter("width", 0);
-      this->declare_parameter("height", 0);
-      this->declare_parameter("transform", std::vector<double>{});
+    use_input_size_(false)
+  {
+    this->declare_parameter("width", 0);
+    this->declare_parameter("height", 0);
+    this->declare_parameter("transform", std::vector<double>{});
 
-      if (this->get_parameter("width").as_int() == 0 || this->get_parameter("height").as_int() == 0)
-      {
-        use_input_size_ = true;
-        RCLCPP_INFO(this->get_logger(),
-                    "No ~width and ~height parameters given. Output images will be same size as input.");
-      }
-      else
-      {
-        output_size_.height = this->get_parameter("height").as_int();
-        output_size_.width = this->get_parameter("width").as_int();
-      }
+    if (this->get_parameter("width").as_int() == 0 || this->get_parameter("height").as_int() == 0) {
+      use_input_size_ = true;
+      RCLCPP_INFO(
+        this->get_logger(),
+        "No ~width and ~height parameters given. Output images will be same size as input.");
+    } else {
+      output_size_.height = this->get_parameter("height").as_int();
+      output_size_.width = this->get_parameter("width").as_int();
+    }
 
-      const std::vector<double> transform = this->get_parameter("transform").as_double_array();
-      if (transform.size() != 9)
-      {
-        RCLCPP_FATAL(this->get_logger(),
-                     "~transform must be a 9-element list of doubles (3x3 matrix, row major)");
-        // Return without setting up callbacks
-        // Don't shut down, because that would bring down all other nodelets as well
-        return;
-      }
-      m_ = cv::Mat(transform, true).reshape(0, 3);
-      std::stringstream matstring;
-      matstring << m_;
-      RCLCPP_INFO(this->get_logger(), "Transformation matrix: %s", matstring.str().c_str());
+    const std::vector<double> transform = this->get_parameter("transform").as_double_array();
+    if (transform.size() != 9) {
+      RCLCPP_FATAL(
+        this->get_logger(),
+        "~transform must be a 9-element list of doubles (3x3 matrix, row major)");
+      // Return without setting up callbacks
+      // Don't shut down, because that would bring down all other nodelets as well
+      return;
+    }
+    m_ = cv::Mat(transform, true).reshape(0, 3);
+    std::stringstream matstring;
+    matstring << m_;
+    RCLCPP_INFO(this->get_logger(), "Transformation matrix: %s", matstring.str().c_str());
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void
       {
         cv_bridge::CvImageConstPtr cv_image = cv_bridge::toCvShare(image);
 
         cv_bridge::CvImagePtr cv_warped = std::make_shared<cv_bridge::CvImage>();
-        if (use_input_size_)
-        {
+        if (use_input_size_) {
           output_size_ = cv_image->image.size();
         }
         cv::warpPerspective(cv_image->image, cv_warped->image, m_, output_size_, CV_INTER_LANCZOS4);
@@ -100,24 +97,24 @@ namespace swri_image_util
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "warped_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_pub_ = image_transport::create_publisher(this, "warped_image");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_pub_ = it_.advertise("warped_image", 1);
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_pub_ = it_.advertise("warped_image", 1);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
+private:
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
-    cv::Mat m_;
-    bool use_input_size_;
-    cv::Size output_size_;
-  };
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+  cv::Mat m_;
+  bool use_input_size_;
+  cv::Size output_size_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

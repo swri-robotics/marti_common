@@ -44,65 +44,66 @@
 
 namespace swri_image_util
 {
-  class DrawTextNode : public rclcpp::Node
-  {
-  public:
-    explicit DrawTextNode(const rclcpp::NodeOptions& options) :
-        rclcpp::Node("draw_text", options)
+class DrawTextNode : public rclcpp::Node
+{
+public:
+  explicit DrawTextNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("draw_text", options)
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-        , it_(image_transport::RequiredInterfaces{*this})
+    , it_(image_transport::RequiredInterfaces{*this})
 #endif
-    {
-      rcl_interfaces::msg::ParameterDescriptor desc;
-      desc.name = "text";
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
-      this->declare_parameter("text", "label", desc);
+  {
+    rcl_interfaces::msg::ParameterDescriptor desc;
+    desc.name = "text";
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+    this->declare_parameter("text", "label", desc);
 
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
-      desc.name = "font_thickness";
-      this->declare_parameter("font_thickness", 1, desc);
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_INTEGER;
+    desc.name = "font_thickness";
+    this->declare_parameter("font_thickness", 1, desc);
 
-      desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
-      desc.name = "offset_x";
-      this->declare_parameter("offset_x", 0.0, desc);
-      desc.name = "offset_y";
-      this->declare_parameter("offset_y", 0.0, desc);
-      desc.name = "font_scale";
-      this->declare_parameter("font_scale", 1.0, desc);
+    desc.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    desc.name = "offset_x";
+    this->declare_parameter("offset_x", 0.0, desc);
+    desc.name = "offset_y";
+    this->declare_parameter("offset_y", 0.0, desc);
+    desc.name = "font_scale";
+    this->declare_parameter("font_scale", 1.0, desc);
 
-      auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr& image) -> void
+    auto callback = [this](const sensor_msgs::msg::Image::ConstSharedPtr & image) -> void
       {
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(image);
 
         cv::putText(
-            cv_image->image,
-            this->get_parameter("text").as_string(),
-            cv::Point(this->get_parameter("offset_x").as_double(),
-                this->get_parameter("offset_y").as_double()),
-            cv::FONT_HERSHEY_SIMPLEX,
-            this->get_parameter("font_scale").as_double(),
-            cv::Scalar(255, 255, 255),
-            this->get_parameter("font_thickness").as_int());
+          cv_image->image,
+          this->get_parameter("text").as_string(),
+          cv::Point(
+            this->get_parameter("offset_x").as_double(),
+            this->get_parameter("offset_y").as_double()),
+          cv::FONT_HERSHEY_SIMPLEX,
+          this->get_parameter("font_scale").as_double(),
+          cv::Scalar(255, 255, 255),
+          this->get_parameter("font_thickness").as_int());
 
         image_pub_.publish(cv_image->toImageMsg());
       };
 
 #ifdef USE_LEGACY_IMAGE_TRANSPORT_API
-      image_pub_ = image_transport::create_publisher(this, "stamped_image");
-      image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
+    image_pub_ = image_transport::create_publisher(this, "stamped_image");
+    image_sub_ = image_transport::create_subscription(this, "image", callback, "raw");
 #else
-      image_pub_ = it_.advertise("stamped_image", 1);
-      image_sub_ = it_.subscribe("image", 1, callback);
+    image_pub_ = it_.advertise("stamped_image", 1);
+    image_sub_ = it_.subscribe("image", 1, callback);
 #endif
-    }
+  }
 
-  private:
+private:
 #ifndef USE_LEGACY_IMAGE_TRANSPORT_API
-    image_transport::ImageTransport it_;
+  image_transport::ImageTransport it_;
 #endif
-    image_transport::Subscriber image_sub_;
-    image_transport::Publisher image_pub_;
-  };
+  image_transport::Subscriber image_sub_;
+  image_transport::Publisher image_pub_;
+};
 }
 
 #include <rclcpp_components/register_node_macro.hpp>

@@ -48,10 +48,10 @@ namespace swri_route_util
 // line colors defaults to black but can be changed after the marker
 // has been built.
 void markerForRouteSpeeds(
-  visualization_msgs::msg::Marker &marker,
-  const Route &route,
-    const marti_nav_msgs::msg::RouteSpeedArray &speeds,
-    double scale);
+  visualization_msgs::msg::Marker & marker,
+  const Route & route,
+  const marti_nav_msgs::msg::RouteSpeedArray & speeds,
+  double scale);
 
 // Create markers that outline a set of obstacles.  Each obstacle is
 // drawn as a closed line strip, using the obstacle's pose as the
@@ -62,10 +62,10 @@ void markerForRouteSpeeds(
 // necessarily the number of obstacles.  Any markers already in the
 // array are removed.
 void markerArrayForObstacles(
-  visualization_msgs::msg::MarkerArray &markers,
-  const marti_nav_msgs::msg::ObstacleArray &obstacles,
-  const std::string &ns,
-  const std_msgs::msg::ColorRGBA &color,
+  visualization_msgs::msg::MarkerArray & markers,
+  const marti_nav_msgs::msg::ObstacleArray & obstacles,
+  const std::string & ns,
+  const std_msgs::msg::ColorRGBA & color,
   double line_width);
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_VISUALIZATION_H_

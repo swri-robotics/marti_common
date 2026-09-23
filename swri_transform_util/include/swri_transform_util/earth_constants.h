@@ -32,27 +32,27 @@
 
 namespace swri_transform_util
 {
-  /**
+/**
    * Earth equatorial radius in meters according to WGS84.
    */
-  static const double _earth_equator_radius = 6378137.0;
+static const double _earth_equator_radius = 6378137.0;
 
-  /**
+/**
    * Earth mean radius in meters
    */
-  static const double _earth_mean_radius = 6371009.0;
+static const double _earth_mean_radius = 6371009.0;
 
-  /**
+/**
    * Earth equatorial circumference in meters according to WGS84.
    */
-  static const double _earth_equator_circumference = 40075016.69;
+static const double _earth_equator_circumference = 40075016.69;
 
-  /**
+/**
    * Earth 'first' eccentricity according to WGS84.
    */
-  static const double _earth_eccentricity = 0.08181919084261;
+static const double _earth_eccentricity = 0.08181919084261;
 
-  /**
+/**
    * Earth flattening according to WGS84.
    *
    * Flattening is a measure of the compression of a sphere along a diameter to
@@ -60,12 +60,12 @@ namespace swri_transform_util
    *
    * See: http://en.wikipedia.org/wiki/Flattening
    */
-  static const double _earth_flattening = 3.35281066475e-3;
+static const double _earth_flattening = 3.35281066475e-3;
 
-  /**
+/**
    * Earth rotation rate in radians per second.
    */
-  static const double _earth_rotation_rate = 7.292115e-5;
+static const double _earth_rotation_rate = 7.292115e-5;
 }
 
 #endif  // TRANSFORM_UTIL_EARTH_CONSTANTS_H_

@@ -37,7 +37,7 @@
 
 namespace swri_image_util
 {
-  /**
+/**
    * @brief      Computes the fundamental matrix for a set of matching points in
    *             two different images.  The method also returns the inlier
    *             keypoints for both frames.
@@ -52,15 +52,16 @@ namespace swri_image_util
    * @param[in]  confidence           The confidence level (which affects the
    *                                  number of iterations)
    */
-  void GetFundamentalInliers(const cv::Mat points1,
-                             const cv::Mat points2,
-                             cv::Mat& fundamental_matrix,
-                             cv::Mat& inliers1,
-                             cv::Mat& inliers2,
-                             double max_distance = 1.0,
-                             double confidence = 0.99);
+void GetFundamentalInliers(
+  const cv::Mat points1,
+  const cv::Mat points2,
+  cv::Mat & fundamental_matrix,
+  cv::Mat & inliers1,
+  cv::Mat & inliers2,
+  double max_distance = 1.0,
+  double confidence = 0.99);
 
-  /**
+/**
    * @brief      Computes the fundamental matrix for a set of matching points in
    *             two different images.  The method also returns the inlier
    *             keypoints for both frames.
@@ -76,17 +77,18 @@ namespace swri_image_util
    * @param[in]  confidence           The confidence level (which affects the
    *                                  number of iterations)
    */
-  void GetFundamentalInliers(const cv::Mat points1,
-                             const cv::Mat points2,
-                             cv::Mat& fundamental_matrix,
-                             cv::Mat& inliers1,
-                             cv::Mat& inliers2,
-                             std::vector<uint32_t>& indices,
-                             double max_distance = 1.0,
-                             double confidence = 0.99);
+void GetFundamentalInliers(
+  const cv::Mat points1,
+  const cv::Mat points2,
+  cv::Mat & fundamental_matrix,
+  cv::Mat & inliers1,
+  cv::Mat & inliers2,
+  std::vector<uint32_t> & indices,
+  double max_distance = 1.0,
+  double confidence = 0.99);
 
 
-  /**
+/**
    * @brief      Converts keypoints and matches into two cv::Mats in which the
    *             the matching keypoints from kp1 and kp2 are ordered in the same
    *             manner
@@ -97,11 +99,12 @@ namespace swri_image_util
    * @param[out] kp1_out    The first set of matching keypoints output as a Mat
    * @param[out] kp2_out    The second set of matching keypoints output as a Mat
    */
-  void ConvertMatches(const std::vector<cv::KeyPoint>& kp1,
-                      const std::vector<cv::KeyPoint>& kp2,
-                      const std::vector<cv::DMatch>& matches,
-                      cv::Mat& kp1_out,
-                      cv::Mat& kp2_out);
+void ConvertMatches(
+  const std::vector<cv::KeyPoint> & kp1,
+  const std::vector<cv::KeyPoint> & kp2,
+  const std::vector<cv::DMatch> & matches,
+  cv::Mat & kp1_out,
+  cv::Mat & kp2_out);
 }
 
 #endif  // IMAGE_UTIL_IMAGE_MATCHING_H_

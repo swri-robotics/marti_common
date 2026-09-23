@@ -43,21 +43,23 @@ class RoutePoint;
 // frame_id of the transformed route will be set to the required
 // target_frame argument, because forgetting to up the frame_id has
 // caused difficult bugs several times.
-void transform(Route &route,
-               const swri_transform_util::Transform &transform,
-               const std::string &target_frame);
+void transform(
+  Route & route,
+  const swri_transform_util::Transform & transform,
+  const std::string & target_frame);
 
 
 // Project a route to the XY plane by setting the Z coordinate to zero.
-void projectToXY(Route &route);
+void projectToXY(Route & route);
 
 
 // Fill in the orientation of the route points using an estimate from
 // the route geometry and desired "up" direction.  This function
 // assumes the route is in a cartesian (e.g. not WGS84) frame.
-void fillOrientations(Route &route,
-                      const tf2::Vector3 &up=tf2::Vector3(0.0, 0.0, 1.0),
-                      rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::fillOrientations"));
+void fillOrientations(
+  Route & route,
+  const tf2::Vector3 & up = tf2::Vector3(0.0, 0.0, 1.0),
+  rclcpp::Logger logger = rclcpp::get_logger("swri_transform_util::fillOrientations"));
 
 
 // Find the closest point on the route (as a route position) for a
@@ -66,22 +68,24 @@ void fillOrientations(Route &route,
 // first and last segments to extend infinitely (ONLY if the point is
 // nearest to either without extrapolation).  This function assumes
 // the route is in a cartesian (e.g. not WGS84) frame.
-bool projectOntoRoute(marti_nav_msgs::msg::RoutePosition &position,
-                      const Route &route,
-                      const tf2::Vector3 &point,
-                      bool extrapolate_before_start,
-                      bool extrapolate_past_end);
+bool projectOntoRoute(
+  marti_nav_msgs::msg::RoutePosition & position,
+  const Route & route,
+  const tf2::Vector3 & point,
+  bool extrapolate_before_start,
+  bool extrapolate_past_end);
 
 
 // Find the closest position on a route for a given point, restricted
 // to a subset of the route.  The subset is defined by a start and end
 // position on the route.  This function assumes the route is in a
 // cartesian (e.g. not WGS84) frame.
-bool projectOntoRouteWindow(marti_nav_msgs::msg::RoutePosition &position,
-                            const Route &route,
-                            const tf2::Vector3 &point,
-                            const marti_nav_msgs::msg::RoutePosition &window_start,
-                            const marti_nav_msgs::msg::RoutePosition &window_end);
+bool projectOntoRouteWindow(
+  marti_nav_msgs::msg::RoutePosition & position,
+  const Route & route,
+  const tf2::Vector3 & point,
+  const marti_nav_msgs::msg::RoutePosition & window_start,
+  const marti_nav_msgs::msg::RoutePosition & window_end);
 
 
 // Normalize a route position.  A normalize route position is guaranteed to
@@ -101,26 +105,28 @@ bool projectOntoRouteWindow(marti_nav_msgs::msg::RoutePosition &position,
 //  This function fails if the original position's id is not found in the
 // route.  This function assumes the route is in a cartesian (e.g. not
 // WGS84) frame.
-bool normalizeRoutePosition(marti_nav_msgs::msg::RoutePosition &normalized_position,
-                            const Route &route,
-                            const marti_nav_msgs::msg::RoutePosition &position);
+bool normalizeRoutePosition(
+  marti_nav_msgs::msg::RoutePosition & normalized_position,
+  const Route & route,
+  const marti_nav_msgs::msg::RoutePosition & position);
 
 
 // Create a route point from a route position by interpolating between
 // the route's points as needed.  This function assumes the route is
 // in a cartesian (e.g. not WGS84) frame.
-bool interpolateRoutePosition(RoutePoint &point,
-                              const Route &route,
-                              const marti_nav_msgs::msg::RoutePosition &position,
-                              bool allow_extrapolation);
+bool interpolateRoutePosition(
+  RoutePoint & point,
+  const Route & route,
+  const marti_nav_msgs::msg::RoutePosition & position,
+  bool allow_extrapolation);
 
 // Return the distance between two route positions.  This function
 // works for routes defined in WGS84 or Euclidean spaces.
 bool routeDistance(
-  double &distance,
-  const marti_nav_msgs::msg::RoutePosition &start,
-  const marti_nav_msgs::msg::RoutePosition &end,
-  const Route &route);
+  double & distance,
+  const marti_nav_msgs::msg::RoutePosition & start,
+  const marti_nav_msgs::msg::RoutePosition & end,
+  const Route & route);
 
 // Return the distances between a start route position and multiple
 // end route positions.  This function works for routes defined in
@@ -130,16 +136,16 @@ bool routeDistance(
 // and distances is guaranteed to be the same size as ends.  If an end
 // point is not found in the route, its distance is set to NaN.
 bool routeDistances(
-  std::vector<double> &distances,
-  const marti_nav_msgs::msg::RoutePosition &start,
-  const std::vector<marti_nav_msgs::msg::RoutePosition> &ends,
-  const Route &route);
+  std::vector<double> & distances,
+  const marti_nav_msgs::msg::RoutePosition & start,
+  const std::vector<marti_nav_msgs::msg::RoutePosition> & ends,
+  const Route & route);
 
 // Extracts a subroute from [start, end)
 bool extractSubroute(
-  Route &sub_route,
-  const Route &route,
-  const marti_nav_msgs::msg::RoutePosition &start,
-  const marti_nav_msgs::msg::RoutePosition &end);
+  Route & sub_route,
+  const Route & route,
+  const marti_nav_msgs::msg::RoutePosition & start,
+  const marti_nav_msgs::msg::RoutePosition & end);
 }  // namespace swri_route_util
 #endif  // SWRI_ROUTE_UTIL_UTIL_H_

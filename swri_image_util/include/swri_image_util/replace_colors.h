@@ -34,14 +34,14 @@
 
 namespace swri_image_util
 {
-  /**
+/**
    * Replaces the colors in original_image with the values from the look up
    * table in lut. The modified image is stored in modified_image
    */
-  void replaceColors(
-    const cv::Mat& original_image,
-    const cv::Mat& lut,
-    cv::Mat& modified_image);
+void replaceColors(
+  const cv::Mat & original_image,
+  const cv::Mat & lut,
+  cv::Mat & modified_image);
 }
 
 #endif // IMAGE_UTIL_REPLACE_COLORS_H_

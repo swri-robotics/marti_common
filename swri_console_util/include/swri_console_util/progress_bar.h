@@ -37,37 +37,37 @@
 
 namespace swri_console_util
 {
-  class ProgressBar
-  {
-  public:
-    ProgressBar();
-    ~ProgressBar();
+class ProgressBar
+{
+public:
+  ProgressBar();
+  ~ProgressBar();
 
-    void SetStartTime(const rclcpp::Time& start_time);
-    void SetProgress(double percent_complete);
-    void PrintTime();
-    void CheckForPause();
-    signed char ReadCharFromStdin();
+  void SetStartTime(const rclcpp::Time & start_time);
+  void SetProgress(double percent_complete);
+  void PrintTime();
+  void CheckForPause();
+  signed char ReadCharFromStdin();
 
-    static std::string GetTimeString(double seconds);
-    static std::string IntToString(int64_t i, int width = 0);
+  static std::string GetTimeString(double seconds);
+  static std::string IntToString(int64_t i, int width = 0);
 
-  private:
-    void SetupTerminal();
-    void RestoreTerminal();
+private:
+  void SetupTerminal();
+  void RestoreTerminal();
 
-    bool paused_;
+  bool paused_;
 
-    double percent_complete_;
+  double percent_complete_;
 
-    rclcpp::Clock clock_;
-    rclcpp::Time start_time_;
-    rclcpp::Duration paused_time_;
+  rclcpp::Clock clock_;
+  rclcpp::Time start_time_;
+  rclcpp::Duration paused_time_;
 
-    termios orig_flags_;
-    fd_set  stdin_fdset_;
-    int     maxfd_;
-  };
+  termios orig_flags_;
+  fd_set stdin_fdset_;
+  int maxfd_;
+};
 }
 
 #endif  // CONSOLE_UTIL_PROGRESS_BAR_H_

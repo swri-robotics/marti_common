@@ -32,7 +32,8 @@
 
 #include <string>
 
-namespace swri_dbw_interface {
+namespace swri_dbw_interface
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 // The follow define common states used for transmission devices in the

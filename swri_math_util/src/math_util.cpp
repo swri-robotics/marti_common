@@ -33,51 +33,46 @@
 
 namespace swri_math_util
 {
-  double Round(double value)
-  {
-    return (value > 0.0) ? std::floor(value + 0.5) : std::ceil(value - 0.5);
+double Round(double value)
+{
+  return (value > 0.0) ? std::floor(value + 0.5) : std::ceil(value - 0.5);
+}
+
+double ToNearest(double value, double multiple)
+{
+  if (multiple == 0) {
+    return 0;
   }
 
-  double ToNearest(double value, double multiple)
-  {
-    if (multiple == 0)
-    {
-      return 0;
+  return Round(value / multiple) * multiple;
+}
+
+double UpToNearest(double value, double multiple)
+{
+  if (multiple == 0) {
+    return 0;
+  }
+
+  return std::ceil(value / multiple) * multiple;
+}
+
+bool IsNear(double v1, double v2, double epsilon)
+{
+  return std::fabs(v1 - v2) <= epsilon;
+}
+
+double unWrapAngle(
+  double static_angle,
+  double variable_angle,
+  double threshold)
+{
+  if (std::abs(static_angle - variable_angle) > threshold) {
+    if (variable_angle < static_angle) {
+      variable_angle += swri_math_util::_2pi;
+    } else {
+      variable_angle -= swri_math_util::_2pi;
     }
-
-    return Round(value / multiple) * multiple;
   }
-
-  double UpToNearest(double value, double multiple)
-  {
-    if (multiple == 0)
-    {
-      return 0;
-    }
-
-    return std::ceil(value / multiple) * multiple;
-  }
-
-  bool IsNear(double v1, double v2, double epsilon)
-  {
-    return std::fabs(v1 - v2) <= epsilon;
-  }
-
-  double unWrapAngle(double static_angle,
-                     double variable_angle,
-                     double threshold)
-  {
-    if (std::abs(static_angle - variable_angle) > threshold)
-    {
-      if (variable_angle < static_angle)
-      {
-        variable_angle += swri_math_util::_2pi;
-      }
-      else
-      {
-        variable_angle -= swri_math_util::_2pi;
-      }
-    }
-    return variable_angle;
-  }
+  return variable_angle;
+}
 }

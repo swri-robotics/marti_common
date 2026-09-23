@@ -135,12 +135,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_0)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat identity(2, 3, CV_32FC1);
-  identity.at<float>(0,0) = 1;
-  identity.at<float>(0,1) = 0;
-  identity.at<float>(0,2) = 0;
-  identity.at<float>(1,0) = 0;
-  identity.at<float>(1,1) = 1;
-  identity.at<float>(1,2) = 0;
+  identity.at<float>(0, 0) = 1;
+  identity.at<float>(0, 1) = 0;
+  identity.at<float>(0, 2) = 0;
+  identity.at<float>(1, 0) = 0;
+  identity.at<float>(1, 1) = 1;
+  identity.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, identity));
 }
@@ -150,12 +150,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_1)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat identity(2, 3, CV_32FC1);
-  identity.at<float>(0,0) = 1;
-  identity.at<float>(0,1) = 0;
-  identity.at<float>(0,2) = 0;
-  identity.at<float>(1,0) = 0;
-  identity.at<float>(1,1) = 1;
-  identity.at<float>(1,2) = 0;
+  identity.at<float>(0, 0) = 1;
+  identity.at<float>(0, 1) = 0;
+  identity.at<float>(0, 2) = 0;
+  identity.at<float>(1, 0) = 0;
+  identity.at<float>(1, 1) = 1;
+  identity.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, identity));
 }
@@ -165,12 +165,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_2)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat shift_15_x(2, 3, CV_32FC1);
-  shift_15_x.at<float>(0,0) = 1;
-  shift_15_x.at<float>(0,1) = 0;
-  shift_15_x.at<float>(0,2) = 15;
-  shift_15_x.at<float>(1,0) = 0;
-  shift_15_x.at<float>(1,1) = 1;
-  shift_15_x.at<float>(1,2) = 0;
+  shift_15_x.at<float>(0, 0) = 1;
+  shift_15_x.at<float>(0, 1) = 0;
+  shift_15_x.at<float>(0, 2) = 15;
+  shift_15_x.at<float>(1, 0) = 0;
+  shift_15_x.at<float>(1, 1) = 1;
+  shift_15_x.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(0, swri_image_util::GetOverlappingArea(rect, shift_15_x));
 }
@@ -180,12 +180,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_3)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat shift_15_x(2, 3, CV_32FC1);
-  shift_15_x.at<float>(0,0) = 1;
-  shift_15_x.at<float>(0,1) = 0;
-  shift_15_x.at<float>(0,2) = 15;
-  shift_15_x.at<float>(1,0) = 0;
-  shift_15_x.at<float>(1,1) = 1;
-  shift_15_x.at<float>(1,2) = 0;
+  shift_15_x.at<float>(0, 0) = 1;
+  shift_15_x.at<float>(0, 1) = 0;
+  shift_15_x.at<float>(0, 2) = 15;
+  shift_15_x.at<float>(1, 0) = 0;
+  shift_15_x.at<float>(1, 1) = 1;
+  shift_15_x.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(50, swri_image_util::GetOverlappingArea(rect2, shift_15_x));
 }
@@ -195,12 +195,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_4)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat shift_5_x(2, 3, CV_32FC1);
-  shift_5_x.at<float>(0,0) = 1;
-  shift_5_x.at<float>(0,1) = 0;
-  shift_5_x.at<float>(0,2) = 5;
-  shift_5_x.at<float>(1,0) = 0;
-  shift_5_x.at<float>(1,1) = 1;
-  shift_5_x.at<float>(1,2) = 0;
+  shift_5_x.at<float>(0, 0) = 1;
+  shift_5_x.at<float>(0, 1) = 0;
+  shift_5_x.at<float>(0, 2) = 5;
+  shift_5_x.at<float>(1, 0) = 0;
+  shift_5_x.at<float>(1, 1) = 1;
+  shift_5_x.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(50, swri_image_util::GetOverlappingArea(rect, shift_5_x));
 }
@@ -210,12 +210,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_5)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat shift_5_x(2, 3, CV_32FC1);
-  shift_5_x.at<float>(0,0) = 1;
-  shift_5_x.at<float>(0,1) = 0;
-  shift_5_x.at<float>(0,2) = 5;
-  shift_5_x.at<float>(1,0) = 0;
-  shift_5_x.at<float>(1,1) = 1;
-  shift_5_x.at<float>(1,2) = 0;
+  shift_5_x.at<float>(0, 0) = 1;
+  shift_5_x.at<float>(0, 1) = 0;
+  shift_5_x.at<float>(0, 2) = 5;
+  shift_5_x.at<float>(1, 0) = 0;
+  shift_5_x.at<float>(1, 1) = 1;
+  shift_5_x.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(150, swri_image_util::GetOverlappingArea(rect2, shift_5_x));
 }
@@ -225,12 +225,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_6)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat shift_5_xy(2, 3, CV_32FC1);
-  shift_5_xy.at<float>(0,0) = 1;
-  shift_5_xy.at<float>(0,1) = 0;
-  shift_5_xy.at<float>(0,2) = 5;
-  shift_5_xy.at<float>(1,0) = 0;
-  shift_5_xy.at<float>(1,1) = 1;
-  shift_5_xy.at<float>(1,2) = 5;
+  shift_5_xy.at<float>(0, 0) = 1;
+  shift_5_xy.at<float>(0, 1) = 0;
+  shift_5_xy.at<float>(0, 2) = 5;
+  shift_5_xy.at<float>(1, 0) = 0;
+  shift_5_xy.at<float>(1, 1) = 1;
+  shift_5_xy.at<float>(1, 2) = 5;
 
   EXPECT_FLOAT_EQ(25, swri_image_util::GetOverlappingArea(rect, shift_5_xy));
 }
@@ -240,12 +240,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_7)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat shift_5_xy(2, 3, CV_32FC1);
-  shift_5_xy.at<float>(0,0) = 1;
-  shift_5_xy.at<float>(0,1) = 0;
-  shift_5_xy.at<float>(0,2) = 5;
-  shift_5_xy.at<float>(1,0) = 0;
-  shift_5_xy.at<float>(1,1) = 1;
-  shift_5_xy.at<float>(1,2) = 5;
+  shift_5_xy.at<float>(0, 0) = 1;
+  shift_5_xy.at<float>(0, 1) = 0;
+  shift_5_xy.at<float>(0, 2) = 5;
+  shift_5_xy.at<float>(1, 0) = 0;
+  shift_5_xy.at<float>(1, 1) = 1;
+  shift_5_xy.at<float>(1, 2) = 5;
 
   EXPECT_FLOAT_EQ(75, swri_image_util::GetOverlappingArea(rect2, shift_5_xy));
 }
@@ -255,12 +255,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_8)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat rotate90(2, 3, CV_32FC1);
-  rotate90.at<float>(0,0) = 0;
-  rotate90.at<float>(0,1) = 1;
-  rotate90.at<float>(0,2) = 0;
-  rotate90.at<float>(1,0) = -1;
-  rotate90.at<float>(1,1) = 0;
-  rotate90.at<float>(1,2) = 0;
+  rotate90.at<float>(0, 0) = 0;
+  rotate90.at<float>(0, 1) = 1;
+  rotate90.at<float>(0, 2) = 0;
+  rotate90.at<float>(1, 0) = -1;
+  rotate90.at<float>(1, 1) = 0;
+  rotate90.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, rotate90));
 }
@@ -270,12 +270,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_9)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat rotate90(2, 3, CV_32FC1);
-  rotate90.at<float>(0,0) = 0;
-  rotate90.at<float>(0,1) = 1;
-  rotate90.at<float>(0,2) = 0;
-  rotate90.at<float>(1,0) = -1;
-  rotate90.at<float>(1,1) = 0;
-  rotate90.at<float>(1,2) = 0;
+  rotate90.at<float>(0, 0) = 0;
+  rotate90.at<float>(0, 1) = 1;
+  rotate90.at<float>(0, 2) = 0;
+  rotate90.at<float>(1, 0) = -1;
+  rotate90.at<float>(1, 1) = 0;
+  rotate90.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect2, rotate90));
 }
@@ -285,12 +285,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_10)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat rotate180(2, 3, CV_32FC1);
-  rotate180.at<float>(0,0) = -1;
-  rotate180.at<float>(0,1) = 0;
-  rotate180.at<float>(0,2) = 0;
-  rotate180.at<float>(1,0) = 0;
-  rotate180.at<float>(1,1) = -1;
-  rotate180.at<float>(1,2) = 0;
+  rotate180.at<float>(0, 0) = -1;
+  rotate180.at<float>(0, 1) = 0;
+  rotate180.at<float>(0, 2) = 0;
+  rotate180.at<float>(1, 0) = 0;
+  rotate180.at<float>(1, 1) = -1;
+  rotate180.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(100, swri_image_util::GetOverlappingArea(rect, rotate180));
 }
@@ -300,12 +300,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_11)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat rotate180(2, 3, CV_32FC1);
-  rotate180.at<float>(0,0) = -1;
-  rotate180.at<float>(0,1) = 0;
-  rotate180.at<float>(0,2) = 0;
-  rotate180.at<float>(1,0) = 0;
-  rotate180.at<float>(1,1) = -1;
-  rotate180.at<float>(1,2) = 0;
+  rotate180.at<float>(0, 0) = -1;
+  rotate180.at<float>(0, 1) = 0;
+  rotate180.at<float>(0, 2) = 0;
+  rotate180.at<float>(1, 0) = 0;
+  rotate180.at<float>(1, 1) = -1;
+  rotate180.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(200, swri_image_util::GetOverlappingArea(rect2, rotate180));
 }
@@ -315,12 +315,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_12)
   cv::Rect rect(-5, -5, 10, 10);
 
   cv::Mat rotate45(2, 3, CV_32FC1);
-  rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(0,1) = std::sin(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(0,2) = 0;
-  rotate45.at<float>(1,0) = -std::sin(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(1,1) = std::cos(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(1,2) = 0;
+  rotate45.at<float>(0, 0) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0, 1) = std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0, 2) = 0;
+  rotate45.at<float>(1, 0) = -std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1, 1) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(82.842712, swri_image_util::GetOverlappingArea(rect, rotate45));
 }
@@ -330,12 +330,12 @@ TEST(GeometryUtilTests, GetOverlappingArea_13)
   cv::Rect rect2(-10, -5, 20, 10);
 
   cv::Mat rotate45(2, 3, CV_32FC1);
-  rotate45.at<float>(0,0) = std::cos(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(0,1) = std::sin(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(0,2) = 0;
-  rotate45.at<float>(1,0) = -std::sin(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(1,1) = std::cos(swri_math_util::_half_pi * 0.5);
-  rotate45.at<float>(1,2) = 0;
+  rotate45.at<float>(0, 0) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0, 1) = std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(0, 2) = 0;
+  rotate45.at<float>(1, 0) = -std::sin(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1, 1) = std::cos(swri_math_util::_half_pi * 0.5);
+  rotate45.at<float>(1, 2) = 0;
 
   EXPECT_FLOAT_EQ(136.3961, swri_image_util::GetOverlappingArea(rect2, rotate45));
 }
@@ -343,21 +343,21 @@ TEST(GeometryUtilTests, GetOverlappingArea_13)
 TEST(GeometryUtilTests, TestProjectEllipse_0)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
-  ellipsoid1.at<float>(0,0) = 1;
-  ellipsoid1.at<float>(0,1) = 0;
-  ellipsoid1.at<float>(0,2) = 0;
-  ellipsoid1.at<float>(1,0) = 0;
-  ellipsoid1.at<float>(1,1) = 1;
-  ellipsoid1.at<float>(1,2) = 0;
-  ellipsoid1.at<float>(2,0) = 0;
-  ellipsoid1.at<float>(2,1) = 0;
-  ellipsoid1.at<float>(2,2) = 1;
+  ellipsoid1.at<float>(0, 0) = 1;
+  ellipsoid1.at<float>(0, 1) = 0;
+  ellipsoid1.at<float>(0, 2) = 0;
+  ellipsoid1.at<float>(1, 0) = 0;
+  ellipsoid1.at<float>(1, 1) = 1;
+  ellipsoid1.at<float>(1, 2) = 0;
+  ellipsoid1.at<float>(2, 0) = 0;
+  ellipsoid1.at<float>(2, 1) = 0;
+  ellipsoid1.at<float>(2, 2) = 1;
 
   cv::Mat ellipse1(2, 2, CV_32FC1);
-  ellipse1.at<float>(0,0) = 1;
-  ellipse1.at<float>(0,1) = 0;
-  ellipse1.at<float>(1,0) = 0;
-  ellipse1.at<float>(1,1) = 1;
+  ellipse1.at<float>(0, 0) = 1;
+  ellipse1.at<float>(0, 1) = 0;
+  ellipse1.at<float>(1, 0) = 0;
+  ellipse1.at<float>(1, 1) = 1;
 
   cv::Mat projected1 = swri_image_util::ProjectEllipsoid(ellipsoid1);
 
@@ -370,21 +370,21 @@ TEST(GeometryUtilTests, TestProjectEllipse_0)
 TEST(GeometryUtilTests, TestProjectEllipse_1)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
-  ellipsoid1.at<float>(0,0) = 10;
-  ellipsoid1.at<float>(0,1) = 0;
-  ellipsoid1.at<float>(0,2) = 0;
-  ellipsoid1.at<float>(1,0) = 0;
-  ellipsoid1.at<float>(1,1) = 15;
-  ellipsoid1.at<float>(1,2) = 0;
-  ellipsoid1.at<float>(2,0) = 0;
-  ellipsoid1.at<float>(2,1) = 0;
-  ellipsoid1.at<float>(2,2) = -35;
+  ellipsoid1.at<float>(0, 0) = 10;
+  ellipsoid1.at<float>(0, 1) = 0;
+  ellipsoid1.at<float>(0, 2) = 0;
+  ellipsoid1.at<float>(1, 0) = 0;
+  ellipsoid1.at<float>(1, 1) = 15;
+  ellipsoid1.at<float>(1, 2) = 0;
+  ellipsoid1.at<float>(2, 0) = 0;
+  ellipsoid1.at<float>(2, 1) = 0;
+  ellipsoid1.at<float>(2, 2) = -35;
 
   cv::Mat ellipse1(2, 2, CV_32FC1);
-  ellipse1.at<float>(0,0) = 10;
-  ellipse1.at<float>(0,1) = 0;
-  ellipse1.at<float>(1,0) = 0;
-  ellipse1.at<float>(1,1) = 15;
+  ellipse1.at<float>(0, 0) = 10;
+  ellipse1.at<float>(0, 1) = 0;
+  ellipse1.at<float>(1, 0) = 0;
+  ellipse1.at<float>(1, 1) = 15;
 
   cv::Mat projected1 = swri_image_util::ProjectEllipsoid(ellipsoid1);
 
@@ -397,21 +397,21 @@ TEST(GeometryUtilTests, TestProjectEllipse_1)
 TEST(GeometryUtilTests, TestProjectEllipse_3)
 {
   cv::Mat ellipsoid1(3, 3, CV_32FC1);
-  ellipsoid1.at<float>(0,0) = 10;
-  ellipsoid1.at<float>(0,1) = 0;
-  ellipsoid1.at<float>(0,2) = 0;
-  ellipsoid1.at<float>(1,0) = 0;
-  ellipsoid1.at<float>(1,1) = 15;
-  ellipsoid1.at<float>(1,2) = 0;
-  ellipsoid1.at<float>(2,0) = 0;
-  ellipsoid1.at<float>(2,1) = 0;
-  ellipsoid1.at<float>(2,2) = std::numeric_limits<double>::max() * 0.5;
+  ellipsoid1.at<float>(0, 0) = 10;
+  ellipsoid1.at<float>(0, 1) = 0;
+  ellipsoid1.at<float>(0, 2) = 0;
+  ellipsoid1.at<float>(1, 0) = 0;
+  ellipsoid1.at<float>(1, 1) = 15;
+  ellipsoid1.at<float>(1, 2) = 0;
+  ellipsoid1.at<float>(2, 0) = 0;
+  ellipsoid1.at<float>(2, 1) = 0;
+  ellipsoid1.at<float>(2, 2) = std::numeric_limits<double>::max() * 0.5;
 
   cv::Mat ellipse1(2, 2, CV_32FC1);
-  ellipse1.at<float>(0,0) = 10;
-  ellipse1.at<float>(0,1) = 0;
-  ellipse1.at<float>(1,0) = 0;
-  ellipse1.at<float>(1,1) = 15;
+  ellipse1.at<float>(0, 0) = 10;
+  ellipse1.at<float>(0, 1) = 0;
+  ellipse1.at<float>(1, 0) = 0;
+  ellipse1.at<float>(1, 1) = 15;
 
   cv::Mat projected1 = swri_image_util::ProjectEllipsoid(ellipsoid1);
 
@@ -426,15 +426,15 @@ TEST(GeometryUtilTests, TestProjectEllipse_3)
 TEST(GeometryUtilTests, TestProjectEllipseInvalid_0)
 {
   cv::Mat ellipsoid2(3, 3, CV_32FC1);
-  ellipsoid2.at<float>(0,0) = 1;
-  ellipsoid2.at<float>(0,1) = 0;
-  ellipsoid2.at<float>(0,2) = 0;
-  ellipsoid2.at<float>(1,0) = 0;
-  ellipsoid2.at<float>(1,1) = 1;
-  ellipsoid2.at<float>(1,2) = 0;
-  ellipsoid2.at<float>(2,0) = 0;
-  ellipsoid2.at<float>(2,1) = 0;
-  ellipsoid2.at<float>(2,2) = 0;
+  ellipsoid2.at<float>(0, 0) = 1;
+  ellipsoid2.at<float>(0, 1) = 0;
+  ellipsoid2.at<float>(0, 2) = 0;
+  ellipsoid2.at<float>(1, 0) = 0;
+  ellipsoid2.at<float>(1, 1) = 1;
+  ellipsoid2.at<float>(1, 2) = 0;
+  ellipsoid2.at<float>(2, 0) = 0;
+  ellipsoid2.at<float>(2, 1) = 0;
+  ellipsoid2.at<float>(2, 2) = 0;
 
   cv::Mat projected2 = swri_image_util::ProjectEllipsoid(ellipsoid2);
 
@@ -444,10 +444,10 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid_0)
 TEST(GeometryUtilTests, TestProjectEllipseInvalid_1)
 {
   cv::Mat ellipsoid2(2, 2, CV_32FC1);
-  ellipsoid2.at<float>(0,0) = 1;
-  ellipsoid2.at<float>(0,1) = 0;
-  ellipsoid2.at<float>(1,0) = 0;
-  ellipsoid2.at<float>(1,1) = 1;
+  ellipsoid2.at<float>(0, 0) = 1;
+  ellipsoid2.at<float>(0, 1) = 0;
+  ellipsoid2.at<float>(1, 0) = 0;
+  ellipsoid2.at<float>(1, 1) = 1;
 
   cv::Mat projected2 = swri_image_util::ProjectEllipsoid(ellipsoid2);
 
@@ -457,10 +457,10 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid_1)
 TEST(GeometryUtilTests, TestProjectEllipseInvalid_2)
 {
   cv::Mat ellipsoid2(2, 2, CV_32SC1);
-  ellipsoid2.at<int32_t>(0,0) = 1;
-  ellipsoid2.at<int32_t>(0,1) = 0;
-  ellipsoid2.at<int32_t>(1,0) = 0;
-  ellipsoid2.at<int32_t>(1,1) = 1;
+  ellipsoid2.at<int32_t>(0, 0) = 1;
+  ellipsoid2.at<int32_t>(0, 1) = 0;
+  ellipsoid2.at<int32_t>(1, 0) = 0;
+  ellipsoid2.at<int32_t>(1, 1) = 1;
 
   cv::Mat projected2 = swri_image_util::ProjectEllipsoid(ellipsoid2);
 
@@ -470,63 +470,62 @@ TEST(GeometryUtilTests, TestProjectEllipseInvalid_2)
 TEST(GeometryUtilTests, TestGetEllipsePoints_0)
 {
   cv::Mat ellipse(2, 2, CV_32FC1);
-  ellipse.at<float>(0,0) = 1;
-  ellipse.at<float>(0,1) = 0;
-  ellipse.at<float>(1,0) = 0;
-  ellipse.at<float>(1,1) = 1;
+  ellipse.at<float>(0, 0) = 1;
+  ellipse.at<float>(0, 1) = 0;
+  ellipse.at<float>(1, 0) = 0;
+  ellipse.at<float>(1, 1) = 1;
 
   std::vector<tf2::Vector3> points = swri_image_util::GetEllipsePoints(
-      ellipse, tf2::Vector3(0, 0, 0), 1, 8);
+    ellipse, tf2::Vector3(0, 0, 0), 1, 8);
 
   ASSERT_EQ(8, points.size());
 
   EXPECT_FLOAT_EQ(1, points[0].x());
   EXPECT_NEAR(0, points[0].y(), 0.000000001);
 
-  EXPECT_NEAR(0.7071067811865475243818940365, points[1].x(),  0.000000001);
-  EXPECT_NEAR(0.7071067811865475243818940365, points[1].y(),  0.000000001);
+  EXPECT_NEAR(0.7071067811865475243818940365, points[1].x(), 0.000000001);
+  EXPECT_NEAR(0.7071067811865475243818940365, points[1].y(), 0.000000001);
 
   EXPECT_NEAR(0, points[2].x(), 0.000000001);
   EXPECT_FLOAT_EQ(1, points[2].y());
 
-  EXPECT_NEAR(-0.7071067811865475243818940365, points[3].x(),  0.000000001);
-  EXPECT_NEAR(0.7071067811865475243818940365, points[3].y(),  0.000000001);
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[3].x(), 0.000000001);
+  EXPECT_NEAR(0.7071067811865475243818940365, points[3].y(), 0.000000001);
 
   EXPECT_FLOAT_EQ(-1, points[4].x());
   EXPECT_NEAR(0, points[4].y(), 0.000000001);
 
-  EXPECT_NEAR(-0.7071067811865475243818940365, points[5].x(),  0.000000001);
-  EXPECT_NEAR(-0.7071067811865475243818940365, points[5].y(),  0.000000001);
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[5].x(), 0.000000001);
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[5].y(), 0.000000001);
 
   EXPECT_NEAR(0, points[6].x(), 0.000000001);
   EXPECT_FLOAT_EQ(-1, points[6].y());
 
-  EXPECT_NEAR(0.7071067811865475243818940365, points[7].x(),  0.000000001);
-  EXPECT_NEAR(-0.7071067811865475243818940365, points[7].y(),  0.000000001);
+  EXPECT_NEAR(0.7071067811865475243818940365, points[7].x(), 0.000000001);
+  EXPECT_NEAR(-0.7071067811865475243818940365, points[7].y(), 0.000000001);
 }
 
 TEST(GeometryUtilTests, TestGetEllipsePointsWithZ)
 {
   cv::Mat ellipse(2, 2, CV_32FC1);
-  ellipse.at<float>(0,0) = 1;
-  ellipse.at<float>(0,1) = 0;
-  ellipse.at<float>(1,0) = 0;
-  ellipse.at<float>(1,1) = 1;
+  ellipse.at<float>(0, 0) = 1;
+  ellipse.at<float>(0, 1) = 0;
+  ellipse.at<float>(1, 0) = 0;
+  ellipse.at<float>(1, 1) = 1;
 
   tf2::Vector3 center(1, 2, 3);
 
   std::vector<tf2::Vector3> points = swri_image_util::GetEllipsePointsWithZ(
-      ellipse, center, 1, 8);
+    ellipse, center, 1, 8);
   ASSERT_EQ(8, points.size());
 
   // Only the Z coordinate differs from GetEllipsePoints(), which flattens the
   // perimeter onto the XY-plane.
   std::vector<tf2::Vector3> flattened = swri_image_util::GetEllipsePoints(
-      ellipse, center, 1, 8);
+    ellipse, center, 1, 8);
   ASSERT_EQ(8, flattened.size());
 
-  for (size_t i = 0; i < points.size(); i++)
-  {
+  for (size_t i = 0; i < points.size(); i++) {
     EXPECT_FLOAT_EQ(center.z(), points[i].z());
     EXPECT_FLOAT_EQ(0, flattened[i].z());
 
@@ -541,7 +540,7 @@ TEST(GeometryUtilTests, TestGetEllipsePointsWithZ)
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

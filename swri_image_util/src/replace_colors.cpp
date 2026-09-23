@@ -33,13 +33,13 @@
 
 namespace swri_image_util
 {
-  void replaceColors(
-    const cv::Mat& original_image,
-    const cv::Mat& lut,
-    cv::Mat& modified_image)
-  {
-    cv::Mat input_rgb;
-    cv::cvtColor(original_image, input_rgb, cv::COLOR_GRAY2BGR);
-    cv::LUT(input_rgb, lut, modified_image);
-  }
+void replaceColors(
+  const cv::Mat & original_image,
+  const cv::Mat & lut,
+  cv::Mat & modified_image)
+{
+  cv::Mat input_rgb;
+  cv::cvtColor(original_image, input_rgb, cv::COLOR_GRAY2BGR);
+  cv::LUT(input_rgb, lut, modified_image);
+}
 }

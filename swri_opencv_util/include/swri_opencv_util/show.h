@@ -34,14 +34,14 @@
 
 namespace swri_opencv_util
 {
-  // Implemented in swri_opencv_util::swri_opencv_util_show, which links
-  // HighGUI; the core swri_opencv_util library does not.
-  void ShowScaled(
-      const std::string& name,
-      const cv::Mat& mat,
-      const cv::Mat& mask = cv::Mat(),
-      double a = -1.0, // assume auto-scaling
-      double b = 0.0);
+// Implemented in swri_opencv_util::swri_opencv_util_show, which links
+// HighGUI; the core swri_opencv_util library does not.
+void ShowScaled(
+  const std::string & name,
+  const cv::Mat & mat,
+  const cv::Mat & mask = cv::Mat(),
+  double a = -1.0,     // assume auto-scaling
+  double b = 0.0);
 }
 
 #endif  // OPENCV_UTIL_SHOW_H_

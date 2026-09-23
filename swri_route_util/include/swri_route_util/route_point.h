@@ -50,25 +50,25 @@ namespace swri_route_util
 // interpolated from a Route.
 class RoutePoint
 {
- public:
+public:
   RoutePoint();
 
   // Access to the route point's position as tf datatypes.
-  void setPosition(const tf2::Vector3 &position);
-  const tf2::Vector3& position() const;
-  tf2::Vector3& position();
+  void setPosition(const tf2::Vector3 & position);
+  const tf2::Vector3 & position() const;
+  tf2::Vector3 & position();
 
   // Access to the route point's position as message datatypes.
-  void setPosition(const geometry_msgs::msg::Point &position);
+  void setPosition(const geometry_msgs::msg::Point & position);
   const geometry_msgs::msg::Point positionMsg() const;
 
   // Access to the route point's orientation as tf datatypes.
-  void setOrientation(const tf2::Quaternion &orientation);
-  const tf2::Quaternion& orientation() const;
-  tf2::Quaternion& orientation();
+  void setOrientation(const tf2::Quaternion & orientation);
+  const tf2::Quaternion & orientation() const;
+  tf2::Quaternion & orientation();
 
   // Access to the route point's orientation as message datatypes.
-  void setOrientation(const geometry_msgs::msg::Quaternion &orientation);
+  void setOrientation(const geometry_msgs::msg::Quaternion & orientation);
   const geometry_msgs::msg::Quaternion orientationMsg() const;
 
   // Access to the route point's pose (position and orientation) as
@@ -78,13 +78,13 @@ class RoutePoint
 
   // Access to the route point's pose (position and orientation) as
   // message datatypes.
-  void setPose(const geometry_msgs::msg::Pose &pose);
+  void setPose(const geometry_msgs::msg::Pose & pose);
   geometry_msgs::msg::Pose poseMsg() const;
 
   // Access to the route point's id.  Ids should be unique when used,
   // but are typically not set for interpolated points.
-  const std::string& id() const;
-  void setId(const std::string &id);
+  const std::string & id() const;
+  void setId(const std::string & id);
 
   // Native access to the route point "stop_point" property.  This is
   // a boolean property that defaults to false if it is not explicitly
@@ -114,21 +114,21 @@ class RoutePoint
 
   // Get the value of a property.  Returns an empty string if the
   // property does not exist.
-  std::string getProperty(const std::string &name) const;
+  std::string getProperty(const std::string & name) const;
 
   // Determine if the specified property is defined for the route
   // point.
-  bool hasProperty(const std::string &name) const;
+  bool hasProperty(const std::string & name) const;
 
   // Set the value of a property.  If the property doesn't exist, it
   // is added.
-  void setProperty(const std::string &name, const std::string &value);
+  void setProperty(const std::string & name, const std::string & value);
 
   // Delete a property.  If the property doesn't exist or is not
   // deletable (e.g. name, guid), this method does nothing.
-  void deleteProperty(const std::string &name);
+  void deleteProperty(const std::string & name);
 
- private:
+private:
   tf2::Vector3 position_;
   tf2::Quaternion orientation_;
 

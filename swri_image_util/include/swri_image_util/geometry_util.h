@@ -29,9 +29,9 @@
 
 namespace swri_image_util
 {
-  typedef cv::Rect_<double> BoundingBox;
+typedef cv::Rect_<double> BoundingBox;
 
-  /**
+/**
    * Calculate the overlapping area of a rectangle an a rigidly transformed
    * version of itself.
    *
@@ -40,11 +40,11 @@ namespace swri_image_util
    *
    * @returns The area of intersection of the two rectangles.
    */
-  double GetOverlappingArea(
-      const cv::Rect& rect,
-      const cv::Mat& rigid_transform);
+double GetOverlappingArea(
+  const cv::Rect & rect,
+  const cv::Mat & rigid_transform);
 
-  /**
+/**
    * Determine if two aligned rectangles intersect one another.
    *
    * @param[in]  box1  The first rectangle.
@@ -52,9 +52,9 @@ namespace swri_image_util
    *
    * @returns True if box1 intersects with box2.  False otherwise.
    */
-  bool Intersects(const BoundingBox& box1, const BoundingBox& box2);
+bool Intersects(const BoundingBox & box1, const BoundingBox & box2);
 
-  /**
+/**
    * Projects a 3D ellipsoid to an ellipse on the XY-plane.
    *
    * @param[in]  ellipsoid  The ellipsoid represented as a 3x3 float matrix.
@@ -62,9 +62,9 @@ namespace swri_image_util
    * @returns The ellipse as a 2x2 float matrix if successful.  An empty matrix
    *          otherwise.
    */
-  cv::Mat ProjectEllipsoid(const cv::Mat& ellipsiod);
+cv::Mat ProjectEllipsoid(const cv::Mat & ellipsiod);
 
-  /**
+/**
    * Gets a list of points on the perimeter of an ellipse.
    *
    * The Z coordinate of every returned point is 0, whatever the center's Z is.
@@ -79,13 +79,13 @@ namespace swri_image_util
    * @returns A list of points on the perimeter of the ellipse if successful.
    *          An empty list otherwise.
    */
-  std::vector<tf2::Vector3> GetEllipsePoints(
-      const cv::Mat& ellipse,
-      const tf2::Vector3& center,
-      double scale,
-      int32_t num_points);
+std::vector<tf2::Vector3> GetEllipsePoints(
+  const cv::Mat & ellipse,
+  const tf2::Vector3 & center,
+  double scale,
+  int32_t num_points);
 
-  /**
+/**
    * Gets a list of points on the perimeter of an ellipse, in the plane of the
    * ellipse's center.
    *
@@ -100,11 +100,11 @@ namespace swri_image_util
    * @returns A list of points on the perimeter of the ellipse if successful.
    *          An empty list otherwise.
    */
-  std::vector<tf2::Vector3> GetEllipsePointsWithZ(
-      const cv::Mat& ellipse,
-      const tf2::Vector3& center,
-      double scale,
-      int32_t num_points);
+std::vector<tf2::Vector3> GetEllipsePointsWithZ(
+  const cv::Mat & ellipse,
+  const tf2::Vector3 & center,
+  double scale,
+  int32_t num_points);
 }
 
 #endif  // IMAGE_UTIL_GEOMETRY_UTIL_H_

@@ -52,10 +52,8 @@ public:
     ASSERT_TRUE(_tf_manager != nullptr);
     // Wait until the local_xy_origin is setup correctly
     bool origin_init = false;
-    for (size_t i=0; i < 100; ++i)
-    {
-      if (_tf_manager->SupportsTransform("far_field", "far_field__identity"))
-      {
+    for (size_t i = 0; i < 100; ++i) {
+      if (_tf_manager->SupportsTransform("far_field", "far_field__identity")) {
         origin_init = true;
         break;
       }
@@ -70,7 +68,8 @@ TEST_F(TransformManagerTests, Identity1)
   tf2::Vector3 p1(56, 234, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       "/near_field",
       transform));
@@ -89,11 +88,13 @@ TEST_F(TransformManagerTests, Identity1)
 TEST_F(TransformManagerTests, IdentityNoSlash)
 {
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       "near_field",
       transform));
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "near_field",
       "/near_field",
       transform));
@@ -104,7 +105,8 @@ TEST_F(TransformManagerTests, Identity2)
   tf2::Vector3 p1(435, -900, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/some_frame",
       "/some_frame",
       transform));
@@ -126,7 +128,8 @@ TEST_F(TransformManagerTests, TfToTf1)
   tf2::Vector3 far_field(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       "/far_field",
       transform));
@@ -148,7 +151,8 @@ TEST_F(TransformManagerTests, TfToTf1NoSlash)
   tf2::Vector3 far_field(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       "far_field",
       transform));
@@ -170,7 +174,8 @@ TEST_F(TransformManagerTests, TfToTf2)
   tf2::Vector3 far_field(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       "/far_field",
       transform));
@@ -187,7 +192,8 @@ TEST_F(TransformManagerTests, WgsToUtm)
   tf2::Vector3 wgs84(-98.471944, 29.526667, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       swri_transform_util::_utm_frame,
       swri_transform_util::_wgs84_frame,
       transform));
@@ -209,7 +215,8 @@ TEST_F(TransformManagerTests, WgsToUtmNoSlash)
   tf2::Vector3 wgs84(-98.471944, 29.526667, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "utm",
       "wgs84",
       transform));
@@ -231,7 +238,8 @@ TEST_F(TransformManagerTests, UtmToWgs84)
   tf2::Vector3 utm(551170, 3266454, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       swri_transform_util::_wgs84_frame,
       swri_transform_util::_utm_frame,
       transform));
@@ -253,7 +261,8 @@ TEST_F(TransformManagerTests, TfToUtm1)
   tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       swri_transform_util::_utm_frame,
       "/far_field",
       transform));
@@ -275,7 +284,8 @@ TEST_F(TransformManagerTests, TfToUtm1NoSlash)
   tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "utm",
       "far_field",
       transform));
@@ -296,7 +306,8 @@ TEST_F(TransformManagerTests, TfToUtm2)
   tf2::Vector3 tf(500, 500, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       swri_transform_util::_utm_frame,
       "/far_field",
       transform));
@@ -318,7 +329,8 @@ TEST_F(TransformManagerTests, UtmToTf1)
   tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_utm_frame,
       transform));
@@ -340,7 +352,8 @@ TEST_F(TransformManagerTests, UtmToTf2)
   tf2::Vector3 utm(537460.3372816057, 3258123.434110421, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       swri_transform_util::_utm_frame,
       transform));
@@ -362,7 +375,8 @@ TEST_F(TransformManagerTests, UtmToTf3)
   tf2::Vector3 utm(537460.3372816057 - 500, 3258123.434110421 - 500, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_utm_frame,
       transform));
@@ -384,7 +398,8 @@ TEST_F(TransformManagerTests, UtmToTf4)
   tf2::Vector3 utm(551170, 3266454, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_utm_frame,
       transform));
@@ -406,7 +421,8 @@ TEST_F(TransformManagerTests, Wgs84ToTf1)
   tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/far_field",
       swri_transform_util::_wgs84_frame,
       transform));
@@ -428,7 +444,8 @@ TEST_F(TransformManagerTests, Wgs84ToTf1NoSlash)
   tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "far_field",
       "wgs84",
       transform));
@@ -450,7 +467,8 @@ TEST_F(TransformManagerTests, Wgs84ToTf2)
   tf2::Vector3 wgs84(-98.61370577, 29.45196669, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "/near_field",
       swri_transform_util::_wgs84_frame,
       transform));
@@ -472,7 +490,8 @@ TEST_F(TransformManagerTests, TfToWgs84_1)
   tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       swri_transform_util::_wgs84_frame,
       "/far_field",
       transform));
@@ -494,7 +513,8 @@ TEST_F(TransformManagerTests, TfToWgs84_1NoSlash)
   tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       "wgs84",
       "far_field",
       transform));
@@ -515,7 +535,8 @@ TEST_F(TransformManagerTests, TfToWgs84_2)
   tf2::Vector3 tf(0, 0, 0);
 
   swri_transform_util::Transform transform;
-  ASSERT_TRUE(_tf_manager->GetTransform(
+  ASSERT_TRUE(
+    _tf_manager->GetTransform(
       swri_transform_util::_wgs84_frame,
       "/near_field",
       transform));
@@ -532,7 +553,7 @@ TEST_F(TransformManagerTests, TfToWgs84_2)
 }
 
 // Run all the tests that were declared with TEST_F()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
@@ -553,17 +574,16 @@ int main(int argc, char **argv)
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(_node);
   std::atomic<bool> tests_done(false);
-  std::thread spinner = std::thread([&tests_done, &executor]() {
-      while (not tests_done)
-      {
+  std::thread spinner = std::thread(
+    [&tests_done, &executor]() {
+      while (not tests_done) {
         executor.spin_some();
       }
-  });
+    });
 
   int result = RUN_ALL_TESTS();
   tests_done = true;
-  if (spinner.joinable())
-  {
+  if (spinner.joinable()) {
     spinner.join();
   }
   executor.remove_node(_node);

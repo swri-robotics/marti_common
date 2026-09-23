@@ -38,21 +38,37 @@ TEST(TrigUtilTests, WrapRadians)
   EXPECT_FLOAT_EQ(0, swri_math_util::WrapRadians(0, 0));
   EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi, 0));
   EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi * 3.0, 0));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi * -0.5, swri_math_util::WrapRadians(swri_math_util::_pi * 1.5, 0));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi * 0.5, swri_math_util::WrapRadians(swri_math_util::_pi * -1.5, 0));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi * -0.5,
+    swri_math_util::WrapRadians(swri_math_util::_pi * 1.5, 0));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi * 0.5,
+    swri_math_util::WrapRadians(swri_math_util::_pi * -1.5, 0));
 
   // Test values wrapped between [0, 2pi]
   EXPECT_FLOAT_EQ(0, swri_math_util::WrapRadians(0, swri_math_util::_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi, swri_math_util::_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi * 3.0, swri_math_util::_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(-swri_math_util::_pi, swri_math_util::_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi, swri_math_util::WrapRadians(swri_math_util::_pi * -3.0, swri_math_util::_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi * 0.5, swri_math_util::WrapRadians(swri_math_util::_pi * 2.5, swri_math_util::_pi));
-  EXPECT_FLOAT_EQ(swri_math_util::_pi * 1.5, swri_math_util::WrapRadians(swri_math_util::_pi * 3.5, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi,
+    swri_math_util::WrapRadians(swri_math_util::_pi, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi,
+    swri_math_util::WrapRadians(swri_math_util::_pi * 3.0, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi,
+    swri_math_util::WrapRadians(-swri_math_util::_pi, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi,
+    swri_math_util::WrapRadians(swri_math_util::_pi * -3.0, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi * 0.5,
+    swri_math_util::WrapRadians(swri_math_util::_pi * 2.5, swri_math_util::_pi));
+  EXPECT_FLOAT_EQ(
+    swri_math_util::_pi * 1.5,
+    swri_math_util::WrapRadians(swri_math_util::_pi * 3.5, swri_math_util::_pi));
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

@@ -45,72 +45,73 @@
 
 namespace swri_transform_util
 {
-  /**
+/**
    * A base class for transformers.
    *
    * Instantiations of this class implement an interface to get transforms from
    * certain types of frames (e.g. TF, WGS84) to other types of frames.
    */
-  class Transformer
-  {
-    public:
-      Transformer();
-      virtual ~Transformer() = default;
+class Transformer
+{
+public:
+  Transformer();
+  virtual ~Transformer() = default;
 
-      /**
-       * Initialize the Transformer from a tf::TransformListener.
-       *
-       * @param tf A shared pointer to a tf::TransformListener that the
-       *    Transformer wraps. It is recommended that every Transformer in a
-       *    node use the same tf::TransformListener to reduce redundant
-       *    computation.
-       */
-      void Initialize(std::shared_ptr<tf2_ros::Buffer> tf,
-                      std::shared_ptr<LocalXyWgs84Util> xy_util);
+  /**
+     * Initialize the Transformer from a tf::TransformListener.
+     *
+     * @param tf A shared pointer to a tf::TransformListener that the
+     *    Transformer wraps. It is recommended that every Transformer in a
+     *    node use the same tf::TransformListener to reduce redundant
+     *    computation.
+     */
+  void Initialize(
+    std::shared_ptr<tf2_ros::Buffer> tf,
+    std::shared_ptr<LocalXyWgs84Util> xy_util);
 
-      /**
-       * Get a map of the transforms supported by this Transformer
-       * @return A map from source frame IDs to list of destination frame IDs.
-       *   A source->destination entry does not imply that the inverse
-       *   transform is supported as well.
-       */
-      virtual std::map<std::string, std::vector<std::string> > Supports() const = 0;
+  /**
+     * Get a map of the transforms supported by this Transformer
+     * @return A map from source frame IDs to list of destination frame IDs.
+     *   A source->destination entry does not imply that the inverse
+     *   transform is supported as well.
+     */
+  virtual std::map<std::string, std::vector<std::string>> Supports() const = 0;
 
-      /**
-       * Get a swri_transform_util::Transform
-       *
-       * Gets the swri_transform_util::Transform that transforms coordinates
-       * from the source_frame into the target_frame. If the transform is not
-       * available, return false.
-       *
-       * @param[in] target_frame Destination frame for transform
-       * @param[in] source_frame Source frame for transform
-       * @param[in] time Time that the transform is valid for. To get the most
-       *    recent transform, use tf2::TimePoint(0)
-       * @param[out] transform Output container for the transform
-       * @return True if the transform was found, false if no transform between
-       *    the specified frames is available for the specified time.
-       */
-      virtual bool GetTransform(
-        const std::string& target_frame,
-        const std::string& source_frame,
-        const tf2::TimePoint& time,
-        Transform& transform) = 0;
+  /**
+     * Get a swri_transform_util::Transform
+     *
+     * Gets the swri_transform_util::Transform that transforms coordinates
+     * from the source_frame into the target_frame. If the transform is not
+     * available, return false.
+     *
+     * @param[in] target_frame Destination frame for transform
+     * @param[in] source_frame Source frame for transform
+     * @param[in] time Time that the transform is valid for. To get the most
+     *    recent transform, use tf2::TimePoint(0)
+     * @param[out] transform Output container for the transform
+     * @return True if the transform was found, false if no transform between
+     *    the specified frames is available for the specified time.
+     */
+  virtual bool GetTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time,
+    Transform & transform) = 0;
 
-    protected:
-      bool initialized_;
-      std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-      std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
-      rclcpp::Logger logger_;
+protected:
+  bool initialized_;
+  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+  std::shared_ptr<LocalXyWgs84Util> local_xy_util_;
+  rclcpp::Logger logger_;
 
-      virtual bool Initialize();
+  virtual bool Initialize();
 
-      virtual bool GetTransform(
-          const std::string& target_frame,
-          const std::string& source_frame,
-          const tf2::TimePoint& time,
-          geometry_msgs::msg::TransformStamped& transform) const;
-  };
+  virtual bool GetTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time,
+    geometry_msgs::msg::TransformStamped & transform) const;
+};
 }
 
 #endif  // TRANSFORM_UTIL_TRANSFORMER_H_

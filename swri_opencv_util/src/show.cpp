@@ -38,104 +38,90 @@
 
 namespace swri_opencv_util
 {
-  class CvWindows
+class CvWindows
+{
+public:
+  static CvWindows & getInstance()
   {
-  public:
-    static CvWindows& getInstance()
-    {
-      static CvWindows instance;
-      return instance;
-    }
-
-    ~CvWindows() {}
-
-    void RegisterWindow(const std::string& name)
-    {
-      std::unique_lock<std::mutex> lock(mutex_);
-
-      if (windows_.empty())
-      {
-        cv::startWindowThread();
-      }
-
-      if (windows_.count(name) == 0)
-      {
-        windows_[name] = name;
-
-        cv::namedWindow(name.c_str(), cv::WINDOW_NORMAL);
-      }
-    }
-
-  private:
-    CvWindows() {}
-    /* Delete the copy and move constructors to enforce the singleton pattern */
-    CvWindows(const CvWindows&) = delete;
-    CvWindows& operator=(const CvWindows&) = delete;
-    CvWindows(CvWindows&&) = delete;
-    CvWindows& operator=(CvWindows&&) = delete;
-    std::mutex mutex_;
-    std::map<std::string, std::string> windows_;
-  };
-
-  void ShowScaled(
-      const std::string& name,
-      const cv::Mat& mat,
-      const cv::Mat& mask,
-      double a,
-      double b)
-  {
-    if (mat.empty())
-    {
-      return;
-    }
-
-    CvWindows::getInstance().RegisterWindow(name);
-
-    cv::Mat scaled;
-
-    // Autoscale if a is negative
-    if(a < 0.0)
-    {
-      double min, max;
-      cv::minMaxLoc(mat, &min, &max, 0, 0, mask);
-
-      if(mat.type() == CV_8UC1)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8U, a, b);
-      }
-      else if(mat.type() == CV_32FC1)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8U, a, b);
-        if (!mask.empty())
-        {
-          cv::Mat color;
-          cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGR);
-          color.setTo(cv::Scalar(0.0,0.0,255.0), mask == 0);
-          scaled = color;
-        }
-      }
-      else if(mat.type() == CV_32FC3)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8UC3, a, b);
-      }
-      else if(mat.type() == CV_8UC3)
-      {
-        a = 255.0 / std::max(max - min, DBL_EPSILON);
-        b = -min * a;
-        mat.convertTo(scaled, CV_8UC3, a, b);
-      }
-    }
-    else
-    {
-      mat.convertTo(scaled, CV_8U, a, b);
-    }
-
-    cv::imshow(name, scaled);
+    static CvWindows instance;
+    return instance;
   }
+
+  ~CvWindows() {}
+
+  void RegisterWindow(const std::string & name)
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+
+    if (windows_.empty()) {
+      cv::startWindowThread();
+    }
+
+    if (windows_.count(name) == 0) {
+      windows_[name] = name;
+
+      cv::namedWindow(name.c_str(), cv::WINDOW_NORMAL);
+    }
+  }
+
+private:
+  CvWindows() {}
+  /* Delete the copy and move constructors to enforce the singleton pattern */
+  CvWindows(const CvWindows &) = delete;
+  CvWindows & operator=(const CvWindows &) = delete;
+  CvWindows(CvWindows &&) = delete;
+  CvWindows & operator=(CvWindows &&) = delete;
+  std::mutex mutex_;
+  std::map<std::string, std::string> windows_;
+};
+
+void ShowScaled(
+  const std::string & name,
+  const cv::Mat & mat,
+  const cv::Mat & mask,
+  double a,
+  double b)
+{
+  if (mat.empty()) {
+    return;
+  }
+
+  CvWindows::getInstance().RegisterWindow(name);
+
+  cv::Mat scaled;
+
+  // Autoscale if a is negative
+  if (a < 0.0) {
+    double min, max;
+    cv::minMaxLoc(mat, &min, &max, 0, 0, mask);
+
+    if (mat.type() == CV_8UC1) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8U, a, b);
+    } else if (mat.type() == CV_32FC1) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8U, a, b);
+      if (!mask.empty()) {
+        cv::Mat color;
+        cv::cvtColor(scaled, color, cv::COLOR_GRAY2BGR);
+        color.setTo(cv::Scalar(0.0, 0.0, 255.0), mask == 0);
+        scaled = color;
+      }
+    } else if (mat.type() == CV_32FC3) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8UC3, a, b);
+    } else if (mat.type() == CV_8UC3) {
+      a = 255.0 / std::max(max - min, DBL_EPSILON);
+      b = -min * a;
+      mat.convertTo(scaled, CV_8UC3, a, b);
+    }
+  } else {
+    mat.convertTo(scaled, CV_8U, a, b);
+  }
+
+  cv::imshow(name, scaled);
+}
 }

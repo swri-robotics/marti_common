@@ -33,15 +33,15 @@
 #include <vector>
 #include <opencv2/core/core.hpp>
 
-#define HAVE_INT64_T_64  # Prevents conflict with OpenCV typedef of int64
+#define HAVE_INT64_T_64  #Prevents conflict with OpenCV typedef of int64
 #include <geos_c.h>
 #undef HAVE_INT64_T_64
 
 namespace swri_geometry_util
 {
-  GEOSContextHandle_t GetContext();
+GEOSContextHandle_t GetContext();
 
-  /**
+/**
    * Calculate the instersection between two lines defined by 4 points.
    *
    * @param[in]   p1   First point of line segment 1.
@@ -52,14 +52,14 @@ namespace swri_geometry_util
    *
    * @returns True if the lines are not parallel.
    */
-  bool LineIntersection(
-      const cv::Vec2d& p1,
-      const cv::Vec2d& p2,
-      const cv::Vec2d& p3,
-      const cv::Vec2d& p4,
-      cv::Vec2d& c);
+bool LineIntersection(
+  const cv::Vec2d & p1,
+  const cv::Vec2d & p2,
+  const cv::Vec2d & p3,
+  const cv::Vec2d & p4,
+  cv::Vec2d & c);
 
-  /**
+/**
    * Calculate the instersection between two line segments defined by 4 points.
    *
    * In the case of parallel overlapping segments, the intersection point
@@ -73,14 +73,14 @@ namespace swri_geometry_util
    *
    * @returns True if the line segments intersect.
    */
-  bool LineSegmentIntersection(
-      const cv::Vec2d& p1,
-      const cv::Vec2d& p2,
-      const cv::Vec2d& p3,
-      const cv::Vec2d& p4,
-      cv::Vec2d& c);
+bool LineSegmentIntersection(
+  const cv::Vec2d & p1,
+  const cv::Vec2d & p2,
+  const cv::Vec2d & p3,
+  const cv::Vec2d & p4,
+  cv::Vec2d & c);
 
-  /**
+/**
    * Check if a point is on a line segment.
    *
    * @param[in]   p1   The point.
@@ -89,30 +89,30 @@ namespace swri_geometry_util
    *
    * @returns True if the point is on the line segment.
    */
-  bool PointOnLineSegment(
-      const cv::Vec2d& p1,
-      const cv::Vec2d& p2,
-      const cv::Vec2d& p3);
+bool PointOnLineSegment(
+  const cv::Vec2d & p1,
+  const cv::Vec2d & p2,
+  const cv::Vec2d & p3);
 
-  bool PolygonsIntersect(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b);
+bool PolygonsIntersect(
+  const std::vector<cv::Vec2d> & a,
+  const std::vector<cv::Vec2d> & b);
 
-  bool PolygonsIntersect(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b,
-      GEOSContextHandle_t& ctx);
+bool PolygonsIntersect(
+  const std::vector<cv::Vec2d> & a,
+  const std::vector<cv::Vec2d> & b,
+  GEOSContextHandle_t & ctx);
 
-  double PolygonIntersectionArea(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b);
+double PolygonIntersectionArea(
+  const std::vector<cv::Vec2d> & a,
+  const std::vector<cv::Vec2d> & b);
 
-  double PolygonIntersectionArea(
-      const std::vector<cv::Vec2d>& a,
-      const std::vector<cv::Vec2d>& b,
-      GEOSContextHandle_t& ctx);
+double PolygonIntersectionArea(
+  const std::vector<cv::Vec2d> & a,
+  const std::vector<cv::Vec2d> & b,
+  GEOSContextHandle_t & ctx);
 
-  void ReleaseContext(GEOSContextHandle_t&  ctx);
+void ReleaseContext(GEOSContextHandle_t & ctx);
 }
 
 #endif

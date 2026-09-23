@@ -31,166 +31,164 @@
 
 namespace swri_transform_util
 {
-  Transform::Transform() :
-    transform_(std::make_shared<IdentityTransform>())
-  {
+Transform::Transform()
+: transform_(std::make_shared<IdentityTransform>())
+{
+}
+
+Transform::Transform(const tf2::Transform & transform)
+: transform_(std::make_shared<TfTransform>(transform))
+{
+}
+
+Transform::Transform(const tf2::Stamped<tf2::Transform> & transform)
+: transform_(std::make_shared<TfTransform>(transform))
+{
+}
+
+Transform::Transform(std::shared_ptr<TransformImpl> transform)
+: transform_(transform)
+{
+}
+
+Transform & Transform::operator=(const tf2::Transform transform)
+{
+  transform_ = std::make_shared<TfTransform>(transform);
+
+  return *this;
+}
+
+Transform & Transform::operator=(std::shared_ptr<TransformImpl> transform)
+{
+  transform_ = transform;
+
+  return *this;
+}
+
+tf2::Vector3 Transform::operator()(const tf2::Vector3 & v) const
+{
+  tf2::Vector3 transformed;
+
+  transform_->Transform(v, transformed);
+
+  return transformed;
+}
+
+tf2::Vector3 Transform::operator*(const tf2::Vector3 & v) const
+{
+  tf2::Vector3 transformed;
+
+  transform_->Transform(v, transformed);
+
+  return transformed;
+}
+
+tf2::Quaternion Transform::operator*(const tf2::Quaternion & q) const
+{
+  return q * GetOrientation();
+}
+
+tf2::Vector3 Transform::GetOrigin() const
+{
+  tf2::Vector3 origin;
+
+  transform_->Transform(tf2::Vector3(0, 0, 0), origin);
+
+  return origin;
+}
+
+tf2::Quaternion Transform::GetOrientation() const
+{
+  return transform_->GetOrientation();
+}
+
+Transform Transform::Inverse() const
+{
+  return Transform(transform_->Inverse());
+}
+
+bool Transform::operator==(const Transform & other) const
+{
+  if (transform_ == other.transform_) {
+    return true;
   }
 
-  Transform::Transform(const tf2::Transform& transform) :
-    transform_(std::make_shared<TfTransform>(transform))
-  {
+  if (!transform_ || !other.transform_) {
+    return false;
   }
 
-  Transform::Transform(const tf2::Stamped<tf2::Transform>& transform) :
-    transform_(std::make_shared<TfTransform>(transform))
-  {
-  }
+  return transform_->Equals(*other.transform_);
+}
 
-  Transform::Transform(std::shared_ptr<TransformImpl> transform) :
-    transform_(transform)
-  {
-  }
+bool Transform::operator!=(const Transform & other) const
+{
+  return !(*this == other);
+}
 
-  Transform& Transform::operator=(const tf2::Transform transform)
-  {
-    transform_ = std::make_shared<TfTransform>(transform);
+tf2::Transform Transform::GetTF() const
+{
+  return tf2::Transform(GetOrientation(), GetOrigin());
+}
 
-    return *this;
-  }
+void IdentityTransform::Transform(const tf2::Vector3 & v_in, tf2::Vector3 & v_out) const
+{
+  v_out = v_in;
+}
 
-  Transform& Transform::operator=(std::shared_ptr<TransformImpl> transform)
-  {
-    transform_ = transform;
+bool IdentityTransform::Equals(const TransformImpl & other) const
+{
+  // Every identity transform maps points the same way, so the type is the
+  // only thing worth checking.
+  return dynamic_cast<const IdentityTransform *>(&other) != nullptr;
+}
 
-    return *this;
-  }
+std::shared_ptr<TransformImpl> IdentityTransform::Inverse() const
+{
+  TransformImplPtr inverse =
+    std::make_shared<IdentityTransform>();
+  inverse->SetStamp(stamp_);
+  return inverse;
+}
 
-  tf2::Vector3 Transform::operator()(const tf2::Vector3& v) const
-  {
-    tf2::Vector3 transformed;
+TfTransform::TfTransform(const tf2::Transform & transform)
+: transform_(transform)
+{
+  Tf2StampStampInterface::SetStamp(std::chrono::system_clock::now());
+}
 
-    transform_->Transform(v, transformed);
+TfTransform::TfTransform(const tf2::Stamped<tf2::Transform> & transform)
+: transform_(transform)
+{
+  Tf2StampStampInterface::SetStamp(transform.stamp_);
+}
 
-    return transformed;
-  }
+void TfTransform::Transform(const tf2::Vector3 & v_in, tf2::Vector3 & v_out) const
+{
+  v_out = transform_ * v_in;
+}
 
-  tf2::Vector3 Transform::operator*(const tf2::Vector3& v) const
-  {
-    tf2::Vector3 transformed;
+bool TfTransform::Equals(const TransformImpl & other) const
+{
+  auto tf_other = dynamic_cast<const TfTransform *>(&other);
 
-    transform_->Transform(v, transformed);
+  // Rotations are compared component-wise, so a quaternion and its negation
+  // -- the same rotation -- are reported unequal. That is the safe way to
+  // be wrong: a caller redoes work it could have skipped.
+  return tf_other != nullptr &&
+         transform_.getOrigin() == tf_other->transform_.getOrigin() &&
+         transform_.getRotation() == tf_other->transform_.getRotation();
+}
 
-    return transformed;
-  }
+tf2::Quaternion TfTransform::GetOrientation() const
+{
+  return transform_.getRotation();
+}
 
-  tf2::Quaternion Transform::operator*(const tf2::Quaternion& q) const
-  {
-    return q * GetOrientation();
-  }
-
-  tf2::Vector3 Transform::GetOrigin() const
-  {
-    tf2::Vector3 origin;
-
-    transform_->Transform(tf2::Vector3(0, 0, 0), origin);
-
-    return origin;
-  }
-
-  tf2::Quaternion Transform::GetOrientation() const
-  {
-    return transform_->GetOrientation();
-  }
-
-  Transform Transform::Inverse() const
-  {
-    return Transform(transform_->Inverse());
-  }
-
-  bool Transform::operator==(const Transform& other) const
-  {
-    if (transform_ == other.transform_)
-    {
-      return true;
-    }
-
-    if (!transform_ || !other.transform_)
-    {
-      return false;
-    }
-
-    return transform_->Equals(*other.transform_);
-  }
-
-  bool Transform::operator!=(const Transform& other) const
-  {
-    return !(*this == other);
-  }
-
-  tf2::Transform Transform::GetTF() const
-  {
-    return tf2::Transform(GetOrientation(),GetOrigin());
-  }
-
-  void IdentityTransform::Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const
-  {
-    v_out = v_in;
-  }
-
-  bool IdentityTransform::Equals(const TransformImpl& other) const
-  {
-    // Every identity transform maps points the same way, so the type is the
-    // only thing worth checking.
-    return dynamic_cast<const IdentityTransform*>(&other) != nullptr;
-  }
-
-  std::shared_ptr<TransformImpl> IdentityTransform::Inverse() const
-  {
-    TransformImplPtr inverse =
-        std::make_shared<IdentityTransform>();
-    inverse->SetStamp(stamp_);
-    return inverse;
-  }
-
-  TfTransform::TfTransform(const tf2::Transform& transform) :
-    transform_(transform)
-  {
-    Tf2StampStampInterface::SetStamp(std::chrono::system_clock::now());
-  }
-
-  TfTransform::TfTransform(const tf2::Stamped<tf2::Transform>& transform) :
-    transform_(transform)
-  {
-    Tf2StampStampInterface::SetStamp(transform.stamp_);
-  }
-
-  void TfTransform::Transform(const tf2::Vector3& v_in, tf2::Vector3& v_out) const
-  {
-    v_out = transform_ * v_in;
-  }
-
-  bool TfTransform::Equals(const TransformImpl& other) const
-  {
-    auto tf_other = dynamic_cast<const TfTransform*>(&other);
-
-    // Rotations are compared component-wise, so a quaternion and its negation
-    // -- the same rotation -- are reported unequal. That is the safe way to
-    // be wrong: a caller redoes work it could have skipped.
-    return tf_other != nullptr &&
-        transform_.getOrigin() == tf_other->transform_.getOrigin() &&
-        transform_.getRotation() == tf_other->transform_.getRotation();
-  }
-
-  tf2::Quaternion TfTransform::GetOrientation() const
-  {
-    return transform_.getRotation();
-  }
-
-  TransformImplPtr TfTransform::Inverse() const
-  {
-    TransformImplPtr inverse =
-        std::make_shared<TfTransform>(transform_.inverse());
-    inverse->SetStamp(stamp_);
-    return inverse;
-  }
+TransformImplPtr TfTransform::Inverse() const
+{
+  TransformImplPtr inverse =
+    std::make_shared<TfTransform>(transform_.inverse());
+  inverse->SetStamp(stamp_);
+  return inverse;
+}
 }

@@ -37,25 +37,25 @@
 
 namespace swri_math_util
 {
-  class RandomGenerator
-  {
-    public:
-      explicit RandomGenerator(int32_t seed = -1);
+class RandomGenerator
+{
+public:
+  explicit RandomGenerator(int32_t seed = -1);
 
-      void GetUniformRandomSample(
-        int32_t min,
-        int32_t max,
-        int32_t count,
-        std::vector<int32_t>& sample);
+  void GetUniformRandomSample(
+    int32_t min,
+    int32_t max,
+    int32_t count,
+    std::vector<int32_t> & sample);
 
-    private:
-      std::random_device seed_;
-      std::mt19937 rng_;
-      std::mutex mutex_;
-  };
-  typedef std::shared_ptr<RandomGenerator> RandomGeneratorPtr;
+private:
+  std::random_device seed_;
+  std::mt19937 rng_;
+  std::mutex mutex_;
+};
+typedef std::shared_ptr<RandomGenerator> RandomGeneratorPtr;
 
-  /**
+/**
    * Gets a uniform random sample of integers without repeats for a given range.
    *
    * The number of samples should be much smaller than the number of possible
@@ -71,51 +71,45 @@ namespace swri_math_util
    * param[in]   count   The sample size.
    * param[out]  sample  The sample.
    */
-  template <class RNG>
-  void GetUniformRandomSample(
-    RNG& rng,
-    int32_t min,
-    int32_t max,
-    int32_t count,
-    std::vector<int32_t>& sample)
-  {
-    sample.clear();
-    if (count < 0)
-    {
-      return;
-    }
+template<class RNG>
+void GetUniformRandomSample(
+  RNG & rng,
+  int32_t min,
+  int32_t max,
+  int32_t count,
+  std::vector<int32_t> & sample)
+{
+  sample.clear();
+  if (count < 0) {
+    return;
+  }
 
-    if (min > max)
-    {
-      int32_t tmp = min;
-      min = max;
-      max = tmp;
-    }
+  if (min > max) {
+    int32_t tmp = min;
+    min = max;
+    max = tmp;
+  }
 
-    int32_t range = (max - min) + 1;
-    if (count > range)
-    {
-      count = range;
-    }
+  int32_t range = (max - min) + 1;
+  if (count > range) {
+    count = range;
+  }
 
-    sample.resize(count);
+  sample.resize(count);
 
-    std::uniform_int_distribution<> dist(min, max);
-    for (int32_t i = 0; i < count; i++)
-    {
-      bool has_sample = false;
-      while (!has_sample)
-      {
-        sample[i] = dist(rng);
-        int32_t j;
-        for (j = 0; j < i; j++)
-        {
-          if (sample[i] == sample[j]) break;
-        }
-        has_sample = j == i;
+  std::uniform_int_distribution<> dist(min, max);
+  for (int32_t i = 0; i < count; i++) {
+    bool has_sample = false;
+    while (!has_sample) {
+      sample[i] = dist(rng);
+      int32_t j;
+      for (j = 0; j < i; j++) {
+        if (sample[i] == sample[j]) {break;}
       }
+      has_sample = j == i;
     }
   }
+}
 }
 
 #endif  // MATH_UTIL_RANDOM_H_

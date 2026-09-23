@@ -37,213 +37,204 @@
 
 namespace swri_transform_util
 {
-  namespace
-  {
-    PJ* CreateNormalizedUtmTransform(int zone, bool south)
-    {
-      char dst_args[96];
-      snprintf(
-          dst_args,
-          sizeof(dst_args),
-          "+proj=utm +datum=WGS84 +zone=%d%s +type=crs",
-          zone,
-          south ? " +south" : "");
+namespace
+{
+PJ * CreateNormalizedUtmTransform(int zone, bool south)
+{
+  char dst_args[96];
+  snprintf(
+    dst_args,
+    sizeof(dst_args),
+    "+proj=utm +datum=WGS84 +zone=%d%s +type=crs",
+    zone,
+    south ? " +south" : "");
 
-      PJ* transform = proj_create_crs_to_crs(
-          PJ_DEFAULT_CTX,
-          "+proj=longlat +datum=WGS84 +type=crs",
-          dst_args,
-          NULL);
+  PJ * transform = proj_create_crs_to_crs(
+    PJ_DEFAULT_CTX,
+    "+proj=longlat +datum=WGS84 +type=crs",
+    dst_args,
+    NULL);
 
-      if (transform == nullptr)
-      {
-        return nullptr;
-      }
-
-      PJ* normalized = proj_normalize_for_visualization(PJ_DEFAULT_CTX, transform);
-      if (normalized != nullptr)
-      {
-        proj_destroy(transform);
-        transform = normalized;
-      }
-
-      return transform;
-    }
+  if (transform == nullptr) {
+    return nullptr;
   }
 
-  uint32_t GetZone(double longitude)
-  {
-    int32_t zone = static_cast<int32_t>((longitude + 180.0) / 6.0) + 1;
-    if (zone < 1) zone = 1;
-    if (zone > 60) zone = 60;
-
-    return static_cast<uint32_t>(zone);
+  PJ * normalized = proj_normalize_for_visualization(PJ_DEFAULT_CTX, transform);
+  if (normalized != nullptr) {
+    proj_destroy(transform);
+    transform = normalized;
   }
 
-  char GetBand(double latitude)
-  {
-    // This routine determines the correct UTM letter designator for the given
-    // latitude returns 'Z' if latitude is outside the UTM limits of 84N to 80S
-    // Written by Chuck Gantz- chuck.gantz@globalstar.com
+  return transform;
+}
+}
 
-    char band;
+uint32_t GetZone(double longitude)
+{
+  int32_t zone = static_cast<int32_t>((longitude + 180.0) / 6.0) + 1;
+  if (zone < 1) {zone = 1;}
+  if (zone > 60) {zone = 60;}
 
-    if (latitude > 84) band = 'Z';
-    else if (latitude >= 72)  band = 'X';
-    else if (latitude >= 64)  band = 'W';
-    else if (latitude >= 56)  band = 'V';
-    else if (latitude >= 48)  band = 'U';
-    else if (latitude >= 40)  band = 'T';
-    else if (latitude >= 32)  band = 'S';
-    else if (latitude >= 24)  band = 'R';
-    else if (latitude >= 16)  band = 'Q';
-    else if (latitude >= 8)   band = 'P';
-    else if (latitude >= 0)   band = 'N';
-    else if (latitude >= -8)  band = 'M';
-    else if (latitude >= -16) band = 'L';
-    else if (latitude >= -24) band = 'K';
-    else if (latitude >= -32) band = 'J';
-    else if (latitude >= -40) band = 'H';
-    else if (latitude >= -48) band = 'G';
-    else if (latitude >= -56) band = 'F';
-    else if (latitude >= -64) band = 'E';
-    else if (latitude >= -72) band = 'D';
-    else if (latitude >= -80) band = 'C';
-    else
-      band = 'Z';
+  return static_cast<uint32_t>(zone);
+}
 
-    return band;
+char GetBand(double latitude)
+{
+  // This routine determines the correct UTM letter designator for the given
+  // latitude returns 'Z' if latitude is outside the UTM limits of 84N to 80S
+  // Written by Chuck Gantz- chuck.gantz@globalstar.com
+
+  char band;
+
+  if (latitude > 84) {band = 'Z';} else if (latitude >= 72) {band = 'X';} else if (latitude >= 64) {
+    band = 'W';
+  } else if (latitude >= 56) {band = 'V';} else if (latitude >= 48) {
+    band = 'U';
+  } else if (latitude >= 40) {band = 'T';} else if (latitude >= 32) {
+    band = 'S';
+  } else if (latitude >= 24) {band = 'R';} else if (latitude >= 16) {
+    band = 'Q';
+  } else if (latitude >= 8) {band = 'P';} else if (latitude >= 0) {
+    band = 'N';
+  } else if (latitude >= -8) {band = 'M';} else if (latitude >= -16) {
+    band = 'L';
+  } else if (latitude >= -24) {band = 'K';} else if (latitude >= -32) {
+    band = 'J';
+  } else if (latitude >= -40) {band = 'H';} else if (latitude >= -48) {
+    band = 'G';
+  } else if (latitude >= -56) {band = 'F';} else if (latitude >= -64) {
+    band = 'E';
+  } else if (latitude >= -72) {band = 'D';} else if (latitude >= -80) {band = 'C';} else {
+    band = 'Z';
   }
 
-  UtmUtil::UtmData::UtmData()
-  {
-    for (int i = 0; i < 60; i++)
-    {
-      P_ll_north_[i] = nullptr;
-      P_ll_south_[i] = nullptr;
-    }
+  return band;
+}
 
-    // Initialize projection for each UTM zone.
-    for (int i = 0; i < 60; i++)
-    {
-      P_ll_north_[i] = CreateNormalizedUtmTransform(i + 1, false);
-      P_ll_south_[i] = CreateNormalizedUtmTransform(i + 1, true);
-    }
+UtmUtil::UtmData::UtmData()
+{
+  for (int i = 0; i < 60; i++) {
+    P_ll_north_[i] = nullptr;
+    P_ll_south_[i] = nullptr;
   }
 
-  UtmUtil::UtmData::~UtmData()
-  {
-    for (int i = 0; i < 60; i++)
-    {
-      proj_destroy(P_ll_north_[i]);
-      proj_destroy(P_ll_south_[i]);
-    }
+  // Initialize projection for each UTM zone.
+  for (int i = 0; i < 60; i++) {
+    P_ll_north_[i] = CreateNormalizedUtmTransform(i + 1, false);
+    P_ll_south_[i] = CreateNormalizedUtmTransform(i + 1, true);
+  }
+}
+
+UtmUtil::UtmData::~UtmData()
+{
+  for (int i = 0; i < 60; i++) {
+    proj_destroy(P_ll_north_[i]);
+    proj_destroy(P_ll_south_[i]);
+  }
+}
+
+void UtmUtil::UtmData::ToUtm(
+  double latitude,
+  double longitude,
+  int & zone,
+  char & band,
+  double & easting,
+  double & northing) const
+{
+  std::unique_lock<std::mutex> lock(mutex_);
+
+  zone = GetZone(longitude);
+  band = GetBand(latitude);
+
+  // Get easting and northing values.
+  PJ_COORD c = proj_coord(longitude, latitude, 0.0, 0.0);
+  PJ_COORD c_out;
+
+  // Get easting and northing values.
+  PJ * projection = (band <= 'N') ? P_ll_south_[zone - 1] : P_ll_north_[zone - 1];
+  if (projection == nullptr) {
+    easting = NAN;
+    northing = NAN;
+    return;
   }
 
-  void UtmUtil::UtmData::ToUtm(
-      double latitude,
-      double longitude,
-      int& zone,
-      char& band,
-      double& easting,
-      double& northing) const
-  {
-    std::unique_lock<std::mutex> lock(mutex_);
+  c_out = proj_trans(projection, PJ_FWD, c);
 
-    zone = GetZone(longitude);
-    band = GetBand(latitude);
+  easting = c_out.enu.e;
+  northing = c_out.enu.n;
+}
 
-    // Get easting and northing values.
-    PJ_COORD c = proj_coord(longitude, latitude, 0.0, 0.0);
-    PJ_COORD c_out;
+void UtmUtil::UtmData::ToUtm(
+  double latitude,
+  double longitude,
+  double & easting,
+  double & northing) const
+{
+  int zone;
+  char band;
 
-    // Get easting and northing values.
-    PJ* projection = (band <= 'N') ? P_ll_south_[zone - 1] : P_ll_north_[zone - 1];
-    if (projection == nullptr)
-    {
-      easting = NAN;
-      northing = NAN;
-      return;
-    }
+  ToUtm(latitude, longitude, zone, band, easting, northing);
+}
 
-    c_out = proj_trans(projection, PJ_FWD, c);
+void UtmUtil::UtmData::ToLatLon(
+  int zone,
+  char band,
+  double easting,
+  double northing,
+  double & latitude,
+  double & longitude) const
+{
+  std::unique_lock<std::mutex> lock(mutex_);
 
-    easting = c_out.enu.e;
-    northing = c_out.enu.n;
+  PJ_COORD c = proj_coord(easting, northing, 0.0, 0.0);
+  PJ_COORD c_out;
+
+  PJ * projection = (band <= 'N') ? P_ll_south_[zone - 1] : P_ll_north_[zone - 1];
+  if (projection == nullptr) {
+    latitude = NAN;
+    longitude = NAN;
+    return;
   }
 
-  void UtmUtil::UtmData::ToUtm(
-      double latitude,
-      double longitude,
-      double& easting,
-      double& northing) const
-  {
-    int zone;
-    char band;
+  c_out = proj_trans(projection, PJ_INV, c);
 
-    ToUtm(latitude, longitude, zone, band, easting, northing);
-  }
+  longitude = c_out.lp.lam;
+  latitude = c_out.lp.phi;
+}
 
-  void UtmUtil::UtmData::ToLatLon(
-      int zone,
-      char band,
-      double easting,
-      double northing,
-      double& latitude,
-      double& longitude) const
-  {
-    std::unique_lock<std::mutex> lock(mutex_);
+UtmUtil::UtmUtil()
+: utm_data_(UtmData::GetInstance())
+{
+}
 
-    PJ_COORD c = proj_coord(easting, northing, 0.0, 0.0);
-    PJ_COORD c_out;
+void UtmUtil::ToUtm(
+  double latitude,
+  double longitude,
+  int & zone,
+  char & band,
+  double & easting,
+  double & northing) const
+{
+  utm_data_.ToUtm(latitude, longitude, zone, band, easting, northing);
+}
 
-    PJ* projection = (band <= 'N') ? P_ll_south_[zone - 1] : P_ll_north_[zone - 1];
-    if (projection == nullptr)
-    {
-      latitude = NAN;
-      longitude = NAN;
-      return;
-    }
+void UtmUtil::ToUtm(
+  double latitude,
+  double longitude,
+  double & easting,
+  double & northing) const
+{
+  utm_data_.ToUtm(latitude, longitude, easting, northing);
+}
 
-    c_out = proj_trans(projection, PJ_INV, c);
-
-    longitude = c_out.lp.lam;
-    latitude = c_out.lp.phi;
-  }
-
-  UtmUtil::UtmUtil() :
-    utm_data_(UtmData::GetInstance())
-  {
-  }
-
-  void UtmUtil::ToUtm(
-      double latitude,
-      double longitude,
-      int& zone,
-      char& band,
-      double& easting,
-      double& northing) const
-  {
-    utm_data_.ToUtm(latitude, longitude, zone, band, easting, northing);
-  }
-
-  void UtmUtil::ToUtm(
-      double latitude,
-      double longitude,
-      double& easting,
-      double& northing) const
-  {
-    utm_data_.ToUtm(latitude, longitude, easting, northing);
-  }
-
-  void UtmUtil::ToLatLon(
-      int zone,
-      char band,
-      double easting,
-      double northing,
-      double& latitude,
-      double& longitude) const
-  {
-    utm_data_.ToLatLon(zone, band, easting, northing, latitude, longitude);
-  }
+void UtmUtil::ToLatLon(
+  int zone,
+  char band,
+  double easting,
+  double northing,
+  double & latitude,
+  double & longitude) const
+{
+  utm_data_.ToLatLon(zone, band, easting, northing, latitude, longitude);
+}
 }

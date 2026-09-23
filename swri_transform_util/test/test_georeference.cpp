@@ -48,7 +48,8 @@ TEST(GeoreferenceTests, Load)
 #if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
 #else
-  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
+  std::filesystem::path package =
+    ament_index_cpp::get_package_share_directory("swri_transform_util");
 #endif
   std::filesystem::path data_filename = package / "test" / "data" / "test.geo";
   std::string filename = data_filename.string();
@@ -69,7 +70,8 @@ TEST(GeoreferenceTests, LoadExtension)
 #if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
 #else
-  std::filesystem::path package = ament_index_cpp::get_package_share_directory("swri_transform_util");
+  std::filesystem::path package =
+    ament_index_cpp::get_package_share_directory("swri_transform_util");
 #endif
   std::filesystem::path data_filename = package / "test" / "data" / "test_extension.geo";
   std::string filename = data_filename.string();
@@ -88,7 +90,7 @@ TEST(GeoreferenceTests, LoadExtension)
 // TODO(malban): Test coordinate/pixel transforms.
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

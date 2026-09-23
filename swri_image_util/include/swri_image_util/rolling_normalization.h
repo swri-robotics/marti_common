@@ -38,19 +38,20 @@
 
 namespace swri_image_util
 {
-  class RollingNormalization
-  {
-  public:
-    explicit RollingNormalization(int32_t size);
-    ~RollingNormalization();
+class RollingNormalization
+{
+public:
+  explicit RollingNormalization(int32_t size);
+  ~RollingNormalization();
 
-    cv::Mat AddSample(const cv::Mat& image);
-  private:
-    int32_t max_size_;
-    int32_t samples_;
-    cv::Mat average_image_;
-    cv::Mat norm_image_;
-  };
+  cv::Mat AddSample(const cv::Mat & image);
+
+private:
+  int32_t max_size_;
+  int32_t samples_;
+  cv::Mat average_image_;
+  cv::Mat norm_image_;
+};
 }
 
 
