@@ -33,8 +33,13 @@
 // ament_index_cpp::get_package_share_path (returns std::filesystem::path) was
 // added in ament_index_cpp 1.13.0; older versions only provide
 // get_package_share_directory (returns std::string).
+// The version is compared arithmetically rather than with
+// AMENT_INDEX_CPP_VERSION_GTE(), because cppcheck does not see this header and
+// treats an unresolved function-like macro in an #if as an error, while
+// unresolved object-like macros simply evaluate to 0.
 #include "ament_index_cpp/version.h"
-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+#if AMENT_INDEX_CPP_VERSION_MAJOR * 10000 + AMENT_INDEX_CPP_VERSION_MINOR * 100 + \
+  AMENT_INDEX_CPP_VERSION_PATCH >= 11300
 #include <ament_index_cpp/get_package_share_path.hpp>
 #else
 #include <ament_index_cpp/get_package_share_directory.hpp>
@@ -45,7 +50,8 @@
 
 TEST(GeoreferenceTests, Load)
 {
-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+#if AMENT_INDEX_CPP_VERSION_MAJOR * 10000 + AMENT_INDEX_CPP_VERSION_MINOR * 100 + \
+  AMENT_INDEX_CPP_VERSION_PATCH >= 11300
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
 #else
   std::filesystem::path package =
@@ -67,7 +73,8 @@ TEST(GeoreferenceTests, Load)
 
 TEST(GeoreferenceTests, LoadExtension)
 {
-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+#if AMENT_INDEX_CPP_VERSION_MAJOR * 10000 + AMENT_INDEX_CPP_VERSION_MINOR * 100 + \
+  AMENT_INDEX_CPP_VERSION_PATCH >= 11300
   std::filesystem::path package = ament_index_cpp::get_package_share_path("swri_transform_util");
 #else
   std::filesystem::path package =
