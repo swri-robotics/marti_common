@@ -59,6 +59,17 @@ public:
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     ASSERT_TRUE(origin_init);
+
+    // Wait until the static near_field transform has been received
+    bool tf_init = false;
+    for (size_t i = 0; i < 100; ++i) {
+      if (_tf_buffer->canTransform("far_field", "near_field", tf2::TimePointZero)) {
+        tf_init = true;
+        break;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    ASSERT_TRUE(tf_init);
   }
 };
 
