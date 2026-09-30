@@ -59,6 +59,19 @@ EARTH_MEAN_RADIUS = 6371009.0
 DEFAULT_MAX_ORIGIN_DISTANCE = 10000.0
 
 
+def has_position(msg):
+    """
+    Return whether a GPSFix or NavSatFix carries a usable latitude and longitude.
+
+    A fix status alone is not enough: a receiver can report a fix before it has
+    a position, and both messages use NaN for a position they do not have.
+
+    :param msg: A gps_msgs.msg.GPSFix or sensor_msgs.msg.NavSatFix.
+    :return: True if the latitude and longitude are both finite.
+    """
+    return math.isfinite(msg.latitude) and math.isfinite(msg.longitude)
+
+
 def planar_distance(latitude1, longitude1, latitude2, longitude2):
     """
     Return the approximate distance in meters between two lat/lon points.
@@ -268,9 +281,10 @@ class OriginManager(object):
         :param bool use_track: If True, point the local X axis along the GPS track, provided
             that the track is finite and its uncertainty is finite and positive;
             otherwise the heading is 0, pointing the X axis east. (default False).
-        :raises InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
+        :raises InvalidFixException: If `msg.status.status` is STATUS_NO_FIX, or the
+            latitude or longitude is not finite
         """
-        if msg.status.status == GPSStatus.STATUS_NO_FIX:
+        if msg.status.status == GPSStatus.STATUS_NO_FIX or not has_position(msg):
             message = 'Cannot set origin from invalid GPSFix. Waiting for a valid one...'
             raise InvalidFixException(message)
         heading = 0.0
@@ -295,9 +309,10 @@ class OriginManager(object):
         Set the local origin from a sensor_msgs.msg.NavSatFix object.
 
         :param sensor_msgs.msg.NavSatFix msg: A NavSatFix message with the local origin
-        :raises InvalidFixException: If `msg.status.status` is STATUS_NO_FIX
+        :raises InvalidFixException: If `msg.status.status` is STATUS_NO_FIX, or the
+            latitude or longitude is not finite
         """
-        if msg.status.status == NavSatStatus.STATUS_NO_FIX:
+        if msg.status.status == NavSatStatus.STATUS_NO_FIX or not has_position(msg):
             message = 'Cannot set origin from invalid NavSatFix. Waiting for a valid one...'
             raise InvalidFixException(message)
         self.set_origin('navsat', msg.latitude, msg.longitude, msg.altitude, msg.header.stamp)
@@ -330,7 +345,7 @@ class OriginManager(object):
 
         :param gps_msgs.msg.GPSFix msg: A GPSFix message with the current position.
         """
-        if msg.status.status == GPSStatus.STATUS_NO_FIX:
+        if msg.status.status == GPSStatus.STATUS_NO_FIX or not has_position(msg):
             return
         self.update_current_position(msg.latitude, msg.longitude)
 
@@ -341,7 +356,7 @@ class OriginManager(object):
         :param sensor_msgs.msg.NavSatFix msg: A NavSatFix message with the current
             position.
         """
-        if msg.status.status == NavSatStatus.STATUS_NO_FIX:
+        if msg.status.status == NavSatStatus.STATUS_NO_FIX or not has_position(msg):
             return
         self.update_current_position(msg.latitude, msg.longitude)
 
