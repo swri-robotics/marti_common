@@ -26,11 +26,13 @@
 //
 // *****************************************************************************
 
+#include <cmath>
 #include <functional>
 #include <string>
 
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <gps_msgs/msg/gps_fix.hpp>
+#include <gps_msgs/msg/gps_status.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include "swri_math_util/constants.h"
 #include "swri_math_util/trig_util.h"
@@ -100,6 +102,18 @@ void GpsTransformPublisher::InitTransformBroadcaster()
 
 void GpsTransformPublisher::HandleGps(const gps_msgs::msg::GPSFix::UniquePtr gps_fix)
 {
+  // A GPSFix without a fix, or with a NaN position, has no position to publish:
+  // broadcasting it would move the child frame to 0N 0E, or hand tf2 a NaN
+  // transform, which it rejects.
+  if (gps_fix->status.status == gps_msgs::msg::GPSStatus::STATUS_NO_FIX ||
+    !std::isfinite(gps_fix->latitude) || !std::isfinite(gps_fix->longitude))
+  {
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(), *this->get_clock(), 10000,
+      "Ignoring a GPSFix without a position (status %d)", gps_fix->status.status);
+    return;
+  }
+
   tf2::Transform transform;
 
   // Get the orientation from the GPS track.
