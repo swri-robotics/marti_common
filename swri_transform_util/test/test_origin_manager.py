@@ -38,6 +38,7 @@ from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import NavSatStatus
 from swri_transform_util.origin_manager import DEFAULT_MAX_ORIGIN_DISTANCE
 from swri_transform_util.origin_manager import EARTH_MEAN_RADIUS
+from swri_transform_util.origin_manager import InvalidFixException
 from swri_transform_util.origin_manager import OriginManager
 from swri_transform_util.origin_manager import planar_distance
 
@@ -190,6 +191,61 @@ def test_invalid_fixes_do_not_update_the_position(manager):
 
     assert manager.current_position is None
     assert 'Distance From Origin' not in values_of(status_of(manager))
+
+
+NON_FINITE_POSITIONS = [
+    (math.nan, SWRI['longitude']),
+    (SWRI['latitude'], math.nan),
+    (math.inf, SWRI['longitude']),
+    (SWRI['latitude'], -math.inf),
+]
+
+
+def gps_fix(latitude, longitude):
+    msg = GPSFix()
+    msg.status.status = GPSStatus.STATUS_FIX
+    msg.latitude = latitude
+    msg.longitude = longitude
+    msg.altitude = SWRI['altitude']
+    return msg
+
+
+def navsat_fix(latitude, longitude):
+    msg = NavSatFix()
+    msg.status.status = NavSatStatus.STATUS_FIX
+    msg.latitude = latitude
+    msg.longitude = longitude
+    msg.altitude = SWRI['altitude']
+    return msg
+
+
+@pytest.mark.parametrize('make_fix,update', [
+    (gps_fix, 'update_current_position_from_gps'),
+    (navsat_fix, 'update_current_position_from_navsat'),
+])
+@pytest.mark.parametrize('latitude,longitude', NON_FINITE_POSITIONS)
+def test_fixes_without_a_position_do_not_update_the_position(
+        manager, make_fix, update, latitude, longitude):
+    # A fix status with a NaN or infinite position is still no position.
+    manager.set_origin('navsat', SWRI['latitude'], SWRI['longitude'], SWRI['altitude'])
+    getattr(manager, update)(make_fix(latitude, longitude))
+    assert manager.current_position is None
+
+
+@pytest.mark.parametrize('latitude,longitude', NON_FINITE_POSITIONS)
+def test_fixes_without_a_position_cannot_set_the_origin(manager, latitude, longitude):
+    with pytest.raises(InvalidFixException):
+        manager.set_origin_from_gps(gps_fix(latitude, longitude))
+    with pytest.raises(InvalidFixException):
+        manager.set_origin_from_navsat(navsat_fix(latitude, longitude))
+
+
+def test_a_fix_without_an_altitude_can_set_the_origin(manager):
+    # A 2D fix has no altitude but is still a position.
+    manager.set_origin_from_navsat(navsat_fix(SWRI['latitude'], SWRI['longitude']))
+    two_d = gps_fix(SWRI['latitude'], SWRI['longitude'])
+    two_d.altitude = math.nan
+    manager.set_origin_from_gps(two_d)
 
 
 def test_valid_fixes_update_the_position(manager):
