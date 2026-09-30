@@ -213,6 +213,7 @@ if(BUILD_TESTING)
   # more than the 60 second default that add_launch_test() applies per test.
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo.test.py TIMEOUT 180)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/lat_lon_tf_echo_unsupported_origin.test.py)
+  add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/gps_transform_publisher.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_gps.test.py)
   add_launch_test(${CMAKE_CURRENT_SOURCE_DIR}/test/initialize_invalid_navsat.test.py)
   # The "custom" functionality appears to be gone in ROS 2.
