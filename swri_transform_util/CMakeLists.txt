@@ -105,6 +105,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 # GeographicLib is an implementation detail (hidden behind a forward declaration
 # in local_xy_util.h), so link it PRIVATE. Downstream consumers no longer need
 # GeographicLib's headers or its non-standard CMake config location.
+# The find module's GeographicLib_LIBRARIES is a bare library path that carries
+# no include directories, so add them explicitly for non-/usr installs.
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+  ${GeographicLib_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE
   ${GeographicLib_LIBRARIES})
 
